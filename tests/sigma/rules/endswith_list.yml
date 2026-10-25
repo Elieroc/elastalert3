@@ -1,0 +1,5 @@
+title: endswith_list
+logsource: {product: windows, category: process_creation}
+detection:
+  sel: {Image|endswith: ['\cmd.exe', '\net.exe']}
+  condition: sel

@@ -26,6 +26,7 @@ Contents:
    flags
    configuration
    ruletypes
+   sigma
    alerts
    enhancements
    differences

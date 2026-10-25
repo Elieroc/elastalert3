@@ -1,0 +1,6 @@
+title: one_of
+logsource: {product: windows, category: process_creation}
+detection:
+  sel_a: {Image|endswith: '\net.exe'}
+  sel_b: {DestinationPort: 4444}
+  condition: 1 of sel_*

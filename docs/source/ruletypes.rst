@@ -12,9 +12,9 @@ ElastAlert 2 repository; they run unchanged in ElastAlert 3.
    listed anywhere are ignored, as in ElastAlert 2, so typos are not detected.
 
    Options new in ElastAlert 3: :ref:`active_hours <active_hours>`, :ref:`mitre_attack <mitre_attack>`, :ref:`ingest_timestamp_field <ingest_timestamp_field>`,
-   :ref:`fetch_full_source <fetch_full_source>`, the :ref:`correlation <correlation>` rule type and the ``rust.*``
+   :ref:`fetch_full_source <fetch_full_source>`, :ref:`Sigma rules <sigma>` (``sigma``), the :ref:`correlation <correlation>` rule type and the ``rust.*``
    :doc:`match enhancements <enhancements>`. A rule using one of them does not run in ElastAlert 2 (it ignores
-   ``active_hours``, ``mitre_attack``, ``ingest_timestamp_field`` and ``fetch_full_source``).
+   ``active_hours``, ``mitre_attack``, ``ingest_timestamp_field``, ``fetch_full_source`` and ``sigma``).
 
 .. _commonconfig:
 

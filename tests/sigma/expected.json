@@ -1,0 +1,18 @@
+{
+  "equals_ci": ["e1", "e2"],
+  "endswith_list": ["e1", "e2", "e7"],
+  "contains_all": ["e1"],
+  "windash": ["e3", "e4", "e5"],
+  "not_filter": ["e1"],
+  "null_value": ["e6"],
+  "number_range": ["e8"],
+  "cidr": ["e8", "e9"],
+  "regex": ["e16"],
+  "utf16_base64offset": ["e11"],
+  "keywords": ["e12"],
+  "escaped_wildcard": ["e14"],
+  "one_of": ["e7", "e8"],
+  "cased": ["e2"],
+  "exists": ["e1", "e2", "e3", "e4", "e5", "e7"],
+  "wildcard_equals": ["e7"]
+}

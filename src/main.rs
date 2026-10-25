@@ -15,6 +15,7 @@ mod notify;
 mod querylang;
 mod rule;
 mod setup;
+mod sigma;
 mod testrule;
 mod time;
 mod types;
@@ -110,6 +111,8 @@ enum Cmd {
     Validate,
     /// Write an ATT&CK Navigator layer of the techniques the rules cover (mitre_attack); no Elasticsearch needed
     MitreLayer(mitre::LayerArgs),
+    /// Print the ElastAlert options a Sigma rule compiles to; no Elasticsearch and no config needed
+    SigmaConvert(sigma::ConvertArgs),
 }
 
 struct Logger(log::LevelFilter);
@@ -362,7 +365,7 @@ impl Runtime {
             Ok(f) => f,
             Err(e) => return log::error!("Error scanning rules folder: {e:#}"),
         };
-        let current: FxHashMap<PathBuf, u64> = files.into_iter().map(|f| (rule::file_hash(&f), f)).map(|(h, f)| (f, h)).collect();
+        let current: FxHashMap<PathBuf, u64> = files.into_iter().map(|f| (rule::file_hash(&f, conf), f)).map(|(h, f)| (f, h)).collect();
         let gone: Vec<PathBuf> = self.running.keys().filter(|p| !current.contains_key(*p)).cloned().collect();
         for path in gone {
             log::info!("Rule file {} not found, stopping rule execution", path.display());
@@ -452,6 +455,9 @@ async fn main() -> Result<()> {
     if let Some(Cmd::TestRule(t)) = args.cmd {
         return testrule::run(t, &args.config).await;
     }
+    if let Some(Cmd::SigmaConvert(c)) = &args.cmd {
+        return sigma::convert_cmd(c);
+    }
     let conf = Config::load(&args.config)?;
     if let Some(Cmd::Validate) = &args.cmd {
         return testrule::validate(&conf);
@@ -509,7 +515,7 @@ async fn main() -> Result<()> {
     let mut states = Vec::new();
     let mut hashes = Vec::new();
     for r in rules {
-        hashes.push((r.file.clone(), rule::file_hash(&r.file)));
+        hashes.push((r.file.clone(), rule::file_hash(&r.file, &conf)));
         match RuleState::new(r) {
             Ok(s) => states.push(s),
             Err(e) if conf.skip_invalid => log::error!("Invalid rule skipped: {e:#}"),

@@ -28,6 +28,7 @@ New in ElastAlert 3
 - :ref:`active_hours <active_hours>`: ignore matches outside time windows, in a given time zone.
 - :ref:`mitre_attack <mitre_attack>`: the ATT&CK techniques of a rule, checked at load, written to the alert documents,
   added as TheHive / IRIS tags, and exported as an ATT&CK Navigator layer by the ``mitre-layer`` subcommand.
+- :ref:`Sigma rules <sigma>`: ``sigma: <file>`` compiles a Sigma detection into the rule's ``filter``, with built-in and custom field-mapping pipelines, ``sigma_folders`` to run plain Sigma files, Sigma correlation rules and filters, and the ``sigma-convert`` subcommand.
 - :ref:`ingest_timestamp_field <ingest_timestamp_field>`: query on the ingest time, so late documents are found
   exactly once.
 - :ref:`fetch_full_source <fetch_full_source>` and ``use_pit`` (see :ref:`ea3_config`).
@@ -36,7 +37,7 @@ New in ElastAlert 3
 - Hot reload keeps the state of a changed rule; pending alerts and aggregation groups survive restarts.
 
 A rule using ``correlation`` or a ``rust.*`` enhancement does not load in ElastAlert 2. ElastAlert 2 ignores
-``active_hours``, ``mitre_attack``, ``ingest_timestamp_field`` and ``fetch_full_source``.
+``active_hours``, ``mitre_attack``, ``sigma``, ``sigma_folders``, ``ingest_timestamp_field`` and ``fetch_full_source``.
 
 Behaviour differences
 =====================

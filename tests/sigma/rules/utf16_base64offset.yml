@@ -1,0 +1,5 @@
+title: utf16_base64offset
+logsource: {product: windows, category: process_creation}
+detection:
+  sel: {CommandLine|utf16le|base64offset|contains: whoami}
+  condition: sel

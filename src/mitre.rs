@@ -169,7 +169,7 @@ impl Technique {
     }
 }
 
-fn is_technique_id(s: &str) -> bool {
+pub fn is_technique_id(s: &str) -> bool {
     let b = s.as_bytes();
     let digits = |r: std::ops::Range<usize>| b[r].iter().all(u8::is_ascii_digit);
     match b.len() {

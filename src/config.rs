@@ -5,7 +5,7 @@ use crate::time::{Dur, MINUTE, parse_duration_map};
 use anyhow::{Context, Result, bail};
 use serde_json::{Map, Value, json};
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 pub struct Config {
     /// Every key from the file (after overrides). Rules inherit the ones they don't set.
@@ -17,6 +17,11 @@ pub struct Config {
     pub writeback_index: String,
     pub rules_folders: Vec<PathBuf>,
     pub scan_subdirectories: bool,
+    /// `sigma_folders`: folders of plain Sigma rule files, each loaded as a rule with `sigma_defaults`.
+    pub sigma_folders: Vec<PathBuf>,
+    pub sigma_defaults: Map<String, Value>,
+    /// The Sigma documents of `sigma_folders`, read once per scan of the folders (see `rule::discover`).
+    pub sigma_cache: Arc<Mutex<Option<Arc<crate::sigma::Corpus>>>>,
     pub max_query_size: u64,
     pub scroll_keepalive: String,
     pub max_scrolling_count: u64,
@@ -131,6 +136,20 @@ impl Config {
             Some(Value::Array(a)) => a.iter().filter_map(|v| v.as_str().map(PathBuf::from)).collect(),
             _ => bail!("{} must contain rules_folder", path.display()),
         };
+        let sigma_folders = match raw.get("sigma_folders") {
+            None | Some(Value::Null) => vec![],
+            Some(Value::String(s)) => vec![PathBuf::from(s)],
+            Some(Value::Array(a)) => a.iter().map(|v| v.as_str().map(PathBuf::from).context("sigma_folders must be a folder or a list of folders")).collect::<Result<_>>()?,
+            Some(_) => bail!("sigma_folders must be a folder or a list of folders"),
+        };
+        let sigma_defaults = match raw.get("sigma_defaults") {
+            None | Some(Value::Null) => Map::new(),
+            Some(Value::Object(m)) => m.clone(),
+            Some(_) => bail!("sigma_defaults must be a map of rule options"),
+        };
+        if let Some(k) = ["name", "sigma", "import", "rule_file"].into_iter().find(|k| sigma_defaults.contains_key(*k)) {
+            bail!("sigma_defaults cannot set {k}: every Sigma file is a rule of its own");
+        }
         let attack = match raw.get("mitre_attack_data") {
             None | Some(Value::Null) => Attack::embedded(),
             Some(Value::String(p)) => Arc::new(Attack::from_stix_file(Path::new(p))?),
@@ -145,6 +164,9 @@ impl Config {
             writeback_index: raw["writeback_index"].as_str().context("writeback_index must be a string")?.into(),
             rules_folders: folders,
             scan_subdirectories: raw.get("scan_subdirectories").and_then(Value::as_bool).unwrap_or(true),
+            sigma_folders,
+            sigma_defaults,
+            sigma_cache: Arc::default(),
             max_query_size: raw.get("max_query_size").and_then(Value::as_u64).unwrap_or(10_000),
             scroll_keepalive: raw.get("scroll_keepalive").and_then(Value::as_str).unwrap_or("30s").into(),
             max_scrolling_count: raw.get("max_scrolling_count").and_then(Value::as_u64).unwrap_or(990),

@@ -1,0 +1,6 @@
+title: not_filter
+logsource: {product: windows, category: process_creation}
+detection:
+  selection: {Image|endswith: '\cmd.exe'}
+  filter: {User: SYSTEM}
+  condition: selection and not filter

@@ -1,0 +1,5 @@
+title: number_range
+logsource: {product: windows, category: process_creation}
+detection:
+  sel: {EventID: 3, DestinationPort|gte: 1000}
+  condition: sel

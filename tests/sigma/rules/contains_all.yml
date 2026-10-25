@@ -1,0 +1,5 @@
+title: contains_all
+logsource: {product: windows, category: process_creation}
+detection:
+  sel: {CommandLine|contains|all: [cmd, whoami]}
+  condition: sel

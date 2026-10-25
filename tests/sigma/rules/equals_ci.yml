@@ -1,0 +1,5 @@
+title: equals_ci
+logsource: {product: windows, category: process_creation}
+detection:
+  sel: {Image: 'C:\Windows\System32\cmd.exe'}
+  condition: sel

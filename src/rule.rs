@@ -7,6 +7,7 @@ use crate::time::{Dur, MINUTE, SECOND, parse_duration_map};
 use anyhow::{Context, Result, bail};
 use serde_json::{Map, Value, json};
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Kind {
@@ -226,15 +227,75 @@ pub fn discover(conf: &Config, only: Option<&str>) -> Result<Vec<PathBuf>> {
     let mut files = Vec::new();
     for dir in &conf.rules_folders {
         if !dir.exists() {
+            // A setup made of Sigma folders alone has no use for the default rules folder.
+            if !conf.sigma_folders.is_empty() {
+                continue;
+            }
             bail!("rules folder does not exist: {}", dir.display());
         }
         walk(dir, conf.scan_subdirectories, &mut files)?;
+    }
+    if !conf.sigma_folders.is_empty() {
+        // One read of the Sigma folders per scan: the rules, the filters and the correlations are looked up in it.
+        *conf.sigma_cache.lock().unwrap_or_else(|e| e.into_inner()) = None;
+        let mut sigma_files = Vec::new();
+        for dir in &conf.sigma_folders {
+            if !dir.exists() {
+                bail!("sigma folder does not exist: {}", dir.display());
+            }
+            walk(dir, true, &mut sigma_files)?;
+        }
+        let global = sigma_corpus(conf);
+        // Filters, and the rules a correlation refers to (unless it generates them), are not rules of their own.
+        let referenced = crate::sigma::referenced_rules(&global, |p| correlation_loads(p, conf));
+        files.extend(sigma_files.into_iter().filter(|f| !crate::sigma::is_support_file(f, &global, &referenced)));
     }
     if let Some(name) = only {
         files.retain(|f| f.file_name().and_then(|n| n.to_str()) == Some(name));
     }
     files.sort();
+    files.dedup();
     Ok(files)
+}
+
+/// The Sigma documents of the `sigma_folders`.
+fn sigma_corpus(conf: &Config) -> Arc<crate::sigma::Corpus> {
+    let mut slot = conf.sigma_cache.lock().unwrap_or_else(|e| e.into_inner());
+    slot.get_or_insert_with(|| Arc::new(crate::sigma::Corpus::from_paths(&conf.sigma_folders, true).unwrap_or_default())).clone()
+}
+
+/// Whether a correlation rule of the `sigma_folders` compiles; only then do the rules it refers to stop running on their own.
+fn correlation_loads(file: &Path, conf: &Config) -> bool {
+    let Ok((mut raw, _)) = read_rule(file, conf) else { return false };
+    for (k, v) in &conf.raw {
+        raw.entry(k.clone()).or_insert_with(|| v.clone());
+    }
+    crate::sigma::apply(&mut raw, &conf.attack, &sigma_corpus(conf)).is_ok()
+}
+
+/// A plain Sigma file inside one of the `sigma_folders`.
+fn is_sigma_file(file: &Path, conf: &Config) -> bool {
+    if conf.sigma_folders.is_empty() {
+        return false;
+    }
+    let Ok(file) = file.canonicalize() else { return false };
+    conf.sigma_folders.iter().any(|d| d.canonicalize().is_ok_and(|d| file.starts_with(d)))
+}
+
+/// The options of a rule file before defaults and Sigma are applied: the file itself, or for a plain Sigma file the
+/// `sigma_defaults` pointing at it.
+fn read_rule(file: &Path, conf: &Config) -> Result<(Map<String, Value>, Vec<PathBuf>)> {
+    if !is_sigma_file(file, conf) {
+        return load_yaml(file);
+    }
+    if !conf.sigma_defaults.contains_key("alert") && !conf.raw.contains_key("alert") {
+        bail!("rules from sigma_folders need an alert: set one in sigma_defaults");
+    }
+    let mut raw = conf.sigma_defaults.clone();
+    raw.insert("rule_file".into(), json!(file.to_string_lossy()));
+    raw.insert("sigma".into(), json!(file.file_name().and_then(|n| n.to_str()).unwrap_or_default()));
+    raw.insert("sigma_in_folder".into(), json!(true));
+    Ok((raw, vec![file.to_path_buf()]))
 }
 
 /// Reads a rule and its `import:` chain. Later imports win, `filter` lists are concatenated (AND).
@@ -278,9 +339,10 @@ pub fn load_yaml(file: &Path) -> Result<(Map<String, Value>, Vec<PathBuf>)> {
 }
 
 /// Hash of a rule file and everything it imports; changes when any of them changes.
-pub fn file_hash(file: &Path) -> u64 {
+pub fn file_hash(file: &Path, conf: &Config) -> u64 {
     use std::hash::{Hash, Hasher};
-    let files = load_yaml(file).map(|(_, f)| f).unwrap_or_else(|_| vec![file.to_path_buf()]);
+    let (raw, mut files) = read_rule(file, conf).unwrap_or_else(|_| (Map::new(), vec![file.to_path_buf()]));
+    files.extend(crate::sigma::files(&raw, &sigma_corpus(conf)));
     let mut h = rustc_hash::FxHasher::default();
     for f in files {
         match std::fs::read(&f) {
@@ -306,7 +368,7 @@ fn str_list(v: &Value) -> Vec<String> {
 }
 
 pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
-    let (mut raw, _) = load_yaml(file)?;
+    let (mut raw, _) = read_rule(file, conf)?;
     // Every rule uses the daemon's Elasticsearch connection; a rule that names a different one would
     // silently query the wrong cluster, so refuse it.
     for k in [
@@ -322,6 +384,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
     for (k, v) in &conf.raw {
         raw.entry(k.clone()).or_insert_with(|| v.clone());
     }
+    crate::sigma::apply(&mut raw, &conf.attack, &sigma_corpus(conf))?;
     let stem = file.file_stem().and_then(|s| s.to_str()).unwrap_or("rule");
     let name = raw.get("name").and_then(Value::as_str).unwrap_or(stem).to_string();
     raw.insert("name".into(), json!(name));
@@ -813,6 +876,88 @@ mod tests {
         assert_eq!(raw["index"], json!("logs-*"));
         assert_eq!(raw["filter"], json!([{"term": {"a": 1}}, {"term": {"b": 2}}]));
         assert!(!raw.contains_key("import"));
+        std::fs::remove_dir_all(dir).ok();
+    }
+
+    const SIGMA: &str = "title: Encoded PowerShell\nlevel: high\nlogsource: {product: windows}\ndetection:\n  sel: {Image|endswith: '\\\\ps.exe'}\n  condition: sel\n";
+
+    fn sigma_setup(name: &str, config: &str) -> (PathBuf, Config) {
+        let dir = std::env::temp_dir().join(format!("ea-sigma-folders-{}-{name}", std::process::id()));
+        std::fs::remove_dir_all(&dir).ok();
+        std::fs::create_dir_all(dir.join("sigma/win")).unwrap();
+        std::fs::write(dir.join("sigma/win/ps.yml"), SIGMA).unwrap();
+        std::fs::write(dir.join("sigma/win/notes.txt"), "not a rule").unwrap();
+        let config = config.replace("DIR", &dir.to_string_lossy());
+        std::fs::write(dir.join("config.yaml"), format!("rules_folder: {0}/missing\nes_host: h\nes_port: 9200\nwriteback_index: wb\nrun_every: {{minutes: 1}}\nbuffer_time: {{minutes: 5}}\n{config}", dir.display())).unwrap();
+        let conf = Config::load(&dir.join("config.yaml")).unwrap();
+        (dir, conf)
+    }
+
+    #[test]
+    fn sigma_folders_load_plain_sigma_files() {
+        let (dir, conf) = sigma_setup("ok", "sigma_folders: [DIR/sigma]\nsigma_defaults:\n  alert: [debug]\n  index: logs-*\n  realert: {minutes: 10}\n");
+        let files = discover(&conf, None).unwrap();
+        assert_eq!(files, vec![dir.join("sigma/win/ps.yml")]);
+        let r = load(&files[0], &conf).unwrap();
+        assert_eq!((r.name.as_str(), r.raw["alert_subject"].as_str(), r.raw["priority"].as_u64()), ("ps", Some("Encoded PowerShell"), Some(2)));
+        assert_eq!(r.realert, 10 * MINUTE);
+        assert_eq!(r.filter.len(), 1);
+        // --rule finds a Sigma file by name, and the hash follows the file.
+        assert_eq!(discover(&conf, Some("ps.yml")).unwrap(), files);
+        let before = file_hash(&files[0], &conf);
+        std::fs::write(&files[0], SIGMA.replace("high", "low")).unwrap();
+        assert_ne!(before, file_hash(&files[0], &conf));
+        std::fs::remove_dir_all(dir).ok();
+    }
+
+    #[test]
+    fn sigma_folders_need_an_alert_and_a_real_folder() {
+        let (dir, conf) = sigma_setup("noalert", "sigma_folders: DIR/sigma\nsigma_defaults: {index: logs-*}\n");
+        let err = format!("{:#}", load(&dir.join("sigma/win/ps.yml"), &conf).err().unwrap());
+        assert!(err.contains("need an alert"), "{err}");
+        let (_, conf) = sigma_setup("nofolder", "sigma_folders: [DIR/nope]\n");
+        assert!(discover(&conf, None).unwrap_err().to_string().contains("sigma folder does not exist"));
+        std::fs::remove_dir_all(dir).ok();
+    }
+
+    #[test]
+    fn sigma_folders_skip_filters_and_the_rules_a_correlation_uses() {
+        let (dir, conf) = sigma_setup("corr", "sigma_folders: [DIR/sigma]\nsigma_defaults: {alert: [debug], index: logs-*}\n");
+        let sigma = dir.join("sigma");
+        std::fs::remove_dir_all(sigma.join("win")).unwrap();
+        let det = |name: &str, field: &str| format!("title: {name}\nname: {name}\nlogsource: {{product: windows}}\ndetection: {{s: {{{field}: 1}}, condition: s}}\n");
+        let corr = |ty: &str, extra: &str| format!("title: c\ncorrelation: {{type: {ty}, rules: [failed], group-by: [U], timespan: 1m, condition: {{gte: 3{extra}}}}}\n");
+        std::fs::write(sigma.join("failed.yml"), det("failed", "A")).unwrap();
+        std::fs::write(sigma.join("other.yml"), det("other", "B")).unwrap();
+        std::fs::write(sigma.join("a_corr.yml"), corr("event_count", "")).unwrap();
+        std::fs::write(sigma.join("mf_other.yml"), "title: f\nfilter:\n  rules: [other]\n  selection: {User: SYSTEM}\n  condition: selection\n").unwrap();
+        let names = |conf: &Config| discover(conf, None).unwrap().iter().map(|f| f.file_name().unwrap().to_string_lossy().into_owned()).collect::<Vec<_>>();
+        // The filter is no rule, and `failed` only feeds the correlation.
+        assert_eq!(names(&conf), vec!["a_corr.yml", "other.yml"]);
+        let c = load(&sigma.join("a_corr.yml"), &conf).unwrap();
+        assert_eq!((c.name.as_str(), c.raw["type"].as_str(), c.raw["num_events"].as_u64()), ("a_corr", Some("frequency"), Some(3)));
+        let o = load(&sigma.join("other.yml"), &conf).unwrap();
+        assert!(o.filter[0].to_string().contains("must_not"));
+        // A correlation that does not load leaves its rules running; generate: true keeps them running too.
+        std::fs::write(sigma.join("a_corr.yml"), corr("value_sum", ", field: V")).unwrap();
+        assert_eq!(names(&conf), vec!["a_corr.yml", "failed.yml", "other.yml"]);
+        std::fs::write(sigma.join("a_corr.yml"), format!("generate: true\n{}", corr("event_count", ""))).unwrap();
+        assert_eq!(names(&conf), vec!["a_corr.yml", "failed.yml", "other.yml"]);
+        // Editing a filter changes the hash of the rule it applies to, and only that one.
+        let (before_o, before_f) = (file_hash(&sigma.join("other.yml"), &conf), file_hash(&sigma.join("failed.yml"), &conf));
+        std::fs::write(sigma.join("mf_other.yml"), "title: f\nfilter:\n  rules: [other]\n  selection: {User: ROOT}\n  condition: selection\n").unwrap();
+        *conf.sigma_cache.lock().unwrap() = None;
+        assert_ne!(before_o, file_hash(&sigma.join("other.yml"), &conf));
+        assert_eq!(before_f, file_hash(&sigma.join("failed.yml"), &conf));
+        std::fs::remove_dir_all(dir).ok();
+    }
+
+    #[test]
+    fn sigma_defaults_cannot_name_the_rule() {
+        let dir = std::env::temp_dir().join(format!("ea-sigma-folders-{}-name", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(dir.join("config.yaml"), "rules_folder: r\nes_host: h\nes_port: 9200\nwriteback_index: wb\nrun_every: {minutes: 1}\nbuffer_time: {minutes: 5}\nsigma_defaults: {name: x}\n").unwrap();
+        assert!(format!("{:#}", Config::load(&dir.join("config.yaml")).err().unwrap()).contains("cannot set name"));
         std::fs::remove_dir_all(dir).ok();
     }
 

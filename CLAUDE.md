@@ -19,6 +19,7 @@ Toolchain: Rust 1.99, edition 2024 (let-chains used).
 
 Integration harnesses need a throwaway Elasticsearch and are not part of `cargo test`:
 - `tests/parity/`: `seed.py` loads deterministic data; run Python ElastAlert 2.31.0 and this binary with `--debug --start 2026-10-01T08:00:00Z --end 2026-10-01T10:05:00Z`, then `diff.py py.log rs.log`. The alerts must be identical. Re-run this after any change to rule types, query planning or alert text.
+- `tests/sigma/`: `run.py URL` loads 16 events and checks which ones each rule in `rules/` hits against `expected.json` (derived by hand); with pySigma installed it also compares with `sigma convert -t lucene`. `e2e.py URL` runs the daemon over Sigma correlations and a filter in `sigma_folders` (`e2e/`). `corpus.py DIR [--es URL]` converts a SigmaHQ checkout and must not crash. Re-run after any change to `src/sigma/`.
 - `tests/alerters/sink.py`: local SMTP + HTTP receiver for the email/slack/post/command alerters and retry behaviour.
 - `bench/`: 400k-document dataset, 500-rule folder and correlation rules (`rules-corr`, `config-corr-rs.yaml`) for the performance numbers in `docs/source/differences.rst`.
 
@@ -36,6 +37,7 @@ Single crate, single binary. Process model:
 - `es.rs`: raw REST client over reqwest (no official ES crate) for ES 7.x/8.x and OpenSearch 2.x: PIT + `search_after` when available, scroll fallback, `_bulk`, `_mget`, `--es_debug(_trace)` tracing.
 - `writeback.rs`: single bulk-writer task (flush every 1 s or 500 docs), client-side UUIDv7 ids so retries are idempotent.
 - `alert.rs`: alert body/subject (Python `str.format` subset, `minijinja` for jinja), summary tables. `alerters/`: one module per alerter (`mod.rs` = enum, option helpers, `View`; `http.rs` = shared webhook client; `testutil` = rule builder + in-process HTTP capture server for tests), all 44 upstream alerters (the `alert:` names) (`debug`, `email`, `slack`, `post`, `command`); any other alerter name is rejected at load.
+- `sigma/`: native Sigma rules. `sigma:` in a rule file compiles the Sigma detection into a Query DSL `filter` at load (`mod.rs` = wrapper, metadata and `sigma-convert`; `sigma_folders` plain files are handled in `rule.rs` `read_rule`; `condition.rs`, `modifiers.rs`, `dsl.rs`; `corpus.rs` = multi-document files and the lookup of referenced rules and filters, `corr.rs` = correlation rules as `frequency` / `cardinality` / `correlation`; `pipeline.rs` + `pipelines/*.yml` = field mapping).
 - `testrule.rs`: `test-rule` and `validate` subcommands. `setup.rs`: `create-index`, using mappings embedded from `mappings/` (copied from upstream).
 - `notify.rs`: `notify_email` operator mails. `metrics.rs`: Prometheus endpoint with upstream metric names.
 

@@ -1,0 +1,13 @@
+title: Many failed logins
+level: medium
+correlation:
+  type: event_count
+  rules: [failed_login]
+  group-by: [User]
+  timespan: 10m
+  condition: {gte: 10}
+---
+title: Single failed login
+name: failed_login
+logsource: {product: windows}
+detection: {selection: {EventID: [529, 4625]}, condition: selection}

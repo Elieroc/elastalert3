@@ -1,0 +1,5 @@
+title: windash
+logsource: {product: windows, category: process_creation}
+detection:
+  sel: {CommandLine|windash|contains: ' -enc'}
+  condition: sel

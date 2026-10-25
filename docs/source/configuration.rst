@@ -305,6 +305,12 @@ Options specific to ElastAlert 3
 `MITRE <https://github.com/mitre-attack/attack-stix-data>`_. The :ref:`mitre_attack <mitre_attack>` rule option is
 checked against this bundle instead of the included copy of Enterprise ATT&CK (v20). (Optional, string, no default)
 
+``sigma_folders``: Folders of plain `Sigma <https://sigmahq.io>`__ rule files, searched with their subfolders. Each file is a rule
+of its own, with the options of ``sigma_defaults``. See :ref:`Sigma folders <sigma>`. (Optional, a folder or a list, no default)
+
+``sigma_defaults``: The rule options (``alert``, ``index``, ``sigma_pipeline``, ``realert``, ...) given to every rule of
+``sigma_folders``. It needs an ``alert``. (Optional, map, no default)
+
 ``statsd_host``, ``statsd_instance_tag``: not supported, ignored. Use the Prometheus endpoint, see
 :doc:`recipes/exposing_rule_metrics`.
 

@@ -1,0 +1,40 @@
+title: Correlation - Multiple Failed Logins Followed by Successful Login
+id: b180ead8-d58f-40b2-ae54-c8940995b9b6
+status: experimental
+level: high
+correlation:
+  type: temporal_ordered
+  rules:
+    - multiple_failed_login
+    - successful_login
+  group-by:
+    - User
+  timespan: 10m
+---
+title: Multiple failed logons
+name: multiple_failed_login
+correlation:
+  type: event_count
+  rules:
+    - failed_login
+  group-by:
+    - User
+  timespan: 10m
+  condition:
+    gte: 10
+---
+title: Single failed login
+name: failed_login
+logsource: {product: windows, service: security}
+detection:
+  selection:
+    EventID: [529, 4625]
+  condition: selection
+---
+title: Successful login
+name: successful_login
+logsource: {product: windows, service: security}
+detection:
+  selection:
+    EventID: [528, 4624]
+  condition: selection

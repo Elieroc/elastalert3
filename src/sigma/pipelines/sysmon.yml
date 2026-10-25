@@ -1,0 +1,91 @@
+# Raw Sysmon events as Winlogbeat ships them (no ECS renaming): fields live under winlog.event_data, and the logsource
+# category selects the Sysmon event ID.
+name: sysmon
+transformations:
+  - type: field_name_mapping
+    rule_conditions: [{type: logsource, product: windows}]
+    mapping:
+      EventID: winlog.event_id
+      Computer: winlog.computer_name
+      ComputerName: winlog.computer_name
+      Channel: winlog.channel
+      Provider_Name: winlog.provider_name
+  - type: field_name_prefix
+    rule_conditions: [{type: logsource, product: windows}]
+    prefix: winlog.event_data.
+    unmapped: true
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: process_creation}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [1]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: file_change}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [2]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: network_connection}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [3]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: process_termination}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [5]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: driver_load}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [6]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: image_load}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [7]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: create_remote_thread}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [8]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: raw_access_thread}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [9]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: process_access}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [10]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: file_event}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [11]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: registry_add}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [12]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: registry_delete}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [12]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: registry_set}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [13]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: registry_rename}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [14]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: registry_event}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [12, 13, 14]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: create_stream_hash}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [15]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: pipe_created}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [17, 18]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: wmi_event}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [19, 20, 21]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: dns_query}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [22]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: file_delete}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [23, 26]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: clipboard_capture}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [24]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: process_tampering}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [25]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: file_block_executable}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [27]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: file_block_shredding}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [28]}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: file_executable_detected}]
+    conditions: {winlog.provider_name: Microsoft-Windows-Sysmon, winlog.event_id: [29]}

@@ -1,0 +1,7 @@
+title: null_value
+logsource: {product: windows, category: process_creation}
+detection:
+  sel:
+    User: null
+    Image|startswith: 'C:\Tools'
+  condition: sel

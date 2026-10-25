@@ -1,0 +1,5 @@
+title: exists
+logsource: {product: windows, category: process_creation}
+detection:
+  sel: {User|exists: true, EventID: 1}
+  condition: sel

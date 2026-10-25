@@ -1,0 +1,5 @@
+title: wildcard_equals
+logsource: {product: windows, category: process_creation}
+detection:
+  sel: {CommandLine: 'net user * /add'}
+  condition: sel

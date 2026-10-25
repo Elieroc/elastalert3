@@ -1,0 +1,5 @@
+title: escaped_wildcard
+logsource: {product: windows, category: process_creation}
+detection:
+  sel: {CommandLine|contains: 'a\*b'}
+  condition: sel

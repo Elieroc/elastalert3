@@ -1,0 +1,29 @@
+# Linux events shipped as ECS (Auditbeat, Filebeat, Elastic Agent).
+name: ecs_linux
+transformations:
+  - type: field_name_mapping
+    rule_conditions: [{type: logsource, product: linux}]
+    mapping:
+      Image: process.executable
+      ParentImage: process.parent.executable
+      CommandLine: process.command_line
+      ParentCommandLine: process.parent.command_line
+      CurrentDirectory: process.working_directory
+      ProcessId: process.pid
+      ParentProcessId: process.parent.pid
+      User: user.name
+      TargetFilename: file.path
+      DestinationIp: destination.ip
+      DestinationPort: destination.port
+      DestinationHostname: destination.domain
+      SourceIp: source.ip
+      SourcePort: source.port
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: linux, category: process_creation}]
+    conditions: {event.category: process, event.type: start}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: linux, category: network_connection}]
+    conditions: {event.category: network}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: linux, category: file_event}]
+    conditions: {event.category: file}

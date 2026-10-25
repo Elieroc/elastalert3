@@ -1,0 +1,6 @@
+title: Ignore service accounts
+filter:
+  rules: [successful_login]
+  selection:
+    User|startswith: svc_
+  condition: selection

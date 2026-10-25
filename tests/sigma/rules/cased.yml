@@ -1,0 +1,5 @@
+title: cased
+logsource: {product: windows, category: process_creation}
+detection:
+  sel: {Image|cased|endswith: '\CMD.EXE'}
+  condition: sel

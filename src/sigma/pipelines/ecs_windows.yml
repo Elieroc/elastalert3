@@ -1,0 +1,62 @@
+# Windows events shipped as ECS (Winlogbeat, Elastic Agent). Fields ECS has no name for stay under winlog.event_data.
+name: ecs_windows
+transformations:
+  - type: field_name_mapping
+    rule_conditions: [{type: logsource, product: windows}]
+    mapping:
+      Image: process.executable
+      ParentImage: process.parent.executable
+      CommandLine: process.command_line
+      ParentCommandLine: process.parent.command_line
+      OriginalFileName: process.pe.original_file_name
+      Description: process.pe.description
+      Product: process.pe.product
+      Company: process.pe.company
+      FileVersion: process.pe.file_version
+      Imphash: process.pe.imphash
+      CurrentDirectory: process.working_directory
+      ProcessId: process.pid
+      ParentProcessId: process.parent.pid
+      ProcessGuid: process.entity_id
+      ParentProcessGuid: process.parent.entity_id
+      User: user.name
+      Computer: host.name
+      ComputerName: host.name
+      EventID: event.code
+      Channel: winlog.channel
+      Provider_Name: winlog.provider_name
+      TargetFilename: file.path
+      DestinationIp: destination.ip
+      DestinationPort: destination.port
+      DestinationHostname: destination.domain
+      SourceIp: source.ip
+      SourcePort: source.port
+      Protocol: network.transport
+      QueryName: dns.question.name
+      TargetObject: registry.path
+      Details: registry.data.strings
+  - type: field_name_prefix
+    rule_conditions: [{type: logsource, product: windows}]
+    prefix: winlog.event_data.
+    unmapped: true
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: process_creation}]
+    conditions: {event.category: process, event.type: start}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: network_connection}]
+    conditions: {event.category: network}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: file_event}]
+    conditions: {event.category: file}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: registry_set}]
+    conditions: {event.category: registry}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: registry_add}]
+    conditions: {event.category: registry}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: registry_delete}]
+    conditions: {event.category: registry}
+  - type: add_condition
+    rule_conditions: [{type: logsource, product: windows, category: registry_event}]
+    conditions: {event.category: registry}

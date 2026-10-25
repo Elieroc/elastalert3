@@ -1,0 +1,5 @@
+title: keywords
+logsource: {product: windows, category: process_creation}
+detection:
+  keywords: ['failed password', 'invalid user']
+  condition: keywords
