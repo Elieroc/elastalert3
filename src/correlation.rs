@@ -241,6 +241,16 @@ pub fn parse(src: &str, leaves: &[String]) -> Result<Query> {
     Ok(Query { positive, negated, after, text, negated_text })
 }
 
+/// Marks the leaves that a fresh `Progress` of `e` takes: the ones that can start a chain.
+pub fn first_leaves(e: &Expr, out: &mut [bool]) {
+    match e {
+        Expr::Leaf(i) => out[*i] = true,
+        Expr::And(items) | Expr::Or(items) => items.iter().for_each(|x| first_leaves(x, out)),
+        Expr::Then(items) => first_leaves(&items[0], out),
+        Expr::Not(_) => unreachable!("NOT is split off at load"),
+    }
+}
+
 /// Progress of one chain through an expression without `NOT`.
 #[derive(Clone, Debug)]
 pub struct Progress {

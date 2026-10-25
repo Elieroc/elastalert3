@@ -1228,6 +1228,8 @@ struct LeafRec {
 pub struct Correlation {
     names: Vec<String>,
     need: Vec<u64>,
+    /// Leaves that can start a chain; other events of a pivot without one are skipped before anything is allocated.
+    starts: Vec<bool>,
     query: Query,
     chains: FxHashMap<String, Chain>,
     /// Matches completing at or before this time were alerted by a previous run; replaying them only rebuilds state.
@@ -1237,9 +1239,12 @@ pub struct Correlation {
 impl Correlation {
     fn new(rule: &Rule) -> Self {
         let spec = rule.correlation.as_ref().expect("correlation rules always have leaves");
+        let mut starts = vec![false; spec.leaves.len()];
+        crate::correlation::first_leaves(&spec.query.positive, &mut starts);
         Correlation {
             names: spec.leaves.iter().map(|l| l.name.clone()).collect(),
             need: spec.leaves.iter().map(|l| l.num_events).collect(),
+            starts,
             query: spec.query.clone(),
             chains: FxHashMap::default(),
             suppress_until: None,
@@ -1260,6 +1265,9 @@ impl Correlation {
         }
         let q = &self.query;
         let fresh = !self.chains.contains_key(&key);
+        if fresh && !tags.iter().any(|t| self.starts[*t]) {
+            return;
+        }
         let chain = self.chains.entry(key.clone()).or_insert_with(|| Chain {
             first_ts: ev.ts,
             positive: Progress::new(&q.positive),
