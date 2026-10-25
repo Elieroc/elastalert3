@@ -2192,6 +2192,11 @@ This rule requires four additional options:
 - ``NOT``: what must not happen within ``timeframe`` of the first event. Only at the top of the query, next to
   something that happens: ``x AND NOT y`` (no ``y`` from the start of the chain) or ``x THEN NOT y`` (no ``y`` after
   ``x`` completed). ``NOT`` alone, under ``OR`` or inside parentheses is rejected.
+- ``a THEN NOT b THEN c``: ``c`` after ``a``, with no ``b`` in between. The ``NOT`` guards the gap from the event that
+  completed ``a`` to the one that completes ``c`` (a ``b`` before ``a`` or after ``c`` does not count). A ``b`` in the
+  gap ends the chain without an alert, and a document matching both ``b`` and ``c`` counts as a ``b``. It works in the
+  top-level ``THEN`` only, never first or last (a last one is the ``x THEN NOT y`` above), and combines with it:
+  ``a THEN NOT b THEN c THEN NOT d``.
 - Parentheses group. Different operators at the same level need them: ``(a AND b) THEN c``, never ``a AND b THEN c``.
 
 Keywords are case-insensitive; this documentation writes them in upper case.

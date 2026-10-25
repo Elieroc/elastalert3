@@ -1278,7 +1278,13 @@ impl Correlation {
         });
         let was_done = chain.positive.done;
         let mut took = vec![false; self.names.len()];
-        if chain.positive.feed(&q.positive, tags, &self.need, &mut took) {
+        let fed = chain.positive.feed(&q.positive, tags, &self.need, &mut took);
+        if chain.positive.violated {
+            // A `NOT` between two steps happened before the next step.
+            self.chains.remove(&key);
+            return;
+        }
+        if fed {
             for (rec, _) in chain.leaves.iter_mut().zip(&took).filter(|(_, t)| **t) {
                 if rec.count == 0 {
                     rec.first = ev.ts;
@@ -1571,6 +1577,35 @@ mod tests {
         // A new start after the deadline opens a fresh chain.
         let m = feed(&rule, &mut rt, vec![cev(1, "c", 0), cev(1, "c", 150)]);
         assert_eq!(m.len(), 1);
+    }
+
+    #[test]
+    fn correlation_not_between_steps_guards_the_gap() {
+        // a (leaf 0) THEN NOT b (leaf 1) THEN c (leaf 2).
+        let q = "a THEN NOT b THEN c";
+        let leaves = [("a", 1), ("b", 1), ("c", 1)];
+        let (rule, mut rt) = corr_rule(&leaves, q, 1);
+        let m = feed(&rule, &mut rt, vec![cev(0, "x", 0), cev(2, "x", 5)]);
+        assert_eq!(m.len(), 1, "no b between a and c");
+        assert_eq!(m[0]["correlation"]["query"], json!(q));
+        assert_eq!(m[0]["correlation"]["leaves"]["b"], Value::Null);
+        let (rule, mut rt) = corr_rule(&leaves, q, 1);
+        assert!(feed(&rule, &mut rt, vec![cev(0, "x", 0), cev(1, "x", 2), cev(2, "x", 5)]).is_empty(), "b between a and c kills the chain");
+        // The killed chain is gone: c alone starts nothing, and a new a opens a fresh one.
+        assert!(feed(&rule, &mut rt, vec![cev(2, "x", 6)]).is_empty());
+        assert_eq!(feed(&rule, &mut rt, vec![cev(0, "x", 10), cev(2, "x", 11)]).len(), 1);
+        // A b before a, or another pivot's b, is not in the gap.
+        let (rule, mut rt) = corr_rule(&leaves, q, 1);
+        assert_eq!(feed(&rule, &mut rt, vec![cev(1, "x", 0), cev(0, "x", 1), cev(1, "y", 2), cev(2, "x", 3)]).len(), 1);
+        // A b after c is out of the gap too.
+        let (rule, mut rt) = corr_rule(&leaves, q, 1);
+        let mut out = feed(&rule, &mut rt, vec![cev(0, "x", 0), cev(2, "x", 1), cev(1, "x", 2)]);
+        assert_eq!(out.len(), 1);
+        out.clear();
+        // A document matching both b and c is a b: the chain is dead.
+        let (rule, mut rt) = corr_rule(&leaves, q, 1);
+        rt.add_correlation(&rule, vec![(vec![0], cev(0, "x", 0).1), (vec![1, 2], cev(1, "x", 1).1)], &mut out);
+        assert!(out.is_empty());
     }
 
     #[test]

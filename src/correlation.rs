@@ -195,7 +195,7 @@ fn one_or(items: Vec<Expr>, many: fn(Vec<Expr>) -> Expr) -> Expr {
     if items.len() == 1 { items.into_iter().next().expect("one item") } else { many(items) }
 }
 
-const NOT_PLACE: &str = "NOT can only be used at the top of correlation_query, as `x AND NOT y` or `x THEN NOT y`";
+const NOT_PLACE: &str = "NOT can only be used at the top of correlation_query, as `x AND NOT y`, `x THEN NOT y` or between two steps of a top-level THEN (`x THEN NOT y THEN z`)";
 
 /// Parses `src` over the leaf names. Every leaf must be used; `NOT` only at the top, next to something that happens.
 pub fn parse(src: &str, leaves: &[String]) -> Result<Query> {
@@ -231,7 +231,19 @@ pub fn parse(src: &str, leaves: &[String]) -> Result<Query> {
         }
         e => (e, vec![], false),
     };
-    if has_not(&positive) || negated.iter().any(has_not) {
+    // In a top-level `THEN`, a `NOT` between two steps guards the gap before the next step.
+    let clean = match &positive {
+        Expr::Then(items) => {
+            matches!(items.first(), Some(x) if !matches!(x, Expr::Not(_)))
+                && matches!(items.last(), Some(x) if !matches!(x, Expr::Not(_)))
+                && items.iter().all(|x| match x {
+                    Expr::Not(inner) => !has_not(inner),
+                    x => !has_not(x),
+                })
+        }
+        e => !has_not(e),
+    };
+    if !clean || negated.iter().any(has_not) {
         bail!("{NOT_PLACE}");
     }
     if matches!(positive, Expr::Leaf(_)) && negated.is_empty() {
@@ -255,18 +267,22 @@ pub fn first_leaves(e: &Expr, out: &mut [bool]) {
 #[derive(Clone, Debug)]
 pub struct Progress {
     pub done: bool,
+    /// A `NOT` step of a `THEN` happened before the next step completed: the chain is dead.
+    pub violated: bool,
     /// Leaf: events taken. `THEN`: the operand being waited for.
     n: u64,
+    /// For a `NOT` step of a `THEN`, the progress of its operand.
     children: Vec<Progress>,
 }
 
 impl Progress {
     pub fn new(e: &Expr) -> Self {
         let children = match e {
-            Expr::And(items) | Expr::Or(items) | Expr::Then(items) => items.iter().map(Progress::new).collect(),
+            Expr::Then(items) => items.iter().map(|x| if let Expr::Not(inner) = x { Progress::new(inner) } else { Progress::new(x) }).collect(),
+            Expr::And(items) | Expr::Or(items) => items.iter().map(Progress::new).collect(),
             Expr::Leaf(_) | Expr::Not(_) => vec![],
         };
-        Progress { done: false, n: 0, children }
+        Progress { done: false, violated: false, n: 0, children }
     }
 
     /// Hands one document, matching the leaves `tags`, to the expression; true when a leaf took it, and `took[leaf]`
@@ -295,10 +311,21 @@ impl Progress {
                 any
             }
             Expr::Then(items) => {
-                let i = self.n as usize;
+                let mut i = self.n as usize;
+                // `NOT` steps guard the gap from the previous step to the next one; the first and last step are never `NOT`.
+                // An event matching a guard and the next step kills the chain.
+                while let Expr::Not(x) = &items[i] {
+                    let guard = &mut self.children[i];
+                    guard.feed(x, tags, need, &mut vec![false; took.len()]);
+                    self.violated |= guard.done;
+                    i += 1;
+                }
+                if self.violated {
+                    return false;
+                }
                 let any = self.children[i].feed(&items[i], tags, need, took);
                 if self.children[i].done {
-                    self.n += 1;
+                    self.n = i as u64 + 1;
                     self.done = self.n as usize == items.len();
                 }
                 any
@@ -352,6 +379,18 @@ mod tests {
     }
 
     #[test]
+    fn not_between_steps_of_a_then() {
+        let query = q("a THEN NOT (b OR c) THEN d").unwrap();
+        assert_eq!(query.text, "a THEN NOT (b OR c) THEN d");
+        assert_eq!(query.positive, Expr::Then(vec![Expr::Leaf(0), Expr::Not(Box::new(Expr::Or(vec![Expr::Leaf(1), Expr::Leaf(2)]))), Expr::Leaf(3)]));
+        assert!(query.negated.is_empty());
+        // Together with a trailing NOT.
+        let query = parse("a THEN NOT b THEN c THEN NOT d", &names(&["a", "b", "c", "d"])).unwrap();
+        assert!(query.after && query.negated == vec![Expr::Leaf(3)]);
+        assert!(matches!(&query.positive, Expr::Then(items) if items.len() == 3));
+    }
+
+    #[test]
     fn rejects_bad_queries() {
         let err = |s: &str| q(s).map(|_| ()).unwrap_err().to_string();
         assert!(err("").contains("empty"));
@@ -363,7 +402,7 @@ mod tests {
         assert!(err("a AND OR b").contains("OR needs a leaf"));
         assert!(err("a AND b AND c AND d AND").contains("unexpected end"));
         assert!(err("a AND b, c AND d").contains("unexpected character ','"));
-        for s in ["NOT (a AND b AND c AND d)", "a OR NOT b OR c OR d", "a THEN NOT b THEN c THEN d", "(a AND NOT b) THEN c THEN d", "NOT a AND NOT b AND NOT c AND NOT d", "a AND b AND c AND NOT NOT d"] {
+        for s in ["NOT (a AND b AND c AND d)", "a OR NOT b OR c OR d", "NOT a THEN b THEN c THEN d", "a THEN NOT b THEN NOT c THEN d THEN NOT NOT d", "a THEN (b AND NOT c) THEN d", "(a AND NOT b) THEN c THEN d", "NOT a AND NOT b AND NOT c AND NOT d", "a AND b AND c AND NOT NOT d"] {
             assert!(err(s).contains("NOT can only be used at the top"), "{s}: {}", err(s));
         }
         assert!(parse("a", &names(&["a"])).unwrap_err().to_string().contains("at least two leaves"));
