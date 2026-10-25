@@ -108,6 +108,16 @@ pub struct Rule {
     pub exponential_realert: Option<Dur>,
     pub query_timezone: Option<chrono_tz::Tz>,
     pub allow_degraded: bool,
+    /// `read_doc_values`: the fetched fields are read from doc values instead of `_source` when the mapping allows.
+    pub read_doc_values: bool,
+    /// `split_on_limit`: an EQL / ES|QL range that returns `max_query_size` results is cut in two and read as two.
+    pub split_on_limit: bool,
+    /// `search_timeout`: Elasticsearch gives up a search after this long; a partial result is an error.
+    pub search_timeout: Option<Dur>,
+    /// `terminate_after`: documents collected per shard before a hit search stops early.
+    pub terminate_after: Option<u64>,
+    /// `preference` and `routing` as URL parameters (`&preference=x&routing=y`), empty when neither is set.
+    pub search_params: String,
     pub include_fields: Option<Vec<String>>,
     pub jinja_template: Option<String>,
     pub max_query_size: u64,
@@ -338,11 +348,62 @@ pub fn load_yaml(file: &Path) -> Result<(Map<String, Value>, Vec<PathBuf>)> {
     }
 }
 
+/// One `filter_terms_file` entry: the values of a text file, one per line, as a `terms` filter on `field`.
+struct TermsFile {
+    field: String,
+    path: PathBuf,
+    negate: bool,
+}
+
+/// Elasticsearch refuses a `terms` query with more values than `index.max_terms_count`.
+const MAX_TERMS: usize = 65_536;
+
+impl TermsFile {
+    /// The `terms` filter (inside `bool.must_not` when `negate`). Blank lines and lines starting with `#` are skipped.
+    fn filter(&self) -> Result<Value> {
+        let text = std::fs::read_to_string(&self.path).with_context(|| format!("filter_terms_file {}", self.path.display()))?;
+        let mut values: Vec<&str> = text.lines().map(str::trim).filter(|l| !l.is_empty() && !l.starts_with('#')).collect();
+        values.sort_unstable();
+        values.dedup();
+        if values.is_empty() {
+            bail!("filter_terms_file {} has no value", self.path.display());
+        }
+        if values.len() > MAX_TERMS {
+            bail!("filter_terms_file {} has {} values, Elasticsearch accepts {MAX_TERMS} in a terms query", self.path.display(), values.len());
+        }
+        let terms = json!({"terms": {self.field.clone(): values}});
+        Ok(if self.negate { json!({"bool": {"must_not": [terms]}}) } else { terms })
+    }
+}
+
+/// `filter_terms_file`: a map, or a list of maps, with `field`, `path` (relative to the rule file) and `negate`.
+fn terms_files(raw: &Map<String, Value>) -> Result<Vec<TermsFile>> {
+    let items = match raw.get("filter_terms_file") {
+        None | Some(Value::Null) => return Ok(vec![]),
+        Some(Value::Array(a)) => a.clone(),
+        Some(v @ Value::Object(_)) => vec![v.clone()],
+        Some(_) => bail!("filter_terms_file must be a map or a list of maps with field and path"),
+    };
+    let base = raw.get("rule_file").and_then(Value::as_str).map(Path::new).and_then(Path::parent).unwrap_or(Path::new("."));
+    items
+        .iter()
+        .map(|item| {
+            let m = item.as_object().context("filter_terms_file entries must be maps with field and path")?;
+            if let Some(k) = m.keys().find(|k| !["field", "path", "negate"].contains(&k.as_str())) {
+                bail!("filter_terms_file: option {k} is not supported (field, path, negate)");
+            }
+            let get = |k: &str| m.get(k).and_then(Value::as_str).filter(|s| !s.is_empty()).with_context(|| format!("filter_terms_file needs a {k}"));
+            Ok(TermsFile { field: get("field")?.to_string(), path: base.join(get("path")?), negate: m.get("negate").and_then(Value::as_bool).unwrap_or(false) })
+        })
+        .collect()
+}
+
 /// Hash of a rule file and everything it imports; changes when any of them changes.
 pub fn file_hash(file: &Path, conf: &Config) -> u64 {
     use std::hash::{Hash, Hasher};
     let (raw, mut files) = read_rule(file, conf).unwrap_or_else(|_| (Map::new(), vec![file.to_path_buf()]));
     files.extend(crate::sigma::files(&raw, &sigma_corpus(conf)));
+    files.extend(terms_files(&raw).unwrap_or_default().into_iter().map(|t| t.path));
     let mut h = rustc_hash::FxHasher::default();
     for f in files {
         match std::fs::read(&f) {
@@ -591,6 +652,23 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         .map(|k| if raw_count_keys && !k.ends_with(&suffix) { format!("{k}{suffix}") } else { k })
         .collect();
     let top_count_number = raw.get("top_count_number").and_then(Value::as_u64).unwrap_or(5);
+    let split_on_limit = raw.get("split_on_limit").and_then(Value::as_bool).unwrap_or(false);
+    let search_timeout = dur_opt(&raw, "search_timeout")?;
+    if search_timeout.is_some_and(|t| t < 1_000) {
+        bail!("search_timeout must be at least one millisecond");
+    }
+    let terminate_after = match raw.get("terminate_after") {
+        None | Some(Value::Null) => None,
+        Some(v) => Some(v.as_u64().filter(|n| *n > 0).context("terminate_after must be a positive integer")?),
+    };
+    let mut search_params = String::new();
+    for key in ["preference", "routing"] {
+        match raw.get(key) {
+            None | Some(Value::Null) => {}
+            Some(Value::String(s)) if !s.is_empty() => search_params.push_str(&format!("&{key}={}", crate::discover::quote_plus(s))),
+            Some(_) => bail!("{key} must be a non-empty string"),
+        }
+    }
     let ingest_field = raw.get("ingest_timestamp_field").and_then(Value::as_str).map(String::from);
     let exponential_realert = dur_opt(&raw, "exponential_realert")?;
     let query_timezone = match raw.get("query_timezone").and_then(Value::as_str).filter(|t| !t.is_empty()) {
@@ -608,7 +686,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
     // fetch only the fields they use and get the full document for matches later (`_mget`).
     let user_include = raw.get("include").map(str_list);
     let full = user_include.is_some()
-        || matches!(kind, Kind::Any | Kind::Blacklist | Kind::Whitelist | Kind::Correlation)
+        || matches!(kind, Kind::Any | Kind::Blacklist | Kind::Whitelist)
         || raw.get("fetch_full_source").and_then(Value::as_bool).unwrap_or(false);
     let mut include: Vec<String> = match (&user_include, full) {
         (Some(u), _) => u.clone(),
@@ -621,6 +699,10 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
     include.extend(compound_aggregation_key.iter().cloned());
     include.extend(aggregation_key.clone());
     include.push(timestamp_field.clone());
+    if kind == Kind::Correlation {
+        let leaves = raw.get("correlation_leaves").and_then(Value::as_object).into_iter().flat_map(Map::values);
+        include.extend(leaves.filter_map(|l| l.get("query_key").and_then(Value::as_str)).map(String::from));
+    }
     if !full {
         include.extend(raw.get("cardinality_field").and_then(Value::as_str).map(String::from));
         include.extend(raw.get("field_value").and_then(Value::as_str).map(String::from));
@@ -637,6 +719,10 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
     include.sort();
     include.dedup();
     let enrich = !full && !kind.is_agg_query();
+    let read_doc_values = raw.get("read_doc_values").and_then(Value::as_bool).unwrap_or(false);
+    if read_doc_values && !(enrich && matches!(kind, Kind::Frequency | Kind::Flatline | Kind::Spike | Kind::Correlation) && timestamp_type == TsType::Iso) {
+        bail!("read_doc_values applies to frequency, flatline, spike and correlation rules with an ISO timestamp, without include or fetch_full_source");
+    }
 
     let mut entries: Vec<(String, Option<Map<String, Value>>)> = match &raw["alert"] {
         Value::String(s) => vec![(s.clone(), None)],
@@ -653,6 +739,9 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         Some(Value::Array(a)) => a.clone(),
         Some(_) => bail!("filter must be a list"),
     };
+    for t in terms_files(&raw)? {
+        filter.push(t.filter()?);
+    }
     let max_query_size = raw.get("max_query_size").and_then(Value::as_u64).unwrap_or(conf.max_query_size);
     let query_lang = querylang::detect(&filter)?;
     if let Some(lang) = query_lang {
@@ -661,6 +750,8 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
             bail!("{what} filters only work with plain hit queries: not with use_count_query, use_terms_query, top_count_keys, new_term, correlation or the aggregation rule types");
         }
         querylang::apply_limit(&mut filter, max_query_size);
+    } else if split_on_limit {
+        bail!("split_on_limit only applies to rules with an eql or esql filter; other searches are paged");
     }
 
     let correlation = if kind == Kind::Correlation { Some(correlation_options(&raw, query_key.as_deref(), compound_query_key.len() > 1)?) } else { None };
@@ -689,6 +780,11 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         top_count_keys,
         top_count_number,
         ingest_field,
+        search_timeout,
+        terminate_after,
+        search_params,
+        split_on_limit,
+        read_doc_values,
         exponential_realert,
         query_timezone,
         allow_degraded: raw.get("allow_queries_on_degraded_indices").and_then(Value::as_bool).unwrap_or(false),
@@ -990,7 +1086,8 @@ mod tests {
         assert_eq!(c.leaves[1].query_key.as_deref(), Some("host.id"));
         assert_eq!((c.leaves[0].num_events, c.leaves[1].num_events), (3, 1));
         assert_eq!(c.query.text, "a THEN (b OR c)");
-        assert!(r.include.contains(&"*".to_string()), "whole documents are fetched");
+        assert_eq!(r.include, ["@timestamp", "host.id", "host.name"], "only the pivot and the timestamp are fetched");
+        assert!(r.enrich, "the matches get their whole documents with _mget");
     }
 
     #[test]
@@ -1113,6 +1210,45 @@ mod tests {
         let r = load_text("me_rust", "match_enhancements:\n- rust.drop_if: {field: user.name, equals: svc}\n- TimeEnhancement\n").unwrap();
         assert_eq!(r.enhancements.len(), 2);
         assert!(load_text("jf_bad", "jinja_filters: [filters.domain.DomainFilters]\n").is_err());
+    }
+
+    #[test]
+    fn terms_files_become_filters_and_are_hashed() {
+        let dir = std::env::temp_dir().join(format!("ea-terms-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(dir.join("ips.txt"), "# bad\n10.0.0.1\n\n 10.0.0.0/8 \n10.0.0.1\n").unwrap();
+        let rule = |extra: &str| {
+            let file = dir.join("r.yaml");
+            std::fs::write(&file, format!("name: tf\ntype: any\nindex: logs-*\nalert: debug\nfilter:\n- term: {{a: 1}}\n{extra}")).unwrap();
+            let conf = Config::load_with_defaults(&dir.join("none.yaml")).unwrap();
+            (load(&file, &conf), file_hash(&file, &conf))
+        };
+        let (r, h1) = rule("filter_terms_file: {field: source.ip, path: ips.txt}\n");
+        assert_eq!(r.unwrap().filter[1], json!({"terms": {"source.ip": ["10.0.0.0/8", "10.0.0.1"]}}));
+        let (r, _) = rule("filter_terms_file:\n- {field: source.ip, path: ips.txt, negate: true}\n");
+        assert_eq!(r.unwrap().filter[1]["bool"]["must_not"][0]["terms"]["source.ip"][1], json!("10.0.0.1"));
+        std::fs::write(dir.join("ips.txt"), "10.0.0.2\n").unwrap();
+        let (_, h2) = rule("filter_terms_file: {field: source.ip, path: ips.txt}\n");
+        assert_ne!(h1, h2, "a change of the list reloads the rule");
+        assert!(rule("filter_terms_file: {field: source.ip, path: nope.txt}\n").0.is_err());
+        assert!(rule("filter_terms_file: {field: source.ip}\n").0.is_err());
+        assert!(rule("filter_terms_file: {field: f, path: ips.txt, nope: 1}\n").0.is_err());
+        std::fs::write(dir.join("ips.txt"), "# nothing\n").unwrap();
+        assert!(rule("filter_terms_file: {field: f, path: ips.txt}\n").0.is_err());
+        std::fs::write(dir.join("ips.txt"), (0..65_537).map(|i| format!("v{i}\n")).collect::<String>()).unwrap();
+        assert!(rule("filter_terms_file: {field: f, path: ips.txt}\n").0.is_err());
+        std::fs::remove_dir_all(dir).ok();
+    }
+
+    #[test]
+    fn search_options() {
+        let r = load_text("so_none", "").unwrap();
+        assert_eq!((r.search_timeout, r.terminate_after, r.search_params.as_str()), (None, None, ""));
+        let r = load_text("so_ok", "search_timeout: {seconds: 20}\nterminate_after: 5000\npreference: _local\nrouting: 'a b'\n").unwrap();
+        assert_eq!((r.search_timeout, r.terminate_after), (Some(20 * SECOND), Some(5000)));
+        assert_eq!(r.search_params, "&preference=_local&routing=a+b");
+        assert!(load_text("so_zero", "terminate_after: 0\n").is_err());
+        assert!(load_text("so_empty", "routing: ''\n").is_err());
     }
 
     #[test]

@@ -31,13 +31,18 @@ New in ElastAlert 3
 - :ref:`Sigma rules <sigma>`: ``sigma: <file>`` compiles a Sigma detection into the rule's ``filter``, with built-in and custom field-mapping pipelines, ``sigma_folders`` to run plain Sigma files, Sigma correlation rules and filters, and the ``sigma-convert`` subcommand.
 - :ref:`ingest_timestamp_field <ingest_timestamp_field>`: query on the ingest time, so late documents are found
   exactly once.
+- :ref:`filter_terms_file <filter_terms_file>`: a ``terms`` filter from a list of indicators in a file, reloaded when the file changes.
+- :ref:`read_doc_values <read_doc_values>`: read the timestamp and the ``query_key`` from doc values instead of ``_source``.
+- :ref:`split_on_limit <split_on_limit>`: read every result of an EQL / ES|QL range that fills ``max_query_size``.
+- :ref:`search_timeout, terminate_after, preference and routing <search_options>`.
 - :ref:`fetch_full_source <fetch_full_source>` and ``use_pit`` (see :ref:`ea3_config`).
+- Prometheus: :doc:`rule lag, last success time and Elasticsearch request durations <recipes/exposing_rule_metrics>`.
 - The ``rust.add_field``, ``rust.drop_if`` and ``rust.lookup`` :doc:`match enhancements <enhancements>`.
-- The ``validate`` subcommand, and ``--es_debug_trace`` with responses.
+- The ``validate`` subcommand (``validate --es`` checks the filters and fields against the mappings), and ``--es_debug_trace`` with responses.
 - Hot reload keeps the state of a changed rule; pending alerts and aggregation groups survive restarts.
 
 A rule using ``correlation`` or a ``rust.*`` enhancement does not load in ElastAlert 2. ElastAlert 2 ignores
-``active_hours``, ``mitre_attack``, ``sigma``, ``sigma_folders``, ``ingest_timestamp_field`` and ``fetch_full_source``.
+``active_hours``, ``mitre_attack``, ``sigma``, ``sigma_folders``, ``ingest_timestamp_field``, ``fetch_full_source``, ``search_timeout``, ``terminate_after``, ``preference``, ``routing``, ``split_on_limit``, ``read_doc_values`` and ``filter_terms_file``.
 
 Behaviour differences
 =====================
@@ -63,7 +68,7 @@ Behaviour differences
      - kept in memory, mirrored in Elasticsearch, aggregation groups sent by a timer
    * - Paging
      - scroll, recursive, capped at 990 pages
-     - point in time + ``search_after``, iterative, no cap
+     - point in time + ``search_after``, iterative, no cap; a plain search first, the point in time is opened only when the page is full
    * - ``new_term`` startup
      - one terms aggregation per day of ``terms_window_size``
      - one composite aggregation; ``window_step_size`` is ignored
@@ -171,8 +176,9 @@ and key fields are read from Elasticsearch), bulk writeback and compact event wi
 
 :ref:`correlation <correlation>` rules have no ElastAlert 2 counterpart. Same machine and the same 400,000 documents
 over 3 days (6 h ``buffer_time``, ``--debug``, ``query_key: user.name``, median of 3 runs; rules in
-``bench/rules-corr``). Every leaf is a search of its own over whole documents, so the time grows with the number of
-leaves, and the memory with the matches held until the end of the run, each with the documents of its leaves.
+``bench/rules-corr``). The leaves reading the same index share one search and only the pivot and the timestamp are
+read; the whole documents are fetched for the matches only, so the memory grows with the matches held until the end of
+the run, each with the documents of its leaves.
 
 .. list-table::
    :header-rows: 1
@@ -183,24 +189,24 @@ leaves, and the memory with the matches held until the end of the run, each with
      - Max RSS
      - Matches
    * - ``fail THEN ok``, 5 failures (15 min)
-     - 10.4 s
-     - 804 MB
+     - 4.6 s
+     - 313 MB
      - 3,767
    * - ``fail AND denied``, 3 and 2 events (10 min)
-     - 4.5 s
-     - 525 MB
+     - 3.3 s
+     - 307 MB
      - 4,172
    * - ``unauth THEN NOT db`` (10 min)
-     - 4.6 s
-     - 469 MB
+     - 3.6 s
+     - 342 MB
      - 7,557
    * - ``(fail OR denied) THEN ok THEN (web2 AND db)`` (20 min)
-     - 22.9 s
-     - 1,833 MB
+     - 7.7 s
+     - 1,908 MB
      - 15,995
    * - ``fail AND web1 AND NOT denied`` (10 min)
-     - 10.4 s
-     - 635 MB
+     - 4.8 s
+     - 219 MB
      - 2,300
 
 The first three rules written with the ``correlation_steps`` of ElastAlert 3.2.0 take the same time (within 3 %).

@@ -66,7 +66,7 @@ pub fn quote(s: &str) -> String {
 }
 
 /// `urllib.parse.quote_plus(s, safe='')`, used by `urlencode`.
-fn quote_plus(s: &str) -> String {
+pub fn quote_plus(s: &str) -> String {
     quote(s).replace('/', "%2F").replace("%20", "+")
 }
 

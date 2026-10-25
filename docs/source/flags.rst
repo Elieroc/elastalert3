@@ -70,6 +70,14 @@ mappings of ElastAlert 2 (replaces ``elastalert-create-index``).
 ``validate`` loads the config and every rule, builds the alerters, reports each error and exits with status 1 if
 there is any. It does not contact Elasticsearch, so it fits in a CI job.
 
+``validate --es`` also reads the mappings of the indices of each rule (``_field_caps``) and has Elasticsearch parse
+each filter (``_validate/query``). It prints warnings, and does not change the exit status. It reports: an index
+without any field, a ``timestamp_field`` that is not a date, a filter on a field that is not in the mapping, ``term``,
+``terms`` and ``prefix`` on a ``text`` field (with the ``.keyword`` sub-field when there is one), a ``wildcard``
+starting with ``*`` or ``?``, a field used for ``query_key`` / ``top_count_keys`` aggregations that cannot be
+aggregated, and a filter Elasticsearch cannot parse. A field that no document has yet is only a warning: a new
+document may map it later.
+
 ``test-rule <rule.yaml> [...]`` runs one rule on past data (replaces ``elastalert-test-rule``). See
 :ref:`Testing your rule <testing>`.
 

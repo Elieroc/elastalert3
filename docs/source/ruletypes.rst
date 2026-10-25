@@ -143,6 +143,20 @@ Rule Configuration Cheat Sheet
 +--------------------------------------------------------------+           |
 | ``max_query_size`` (int, default global max_query_size)      |           |
 +--------------------------------------------------------------+           |
+| ``search_timeout`` (time, no default)                        |           |
++--------------------------------------------------------------+           |
+| ``terminate_after`` (int, no default)                        |           |
++--------------------------------------------------------------+           |
+| ``preference`` (string, no default)                          |           |
++--------------------------------------------------------------+           |
+| ``routing`` (string, no default)                             |           |
++--------------------------------------------------------------+           |
+| ``split_on_limit`` (boolean, False)                          |           |
++--------------------------------------------------------------+           |
+| ``read_doc_values`` (boolean, False)                         |           |
++--------------------------------------------------------------+           |
+| ``filter_terms_file`` (map or list, no default)              |           |
++--------------------------------------------------------------+           |
 | ``query_delay`` (time, default 0 min)                        |           |
 +--------------------------------------------------------------+           |
 | ``owner`` (string, default empty string)                     |           |
@@ -701,7 +715,8 @@ override a global ``max_query_size``. (Optional, int, default value of global ``
 
    Results are paged with point in time + ``search_after`` on Elasticsearch 7.12 and newer (``use_pit: true``, the
    default, set in ``config.yaml``), and with scroll otherwise (OpenSearch). Paging is iterative: ``max_scrolling_count``
-   is honoured but there is no 990 pages limit.
+   is honoured but there is no 990 pages limit. A result that fits one page (``max_query_size``) is read with a plain
+   search, without opening a point in time.
 
 
 filter
@@ -1333,6 +1348,96 @@ It is not supported by the aggregation rule types. (Optional, string, no default
 .. code-block:: yaml
 
     ingest_timestamp_field: event.ingested
+
+.. _filter_terms_file:
+
+filter_terms_file
+^^^^^^^^^^^^^^^^^
+
+.. admonition:: ElastAlert 3
+   :class: ea3
+
+   New in ElastAlert 3. ElastAlert 2 does not load a rule that has it.
+
+``filter_terms_file``: adds a ``terms`` filter built from a text file, for lists of indicators (IP addresses, domains,
+hashes, users). It is a map, or a list of maps, with:
+
+- ``field``: the field to match.
+- ``path``: the file, one value per line (blank lines and lines starting with ``#`` are skipped). A relative path is
+  relative to the rule file.
+- ``negate``: when true the rule ignores the documents whose field is in the list. (Optional, boolean, default false)
+
+.. code-block:: yaml
+
+    filter_terms_file:
+    - field: source.ip
+      path: iocs/bad_ips.txt        # 10.1.2.3 and CIDR ranges such as 203.0.113.0/24 on an ip field
+    - field: user.name
+      path: iocs/service_accounts.txt
+      negate: true
+
+The file is read when the rule loads and again whenever it changes, like an imported file, and the rule keeps its
+state. The rule does not load when the file is missing, has no value, or has more than 65,536 values (the limit of
+Elasticsearch for a ``terms`` query).
+
+.. _read_doc_values:
+
+read_doc_values
+^^^^^^^^^^^^^^^
+
+.. admonition:: ElastAlert 3
+   :class: ea3
+
+   New in ElastAlert 3. ElastAlert 2 ignores it.
+
+``read_doc_values``: read the few fields a rule needs (the timestamp and the ``query_key``) from doc values
+(``docvalue_fields``) instead of ``_source``. Elasticsearch then does not decompress the stored document of every hit:
+a 400,000 document range reads in 0.6 s of search time instead of 1.6 s, and a ``frequency`` rule over the same data
+runs about 25 % faster. The whole documents of the matches are still fetched with ``_mget``, so the alerts are the same.
+
+It applies to ``frequency``, ``flatline``, ``spike`` and ``correlation`` rules with an ISO timestamp, without ``include``
+or ``fetch_full_source`` (the rule does not load otherwise). The first time a rule reads an index, ElastAlert 3 checks
+the mapping: every fetched field must be a keyword, number, boolean, ip or date with one type. If one is not (a
+``text`` field, an object, a field mapped differently in two indices) a warning is logged once and ``_source`` is read.
+Two differences remain with ``_source``: a ``keyword`` value longer than its ``ignore_above`` is not in doc values, and a
+field with several values comes back sorted and without duplicates. (Optional, boolean, default false)
+
+.. _split_on_limit:
+
+split_on_limit
+^^^^^^^^^^^^^^
+
+.. admonition:: ElastAlert 3
+   :class: ea3
+
+   New in ElastAlert 3. ElastAlert 2 ignores it.
+
+``split_on_limit``: ``eql`` and ``esql`` filters cannot be paged: a query range that returns ``max_query_size``
+results loses the rest, and a warning says so (as in ElastAlert 2). With ``split_on_limit: true`` the range is cut in
+two, each half is read on its own, and again if it is still full, down to one millisecond. Every result is seen, at the
+cost of more requests on busy ranges. The rule does not load with this option when it has no ``eql`` or ``esql``
+filter, since other searches are paged already. (Optional, boolean, default false)
+
+.. _search_options:
+
+search_timeout, terminate_after, preference, routing
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. admonition:: ElastAlert 3
+   :class: ea3
+
+   New in ElastAlert 3. ElastAlert 2 ignores these options.
+
+``search_timeout``: Elasticsearch stops a search of this rule after this time (a time map, at least one millisecond).
+Elasticsearch then answers with what it has found so far; ElastAlert 3 treats this as an error and reads the same range
+again at the next run, so no event is skipped. With ``allow_queries_on_degraded_indices: true`` the partial result is used
+and a warning is logged. (Optional, time, no default)
+
+``terminate_after``: Each shard stops collecting after this many documents. Only for rules where a few documents are
+enough (``any`` on a rare event, for instance): the documents past the limit are never seen, so a ``frequency`` or
+``correlation`` rule would count too few. (Optional, int, no default)
+
+``preference`` and ``routing``: sent as the same parameters of the search, and of the point in time. (Optional, string)
 
 .. _fetch_full_source:
 
@@ -2032,7 +2137,8 @@ Correlation
 
 ``correlation``: This rule matches when events of several searches, the leaves, happen on the same ``query_key`` value
 (a machine, an IP, a user) within ``timeframe`` of the first one, as ``correlation_query`` combines them with ``AND``,
-``OR``, ``THEN`` and ``NOT``. Every leaf is a search of its own, so it also works on OpenSearch and across indices. It
+``OR``, ``THEN`` and ``NOT``. The leaves reading the same index share one search (their filters are named
+alternatives, and each hit says which leaves it matched), so it also works on OpenSearch and across indices. It
 replaces EQL ``sequence`` queries, which ElastAlert 3 does not run.
 
 .. code-block:: yaml
@@ -2109,7 +2215,9 @@ Behaviour:
 - State is kept in memory. After a restart or a rule reload the last ``timeframe`` is read again to rebuild open chains;
   chains that already completed are not alerted twice. A fresh start (no previous run) reads ``buffer_time`` back, as
   other types.
-- Whole documents are fetched (no field projection).
+- Only the timestamp, the ``query_key`` and the ``query_key`` of the leaves are read from Elasticsearch; the whole
+  document of the matches and of their leaves is fetched with ``_mget``. Set ``fetch_full_source: true`` or ``include``
+  to read whole documents.
 - Late-indexed documents (older than the end of the last run) are missed, as for other types.
 
 Example with a sequence: failed logins, a success, a privilege escalation, then persistence on the same host and user.

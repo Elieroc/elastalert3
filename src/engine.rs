@@ -105,9 +105,12 @@ pub struct RuleState {
     bucket_offset: i64,
     /// Hash of `_id` -> event time, to skip hits already seen in overlapping windows.
     seen: FxHashMap<u64, Ts>,
-    /// `correlation`: the leaf being queried, and the tagged events (with their dedup hash) gathered for the range.
-    corr_leaf: Option<usize>,
+    /// `correlation`: whether hits carry the leaves they matched (`matched_queries`), and the tagged events (with
+    /// their dedup hash) gathered for the range.
+    corr_group: bool,
     corr_buf: Vec<(usize, Event, u64)>,
+    /// `read_doc_values`: per index, the `docvalue_fields` to ask for, or `None` when a field cannot be read that way.
+    doc_values: FxHashMap<String, Option<Vec<Value>>>,
     /// Documents to query instead of ES (`test-rule --data`).
     pub mock: Option<Vec<Doc>>,
     /// `limit_execution`: whether a run has happened since the rule was (re)loaded.
@@ -121,10 +124,67 @@ pub struct RuleState {
     alerts_not_sent: AtomicU64,
 }
 
+/// Name of the query clause of a correlation leaf; `matched_queries` of a hit lists the leaves it matched.
+const LEAF_PREFIX: &str = "ea3_leaf_";
+/// Temporary key on a hit's document: the leaves it matched.
+const LEAVES_KEY: &str = "_ea3_leaves";
+
+/// Old-style `- query: {...}` filter entries are unwrapped.
+pub fn unwrap_query(f: &Value) -> Value {
+    f.get("query").cloned().unwrap_or_else(|| f.clone())
+}
+
+/// One clause for the leaves `members` (indexes into `leaves`) that share an index: any of them, each named.
+fn leaves_filter(leaves: &[crate::rule::Leaf], members: &[usize]) -> Value {
+    let named: Vec<Value> = members
+        .iter()
+        .map(|&i| json!({"bool": {"filter": leaves[i].filter.iter().map(unwrap_query).collect::<Vec<_>>(), "_name": format!("{LEAF_PREFIX}{i}")}}))
+        .collect();
+    json!({"bool": {"should": named, "minimum_should_match": 1}})
+}
+
+/// Leaves a hit matched, from its `matched_queries` (a list of names, or a map of name to score).
+fn matched_leaves(hit: &Value) -> Vec<usize> {
+    let names: Vec<&str> = match hit.get("matched_queries") {
+        Some(Value::Array(a)) => a.iter().filter_map(Value::as_str).collect(),
+        Some(Value::Object(m)) => m.keys().map(String::as_str).collect(),
+        _ => Vec::new(),
+    };
+    let mut leaves: Vec<usize> = names.into_iter().filter_map(|n| n.strip_prefix(LEAF_PREFIX)?.parse().ok()).collect();
+    leaves.sort_unstable();
+    leaves
+}
+
 fn id_hash(id: &str) -> u64 {
     let mut h = FxHasher::default();
     id.hash(&mut h);
     h.finish()
+}
+
+/// The `docvalue_fields` entries for `include`, from a `_field_caps` response; the reason when one field cannot be read
+/// from doc values (missing, an object, a text field, several types, or a type whose doc values differ from `_source`).
+fn doc_values_of(include: &[String], caps: &Value) -> std::result::Result<Vec<Value>, String> {
+    const KINDS: [&str; 12] = ["keyword", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "boolean", "ip", "date"];
+    let mut out = Vec::new();
+    for f in include {
+        let types = caps["fields"][f.as_str()].as_object().filter(|t| !t.is_empty()).ok_or_else(|| format!("field {f} is not mapped to a single value type"))?;
+        let (kind, cap) = match types.iter().collect::<Vec<_>>()[..] {
+            [(kind, cap)] => (kind.as_str(), cap),
+            _ => return Err(format!("field {f} has several types")),
+        };
+        if !KINDS.contains(&kind) || cap["aggregatable"] != json!(true) {
+            return Err(format!("field {f} is {kind} without doc values"));
+        }
+        out.push(if kind == "date" { json!({"field": f, "format": "strict_date_optional_time"}) } else { json!({"field": f}) });
+    }
+    Ok(out)
+}
+
+/// Where to cut the range (`start`, `end`] in two, on a millisecond (the resolution of Elasticsearch dates); `None`
+/// when a half would be shorter than that.
+fn split_point(start: Ts, end: Ts) -> Option<Ts> {
+    let mid = (start + (end - start) / 2).div_euclid(1_000) * 1_000;
+    (mid > start && mid < end).then_some(mid)
 }
 
 /// Retry delay: 30 s doubling per attempt, at most one hour.
@@ -153,8 +213,9 @@ impl RuleState {
             minimum_starttime: None,
             bucket_offset: 0,
             seen: FxHashMap::default(),
-            corr_leaf: None,
+            corr_group: false,
             corr_buf: Vec::new(),
+            doc_values: FxHashMap::default(),
             mock: None,
             has_run_once: false,
             next_min_start: None,
@@ -179,8 +240,9 @@ impl RuleState {
             minimum_starttime: None,
             bucket_offset: 0,
             seen: FxHashMap::default(),
-            corr_leaf: None,
+            corr_group: false,
             corr_buf: Vec::new(),
+            doc_values: FxHashMap::default(),
             mock: None,
             has_run_once: false,
             next_min_start: None,
@@ -237,7 +299,7 @@ impl RuleState {
     pub fn filters(&self, start: Ts, end: Ts, extra: Vec<Value>) -> Value {
         let mut must = vec![json!({"range": {self.range_field(): {"gt": self.range_value(start), "lte": self.range_value(end)}}})];
         // Old-style `- query: {...}` filter entries are unwrapped.
-        must.extend(self.rule.filter.iter().map(|f| f.get("query").cloned().unwrap_or_else(|| f.clone())));
+        must.extend(self.rule.filter.iter().map(unwrap_query));
         must.extend(self.rtype.extra_filter(&self.rule));
         must.extend(extra);
         json!({"bool": {"filter": {"bool": {"must": must}}}})
@@ -253,7 +315,18 @@ impl RuleState {
         if let Some(f) = &self.rule.include_fields {
             q["fields"] = json!(f);
         }
-        q
+        if let Some(n) = self.rule.terminate_after {
+            q["terminate_after"] = json!(n);
+        }
+        self.with_timeout(q)
+    }
+
+    /// Adds the rule's `search_timeout` to a search body.
+    fn with_timeout(&self, mut body: Value) -> Value {
+        if let Some(t) = self.rule.search_timeout {
+            body["timeout"] = json!(format!("{}ms", t / 1_000));
+        }
+        body
     }
 
     pub fn index_for(&self, start: Ts, end: Ts) -> Result<String> {
@@ -291,7 +364,10 @@ impl RuleState {
                     doc.insert(meta.into(), v.clone());
                 }
             }
-            for (key, parts) in [(&self.rule.query_key, &self.rule.compound_query_key), (&self.rule.aggregation_key, &self.rule.compound_aggregation_key)] {
+            if self.corr_group {
+                doc.insert(LEAVES_KEY.into(), json!(matched_leaves(hit)));
+            }
+            for (key, parts) in [(&self.rule.query_key,&self.rule.compound_query_key), (&self.rule.aggregation_key, &self.rule.compound_aggregation_key)] {
                 if let (Some(key), false) = (key, parts.is_empty()) {
                     let joined: Vec<String> = parts.iter().map(|k| field::lookup(&doc, k).map_or_else(|| "None".into(), py_str)).collect();
                     doc.insert(key.clone(), json!(joined.join(", ")));
@@ -316,8 +392,28 @@ impl RuleState {
             if scrolling { " (scrolling..)" } else { "" }
         );
         let events = self.process_hits(&mut hits)?;
-        if let Some(leaf) = self.corr_leaf {
-            self.stage_leaf_events(leaf, events);
+        if self.corr_group {
+            // A document matching several leaves is staged once per leaf.
+            let before = events.len();
+            let mut per_leaf: Vec<Vec<Event>> = vec![Vec::new(); self.rule.correlation.as_ref().map_or(0, |c| c.leaves.len())];
+            for mut ev in events {
+                let leaves: Vec<usize> = match ev.doc.remove(LEAVES_KEY) {
+                    Some(Value::Array(a)) => a.iter().filter_map(|v| v.as_u64().map(|n| n as usize)).filter(|n| *n < per_leaf.len()).collect(),
+                    _ => Vec::new(),
+                };
+                if let Some((last, rest)) = leaves.split_last() {
+                    for l in rest {
+                        per_leaf[*l].push(ev.clone());
+                    }
+                    per_leaf[*last].push(ev);
+                }
+            }
+            // `num_hits` counted a document once per leaf it matched, when each leaf was a search of its own.
+            self.hits += per_leaf.iter().map(Vec::len).sum::<usize>() as u64;
+            self.hits = self.hits.saturating_sub(before as u64);
+            for (leaf, evs) in per_leaf.into_iter().enumerate().filter(|(_, e)| !e.is_empty()) {
+                self.stage_leaf_events(leaf, evs);
+            }
             return Ok(());
         }
         let before = events.len();
@@ -370,11 +466,35 @@ impl RuleState {
         self.hit_search(ctx, &index, start, end, matches).await
     }
 
-    /// Plain hit search over (start, end]: point in time when available, scroll otherwise.
+    /// Plain hit search over (start, end]: one plain request when the result fits a page, else point in time when
+    /// available, scroll otherwise.
     async fn hit_search(&mut self, ctx: &Ctx, index: &str, start: Ts, end: Ts, matches: &mut Vec<Doc>) -> Result<()> {
-        let body = self.query(start, end);
+        let mut body = self.query(start, end);
+        if self.rule.read_doc_values
+            && let Some(fields) = self.doc_value_fields(ctx, index).await
+        {
+            body["_source"] = json!(false);
+            body["docvalue_fields"] = json!(fields);
+        }
         if ctx.use_pit && ctx.es.supports_pit().await {
-            match ctx.es.pit_open(index, "1m").await {
+            // Most runs return less than a page: a plain request saves opening and closing the PIT. A full page may
+            // be cut short, so it is dropped and the range is read again under the PIT (`search_after` needs it).
+            let size = self.rule.max_query_size;
+            if size > 0 {
+                let mut probe = body.clone();
+                probe["size"] = json!(size);
+                probe["track_total_hits"] = json!(false);
+                let mut resp = ctx.es.search_with(index, &probe, &self.rule.search_params).await?;
+                check_shards(&resp, self.rule.allow_degraded, &self.rule.name)?;
+                let hits = match resp["hits"]["hits"].take() {
+                    Value::Array(a) => a,
+                    _ => Vec::new(),
+                };
+                if (hits.len() as u64) < size {
+                    return self.on_hits(ctx, start, end, hits, false, matches);
+                }
+            }
+            match ctx.es.pit_open(index, "1m", &self.rule.search_params).await {
                 Ok(id) => return self.pit_pages(ctx, start, end, body, id, matches).await,
                 Err(e) => log::warn!("rule {}: point in time unavailable ({e:#}), using scroll", self.rule.name),
             }
@@ -382,16 +502,51 @@ impl RuleState {
         self.scroll_pages(ctx, start, end, index, body, matches).await
     }
 
-    /// `correlation` rules: one search per leaf (its filter added to the rule's), all events merged by time and handed
-    /// to the rule type together. Dedup hashes are only recorded once every leaf succeeded, so a failed run reads the range again.
+    /// `read_doc_values`: `docvalue_fields` for the fields the rule fetches, when every one of them is a single-type,
+    /// aggregatable keyword, number, boolean, ip or date in `index`; otherwise `None` and `_source` is read.
+    async fn doc_value_fields(&mut self, ctx: &Ctx, index: &str) -> Option<Vec<Value>> {
+        if let Some(known) = self.doc_values.get(index) {
+            return known.clone();
+        }
+        // A compound `query_key` is in the list as `a,b`; its parts are there too.
+        let include: Vec<String> = self.rule.include.iter().filter(|f| !f.contains(',')).cloned().collect();
+        let names = include.join(",");
+        let resp = match ctx.es.get(&format!("{index}/_field_caps?fields={}&ignore_unavailable=true&allow_no_indices=true", crate::discover::quote_plus(&names))).await {
+            Ok(r) => r,
+            Err(e) => {
+                log::warn!("Rule {}: cannot read the mappings of {index} for read_doc_values, reading _source: {e:#}", self.rule.name);
+                return None;
+            }
+        };
+        let fields = doc_values_of(&include, &resp);
+        match &fields {
+            Ok(_) => log::info!("Rule {}: reading {} from doc values in {index}", self.rule.name, names),
+            Err(why) => log::warn!("Rule {}: read_doc_values is on but {why} in {index}, reading _source", self.rule.name),
+        }
+        let fields = fields.ok();
+        self.doc_values.insert(index.to_string(), fields.clone());
+        fields
+    }
+
+    /// `correlation` rules: one search per index (the filters of the leaves reading it are named alternatives added to
+    /// the rule's, and each hit says which leaves it matched), all events merged by time and handed to the rule type
+    /// together. Dedup hashes are only recorded once every search succeeded, so a failed run reads the range again.
     async fn correlation_query(&mut self, ctx: &Ctx, start: Ts, end: Ts, matches: &mut Vec<Doc>) -> Result<()> {
         let spec = self.rule.correlation.clone().expect("correlation rules always have leaves");
         let (base_filter, base_index) = (self.rule.filter.clone(), self.rule.index.clone());
-        let mut result = Ok(());
+        let mut searches: Vec<(String, Vec<usize>)> = Vec::new();
         for (i, leaf) in spec.leaves.iter().enumerate() {
-            self.rule.filter = base_filter.iter().chain(&leaf.filter).cloned().collect();
-            self.rule.index = leaf.index.clone().unwrap_or_else(|| base_index.clone());
-            self.corr_leaf = Some(i);
+            let index = leaf.index.clone().unwrap_or_else(|| base_index.clone());
+            match searches.iter_mut().find(|(ix, _)| *ix == index) {
+                Some((_, members)) => members.push(i),
+                None => searches.push((index, vec![i])),
+            }
+        }
+        let mut result = Ok(());
+        self.corr_group = true;
+        for (index, members) in searches {
+            self.rule.filter = base_filter.iter().cloned().chain([leaves_filter(&spec.leaves, &members)]).collect();
+            self.rule.index = index;
             result = async {
                 let index = self.index_for(start, end)?;
                 self.hit_search(ctx, &index, start, end, &mut Vec::new()).await
@@ -401,7 +556,7 @@ impl RuleState {
                 break;
             }
         }
-        (self.rule.filter, self.rule.index, self.corr_leaf) = (base_filter, base_index, None);
+        (self.rule.filter, self.rule.index, self.corr_group) = (base_filter, base_index, false);
         let mut staged = std::mem::take(&mut self.corr_buf);
         result?;
         for (_, ev, hash) in &staged {
@@ -456,28 +611,38 @@ impl RuleState {
     }
 
     /// EQL / ES|QL rules: one request per range, no paging (upstream cannot page them either), so results beyond
-    /// `max_query_size` are lost and a warning says so.
+    /// `max_query_size` are lost and a warning says so. With `split_on_limit` a range that fills the limit is cut in
+    /// two and each half is read on its own, again if needed, down to a millisecond.
     async fn lang_query(&mut self, ctx: &Ctx, lang: QueryLang, index: &str, start: Ts, end: Ts, matches: &mut Vec<Doc>) -> Result<()> {
         let size = self.rule.max_query_size;
-        let query = self.filters(start, end, vec![]);
-        let body = querylang::request(&query, lang, size, &self.rule.timestamp_field).with_context(|| format!("no {} query found in the rule filter", lang.key()))?;
-        let (hits, total) = match lang {
-            QueryLang::Eql => {
-                let mut resp = ctx.es.eql_search(index, &body).await?;
-                let total = resp.pointer("/hits/total/value").and_then(Value::as_u64).unwrap_or(0);
-                (querylang::eql_hits(&mut resp)?, total)
+        let mut todo = vec![(start, end)];
+        while let Some((s, e)) = todo.pop() {
+            let query = self.filters(s, e, vec![]);
+            let body = querylang::request(&query, lang, size, &self.rule.timestamp_field).with_context(|| format!("no {} query found in the rule filter", lang.key()))?;
+            let (hits, total) = match lang {
+                QueryLang::Eql => {
+                    let mut resp = ctx.es.eql_search(index, &body).await?;
+                    let total = resp.pointer("/hits/total/value").and_then(Value::as_u64).unwrap_or(0);
+                    (querylang::eql_hits(&mut resp)?, total)
+                }
+                QueryLang::Esql => {
+                    let resp = ctx.es.esql_query(&body).await?;
+                    let hits = querylang::esql_hits(&resp, index);
+                    let n = hits.len() as u64;
+                    (hits, n)
+                }
+            };
+            let n = hits.len() as u64;
+            let full = size > 0 && (total > n || n >= size);
+            if full && self.rule.split_on_limit && let Some(mid) = split_point(s, e) {
+                // Right half first on the stack, so the left (older) one is read first.
+                todo.extend([(mid, e), (s, mid)]);
+                continue;
             }
-            QueryLang::Esql => {
-                let resp = ctx.es.esql_query(&body).await?;
-                let hits = querylang::esql_hits(&resp, index);
-                let n = hits.len() as u64;
-                (hits, n)
+            self.on_hits(ctx, s, e, hits, false, matches)?;
+            if full {
+                log::warn!("Rule {}: {} queries cannot be paged, results beyond max_query_size ({size}) are not seen", self.rule.name, lang.key());
             }
-        };
-        let n = hits.len() as u64;
-        self.on_hits(ctx, start, end, hits, false, matches)?;
-        if size > 0 && (total > n || n >= size) {
-            log::warn!("Rule {}: {} queries cannot be paged, results beyond max_query_size ({size}) are not seen", self.rule.name, lang.key());
         }
         Ok(())
     }
@@ -500,8 +665,9 @@ impl RuleState {
                 aggs = json!({"bucket_aggs": {"terms": {"field": field, "size": rule.terms_size, "min_doc_count": min}, "aggs": aggs}});
             }
         }
-        let body = json!({"query": self.filters(start, end, vec![]), "size": 0, "aggs": aggs});
-        let resp = ctx.es.search(index, &body).await.map_err(|e| anyhow::anyhow!("Error running query: {e:#}"))?;
+        let body = self.with_timeout(json!({"query": self.filters(start, end, vec![]), "size": 0, "aggs": aggs}));
+        let resp = ctx.es.search_with(index, &body, &self.rule.search_params).await.map_err(|e| anyhow::anyhow!("Error running query: {e:#}"))?;
+        check_timeout(&resp, self.rule.allow_degraded, &self.rule.name)?;
         let total = resp["hits"]["total"]["value"].as_u64().or_else(|| resp["hits"]["total"].as_u64()).unwrap_or(0);
         self.hits += total;
         let (lt, fmt) = (self.rule.use_local_time, ctx.ts_fmt.as_deref());
@@ -516,11 +682,12 @@ impl RuleState {
     #[allow(clippy::too_many_arguments)]
     async fn terms(&self, ctx: &Ctx, index: &str, start: Ts, end: Ts, field: String, size: u64, extra: Vec<Value>) -> Result<Vec<(Value, i64)>> {
         let min = self.rule.raw.get("min_doc_count").and_then(Value::as_u64).unwrap_or(1);
-        let body = json!({
+        let body = self.with_timeout(json!({
             "query": self.filters(start, end, extra), "size": 0,
             "aggs": {"counts": {"terms": {"field": field, "size": size, "min_doc_count": min}}},
-        });
-        let resp = ctx.es.search(index, &body).await.map_err(|e| anyhow::anyhow!("Error running terms query: {e:#}"))?;
+        }));
+        let resp = ctx.es.search_with(index, &body, &self.rule.search_params).await.map_err(|e| anyhow::anyhow!("Error running terms query: {e:#}"))?;
+        check_timeout(&resp, self.rule.allow_degraded, &self.rule.name)?;
         Ok(resp["aggregations"]["counts"]["buckets"]
             .as_array()
             .into_iter()
@@ -577,7 +744,7 @@ impl RuleState {
 
     async fn scroll_pages(&mut self, ctx: &Ctx, start: Ts, end: Ts, index: &str, body: Value, matches: &mut Vec<Doc>) -> Result<()> {
         let size = self.rule.max_query_size;
-        let mut resp = ctx.es.search_scroll(index, &body, size, &ctx.scroll_keepalive).await?;
+        let mut resp = ctx.es.search_scroll(index, &body, size, &ctx.scroll_keepalive, &self.rule.search_params).await?;
         let total = resp["hits"]["total"]["value"].as_u64().or_else(|| resp["hits"]["total"].as_u64()).unwrap_or(0);
         let (mut pages, mut seen_hits) = (0, 0u64);
         loop {
@@ -861,6 +1028,8 @@ impl RuleState {
             c.alerts_sent += sent;
             c.alerts_not_sent += self.alerts_not_sent.load(Ordering::Relaxed);
             c.alerts_silenced += silenced;
+            c.last_end = Some(endtime as f64 / SECOND as f64);
+            c.last_success = Some(now() as f64 / SECOND as f64);
         });
         Ok(num_matches)
     }
@@ -882,6 +1051,9 @@ impl RuleState {
             }
             for r in m.get("related_events").and_then(Value::as_array).into_iter().flatten().filter_map(Value::as_object) {
                 collect(r, out);
+            }
+            for l in m.get("correlation").and_then(|c| c.get("leaves")).and_then(Value::as_object).into_iter().flat_map(Map::values).filter_map(Value::as_object) {
+                collect(l, out);
             }
         }
         let mut wanted = FxHashSet::default();
@@ -907,10 +1079,14 @@ impl RuleState {
             tops.insert(f.as_str());
             tops.insert(f.split('.').next().unwrap_or(f));
         }
-        fn apply(m: &mut Doc, full: &FxHashMap<(String, String), Doc>, tops: &FxHashSet<&str>, ts_field: &str) {
+        fn apply(m: &mut Doc, full: &FxHashMap<(String, String), Doc>, tops: &FxHashSet<&str>, ts_field: &str, flat: &[&str]) {
             if let (Some(i), Some(d)) = (m.get("_index").and_then(Value::as_str), m.get("_id").and_then(Value::as_str))
                 && let Some(src) = full.get(&(i.to_string(), d.to_string()))
             {
+                // Doc values come as flat `a.b` keys; the whole document has them nested.
+                for f in flat {
+                    m.remove(*f);
+                }
                 let ts = field::lookup(m, ts_field).cloned();
                 for (k, v) in src {
                     if tops.contains(k.as_str()) {
@@ -927,12 +1103,18 @@ impl RuleState {
             }
             if let Some(Value::Array(rel)) = m.get_mut("related_events") {
                 for r in rel.iter_mut().filter_map(Value::as_object_mut) {
-                    apply(r, full, tops, ts_field);
+                    apply(r, full, tops, ts_field, flat);
+                }
+            }
+            if let Some(Value::Object(leaves)) = m.get_mut("correlation").and_then(|c| c.get_mut("leaves")) {
+                for l in leaves.values_mut().filter_map(Value::as_object_mut) {
+                    apply(l, full, tops, ts_field, flat);
                 }
             }
         }
+        let flat: Vec<&str> = if self.rule.read_doc_values { self.rule.include.iter().map(String::as_str).filter(|f| f.contains('.')).collect() } else { vec![] };
         for m in matches.iter_mut() {
-            apply(m, &full, &tops, &self.rule.timestamp_field);
+            apply(m, &full, &tops, &self.rule.timestamp_field, &flat);
         }
     }
 
@@ -1362,6 +1544,66 @@ fn next_alert(realert: Dur, max: Option<Dur>, cached: Option<(Ts, i32)>, ts: Ts)
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::Leaf;
+
+    fn leaf(name: &str, filter: Value) -> Leaf {
+        Leaf { name: name.into(), filter: vec![filter], index: None, query_key: None, num_events: 1 }
+    }
+
+    #[test]
+    fn doc_values_need_one_aggregatable_type() {
+        let caps = json!({"fields": {
+            "@timestamp": {"date": {"type": "date", "aggregatable": true}},
+            "host.name": {"keyword": {"type": "keyword", "aggregatable": true}},
+            "msg": {"text": {"type": "text", "aggregatable": false}},
+            "mixed": {"keyword": {"type": "keyword", "aggregatable": true}, "long": {"type": "long", "aggregatable": true}},
+        }});
+        let list = |f: &[&str]| doc_values_of(&f.iter().map(|s| s.to_string()).collect::<Vec<_>>(), &caps);
+        assert_eq!(list(&["@timestamp", "host.name"]).unwrap(), vec![json!({"field": "@timestamp", "format": "strict_date_optional_time"}), json!({"field": "host.name"})]);
+        assert!(list(&["msg"]).unwrap_err().contains("text without doc values"));
+        assert!(list(&["mixed"]).unwrap_err().contains("several types"));
+        assert!(list(&["host"]).unwrap_err().contains("not mapped to a single value type"));
+    }
+
+    #[test]
+    fn ranges_are_cut_on_a_millisecond() {
+        assert_eq!(split_point(0, 4_000), Some(2_000));
+        assert_eq!(split_point(1_500, 4_700), Some(3_000));
+        assert_eq!(split_point(0, 1_999), None);
+        assert_eq!(split_point(1_000, 2_000), None);
+        assert_eq!(split_point(1_000, 3_000), Some(2_000));
+    }
+
+    #[test]
+    fn timed_out_search_is_an_error_unless_degraded_is_allowed() {
+        let partial = json!({"timed_out": true, "hits": {"hits": []}});
+        assert!(check_timeout(&partial, false, "r").is_err());
+        assert!(check_shards(&partial, false, "r").is_err());
+        assert!(check_timeout(&partial, true, "r").is_ok());
+        assert!(check_timeout(&json!({"timed_out": false}), false, "r").is_ok());
+    }
+
+    #[test]
+    fn leaves_become_named_alternatives() {
+        let leaves = [leaf("a", json!({"term": {"x": 1}})), leaf("b", json!({"query": {"term": {"y": 2}}})), leaf("c", json!({"term": {"z": 3}}))];
+        assert_eq!(
+            leaves_filter(&leaves, &[0, 2]),
+            json!({"bool": {"minimum_should_match": 1, "should": [
+                {"bool": {"filter": [{"term": {"x": 1}}], "_name": "ea3_leaf_0"}},
+                {"bool": {"filter": [{"term": {"z": 3}}], "_name": "ea3_leaf_2"}},
+            ]}})
+        );
+        // Old-style `query:` entries are unwrapped like the rule's own filter.
+        assert_eq!(leaves_filter(&leaves, &[1])["bool"]["should"][0]["bool"]["filter"], json!([{"term": {"y": 2}}]));
+    }
+
+    #[test]
+    fn hit_says_which_leaves_it_matched() {
+        let hit = json!({"matched_queries": ["other", "ea3_leaf_2", "ea3_leaf_0", "ea3_leaf_x"]});
+        assert_eq!(matched_leaves(&hit), vec![0, 2]);
+        assert_eq!(matched_leaves(&json!({"matched_queries": {"ea3_leaf_1": 0.0}})), vec![1]);
+        assert!(matched_leaves(&json!({})).is_empty());
+    }
 
     /// Expected values printed by upstream's `ElastAlerter.next_alert_time` for the same call sequence.
     #[test]
@@ -1398,7 +1640,20 @@ mod tests {
 }
 
 /// Shard failures stop the rule, unless `allow_queries_on_degraded_indices`: then only query parse errors do.
+/// A search stopped by `search_timeout` returns what it had: an error, unless degraded results are allowed.
+fn check_timeout(resp: &Value, allow_degraded: bool, rule: &str) -> Result<()> {
+    if resp["timed_out"] != json!(true) {
+        return Ok(());
+    }
+    if !allow_degraded {
+        bail!("search timed out (search_timeout), the result is partial");
+    }
+    log::warn!("Rule {rule}: search timed out, continuing with partial results");
+    Ok(())
+}
+
 fn check_shards(resp: &Value, allow_degraded: bool, rule: &str) -> Result<()> {
+    check_timeout(resp, allow_degraded, rule)?;
     let Some(failures) = resp["_shards"]["failures"].as_array().filter(|f| !f.is_empty()) else { return Ok(()) };
     let parse_errors: Vec<&str> = failures.iter().filter_map(|f| f["reason"]["reason"].as_str()).filter(|r| r.contains("Failed to parse")).collect();
     if !parse_errors.is_empty() {

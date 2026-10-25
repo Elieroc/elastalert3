@@ -13,6 +13,7 @@ use std::collections::VecDeque;
 pub type Doc = Map<String, Value>;
 
 /// One hit from Elasticsearch with its parsed timestamp.
+#[derive(Clone)]
 pub struct Event {
     pub ts: Ts,
     pub doc: Doc,

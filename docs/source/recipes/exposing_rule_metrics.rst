@@ -65,3 +65,15 @@ Find below all available metrics:
    Only the counters are exposed: ``elastalert_{metric}_total``. The ``_created`` gauges that the Python Prometheus
    client adds are not. The metric names and the ``rule_name`` label are the same, so existing dashboards and alerts
    on the ``_total`` series keep working.
+
+   New in ElastAlert 3, besides the series above:
+
+   - ``elastalert_rule_lag_seconds{rule_name}`` (gauge): seconds between now and the end of the last query range of
+     the rule. It keeps growing when a rule stops running, so an alert on it (for example above three times
+     ``run_every``) finds rules that are stuck, failing or starved of ``max_threads``.
+   - ``elastalert_rule_last_success_timestamp_seconds{rule_name}`` (gauge): Unix time of the last run without error.
+     Neither gauge has a sample for a rule until its first successful run.
+   - ``elastalert_es_request_duration_seconds{kind}`` (histogram) and ``elastalert_es_request_errors_total{kind}``
+     (counter): every request to Elasticsearch, by ``kind`` (``search``, ``scroll``, ``pit``, ``count``, ``mget``,
+     ``bulk``, ``eql``, ``esql``, ``validate``, ``field_caps``, ``get``, ``other``). They are not per rule, to keep the
+     number of series small with thousands of rules.

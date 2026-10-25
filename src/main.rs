@@ -9,6 +9,7 @@ mod es;
 mod field;
 mod hours;
 mod index;
+mod lint;
 mod metrics;
 mod mitre;
 mod notify;
@@ -108,7 +109,11 @@ enum Cmd {
     /// Run one rule over past data without alerting, and show what it would do
     TestRule(testrule::TestRuleArgs),
     /// Load the config and every rule (including alerter options) and report errors; no Elasticsearch needed
-    Validate,
+    Validate {
+        /// Also check the fields and filters of each rule against the mappings of its indices, and have Elasticsearch parse the filters
+        #[arg(long)]
+        es: bool,
+    },
     /// Write an ATT&CK Navigator layer of the techniques the rules cover (mitre_attack); no Elasticsearch needed
     MitreLayer(mitre::LayerArgs),
     /// Print the ElastAlert options a Sigma rule compiles to; no Elasticsearch and no config needed
@@ -459,13 +464,14 @@ async fn main() -> Result<()> {
         return sigma::convert_cmd(c);
     }
     let conf = Config::load(&args.config)?;
-    if let Some(Cmd::Validate) = &args.cmd {
-        return testrule::validate(&conf);
+    if let Some(Cmd::Validate { es }) = &args.cmd {
+        return testrule::validate(&conf, *es).await;
     }
     if let Some(Cmd::MitreLayer(m)) = &args.cmd {
         return mitre::layer_cmd(m, &conf);
     }
-    let es = Es::from_conf(&conf.raw)?.with_tracing(args.es_debug, args.es_debug_trace.as_deref())?;
+    let metrics = Arc::new(Metrics::default());
+    let es = Es::from_conf(&conf.raw)?.with_tracing(args.es_debug, args.es_debug_trace.as_deref())?.with_metrics(metrics.clone());
 
     if let Some(Cmd::CreateIndex { index, old_index, recreate }) = &args.cmd {
         let index = index.as_deref().unwrap_or(&conf.writeback_index);
@@ -476,7 +482,6 @@ async fn main() -> Result<()> {
     }
 
     let rules = rule::load_all(&conf, args.rule.as_deref())?;
-    let metrics = Arc::new(Metrics::default());
     if let (Some(port), false) = (args.prometheus_port, args.debug) {
         metrics::serve(format!("{}:{port}", args.prometheus_addr), metrics.clone()).await?;
     }

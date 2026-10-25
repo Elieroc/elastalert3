@@ -72,17 +72,18 @@ fn print_terms(doc: &Map<String, Value>, parent: &str, out: &mut Vec<String>) {
 }
 
 /// Checks every rule file, reports each problem, exit code 1 if any.
-pub fn validate(conf: &Config) -> Result<()> {
+pub async fn validate(conf: &Config, with_es: bool) -> Result<()> {
     let files = rule::discover(conf, None)?;
     let (mut ok, mut bad) = (0, 0);
     let mut names: Vec<String> = Vec::new();
+    let mut loaded = Vec::new();
     for f in &files {
         match rule::load(f, conf).and_then(|r| {
             if names.contains(&r.name) {
                 anyhow::bail!("duplicate rule name {}", r.name);
             }
             names.push(r.name.clone());
-            RuleState::new(r).map(|_| ())
+            RuleState::new(r.clone()).map(|_| loaded.push(r))
         }) {
             Ok(()) => ok += 1,
             Err(e) => {
@@ -92,6 +93,11 @@ pub fn validate(conf: &Config) -> Result<()> {
         }
     }
     println!("{ok} rule(s) valid, {bad} invalid");
+    if with_es {
+        let es = Es::from_conf(&conf.raw)?;
+        let warnings = crate::lint::check_rules(&es, &loaded).await;
+        println!("{warnings} warning(s) from Elasticsearch");
+    }
     if bad > 0 {
         std::process::exit(1);
     }

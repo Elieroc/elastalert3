@@ -26,6 +26,7 @@ pub struct Tracing {
 #[derive(Clone)]
 pub struct Es {
     tracing: Arc<Tracing>,
+    metrics: Option<Arc<crate::metrics::Metrics>>,
     caps: Arc<tokio::sync::OnceCell<Caps>>,
     http: reqwest::Client,
     bases: Arc<Vec<String>>,
@@ -121,7 +122,7 @@ impl Es {
             }
             b = b.identity(reqwest::Identity::from_pem(&pem)?);
         }
-        Ok(Es { tracing: Arc::default(), caps: Arc::new(tokio::sync::OnceCell::new()), http: b.build()?, bases: Arc::new(bases), current: Arc::new(AtomicUsize::new(0)) })
+        Ok(Es { tracing: Arc::default(), metrics: None, caps: Arc::new(tokio::sync::OnceCell::new()), http: b.build()?, bases: Arc::new(bases), current: Arc::new(AtomicUsize::new(0)) })
     }
 
     /// Turns on request logging (`log`) and/or a curl-style trace file (appended to).
@@ -131,6 +132,12 @@ impl Es {
             .transpose()?;
         self.tracing = Arc::new(Tracing { log, file });
         Ok(self)
+    }
+
+    /// Records the duration of every request in the Prometheus metrics.
+    pub fn with_metrics(mut self, metrics: Arc<crate::metrics::Metrics>) -> Es {
+        self.metrics = Some(metrics);
+        self
     }
 
     fn trace(&self, method: &Method, url: &str, body: &Body<'_>, status: Option<u16>, secs: f64, response: &str) {
@@ -175,6 +182,7 @@ impl Es {
             let started = std::time::Instant::now();
             let traced = self.tracing.log || self.tracing.file.is_some();
             let sent = req.send().await;
+            let kind = crate::metrics::request_kind(method.as_str(), path);
             if traced && let Err(e) = &sent {
                 self.trace(&method, &format!("{}/{}", self.bases[idx], path.trim_start_matches('/')), &body, None, started.elapsed().as_secs_f64(), &e.to_string());
             }
@@ -183,6 +191,9 @@ impl Es {
                     self.current.store(idx, Ordering::Relaxed);
                     let status = resp.status();
                     let text = resp.text().await?;
+                    if let Some(m) = &self.metrics {
+                        m.es_request(kind, started.elapsed().as_secs_f64(), status.is_success());
+                    }
                     if traced {
                         self.trace(&method, &format!("{}/{}", self.bases[idx], path.trim_start_matches('/')), &body, Some(status.as_u16()), started.elapsed().as_secs_f64(), &text);
                     }
@@ -191,8 +202,16 @@ impl Es {
                     }
                     return Ok(serde_json::from_str(&text).unwrap_or(Value::Null));
                 }
-                Err(e) if e.is_connect() || e.is_timeout() => last_err = Some(e),
-                Err(e) => return Err(e.into()),
+                Err(e) => {
+                    if let Some(m) = &self.metrics {
+                        m.es_request(kind, started.elapsed().as_secs_f64(), false);
+                    }
+                    if e.is_connect() || e.is_timeout() {
+                        last_err = Some(e);
+                    } else {
+                        return Err(e.into());
+                    }
+                }
             }
         }
         Err(last_err.map(Into::into).unwrap_or_else(|| anyhow::anyhow!("no Elasticsearch host configured")))
@@ -237,8 +256,9 @@ impl Es {
         self.caps().await.is_ok_and(|c| !c.opensearch && (c.major > 7 || (c.major == 7 && c.minor >= 12)))
     }
 
-    pub async fn pit_open(&self, index: &str, keepalive: &str) -> Result<String> {
-        let r = self.request(Method::POST, &format!("{index}/_pit?keep_alive={keepalive}&ignore_unavailable=true"), Body::None).await?;
+    /// `params`: extra URL parameters (`&preference=x`), empty for none.
+    pub async fn pit_open(&self, index: &str, keepalive: &str, params: &str) -> Result<String> {
+        let r = self.request(Method::POST, &format!("{index}/_pit?keep_alive={keepalive}&ignore_unavailable=true{params}"), Body::None).await?;
         r["id"].as_str().map(String::from).context("no PIT id in response")
     }
 
@@ -256,8 +276,8 @@ impl Es {
     }
 
     /// First page of a search, opening a scroll context.
-    pub async fn search_scroll(&self, index: &str, body: &Value, size: u64, keepalive: &str) -> Result<Value> {
-        let path = format!("{index}/_search?scroll={keepalive}&size={size}&ignore_unavailable=true&rest_total_hits_as_int=true");
+    pub async fn search_scroll(&self, index: &str, body: &Value, size: u64, keepalive: &str, params: &str) -> Result<Value> {
+        let path = format!("{index}/_search?scroll={keepalive}&size={size}&ignore_unavailable=true&rest_total_hits_as_int=true{params}");
         self.post(&path, body).await
     }
 
@@ -270,7 +290,11 @@ impl Es {
     }
 
     pub async fn search(&self, index: &str, body: &Value) -> Result<Value> {
-        self.post(&format!("{index}/_search?ignore_unavailable=true&rest_total_hits_as_int=true"), body).await
+        self.search_with(index, body, "").await
+    }
+
+    pub async fn search_with(&self, index: &str, body: &Value, params: &str) -> Result<Value> {
+        self.post(&format!("{index}/_search?ignore_unavailable=true&rest_total_hits_as_int=true{params}"), body).await
     }
 
     /// `POST <index>/_eql/search`; the body is the EQL request (`query`, `filter`, `size`).
@@ -286,7 +310,7 @@ impl Es {
     /// Every hit of a query (scrolling), for startup scans.
     pub async fn scan(&self, index: &str, body: &Value, keepalive: &str) -> Result<Vec<Value>> {
         let mut out = Vec::new();
-        let mut resp = self.search_scroll(index, body, 1000, keepalive).await?;
+        let mut resp = self.search_scroll(index, body, 1000, keepalive, "").await?;
         loop {
             let hits = resp["hits"]["hits"].as_array().cloned().unwrap_or_default();
             if hits.is_empty() {
