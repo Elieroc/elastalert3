@@ -460,7 +460,7 @@ checksum = "92773504d58c093f6de2459af4af33faa518c13451eb8f2b5698ed3d36e7c813"
 
 [[package]]
 name = "elastalert"
-version = "3.3.0"
+version = "3.4.0"
 dependencies = [
  "anyhow",
  "chrono",
