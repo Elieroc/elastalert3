@@ -15,6 +15,7 @@ RUN mkdir src && echo 'fn main() {}' > src/main.rs \
 
 COPY src ./src
 COPY mappings ./mappings
+COPY attack ./attack
 RUN cargo build --release --locked \
  && strip target/release/elastalert
 
