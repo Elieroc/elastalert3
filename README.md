@@ -57,7 +57,11 @@ See [Getting Started](https://elastalert3.neopipe.fr/running_elastalert.html).
 - [`correlation`](https://elastalert3.neopipe.fr/ruletypes.html#correlation) rule type: events of several searches on the same machine, IP or user within a window, including a missing step.
 - [`active_hours`](https://elastalert3.neopipe.fr/ruletypes.html#active-hours): ignore matches outside time windows.
 - [`ingest_timestamp_field`](https://elastalert3.neopipe.fr/ruletypes.html#ingest-timestamp-field): late documents found exactly once.
-- Per-alerter retry, pending alerts kept across restarts, hot reload keeping rule state, `validate` subcommand.
+- [Sigma rules](https://elastalert3.neopipe.fr/sigma.html) compiled natively into the rule filter (`sigma`, `sigma_folders`, correlation rules, `sigma-convert`).
+- Per-alerter retry, pending alerts kept across restarts, hot reload keeping rule state, `validate` subcommand (`validate --es` checks filters and fields against the mappings).
+- Faster searches: a plain search when the result fits one page, and `correlation` leaves on the same index share one search (2 to 3 times faster, up to 4 times less memory).
+- Search options per rule: `search_timeout`, `terminate_after`, `preference`, `routing`, `read_doc_values`, `split_on_limit`, and [`filter_terms_file`](https://elastalert3.neopipe.fr/ruletypes.html#filter-terms-file) for indicator lists.
+- Prometheus: rule lag, last success time, Elasticsearch request durations and errors.
 - [Match enhancements in Rust](https://elastalert3.neopipe.fr/enhancements.html) (`rust.add_field`, `rust.drop_if`, `rust.lookup`).
 - About 11 times faster, with less than half the memory, on a 400,000-document frequency rule.
 
