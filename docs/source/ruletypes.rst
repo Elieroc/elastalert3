@@ -12,7 +12,7 @@ ElastAlert 2 repository; they run unchanged in ElastAlert 3.
    listed anywhere are ignored, as in ElastAlert 2, so typos are not detected.
 
    Options new in ElastAlert 3: :ref:`active_hours <active_hours>`, :ref:`mitre_attack <mitre_attack>`, :ref:`ingest_timestamp_field <ingest_timestamp_field>`,
-   :ref:`fetch_full_source <fetch_full_source>`, :ref:`Sigma rules <sigma>` (``sigma``), the :ref:`correlation <correlation>` rule type and the ``rust.*``
+   :ref:`fetch_full_source <fetch_full_source>`, :ref:`Sigma rules <sigma>` (``sigma``), the :ref:`correlation <correlation>` and :ref:`geo_velocity <geo_velocity>` rule types and the ``rust.*``
    :doc:`match enhancements <enhancements>`. A rule using one of them does not run in ElastAlert 2 (it ignores
    ``active_hours``, ``mitre_attack``, ``ingest_timestamp_field``, ``fetch_full_source`` and ``sigma``).
 
@@ -2284,3 +2284,58 @@ leaf names, unknown leaf options, a leaf that the query does not use or a name t
 single leaf, mixed operators without parentheses, ``NOT`` anywhere but at the top, ``eql`` / ``esql`` filters,
 ``use_count_query``, ``use_terms_query``, a leaf ``query_key`` with a compound rule ``query_key``.
 ``test-rule --data`` / ``--use-downloaded`` cannot replay it, since each leaf needs its own search.
+
+
+.. _geo_velocity:
+
+Geo velocity
+~~~~~~~~~~~~
+
+.. admonition:: ElastAlert 3
+   :class: ea3
+
+   New in ElastAlert 3: a rule using this type does not load in ElastAlert 2.
+
+``geo_velocity``: This rule matches when an event is far from the previous event of the same ``query_key`` value, and
+too far for the time between them: an "impossible travel". It also covers a device that should not move, or a card used
+in two places at once.
+
+.. code-block:: yaml
+
+    name: Impossible travel VPN
+    type: geo_velocity
+    index: logs-vpn-*
+    filter:
+      - term: {event.outcome: success}
+    query_key: user.name                 # required: one last position is kept per value
+    geo_field: source.geo.location       # required: a geo_point
+    timeframe: {hours: 24}               # required: a position older than this is forgotten
+    max_speed_kmh: 900                   # match when distance / time is above this
+    min_distance_km: 300                 # ignore smaller jumps (GeoIP is imprecise)
+    geo_include: [source.ip, source.geo.city_name]
+    alert: [slack]
+
+``geo_field`` (string, no default): The field holding the position. Accepted forms: ``{lat, lon}``, ``"lat,lon"``,
+``[lon, lat]`` and ``"POINT(lon lat)"``. A missing or invalid value, or a geohash, skips the event.
+
+``max_speed_kmh`` (number > 0): An event matches when the great-circle (haversine) distance to the previous position
+is above this speed times the time elapsed. Two events at the same instant are infinitely fast.
+
+``min_distance_km`` (number >= 0): Moves shorter than this never match. Defaults to 100 when ``max_speed_kmh`` is set,
+because a GeoIP position is only good to tens of kilometres; there is no default without ``max_speed_kmh``, which
+makes ``min_distance_km`` alone a plain "moved by at least N km" rule. One of the two options is required.
+
+``geo_include`` (list of strings, optional): Fields of the previous event to copy into the match.
+
+- Only the last position of each ``query_key`` value is compared, and it is replaced by every event, so going from A to
+  B to A alerts twice. An event older than the kept position is skipped.
+- A ``geo_velocity`` field is added to the match: ``distance_km``, ``speed_kmh`` (``null`` for events at the same
+  instant), ``elapsed_seconds``, ``location`` and ``previous`` (``timestamp``, ``location`` and the ``geo_include``
+  fields). For example ``alert_text_args: [geo_velocity.distance_km, geo_velocity.previous.source.ip]``.
+- State is one small entry per ``query_key`` value, in memory, dropped after ``timeframe``. After a restart or a rule
+  reload the last ``timeframe`` is read again to rebuild it; trips that were already alerted are not alerted twice.
+- Only the timestamp, ``query_key``, ``geo_field`` and ``geo_include`` are read from Elasticsearch.
+
+Rejected at load: a missing ``query_key``, ``geo_field`` or ``timeframe``, neither ``max_speed_kmh`` nor
+``min_distance_km``, a non-positive ``max_speed_kmh``, a negative ``min_distance_km``, ``use_count_query`` and
+``use_terms_query``.

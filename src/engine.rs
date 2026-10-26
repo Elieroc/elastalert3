@@ -257,10 +257,10 @@ impl RuleState {
     pub fn carry_over(&mut self, old: RuleState) {
         (self.starttime, self.previous_endtime, self.minimum_starttime, self.seen, self.pending, self.agg) =
             (old.starttime, old.previous_endtime, old.minimum_starttime, old.seen, old.pending, old.agg);
-        if self.rule.kind == Kind::Correlation
+        if self.rule.kind.replays_window()
             && let Some(prev) = old.previous_endtime
         {
-            // Open chains were lost with the old rule type: read the window again, without alerting twice.
+            // Open chains (or last positions) were lost with the old rule type: read the window again, without alerting twice.
             self.starttime = Some(prev - self.rule.timeframe.unwrap_or_default());
             self.rtype.suppress_until(prev);
             self.seen.clear();
@@ -863,7 +863,7 @@ impl RuleState {
             && let Some(last) = self.last_run_end(ctx).await
         {
             self.starttime = Some(self.overlap(last));
-            if self.rule.kind == Kind::Correlation {
+            if self.rule.kind.replays_window() {
                 // Chains in progress at the last run are rebuilt from the window before it, without alerting twice.
                 self.starttime = Some(last - self.rule.timeframe.unwrap_or_default());
                 self.rtype.suppress_until(last);

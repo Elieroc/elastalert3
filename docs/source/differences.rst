@@ -25,6 +25,8 @@ New in ElastAlert 3
 
 - The :ref:`correlation <correlation>` rule type: events of several searches (leaves) on the same pivot within a
   window, combined with ``AND``, ``OR``, ``THEN`` and ``NOT``.
+- The :ref:`geo_velocity <geo_velocity>` rule type: an event too far from the previous one of the same ``query_key``
+  for the time between them (impossible travel).
 - :ref:`active_hours <active_hours>`: ignore matches outside time windows, in a given time zone.
 - :ref:`mitre_attack <mitre_attack>`: the ATT&CK techniques of a rule, checked at load, written to the alert documents,
   added as TheHive / IRIS tags, and exported as an ATT&CK Navigator layer by the ``mitre-layer`` subcommand.
@@ -41,7 +43,7 @@ New in ElastAlert 3
 - The ``validate`` subcommand (``validate --es`` checks the filters and fields against the mappings), and ``--es_debug_trace`` with responses.
 - Hot reload keeps the state of a changed rule; pending alerts and aggregation groups survive restarts.
 
-A rule using ``correlation`` or a ``rust.*`` enhancement does not load in ElastAlert 2. ElastAlert 2 ignores
+A rule using ``correlation``, ``geo_velocity`` or a ``rust.*`` enhancement does not load in ElastAlert 2. ElastAlert 2 ignores
 ``active_hours``, ``mitre_attack``, ``sigma``, ``sigma_folders``, ``ingest_timestamp_field``, ``fetch_full_source``, ``search_timeout``, ``terminate_after``, ``preference``, ``routing``, ``split_on_limit``, ``read_doc_values`` and ``filter_terms_file``.
 
 Behaviour differences

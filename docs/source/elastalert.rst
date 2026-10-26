@@ -30,6 +30,8 @@ Several rule types with common monitoring paradigms are included with ElastAlert
   ``percentage_match`` and ``spike_aggregation`` types)
 - "Match when events of several searches happen on the same machine, IP or user within some time" (``correlation`` type,
   new in ElastAlert 3)
+- "Match when something moves too far, too fast between two events (impossible travel)" (``geo_velocity`` type, new in
+  ElastAlert 3)
 
 Currently, we have support built in for these alert types:
 

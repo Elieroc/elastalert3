@@ -24,12 +24,18 @@ pub enum Kind {
     PercentageMatch,
     SpikeAggregation,
     Correlation,
+    GeoVelocity,
 }
 
 impl Kind {
     /// Types answered by one aggregation query per segment instead of by hits.
     pub fn is_agg_query(self) -> bool {
         matches!(self, Kind::MetricAggregation | Kind::PercentageMatch | Kind::SpikeAggregation)
+    }
+
+    /// Types whose state is rebuilt after a restart by reading the last `timeframe` again, without alerting twice.
+    pub fn replays_window(self) -> bool {
+        matches!(self, Kind::Correlation | Kind::GeoVelocity)
     }
 }
 
@@ -468,6 +474,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         Some("percentage_match") => Kind::PercentageMatch,
         Some("spike_aggregation") => Kind::SpikeAggregation,
         Some("correlation") => Kind::Correlation,
+        Some("geo_velocity") => Kind::GeoVelocity,
         other => bail!("rule type {other:?} is not supported yet"),
     };
     for unsupported in ["include_rule_params_in_matches"] {
@@ -602,6 +609,25 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         }
         Kind::SpikeAggregation => need(&["timeframe", "spike_height", "spike_type", "metric_agg_key", "metric_agg_type"])?,
         Kind::Correlation => need(&["correlation_leaves", "correlation_query", "query_key", "timeframe"])?,
+        Kind::GeoVelocity => {
+            need(&["query_key", "geo_field", "timeframe"])?;
+            if !raw.contains_key("max_speed_kmh") && !raw.contains_key("min_distance_km") {
+                bail!("GeoVelocityRule must have one of either max_speed_kmh or min_distance_km");
+            }
+            if raw.get("geo_field").and_then(Value::as_str).is_none_or(str::is_empty) {
+                bail!("geo_field must be a field name");
+            }
+            for (k, min) in [("max_speed_kmh", f64::MIN_POSITIVE), ("min_distance_km", 0.0)] {
+                if let Some(v) = raw.get(k)
+                    && !v.as_f64().is_some_and(|n| n >= min)
+                {
+                    bail!("{k} must be a {} number", if min == 0.0 { "non-negative" } else { "positive" });
+                }
+            }
+            if raw.get("geo_include").is_some_and(|v| !v.as_array().is_some_and(|a| a.iter().all(Value::is_string))) {
+                bail!("geo_include must be a list of field names");
+            }
+        }
         Kind::PercentageMatch => {
             need(&["match_bucket_filter"])?;
             if !raw.contains_key("max_percentage") && !raw.contains_key("min_percentage") {
@@ -706,6 +732,10 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
     if !full {
         include.extend(raw.get("cardinality_field").and_then(Value::as_str).map(String::from));
         include.extend(raw.get("field_value").and_then(Value::as_str).map(String::from));
+        if kind == Kind::GeoVelocity {
+            include.extend(raw.get("geo_field").and_then(Value::as_str).map(String::from));
+            include.extend(raw.get("geo_include").and_then(Value::as_array).into_iter().flatten().filter_map(Value::as_str).map(String::from));
+        }
         if kind == Kind::NewTerm {
             for f in raw.get("fields").into_iter().filter_map(Value::as_array).flatten() {
                 match f {

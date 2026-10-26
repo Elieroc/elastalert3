@@ -55,6 +55,7 @@ See [Getting Started](https://elastalert3.neopipe.fr/running_elastalert.html).
 ## What is new
 
 - [`correlation`](https://elastalert3.neopipe.fr/ruletypes.html#correlation) rule type: events of several searches on the same machine, IP or user within a window, including a missing step.
+- [`geo_velocity`](https://elastalert3.neopipe.fr/ruletypes.html#geo-velocity) rule type: impossible travel, an event too far from the previous one of the same user for the time between them.
 - [`active_hours`](https://elastalert3.neopipe.fr/ruletypes.html#active-hours): ignore matches outside time windows.
 - [`ingest_timestamp_field`](https://elastalert3.neopipe.fr/ruletypes.html#ingest-timestamp-field): late documents found exactly once.
 - [Sigma rules](https://elastalert3.neopipe.fr/sigma.html) compiled natively into the rule filter (`sigma`, `sigma_folders`, correlation rules, `sigma-convert`).

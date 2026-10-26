@@ -202,6 +202,7 @@ pub enum RuleType {
     MetricAgg(MetricAgg),
     Percentage(Percentage),
     Correlation(Correlation),
+    GeoVelocity(GeoVelocity),
 }
 
 impl RuleType {
@@ -218,6 +219,7 @@ impl RuleType {
             Kind::PercentageMatch => RuleType::Percentage(Percentage::new(rule)),
             Kind::SpikeAggregation => RuleType::Spike(Spike::new(rule)),
             Kind::Correlation => RuleType::Correlation(Correlation::new(rule)),
+            Kind::GeoVelocity => RuleType::GeoVelocity(GeoVelocity::new(rule)),
         })
     }
 
@@ -238,6 +240,7 @@ impl RuleType {
             RuleType::Compare(c) => c.add_data(rule, events, matches),
             RuleType::NewTerm(n) => n.add_data(rule, events, matches),
             RuleType::Cardinality(c) => c.add_data(rule, events, matches),
+            RuleType::GeoVelocity(g) => g.add_data(rule, events, matches),
             // Correlation events arrive tagged with their leaves, through `add_correlation`.
             RuleType::MetricAgg(_) | RuleType::Percentage(_) | RuleType::Correlation(_) => {}
         }
@@ -252,8 +255,10 @@ impl RuleType {
 
     /// `correlation`: matches completing at or before `ts` were alerted before a restart; replaying them only rebuilds state.
     pub fn suppress_until(&mut self, ts: Ts) {
-        if let RuleType::Correlation(c) = self {
-            c.suppress_until = Some(ts);
+        match self {
+            RuleType::Correlation(c) => c.suppress_until = Some(ts),
+            RuleType::GeoVelocity(g) => g.suppress_until = Some(ts),
+            _ => {}
         }
     }
 
@@ -303,6 +308,7 @@ impl RuleType {
             RuleType::Flatline(f) => f.garbage_collect(rule, ts, matches),
             RuleType::Cardinality(c) => c.garbage_collect(rule, ts, matches),
             RuleType::Correlation(c) => c.garbage_collect(rule, ts, matches),
+            RuleType::GeoVelocity(g) => g.last.retain(|_, l| ts - l.ts <= tf(rule)),
             _ => {}
         }
     }
@@ -377,6 +383,7 @@ impl RuleType {
                 }
             }
             RuleType::Correlation(c) => c.match_str(rule, m, ts_fmt),
+            RuleType::GeoVelocity(g) => g.match_str(rule, m, ts_fmt),
             RuleType::MetricAgg(a) => {
                 let shown = m.get(&a.key).map_or_else(|| "None".into(), |v| rule.raw.get("metric_format_string").and_then(Value::as_str).map_or_else(|| py_str(v), |f| format_number(f, v)));
                 let opt = |k: &str| rule.raw.get(k).map_or_else(|| "None".into(), py_str);
@@ -1204,6 +1211,130 @@ impl Cardinality {
     }
 }
 
+// ---- geo_velocity ----
+
+const EARTH_RADIUS_KM: f64 = 6371.0088;
+const MICROS_PER_HOUR: f64 = 3_600_000_000.0;
+/// Below this distance a jump is GeoIP noise, not travel (used when only `max_speed_kmh` is set).
+const DEFAULT_MIN_DISTANCE_KM: f64 = 100.0;
+
+/// `(lat, lon)` of a `geo_point` value: `{lat, lon}`, `"lat,lon"`, `[lon, lat]` or `"POINT(lon lat)"`.
+fn parse_geo(v: &Value) -> Option<(f64, f64)> {
+    let num = |v: &Value| v.as_f64().or_else(|| v.as_str().and_then(|s| s.trim().parse().ok()));
+    let (lat, lon) = match v {
+        Value::Object(o) => (num(o.get("lat")?)?, num(o.get("lon")?)?),
+        Value::Array(a) if a.len() >= 2 => (num(&a[1])?, num(&a[0])?),
+        Value::String(s) => match s.trim().strip_prefix("POINT").or_else(|| s.trim().strip_prefix("point")) {
+            Some(w) => {
+                let mut it = w.trim().strip_prefix('(')?.strip_suffix(')')?.split_whitespace();
+                let lon = it.next()?.parse().ok()?;
+                (it.next()?.parse().ok()?, lon)
+            }
+            None => {
+                let (a, b) = s.split_once(',')?;
+                (a.trim().parse().ok()?, b.trim().parse().ok()?)
+            }
+        },
+        _ => return None,
+    };
+    ((-90.0..=90.0).contains(&lat) && (-180.0..=180.0).contains(&lon)).then_some((lat, lon))
+}
+
+fn haversine_km(a: (f64, f64), b: (f64, f64)) -> f64 {
+    let (p1, p2) = (a.0.to_radians(), b.0.to_radians());
+    let h = ((p2 - p1) / 2.0).sin().powi(2) + p1.cos() * p2.cos() * ((b.1 - a.1).to_radians() / 2.0).sin().powi(2);
+    2.0 * EARTH_RADIUS_KM * h.sqrt().min(1.0).asin()
+}
+
+/// The last position seen for one `query_key` value.
+struct LastPoint {
+    ts: Ts,
+    pos: (f64, f64),
+    /// The `geo_include` fields of that event, in order.
+    extra: Vec<Value>,
+}
+
+/// `geo_velocity`: an event whose position is at least `min_distance_km` from the previous event of the same
+/// `query_key`, and further than `max_speed_kmh` allows for the time between them. One small entry per key.
+pub struct GeoVelocity {
+    field: String,
+    include: Vec<String>,
+    max_kmh: Option<f64>,
+    min_km: f64,
+    last: FxHashMap<String, LastPoint>,
+    /// Matches at or before this time were alerted by a previous run; replaying them only rebuilds state.
+    suppress_until: Option<Ts>,
+}
+
+impl GeoVelocity {
+    fn new(rule: &Rule) -> Self {
+        let max_kmh = opt_f64(rule, "max_speed_kmh");
+        GeoVelocity {
+            field: rule.raw.get("geo_field").map(py_str).unwrap_or_default(),
+            include: rule.raw.get("geo_include").and_then(Value::as_array).into_iter().flatten().map(py_str).collect(),
+            max_kmh,
+            min_km: opt_f64(rule, "min_distance_km").unwrap_or(if max_kmh.is_some() { DEFAULT_MIN_DISTANCE_KM } else { 0.0 }),
+            last: FxHashMap::default(),
+            suppress_until: None,
+        }
+    }
+
+    fn add_data(&mut self, rule: &Rule, events: Vec<Event>, matches: &mut Vec<Doc>) {
+        for ev in events {
+            let Some(pos) = field::lookup(&ev.doc, &self.field).and_then(parse_geo) else { continue };
+            let key = group_key(rule, &ev.doc);
+            let extra = self.include.iter().map(|f| field::lookup(&ev.doc, f).cloned().unwrap_or(Value::Null)).collect();
+            let cur = LastPoint { ts: ev.ts, pos, extra };
+            let prev = match self.last.get_mut(&key) {
+                None => {
+                    self.last.insert(key, cur);
+                    continue;
+                }
+                // Older than the kept point (replayed or late): it would only report a trip backwards.
+                Some(l) if ev.ts < l.ts => continue,
+                Some(l) => std::mem::replace(l, cur),
+            };
+            let km = haversine_km(prev.pos, pos);
+            let (dt, hours) = (ev.ts - prev.ts, (ev.ts - prev.ts) as f64 / MICROS_PER_HOUR);
+            if km < self.min_km || self.max_kmh.is_some_and(|v| km <= v * hours) || self.suppress_until.is_some_and(|t| ev.ts <= t) {
+                continue;
+            }
+            let round = |x: f64| json!((x * 100.0).round() / 100.0);
+            let mut before = Map::new();
+            before.insert("timestamp".into(), json!(to_iso(prev.ts)));
+            before.insert("location".into(), json!({"lat": prev.pos.0, "lon": prev.pos.1}));
+            before.extend(self.include.iter().cloned().zip(prev.extra));
+            let mut m = into_match(rule, Event { ts: ev.ts, doc: ev.doc });
+            m.insert(
+                "geo_velocity".into(),
+                json!({
+                    "distance_km": round(km),
+                    "speed_kmh": if dt > 0 { round(km / hours) } else { Value::Null },
+                    "elapsed_seconds": dt / crate::time::SECOND,
+                    "location": {"lat": pos.0, "lon": pos.1},
+                    "previous": before,
+                }),
+            );
+            matches.push(m);
+        }
+    }
+
+    fn match_str(&self, rule: &Rule, m: &Doc, ts_fmt: Option<&str>) -> String {
+        let Some(info) = m.get("geo_velocity") else { return String::new() };
+        let key = rule.query_key.as_ref().and_then(|q| field::lookup(m, q)).map_or_else(|| "None".into(), py_str);
+        let num = |k: &str| info.get(k).and_then(Value::as_f64);
+        let at = |v: Option<&Value>| v.map_or_else(String::new, |l| format!("{},{}", py_str(&l["lat"]), py_str(&l["lon"])));
+        let prev_ts = info["previous"]["timestamp"].as_str().and_then(crate::time::parse_iso).map(|t| pretty(t, rule.use_local_time, ts_fmt)).unwrap_or_default();
+        let speed = num("speed_kmh").map_or_else(|| "instantly".into(), |s| format!("{s:.0} km/h"));
+        format!(
+            "Impossible travel for {key}: {:.0} km in {} ({speed}) from {} at {prev_ts} to {}\n\n",
+            num("distance_km").unwrap_or(0.0),
+            pretty_duration(num("elapsed_seconds").unwrap_or(0.0) as Dur * crate::time::SECOND),
+            at(info["previous"].get("location")),
+            at(info.get("location")),
+        )
+    }
+}
 /// Progress of one pivot value through the `correlation_query` of a `correlation` rule.
 struct Chain {
     /// Time of the first event; the window `timeframe` is measured from here.
@@ -1479,6 +1610,88 @@ mod tests {
         assert!(feed(&rule, &mut rt, vec![cev(TOOL, "a", 0), cev(TOOL, "a", 50), cev(OUT, "a", 70)]).is_empty());
         let (rule, mut rt) = corr();
         assert_eq!(feed(&rule, &mut rt, vec![cev(TOOL, "a", 0), cev(OUT, "a", 60)]).len(), 1, "exactly timeframe is inside");
+    }
+
+    fn geo_rule(extra: &str) -> (Rule, RuleType) {
+        let rule = rule_from(&format!("type: geo_velocity\nquery_key: user\ngeo_field: loc\ntimeframe: {{hours: 24}}\ngeo_include: [ip]\n{extra}"));
+        let rt = RuleType::new(&rule).unwrap();
+        (rule, rt)
+    }
+
+    fn gev(user: &str, loc: Value, minutes: i64, ip: &str) -> Event {
+        let ts = 1_700_000_000_000_000 + minutes * MIN;
+        Event { ts, doc: Doc::from_iter([("user".into(), json!(user)), ("loc".into(), loc), ("ip".into(), json!(ip)), ("@timestamp".into(), json!(to_iso(ts)))]) }
+    }
+
+    const PARIS: (f64, f64) = (48.8566, 2.3522);
+    const NYC: (f64, f64) = (40.7128, -74.0060);
+
+    fn at(p: (f64, f64)) -> Value {
+        json!({"lat": p.0, "lon": p.1})
+    }
+
+    #[test]
+    fn geo_point_formats() {
+        let want = Some((48.5, 2.25));
+        for v in [json!({"lat": 48.5, "lon": 2.25}), json!({"lat": "48.5", "lon": "2.25"}), json!("48.5, 2.25"), json!([2.25, 48.5]), json!("POINT (2.25 48.5)")] {
+            assert_eq!(parse_geo(&v), want, "{v}");
+        }
+        for v in [json!("u09tvw0"), json!("91,0"), json!([0, 181]), json!(null), json!({"lat": 1})] {
+            assert_eq!(parse_geo(&v), None, "{v}");
+        }
+        let d = haversine_km(PARIS, NYC);
+        assert!((5830.0..5850.0).contains(&d), "{d}");
+        assert_eq!(haversine_km(PARIS, PARIS), 0.0);
+    }
+
+    #[test]
+    fn geo_velocity_impossible_travel() {
+        let (rule, mut rt) = geo_rule("max_speed_kmh: 900\n");
+        let mut out = Vec::new();
+        // Paris, then New York an hour later (5840 km/h): match. Paris 100 m away does not.
+        rt.add_data(&rule, vec![gev("a", at(PARIS), 0, "1.1.1.1"), gev("a", at((48.8570, 2.3525)), 5, "1.1.1.2"), gev("a", at(NYC), 65, "2.2.2.2")], &mut out);
+        assert_eq!(out.len(), 1);
+        let g = &out[0]["geo_velocity"];
+        assert_eq!(g["elapsed_seconds"], json!(3600));
+        assert!((5830.0..5850.0).contains(&g["speed_kmh"].as_f64().unwrap()), "{g}");
+        assert_eq!((&g["previous"]["ip"], &out[0]["ip"]), (&json!("1.1.1.2"), &json!("2.2.2.2")));
+        assert!(rt.match_str(&rule, &out[0], None).starts_with("Impossible travel for a: "));
+        // Eight hours is a flight: no match. Another user has its own last point.
+        out.clear();
+        rt.add_data(&rule, vec![gev("a", at(PARIS), 65 + 480, "1.1.1.1"), gev("b", at(PARIS), 1000, "x")], &mut out);
+        assert!(out.is_empty());
+    }
+
+    #[test]
+    fn geo_velocity_options_late_events_and_replay() {
+        // min_distance_km alone: any move of 300 km or more, even at the same instant (speed null).
+        let (rule, mut rt) = geo_rule("min_distance_km: 300\n");
+        let mut out = Vec::new();
+        rt.add_data(&rule, vec![gev("a", at(PARIS), 0, "1"), gev("a", at(NYC), 0, "2"), gev("a", at(PARIS), -10, "3"), gev("a", json!("bad"), 5, "4")], &mut out);
+        assert_eq!(out.len(), 1, "late and unparsable events are skipped");
+        assert_eq!(out[0]["geo_velocity"]["speed_kmh"], Value::Null);
+        // max_speed_kmh alone ignores jumps under 100 km: Paris to Chartres (78 km) in 1 minute.
+        let (rule, mut rt) = geo_rule("max_speed_kmh: 900\n");
+        out.clear();
+        rt.add_data(&rule, vec![gev("a", at(PARIS), 0, "1"), gev("a", at((48.4469, 1.4890)), 1, "2")], &mut out);
+        assert!(out.is_empty());
+        // Replay after a restart rebuilds the last point without alerting again.
+        rt.suppress_until(1_700_000_000_000_000 + 100 * MIN);
+        rt.add_data(&rule, vec![gev("b", at(PARIS), 0, "1"), gev("b", at(NYC), 60, "2")], &mut out);
+        assert!(out.is_empty());
+        rt.add_data(&rule, vec![gev("b", at(PARIS), 160, "3")], &mut out);
+        assert_eq!(out.len(), 1);
+        // State is dropped once older than timeframe.
+        rt.garbage_collect(&rule, 1_700_000_000_000_000 + 30 * 60 * MIN, &mut out);
+        assert!(matches!(&rt, RuleType::GeoVelocity(g) if g.last.is_empty()));
+    }
+
+    #[test]
+    fn geo_velocity_needs_its_options() {
+        for yaml in ["query_key: u\ngeo_field: l\ntimeframe: {hours: 1}\n", "query_key: u\nmax_speed_kmh: 5\ntimeframe: {hours: 1}\n", "geo_field: l\nmax_speed_kmh: 5\ntimeframe: {hours: 1}\n", "query_key: u\ngeo_field: l\nmax_speed_kmh: 0\ntimeframe: {hours: 1}\n", "query_key: u\ngeo_field: l\nmax_speed_kmh: 5\nuse_count_query: true\ntimeframe: {hours: 1}\n"] {
+            let r = std::panic::catch_unwind(|| rule_from(&format!("type: geo_velocity\n{yaml}")));
+            assert!(r.is_err(), "{yaml}");
+        }
     }
 
     #[test]
