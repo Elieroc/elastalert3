@@ -59,7 +59,9 @@ new one and ``--recreate`` deletes and recreates the indices. For information ab
    :class: ea3
 
    ElastAlert 2's separate ``elastalert-create-index`` and ``elastalert-test-rule`` commands are the ``create-index``
-   and ``test-rule`` subcommands of the single ``elastalert`` binary. ``create-index`` does not ask questions.
+   and ``test-rule`` subcommands of the ``elastalert`` binary. ``elastalert-test-rule ARGS`` is also shipped, as a
+   small launcher for ``elastalert test-rule ARGS`` (it must sit next to ``elastalert``). ``create-index`` does not
+   ask questions.
 
 An existing ElastAlert 2 writeback index can be reused as it is: the documents have the same shape.
 

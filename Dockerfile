@@ -17,7 +17,7 @@ COPY src ./src
 COPY mappings ./mappings
 COPY attack ./attack
 RUN cargo build --release --locked \
- && strip target/release/elastalert
+ && strip target/release/elastalert target/release/elastalert-test-rule
 
 # ---- runtime ----
 # debian-slim rather than distroless: the `command` alerter may run `sh -c`.
@@ -29,7 +29,7 @@ RUN apt-get update \
  && mkdir -p /opt/elastalert/rules \
  && chown -R elastalert /opt/elastalert
 
-COPY --from=build /src/target/release/elastalert /usr/local/bin/elastalert
+COPY --from=build /src/target/release/elastalert /src/target/release/elastalert-test-rule /usr/local/bin/
 COPY NOTICE /usr/share/doc/elastalert3/NOTICE
 
 USER elastalert
