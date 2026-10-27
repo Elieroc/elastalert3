@@ -27,12 +27,13 @@ pub enum Kind {
     GeoVelocity,
     Beacon,
     Baseline,
+    Outlier,
 }
 
 impl Kind {
     /// Types answered by one aggregation query per segment instead of by hits.
     pub fn is_agg_query(self) -> bool {
-        matches!(self, Kind::MetricAggregation | Kind::PercentageMatch | Kind::SpikeAggregation)
+        matches!(self, Kind::MetricAggregation | Kind::PercentageMatch | Kind::SpikeAggregation | Kind::Outlier)
     }
 
     /// Types whose state is rebuilt after a restart by reading the last `timeframe` again, without alerting twice.
@@ -450,6 +451,29 @@ pub fn baseline_shape(raw: &Map<String, Value>) -> Result<(Dur, Dur, Dur)> {
     Ok((bucket, history, season))
 }
 
+/// `outlier`: the population is every `query_key` value of the last `timeframe`, so the options must define it fully.
+fn outlier_options(raw: &Map<String, Value>, compound: bool) -> Result<()> {
+    if compound {
+        bail!("a compound query_key is not supported for outlier rules");
+    }
+    if raw.get("metric_agg_type").and_then(Value::as_str) == Some("percentiles") {
+        bail!("metric_agg_type percentiles is not supported for outlier rules");
+    }
+    if !raw.get("outlier_factor").and_then(Value::as_f64).is_some_and(|n| n > 0.0) {
+        bail!("outlier_factor must be a positive number");
+    }
+    if !matches!(raw.get("outlier_reference").map_or(Some("median"), Value::as_str), Some("median" | "p99")) {
+        bail!("outlier_reference must be median or p99");
+    }
+    if raw.get("min_population").is_some_and(|v| !v.as_u64().is_some_and(|n| n >= 3)) {
+        bail!("min_population must be an integer of at least 3");
+    }
+    if raw.get("bucket_interval").is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty())) {
+        bail!("bucket_interval is not supported for outlier rules");
+    }
+    Ok(())
+}
+
 fn baseline_options(raw: &Map<String, Value>, timestamp_type: TsType, compound: bool) -> Result<()> {
     baseline_shape(raw)?;
     if !matches!(raw.get("method").map_or(Some("zscore"), Value::as_str), Some("zscore" | "mad")) {
@@ -526,6 +550,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         Some("geo_velocity") => Kind::GeoVelocity,
         Some("beacon") => Kind::Beacon,
         Some("baseline") => Kind::Baseline,
+        Some("outlier") => Kind::Outlier,
         other => bail!("rule type {other:?} is not supported yet"),
     };
     for unsupported in ["include_rule_params_in_matches"] {
@@ -676,6 +701,10 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         Kind::SpikeAggregation => need(&["timeframe", "spike_height", "spike_type", "metric_agg_key", "metric_agg_type"])?,
         Kind::Correlation => need(&["correlation_leaves", "correlation_query", "query_key", "timeframe"])?,
         Kind::Baseline => baseline_options(&raw, timestamp_type, compound_query_key.len() > 1)?,
+        Kind::Outlier => {
+            need(&["query_key", "timeframe", "metric_agg_key", "metric_agg_type", "outlier_factor"])?;
+            outlier_options(&raw, compound_query_key.len() > 1)?;
+        }
         Kind::Beacon => {
             need(&["query_key", "timeframe", "min_events"])?;
             if !raw["min_events"].as_u64().is_some_and(|n| n >= 3) {
@@ -885,7 +914,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         compound_aggregation_key,
         use_count_query,
         use_terms_query,
-        terms_size: raw.get("terms_size").and_then(Value::as_u64).unwrap_or(50),
+        terms_size: raw.get("terms_size").and_then(Value::as_u64).unwrap_or(if kind == Kind::Outlier { 1000 } else { 50 }),
         top_count_keys,
         top_count_number,
         ingest_field,

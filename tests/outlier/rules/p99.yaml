@@ -1,0 +1,12 @@
+name: outlier-p99
+type: outlier
+index: logs-outlier
+query_key: user.name
+metric_agg_key: bytes_out
+metric_agg_type: sum
+timeframe: {hours: 24}
+outlier_factor: 0.9
+outlier_reference: p99
+min_population: 10
+realert: {hours: 24}
+alert: debug

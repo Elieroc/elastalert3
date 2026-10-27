@@ -217,6 +217,7 @@ pub enum RuleType {
     GeoVelocity(GeoVelocity),
     Beacon(Beacon),
     Baseline(Baseline),
+    Outlier(Outlier),
 }
 
 impl RuleType {
@@ -236,6 +237,7 @@ impl RuleType {
             Kind::GeoVelocity => RuleType::GeoVelocity(GeoVelocity::new(rule)),
             Kind::Beacon => RuleType::Beacon(Beacon::new(rule)),
             Kind::Baseline => RuleType::Baseline(Baseline::new(rule)),
+            Kind::Outlier => RuleType::Outlier(Outlier::new(rule)),
         })
     }
 
@@ -260,7 +262,7 @@ impl RuleType {
             RuleType::Beacon(b) => b.add_data(rule, events, matches),
             // Correlation events arrive tagged with their leaves, through `add_correlation`.
             // Baseline buckets arrive through `add_baseline`.
-            RuleType::MetricAgg(_) | RuleType::Percentage(_) | RuleType::Correlation(_) | RuleType::Baseline(_) => {}
+            RuleType::MetricAgg(_) | RuleType::Percentage(_) | RuleType::Correlation(_) | RuleType::Baseline(_) | RuleType::Outlier(_) => {}
         }
     }
 
@@ -288,6 +290,7 @@ impl RuleType {
             RuleType::MetricAgg(a) => walk_buckets(ts, payload, &mut |t, qk, b| a.check(rule, t, qk, b, matches)),
             RuleType::Percentage(p) => walk_buckets(ts, payload, &mut |t, qk, b| p.check(rule, t, qk, b, matches)),
             RuleType::Spike(s) => s.add_aggregation(rule, ts, payload, matches),
+            RuleType::Outlier(o) => o.add_population(rule, ts, payload, matches),
             _ => {}
         }
     }
@@ -422,6 +425,7 @@ impl RuleType {
             RuleType::GeoVelocity(g) => g.match_str(rule, m, ts_fmt),
             RuleType::Beacon(_) => Beacon::match_str(rule, m, ts_fmt),
             RuleType::Baseline(_) => Baseline::match_str(rule, m, ts_fmt),
+            RuleType::Outlier(_) => Outlier::match_str(rule, m, ts_fmt),
             RuleType::MetricAgg(a) => {
                 let shown = m.get(&a.key).map_or_else(|| "None".into(), |v| rule.raw.get("metric_format_string").and_then(Value::as_str).map_or_else(|| py_str(v), |f| format_number(f, v)));
                 let opt = |k: &str| rule.raw.get(k).map_or_else(|| "None".into(), py_str);
@@ -1385,6 +1389,91 @@ impl Baseline {
     }
 }
 
+// ---- outlier ----
+
+/// Linear-interpolated percentile `p` (0..=1) of a sorted slice.
+fn percentile(xs: &[f64], p: f64) -> f64 {
+    let pos = p * (xs.len() - 1) as f64;
+    let (lo, hi) = (pos.floor() as usize, pos.ceil() as usize);
+    xs[lo] + (xs[hi] - xs[lo]) * (pos - lo as f64)
+}
+
+/// `outlier`: one metric per `query_key` value over the last `timeframe`, each run; an entity matches when its value
+/// is at least `outlier_factor` times the median (or the p99) of the whole population. No state: every run judges a
+/// fresh population, `realert` keeps one alert per entity.
+pub struct Outlier {
+    key: String,
+    ty: String,
+    factor: f64,
+    min_population: usize,
+    p99: bool,
+}
+
+impl Outlier {
+    fn new(rule: &Rule) -> Self {
+        Outlier {
+            key: metric_key(rule),
+            ty: rule.raw.get("metric_agg_type").map(py_str).unwrap_or_default(),
+            factor: opt_f64(rule, "outlier_factor").unwrap_or(1.0),
+            min_population: rule.raw.get("min_population").and_then(Value::as_u64).unwrap_or(10) as usize,
+            p99: rule.raw.get("outlier_reference").and_then(Value::as_str) == Some("p99"),
+        }
+    }
+
+    /// `payload` is the `aggregations` of a terms aggregation on the `query_key` with the metric inside.
+    fn add_population(&mut self, rule: &Rule, ts: Ts, payload: &Value, matches: &mut Vec<Doc>) {
+        let mut pop: Vec<(&Value, f64)> = payload["bucket_aggs"]["buckets"].as_array().into_iter().flatten().filter_map(|b| Some((&b["key"], b[&self.key]["value"].as_f64()?))).collect();
+        if pop.len() < self.min_population {
+            log::debug!("Rule {}: {} entities, fewer than min_population ({}), nothing to compare", rule.name, pop.len(), self.min_population);
+            return;
+        }
+        pop.sort_by(|a, b| b.1.total_cmp(&a.1));
+        let asc: Vec<f64> = pop.iter().rev().map(|(_, v)| *v).collect();
+        let reference = if self.p99 { percentile(&asc, 0.99) } else { percentile(&asc, 0.5) };
+        // Against a reference of 0 every entity with some value would be "infinitely" above its peers.
+        if reference <= 0.0 {
+            return;
+        }
+        let round = |x: f64| json!((x * 100.0).round() / 100.0);
+        let qk = rule.query_key.clone().unwrap_or_default();
+        for (key, value) in pop.iter().take_while(|(_, v)| *v >= self.factor * reference) {
+            let mut doc = Doc::from_iter([(self.key.clone(), json!(value)), ("metric_agg_value".into(), json!(value))]);
+            expand_into(&mut doc, &qk, (*key).clone());
+            let mut m = into_match(rule, Event { ts, doc });
+            m.insert(
+                "outlier".into(),
+                json!({
+                    "value": value,
+                    "reference": round(reference),
+                    "reference_kind": if self.p99 { "p99" } else { "median" },
+                    "ratio": round(value / reference),
+                    "factor": self.factor,
+                    "population": pop.len(),
+                    "metric": format!("{}({})", self.ty, rule.raw.get("metric_agg_key").map(py_str).unwrap_or_default()),
+                }),
+            );
+            matches.push(m);
+        }
+    }
+
+    fn match_str(rule: &Rule, m: &Doc, ts_fmt: Option<&str>) -> String {
+        let (Some(info), Some(ts)) = (m.get("outlier"), field::lookup(m, &rule.timestamp_field).and_then(|v| parse_ts(rule, v))) else { return String::new() };
+        let key = rule.query_key.as_ref().and_then(|q| field::lookup(m, q)).map_or_else(String::new, py_str);
+        let n = |k: &str| info[k].as_f64().unwrap_or(0.0);
+        format!(
+            "Outlier {key}: {} is {} between {} and {}, {}x the {} of its peers ({}, {} entities)\n\n",
+            py_str(&info["metric"]),
+            py_num(n("value")),
+            pretty(ts - tf(rule), rule.use_local_time, ts_fmt),
+            pretty(ts, rule.use_local_time, ts_fmt),
+            py_num(n("ratio")),
+            py_str(&info["reference_kind"]),
+            py_num(n("reference")),
+            py_str(&info["population"]),
+        )
+    }
+}
+
 // ---- beacon ----
 
 /// The event times of one `query_key` value within `timeframe`, and its newest document.
@@ -2128,6 +2217,88 @@ mod tests {
         assert_eq!(NewTerm::new(&rule_from("type: new_term\nfields: [proc]\n")).unwrap().max, 0);
         for yaml in ["type: new_term\nfields: [p]\nmax_occurrences: -1\n", "type: new_term\nfields: [p]\nmax_occurrences: x\n", "type: any\nmax_occurrences: 2\n"] {
             assert!(std::panic::catch_unwind(|| rule_from(yaml)).is_err(), "{yaml}");
+        }
+    }
+
+    fn outlier(extra: &str, values: &[(&str, f64)]) -> (Rule, Vec<Doc>) {
+        let rule = rule_from(&format!("type: outlier\nquery_key: user\ntimeframe: {{hours: 24}}\nmetric_agg_key: bytes\nmetric_agg_type: sum\noutlier_factor: 10\n{extra}"));
+        let mut rt = RuleType::new(&rule).unwrap();
+        let buckets: Vec<Value> = values.iter().map(|(k, v)| json!({"key": k, "doc_count": 1, "metric_bytes_sum": {"value": v}})).collect();
+        let mut out = Vec::new();
+        rt.add_aggregation(&rule, 1_700_000_000_000_000, &json!({"bucket_aggs": {"buckets": buckets}}), &mut out);
+        (rule, out)
+    }
+
+    fn peers(n: usize, extra: &[(&str, f64)]) -> Vec<(String, f64)> {
+        (0..n).map(|i| (format!("u{i}"), 100.0 + i as f64)).chain(extra.iter().map(|(k, v)| (k.to_string(), *v))).collect()
+    }
+
+    fn run_outlier(extra: &str, pop: &[(String, f64)]) -> (Rule, Vec<Doc>) {
+        outlier(extra, &pop.iter().map(|(k, v)| (k.as_str(), *v)).collect::<Vec<_>>())
+    }
+
+    #[test]
+    fn outlier_one_entity_far_above_its_peers() {
+        let (rule, out) = run_outlier("", &peers(12, &[("mallory", 5000.0)]));
+        assert_eq!(out.len(), 1);
+        let m = &out[0];
+        assert_eq!((&m["user"], &m["metric_bytes_sum"], &m["outlier"]["reference_kind"], &m["outlier"]["population"]), (&json!("mallory"), &json!(5000.0), &json!("median"), &json!(13)));
+        // 13 values (100..=111 and 5000), the median is the 7th: 106
+        assert_eq!(m["outlier"]["reference"], json!(106.0));
+        assert_eq!(m["outlier"]["ratio"], json!(47.17));
+        let text = RuleType::new(&rule).unwrap().match_str(&rule, m, None);
+        assert!(text.starts_with("Outlier mallory: sum(bytes) is 5000 between "), "{text}");
+        assert!(text.contains("47.17x the median of its peers (106, 13 entities)"), "{text}");
+    }
+
+    #[test]
+    fn outlier_peers_alike_or_population_too_small_match_nothing() {
+        assert!(run_outlier("", &peers(12, &[])).1.is_empty());
+        // 5 entities, one huge, but min_population defaults to 10
+        assert!(run_outlier("", &peers(4, &[("mallory", 5000.0)])).1.is_empty());
+        assert_eq!(run_outlier("min_population: 5\n", &peers(4, &[("mallory", 5000.0)])).1.len(), 1);
+        // the factor is inclusive: exactly 10x the median matches, a hair under does not
+        assert_eq!(run_outlier("", &peers(12, &[("x", 1060.0)])).1.len(), 1);
+        assert!(run_outlier("", &peers(12, &[("x", 1059.0)])).1.is_empty());
+    }
+
+    #[test]
+    fn outlier_median_of_zero_is_no_reference_and_several_outliers_come_largest_first() {
+        let zeros: Vec<(String, f64)> = (0..11).map(|i| (format!("u{i}"), 0.0)).chain([("a".into(), 9.0)]).collect();
+        assert!(run_outlier("", &zeros).1.is_empty());
+        let out = run_outlier("", &peers(12, &[("big", 9000.0), ("bigger", 20000.0)])).1;
+        assert_eq!(out.iter().map(|m| m["user"].clone()).collect::<Vec<_>>(), vec![json!("bigger"), json!("big")]);
+    }
+
+    #[test]
+    fn outlier_p99_reference() {
+        // p99 of 20 values 1..=20 is 19.81: factor 1 keeps only the top entity
+        let pop: Vec<(String, f64)> = (1..=20).map(|i| (format!("u{i}"), i as f64)).collect();
+        assert!(run_outlier("outlier_reference: p99\n", &pop).1.is_empty(), "factor 10 over p99 matches nothing");
+        let rule = rule_from("type: outlier\nquery_key: user\ntimeframe: {hours: 1}\nmetric_agg_key: b\nmetric_agg_type: max\noutlier_factor: 1\noutlier_reference: p99\nmin_population: 10\n");
+        let mut rt = RuleType::new(&rule).unwrap();
+        let buckets: Vec<Value> = pop.iter().map(|(k, v)| json!({"key": k, "metric_b_max": {"value": v}})).collect();
+        let mut out = Vec::new();
+        rt.add_aggregation(&rule, 0, &json!({"bucket_aggs": {"buckets": buckets}}), &mut out);
+        assert_eq!(out.iter().map(|m| m["user"].clone()).collect::<Vec<_>>(), vec![json!("u20")]);
+        assert_eq!(out[0]["outlier"]["reference"], json!(19.81));
+    }
+
+    #[test]
+    fn outlier_needs_its_options() {
+        let ok = "query_key: user\ntimeframe: {hours: 24}\nmetric_agg_key: b\nmetric_agg_type: sum\noutlier_factor: 10\n";
+        assert!(std::panic::catch_unwind(|| rule_from(&format!("type: outlier\n{ok}min_population: 3\nouTlier_reference: p99\n"))).is_ok());
+        for yaml in [
+            "timeframe: {hours: 1}\nmetric_agg_key: b\nmetric_agg_type: sum\noutlier_factor: 2\n".to_string(),
+            "query_key: u\nmetric_agg_key: b\nmetric_agg_type: sum\noutlier_factor: 2\n".to_string(),
+            "query_key: u\ntimeframe: {hours: 1}\nmetric_agg_type: sum\noutlier_factor: 2\n".to_string(),
+            "query_key: u\ntimeframe: {hours: 1}\nmetric_agg_key: b\noutlier_factor: 2\n".to_string(),
+            "query_key: u\ntimeframe: {hours: 1}\nmetric_agg_key: b\nmetric_agg_type: sum\n".to_string(),
+        ]
+        .into_iter()
+        .chain(["min_population: 2\n", "min_population: x\n", "outlier_factor: 0\n", "outlier_reference: p95\n", "query_key: [a, b]\n", "metric_agg_type: percentiles\npercentile_range: 99\n", "bucket_interval: {hours: 1}\n", "use_count_query: true\n", "ingest_timestamp_field: x\n"].map(|x| format!("{ok}{x}")))
+        {
+            assert!(std::panic::catch_unwind(|| rule_from(&format!("type: outlier\n{yaml}"))).is_err(), "{yaml}");
         }
     }
 

@@ -12,7 +12,7 @@ ElastAlert 2 repository; they run unchanged in ElastAlert 3.
    listed anywhere are ignored, as in ElastAlert 2, so typos are not detected.
 
    Options new in ElastAlert 3: :ref:`active_hours <active_hours>`, :ref:`mitre_attack <mitre_attack>`, :ref:`ingest_timestamp_field <ingest_timestamp_field>`,
-   :ref:`fetch_full_source <fetch_full_source>`, :ref:`Sigma rules <sigma>` (``sigma``), the :ref:`correlation <correlation>`, :ref:`geo_velocity <geo_velocity>`, :ref:`beacon <beacon>` and :ref:`baseline <baseline>` rule types, ``max_occurrences`` of the :ref:`new_term <new_term>` type and the ``rust.*``
+   :ref:`fetch_full_source <fetch_full_source>`, :ref:`Sigma rules <sigma>` (``sigma``), the :ref:`correlation <correlation>`, :ref:`geo_velocity <geo_velocity>`, :ref:`beacon <beacon>`, :ref:`baseline <baseline>` and :ref:`outlier <outlier>` rule types, ``max_occurrences`` of the :ref:`new_term <new_term>` type and the ``rust.*``
    :doc:`match enhancements <enhancements>`. A rule using one of them does not run in ElastAlert 2 (it ignores
    ``active_hours``, ``mitre_attack``, ``ingest_timestamp_field``, ``fetch_full_source`` and ``sigma``).
 
@@ -1599,7 +1599,7 @@ Exit codes: ``2`` query error, ``3`` invalid rule, ``4`` missing timestamp.
    :class: ea3
 
    The output is similar to ElastAlert 2's but not byte for byte identical: scripts that parse it need adjusting.
-   ``--data`` and ``--use-downloaded`` cannot replay the aggregation rule types and ``correlation`` rules, which need
+   ``--data`` and ``--use-downloaded`` cannot replay the aggregation rule types (``outlier`` included) and ``correlation`` rules, which need
    Elasticsearch to aggregate or one search per step. To check that every rule of a folder loads, without
    Elasticsearch, use ``elastalert validate``.
 
@@ -1986,6 +1986,8 @@ again before additional alerts.
 Optional:
 
 ``query_key``: Group cardinality counts by this field. For each unique value of the ``query_key`` field, cardinality will be counted separately.
+
+.. _metric_aggregation:
 
 Metric Aggregation
 ~~~~~~~~~~~~~~~~~~
@@ -2483,3 +2485,66 @@ Rejected at load: a missing ``bucket`` or ``history``, a ``bucket`` that is not 
 or the season, a ``history`` under 2 seasons, an unknown ``seasonality`` or ``method``, a non-positive ``threshold``, a
 negative ``min_baseline_count``, a compound ``query_key``, a ``timestamp_type`` other than ``iso``,
 ``ingest_timestamp_field``, ``use_count_query`` and ``use_terms_query``.
+
+.. _outlier:
+
+Outlier
+~~~~~~~
+
+.. admonition:: ElastAlert 3
+   :class: ea3
+
+   New in ElastAlert 3: a rule using this type does not load in ElastAlert 2.
+
+``outlier``: This rule compares an entity with its peers. A metric is computed per ``query_key`` value over the last
+``timeframe``, and an entity matches when its value is at least ``outlier_factor`` times the median of all the entities.
+There is no universal threshold: 5 GB sent is normal for a video editor and huge for a secretary, so the rule asks
+"is this entity far above the others?" instead of "is it above a fixed number?".
+
+.. code-block:: yaml
+
+    name: Data exfiltration, compared to peers
+    type: outlier
+    index: logs-network-*
+    query_key: user.name           # required: the entity (a single field)
+    metric_agg_key: bytes_out      # required: the field the metric is computed over
+    metric_agg_type: sum           # required: min, max, avg, sum, cardinality or value_count
+    timeframe: {hours: 24}         # required: the window the metric is computed over, ending now
+    outlier_factor: 10             # required: match at value >= factor * reference
+    min_population: 10             # default 10, at least 3
+    outlier_reference: median      # median (default) | p99
+    realert: {hours: 24}
+    alert: [slack]
+
+``query_key``, ``metric_agg_key`` and ``metric_agg_type`` work as in :ref:`metric_aggregation <metric_aggregation>`
+(``metric_agg_script`` too), except that ``percentiles`` is not supported and ``query_key`` must be one field.
+
+``timeframe`` (time): Every run reads the last ``timeframe``, up to now, and judges the population again.
+
+``outlier_factor`` (number > 0): An entity matches when its value is at least this many times the reference.
+
+``outlier_reference``: ``median`` (default) is the median of the values of all the entities. ``p99`` is the 99th
+percentile (interpolated); use a factor around 1 with it, since an entity cannot be much above the 99th percentile of a
+population it belongs to.
+
+``min_population`` (integer >= 3, default 10): With fewer entities there is no meaningful population, and nothing matches.
+
+- The reference is computed over every entity, the candidate included. With a median this changes little; with a small
+  population and ``p99`` it matters, so keep ``min_population`` high.
+- A reference of 0 or less matches nothing: when the typical entity has no value, any entity would be "infinitely"
+  above its peers.
+- The population is the ``terms_size`` entities with the most documents (default **1000** for this type, not 50).
+  Entities beyond it are not seen: raise ``terms_size`` if there are more. Elasticsearch also limits a response to
+  ``search.max_buckets`` (65,535 by default). ``min_doc_count`` (default 1) applies as for ``metric_aggregation``.
+- No state is kept: each run compares a fresh population. As the same outlier stays one on the next run, set ``realert``
+  (it applies per ``query_key`` value) to avoid an alert every ``run_every``.
+- The match has the ``query_key`` field, the metric (``metric_<key>_<type>`` and ``metric_agg_value``) and an ``outlier``
+  field: ``value``, ``reference``, ``reference_kind``, ``ratio``, ``factor``, ``population`` and ``metric``. For example
+  ``alert_text_args: [user.name, outlier.value, outlier.ratio]``. ``@timestamp`` is the end of the ``timeframe``.
+- Over a replay (``--start`` / ``--end``) each query segment of ``buffer_time`` is judged with the ``timeframe`` before
+  its end.
+- ``test-rule --data`` cannot replay this type, as the other aggregation rule types.
+
+Rejected at load: a missing ``query_key``, ``timeframe``, ``metric_agg_key``, ``metric_agg_type`` or ``outlier_factor``,
+a non-positive ``outlier_factor``, a ``min_population`` under 3, an unknown ``outlier_reference``, a compound ``query_key``,
+``percentiles``, ``bucket_interval``, ``use_count_query``, ``use_terms_query`` and ``ingest_timestamp_field``.

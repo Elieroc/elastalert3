@@ -654,6 +654,8 @@ impl RuleState {
     /// `bucket_interval` (date histogram) and by each `query_key` field (terms), as upstream's `get_aggregation_query`.
     async fn agg_query(&mut self, ctx: &Ctx, index: &str, start: Ts, end: Ts, matches: &mut Vec<Doc>) -> Result<()> {
         let rule = &self.rule;
+        // `outlier` compares entities over the whole `timeframe` ending here, whatever the segment is.
+        let start = if rule.kind == Kind::Outlier { end - rule.timeframe.unwrap_or_default() } else { start };
         let mut aggs = rule.agg_query.clone().expect("aggregation rule types always have one");
         if let Some((period, _)) = &rule.bucket_interval {
             let mut histogram = json!({"field": rule.timestamp_field, "fixed_interval": period});
@@ -729,7 +731,7 @@ impl RuleState {
             bail!("test-rule --data / --use-downloaded cannot replay correlation rules: each leaf is a search of its own");
         }
         if self.aggregating() {
-            bail!("test-rule --data / --use-downloaded cannot replay aggregation rule types (metric_aggregation, percentage_match, spike_aggregation)");
+            bail!("test-rule --data / --use-downloaded cannot replay aggregation rule types (metric_aggregation, percentage_match, spike_aggregation, outlier)");
         }
         if self.rule.kind == Kind::Baseline {
             bail!("test-rule --data / --use-downloaded cannot replay baseline rules: they read their history from Elasticsearch");
