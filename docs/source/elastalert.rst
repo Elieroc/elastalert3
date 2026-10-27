@@ -34,6 +34,7 @@ Several rule types with common monitoring paradigms are included with ElastAlert
   ElastAlert 3)
 - "Match when events come at regular intervals (malware beaconing)" (``beacon`` type, new in ElastAlert 3)
 - "Match when the number of events is abnormal for this hour of the week" (``baseline`` type, new in ElastAlert 3)
+- "Match when a rarely seen term appears in a field" (``new_term`` type with ``max_occurrences``, new in ElastAlert 3)
 
 Currently, we have support built in for these alert types:
 
