@@ -12,7 +12,7 @@ ElastAlert 2 repository; they run unchanged in ElastAlert 3.
    listed anywhere are ignored, as in ElastAlert 2, so typos are not detected.
 
    Options new in ElastAlert 3: :ref:`active_hours <active_hours>`, :ref:`mitre_attack <mitre_attack>`, :ref:`ingest_timestamp_field <ingest_timestamp_field>`,
-   :ref:`fetch_full_source <fetch_full_source>`, :ref:`Sigma rules <sigma>` (``sigma``), the :ref:`correlation <correlation>` and :ref:`geo_velocity <geo_velocity>` rule types and the ``rust.*``
+   :ref:`fetch_full_source <fetch_full_source>`, :ref:`Sigma rules <sigma>` (``sigma``), the :ref:`correlation <correlation>`, :ref:`geo_velocity <geo_velocity>` and :ref:`beacon <beacon>` rule types and the ``rust.*``
    :doc:`match enhancements <enhancements>`. A rule using one of them does not run in ElastAlert 2 (it ignores
    ``active_hours``, ``mitre_attack``, ``ingest_timestamp_field``, ``fetch_full_source`` and ``sigma``).
 
@@ -2351,3 +2351,50 @@ makes ``min_distance_km`` alone a plain "moved by at least N km" rule. One of th
 Rejected at load: a missing ``query_key``, ``geo_field`` or ``timeframe``, neither ``max_speed_kmh`` nor
 ``min_distance_km``, a non-positive ``max_speed_kmh``, a negative ``min_distance_km``, ``use_count_query`` and
 ``use_terms_query``.
+
+.. _beacon:
+
+Beacon
+~~~~~~
+
+.. admonition:: ElastAlert 3
+   :class: ea3
+
+   New in ElastAlert 3: a rule using this type does not load in ElastAlert 2.
+
+``beacon``: This rule matches when the events of a ``query_key`` value come at regular intervals: malware calling home
+at a near-fixed period, where a person is irregular. It is the "C2 beaconing" detection.
+
+.. code-block:: yaml
+
+    name: C2 beaconing
+    type: beacon
+    index: logs-network-*
+    query_key: [source.ip, destination.ip]   # required: one series of event times per value
+    timeframe: {hours: 6}                    # required: the window the events are measured over
+    min_events: 20                           # required: at least 3
+    max_jitter: 0.15                         # coefficient of variation of the gaps (default 0.15)
+    min_interval: {seconds: 10}              # ignore faster traffic (default 0)
+    alert: [slack]
+
+``min_events`` (integer >= 3): Fewer events than this in the last ``timeframe`` never match.
+
+``max_jitter`` (number in ]0, 1], default 0.15): The largest accepted coefficient of variation of the gaps between
+consecutive events, that is their standard deviation divided by their mean. A perfect beat is 0; a Poisson process is
+about 1.
+
+``min_interval`` (time, default 0): Series whose mean gap is shorter than this are ignored, to leave out chatty
+applications. A series whose events all share the same instant (mean gap 0) never matches.
+
+- The match is the newest event, with a ``beacon`` field added: ``event_count``, ``mean_interval_seconds``,
+  ``jitter``, ``first_timestamp`` and ``last_timestamp``. For example
+  ``alert_text_args: [beacon.event_count, beacon.mean_interval_seconds]``.
+- The gaps are computed over every event of the last ``timeframe``. The events of a match are used up, like
+  ``frequency``: the next match of the same key needs ``min_events`` new events.
+- State is one list of timestamps (plus the newest document) per ``query_key`` value, in memory, dropped once the key
+  is silent for ``timeframe``. After a restart or a rule reload the last ``timeframe`` is read again to rebuild it;
+  beats that were already alerted are not alerted twice.
+- Only the timestamp and ``query_key`` are read from Elasticsearch.
+
+Rejected at load: a missing ``query_key``, ``timeframe`` or ``min_events``, ``min_events`` under 3, ``max_jitter``
+outside ]0, 1], a negative ``min_interval``, ``use_count_query`` and ``use_terms_query``.

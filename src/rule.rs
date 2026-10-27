@@ -25,6 +25,7 @@ pub enum Kind {
     SpikeAggregation,
     Correlation,
     GeoVelocity,
+    Beacon,
 }
 
 impl Kind {
@@ -35,7 +36,7 @@ impl Kind {
 
     /// Types whose state is rebuilt after a restart by reading the last `timeframe` again, without alerting twice.
     pub fn replays_window(self) -> bool {
-        matches!(self, Kind::Correlation | Kind::GeoVelocity)
+        matches!(self, Kind::Correlation | Kind::GeoVelocity | Kind::Beacon)
     }
 }
 
@@ -478,6 +479,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         Some("spike_aggregation") => Kind::SpikeAggregation,
         Some("correlation") => Kind::Correlation,
         Some("geo_velocity") => Kind::GeoVelocity,
+        Some("beacon") => Kind::Beacon,
         other => bail!("rule type {other:?} is not supported yet"),
     };
     for unsupported in ["include_rule_params_in_matches"] {
@@ -619,6 +621,18 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         }
         Kind::SpikeAggregation => need(&["timeframe", "spike_height", "spike_type", "metric_agg_key", "metric_agg_type"])?,
         Kind::Correlation => need(&["correlation_leaves", "correlation_query", "query_key", "timeframe"])?,
+        Kind::Beacon => {
+            need(&["query_key", "timeframe", "min_events"])?;
+            if !raw["min_events"].as_u64().is_some_and(|n| n >= 3) {
+                bail!("min_events must be an integer of at least 3 (two gaps make a deviation)");
+            }
+            if raw.get("max_jitter").is_some_and(|v| !v.as_f64().is_some_and(|n| n > 0.0 && n <= 1.0)) {
+                bail!("max_jitter must be a number in ]0, 1]");
+            }
+            if dur_opt(&raw, "min_interval")?.is_some_and(|d| d < 0) {
+                bail!("min_interval must not be negative");
+            }
+        }
         Kind::GeoVelocity => {
             need(&["query_key", "geo_field", "timeframe"])?;
             if !raw.contains_key("max_speed_kmh") && !raw.contains_key("min_distance_km") {

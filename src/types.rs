@@ -215,6 +215,7 @@ pub enum RuleType {
     Percentage(Percentage),
     Correlation(Correlation),
     GeoVelocity(GeoVelocity),
+    Beacon(Beacon),
 }
 
 impl RuleType {
@@ -232,6 +233,7 @@ impl RuleType {
             Kind::SpikeAggregation => RuleType::Spike(Spike::new(rule)),
             Kind::Correlation => RuleType::Correlation(Correlation::new(rule)),
             Kind::GeoVelocity => RuleType::GeoVelocity(GeoVelocity::new(rule)),
+            Kind::Beacon => RuleType::Beacon(Beacon::new(rule)),
         })
     }
 
@@ -253,6 +255,7 @@ impl RuleType {
             RuleType::NewTerm(n) => n.add_data(rule, events, matches),
             RuleType::Cardinality(c) => c.add_data(rule, events, matches),
             RuleType::GeoVelocity(g) => g.add_data(rule, events, matches),
+            RuleType::Beacon(b) => b.add_data(rule, events, matches),
             // Correlation events arrive tagged with their leaves, through `add_correlation`.
             RuleType::MetricAgg(_) | RuleType::Percentage(_) | RuleType::Correlation(_) => {}
         }
@@ -270,6 +273,7 @@ impl RuleType {
         match self {
             RuleType::Correlation(c) => c.suppress_until = Some(ts),
             RuleType::GeoVelocity(g) => g.suppress_until = Some(ts),
+            RuleType::Beacon(b) => b.suppress_until = Some(ts),
             _ => {}
         }
     }
@@ -321,6 +325,7 @@ impl RuleType {
             RuleType::Cardinality(c) => c.garbage_collect(rule, ts, matches),
             RuleType::Correlation(c) => c.garbage_collect(rule, ts, matches),
             RuleType::GeoVelocity(g) => g.last.retain(|_, l| ts - l.ts <= tf(rule)),
+            RuleType::Beacon(b) => b.beats.retain(|_, w| w.times.back().is_some_and(|t| ts - t <= tf(rule))),
             _ => {}
         }
     }
@@ -396,6 +401,7 @@ impl RuleType {
             }
             RuleType::Correlation(c) => c.match_str(rule, m, ts_fmt),
             RuleType::GeoVelocity(g) => g.match_str(rule, m, ts_fmt),
+            RuleType::Beacon(_) => Beacon::match_str(rule, m, ts_fmt),
             RuleType::MetricAgg(a) => {
                 let shown = m.get(&a.key).map_or_else(|| "None".into(), |v| rule.raw.get("metric_format_string").and_then(Value::as_str).map_or_else(|| py_str(v), |f| format_number(f, v)));
                 let opt = |k: &str| rule.raw.get(k).map_or_else(|| "None".into(), py_str);
@@ -1224,6 +1230,98 @@ impl Cardinality {
     }
 }
 
+// ---- beacon ----
+
+/// The event times of one `query_key` value within `timeframe`, and its newest document.
+struct Beats {
+    times: VecDeque<Ts>,
+    last: Doc,
+}
+
+/// `beacon`: the gaps between the events of a `query_key` value are regular (malware calling home). Matches when
+/// at least `min_events` events fall within `timeframe`, their mean gap is at least `min_interval` and the
+/// coefficient of variation (standard deviation / mean) of the gaps is at most `max_jitter`.
+pub struct Beacon {
+    min_events: usize,
+    max_jitter: f64,
+    min_interval: Dur,
+    beats: FxHashMap<String, Beats>,
+    /// Matches at or before this time were alerted by a previous run; replaying them only rebuilds state.
+    suppress_until: Option<Ts>,
+}
+
+impl Beacon {
+    fn new(rule: &Rule) -> Self {
+        Beacon {
+            min_events: rule.raw.get("min_events").and_then(Value::as_u64).unwrap_or(3) as usize,
+            max_jitter: opt_f64(rule, "max_jitter").unwrap_or(0.15),
+            min_interval: rule.raw.get("min_interval").and_then(|v| crate::time::parse_duration_map(v).ok()).unwrap_or(0),
+            beats: FxHashMap::default(),
+            suppress_until: None,
+        }
+    }
+
+    fn add_data(&mut self, rule: &Rule, events: Vec<Event>, matches: &mut Vec<Doc>) {
+        for ev in events {
+            let key = group_key(rule, &ev.doc);
+            let b = self.beats.entry(key.clone()).or_insert_with(|| Beats { times: VecDeque::new(), last: Doc::new() });
+            let pos = b.times.partition_point(|t| *t <= ev.ts);
+            b.times.insert(pos, ev.ts);
+            let newest = pos == b.times.len() - 1;
+            while b.times.back().zip(b.times.front()).is_some_and(|(n, o)| n - o > tf(rule)) {
+                b.times.pop_front();
+            }
+            if newest {
+                b.last = ev.doc;
+            }
+            if b.times.len() < self.min_events {
+                continue;
+            }
+            let gaps: Vec<f64> = b.times.iter().zip(b.times.iter().skip(1)).map(|(a, c)| (c - a) as f64).collect();
+            let mean = gaps.iter().sum::<f64>() / gaps.len() as f64;
+            let jitter = (gaps.iter().map(|g| (g - mean).powi(2)).sum::<f64>() / gaps.len() as f64).sqrt() / mean;
+            if mean <= 0.0 || mean < self.min_interval as f64 || jitter > self.max_jitter {
+                continue;
+            }
+            let (first, last) = (b.times[0], b.times[b.times.len() - 1]);
+            let count = b.times.len();
+            let doc = std::mem::take(&mut b.last);
+            // Like frequency: the events that made a match are spent, a new beat needs `min_events` fresh ones.
+            self.beats.remove(&key);
+            if self.suppress_until.is_some_and(|t| last <= t) {
+                continue;
+            }
+            let mut m = into_match(rule, Event { ts: last, doc });
+            m.insert(
+                "beacon".into(),
+                json!({
+                    "event_count": count,
+                    "mean_interval_seconds": (mean / crate::time::SECOND as f64 * 1000.0).round() / 1000.0,
+                    "jitter": (jitter * 10000.0).round() / 10000.0,
+                    "first_timestamp": to_iso(first),
+                    "last_timestamp": to_iso(last),
+                }),
+            );
+            matches.push(m);
+        }
+    }
+
+    fn match_str(rule: &Rule, m: &Doc, ts_fmt: Option<&str>) -> String {
+        let Some(info) = m.get("beacon") else { return String::new() };
+        let key = rule.query_key.as_ref().and_then(|q| field::lookup(m, q)).map_or_else(|| "None".into(), py_str);
+        let at = |k: &str| info[k].as_str().and_then(crate::time::parse_iso).map(|t| pretty(t, rule.use_local_time, ts_fmt)).unwrap_or_default();
+        let every = info["mean_interval_seconds"].as_f64().unwrap_or(0.0).round() as Dur * crate::time::SECOND;
+        format!(
+            "Beaconing for {key}: {} events about every {} (jitter {:.2}) between {} and {}\n\n",
+            py_str(&info["event_count"]),
+            pretty_duration(every),
+            info["jitter"].as_f64().unwrap_or(0.0),
+            at("first_timestamp"),
+            at("last_timestamp"),
+        )
+    }
+}
+
 // ---- geo_velocity ----
 
 const EARTH_RADIUS_KM: f64 = 6371.0088;
@@ -1723,6 +1821,101 @@ mod tests {
         // State is dropped once older than timeframe.
         rt.garbage_collect(&rule, 1_700_000_000_000_000 + 30 * 60 * MIN, &mut out);
         assert!(matches!(&rt, RuleType::GeoVelocity(g) if g.last.is_empty()));
+    }
+
+    fn beacon_rule(extra: &str) -> (Rule, RuleType) {
+        let rule = rule_from(&format!("type: beacon\nquery_key: src\ntimeframe: {{hours: 1}}\nmin_events: 10\n{extra}"));
+        let rt = RuleType::new(&rule).unwrap();
+        (rule, rt)
+    }
+
+    /// One event of `src` at `secs` seconds.
+    fn bev(src: &str, secs: i64) -> Event {
+        let ts = 1_700_000_000_000_000 + secs * crate::time::SECOND;
+        Event { ts, doc: Doc::from_iter([("src".into(), json!(src)), ("@timestamp".into(), json!(to_iso(ts)))]) }
+    }
+
+    fn beats(src: &str, secs: impl IntoIterator<Item = i64>) -> Vec<Event> {
+        secs.into_iter().map(|s| bev(src, s)).collect()
+    }
+
+    #[test]
+    fn beacon_perfect_beat_matches_random_does_not() {
+        let (rule, mut rt) = beacon_rule("");
+        let mut out = Vec::new();
+        rt.add_data(&rule, beats("a", (0..10).map(|i| i * 60)), &mut out);
+        assert_eq!(out.len(), 1);
+        let b = &out[0]["beacon"];
+        assert_eq!((&b["event_count"], &b["mean_interval_seconds"], &b["jitter"]), (&json!(10), &json!(60.0), &json!(0.0)));
+        assert_eq!(out[0]["@timestamp"], json!(to_iso(1_700_000_000_000_000 + 540 * crate::time::SECOND)));
+        let text = rt.match_str(&rule, &out[0], None);
+        assert!(text.starts_with("Beaconing for a: 10 events about every 0:01:00 (jitter 0.00) between "), "{text}");
+        // Irregular gaps (a person browsing) do not.
+        out.clear();
+        rt.add_data(&rule, beats("b", [0, 5, 40, 41, 300, 320, 900, 905, 1500, 2100]), &mut out);
+        assert!(out.is_empty());
+    }
+
+    #[test]
+    fn beacon_jitter_edge_and_min_interval_and_keys() {
+        // Gaps 54 and 66 alternate: mean 60, deviation 6, jitter exactly 0.1.
+        let wobble = (0..10).scan(0, |t, i| { *t += if i % 2 == 0 { 54 } else { 66 }; Some(*t) });
+        let (rule, mut rt) = beacon_rule("max_jitter: 0.1\n");
+        let mut out = Vec::new();
+        rt.add_data(&rule, beats("a", wobble.clone()), &mut out);
+        assert_eq!(out.len(), 1, "jitter equal to max_jitter matches");
+        let (rule, mut rt) = beacon_rule("max_jitter: 0.09\n");
+        out.clear();
+        rt.add_data(&rule, beats("a", wobble), &mut out);
+        assert!(out.is_empty());
+        // Fast chatty traffic (every 5 s) is ignored under min_interval 10 s; every key is judged alone.
+        let (rule, mut rt) = beacon_rule("min_interval: {seconds: 10}\n");
+        rt.add_data(&rule, beats("a", (0..10).map(|i| i * 5)), &mut out);
+        assert!(out.is_empty());
+        rt.add_data(&rule, beats("a", (0..5).map(|i| i * 60)).into_iter().chain(beats("b", (0..10).map(|i| i * 60))).collect(), &mut out);
+        assert_eq!(out.len(), 1);
+        assert_eq!(out[0]["src"], json!("b"));
+        // The same instant ten times is not a beat (mean 0).
+        let (rule, mut rt) = beacon_rule("");
+        out.clear();
+        rt.add_data(&rule, beats("a", [7; 10]), &mut out);
+        assert!(out.is_empty());
+    }
+
+    #[test]
+    fn beacon_window_eviction_spent_events_and_replay() {
+        let (rule, mut rt) = beacon_rule("");
+        let mut out = Vec::new();
+        // Nine beats, then the tenth two hours later: the first nine left the 1 h window.
+        rt.add_data(&rule, beats("a", (0..9).map(|i| i * 60).chain([9000])), &mut out);
+        assert!(out.is_empty());
+        // A match spends its events: ten fresh ones are needed for the next.
+        rt.add_data(&rule, beats("b", (0..10).map(|i| i * 60)), &mut out);
+        rt.add_data(&rule, beats("b", (10..19).map(|i| i * 60)), &mut out);
+        assert_eq!(out.len(), 1);
+        rt.add_data(&rule, beats("b", [19 * 60]), &mut out);
+        assert_eq!(out.len(), 2);
+        // Replay after a restart rebuilds the state without alerting again.
+        rt.suppress_until(1_700_000_000_000_000 + 1000 * crate::time::SECOND);
+        rt.add_data(&rule, beats("c", (0..10).map(|i| i * 60)), &mut out);
+        assert_eq!(out.len(), 2);
+        // Keys silent for longer than timeframe are dropped.
+        rt.garbage_collect(&rule, 1_700_000_000_000_000 + 4 * 3600 * crate::time::SECOND, &mut out);
+        assert!(matches!(&rt, RuleType::Beacon(b) if b.beats.is_empty()));
+    }
+
+    #[test]
+    fn beacon_needs_its_options() {
+        let ok = "query_key: u\ntimeframe: {hours: 1}\nmin_events: 5\n";
+        assert!(std::panic::catch_unwind(|| rule_from(&format!("type: beacon\n{ok}max_jitter: 1\nmin_interval: {{seconds: 1}}\n"))).is_ok());
+        for yaml in ["timeframe: {hours: 1}\nmin_events: 5\n", "query_key: u\nmin_events: 5\n", "query_key: u\ntimeframe: {hours: 1}\n", "query_key: u\ntimeframe: {hours: 1}\nmin_events: 2\n"]
+            .into_iter()
+            .map(String::from)
+            .chain(["max_jitter: 0\n", "max_jitter: 1.5\n", "max_jitter: x\n", "use_count_query: true\n"].map(|x| format!("{ok}{x}")))
+        {
+            let r = std::panic::catch_unwind(|| rule_from(&format!("type: beacon\n{yaml}")));
+            assert!(r.is_err(), "{yaml}");
+        }
     }
 
     #[test]

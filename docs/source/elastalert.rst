@@ -32,6 +32,7 @@ Several rule types with common monitoring paradigms are included with ElastAlert
   new in ElastAlert 3)
 - "Match when something moves too far, too fast between two events (impossible travel)" (``geo_velocity`` type, new in
   ElastAlert 3)
+- "Match when events come at regular intervals (malware beaconing)" (``beacon`` type, new in ElastAlert 3)
 
 Currently, we have support built in for these alert types:
 

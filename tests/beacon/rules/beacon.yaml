@@ -1,0 +1,11 @@
+name: c2-beacon
+type: beacon
+index: logs-beacon
+timestamp_field: "@timestamp"
+query_key: [source.ip, destination.ip]
+timeframe: {hours: 1}
+min_events: 20
+max_jitter: 0.15
+min_interval: {seconds: 10}
+realert: {minutes: 0}
+alert: debug
