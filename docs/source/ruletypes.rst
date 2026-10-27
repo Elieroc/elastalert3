@@ -251,6 +251,8 @@ Rule Configuration Cheat Sheet
 +-------------------------------------------------------+--------+-----------+-----------+--------+-----------+-------+----------+--------+-----------+------------------+-----------------+----------------+
 |``terms_window_size`` (time, default 30 days)          |        |           |           |        |           |       |          | Opt    |           |                  |                 |                |
 +-------------------------------------------------------+--------+-----------+-----------+--------+-----------+-------+----------+--------+-----------+------------------+-----------------+----------------+
+|``max_occurrences`` (int, default 0)                   |        |           |           |        |           |       |          | Opt    |           |                  |                 |                |
++-------------------------------------------------------+--------+-----------+-----------+--------+-----------+-------+----------+--------+-----------+------------------+-----------------+----------------+
 |``window_step_size`` (time, default 1 day)             |        |           |           |        |           |       |          | Opt    |           |                  |                 |                |
 +-------------------------------------------------------+--------+-----------+-----------+--------+-----------+-------+----------+--------+-----------+------------------+-----------------+----------------+
 |``alert_on_missing_field`` (boolean, default False)    |        |           |           |        |           |       |          | Opt    |           |                  |                 |                |
@@ -1893,6 +1895,8 @@ and then falls below the threshold. To reference the query_key value within a fl
 ``forget_keys``: Only valid when used with ``query_key``. If this is set to true, ElastAlert 3 will "forget" about the ``query_key`` value that
 triggers an alert, therefore preventing any more alerts for it until it's seen again.
 
+.. _new_term:
+
 New Term
 ~~~~~~~~
 
@@ -1916,6 +1920,18 @@ Optional:
 
 ``terms_window_size``: The amount of time used for the initial query to find existing terms. No term that has occurred within this time frame
 will trigger an alert. The default is 30 days.
+
+``max_occurrences``: An integer, default 0. A term seen at most this many times in ``terms_window_size`` still triggers an alert
+(once, the first time it shows up after startup), so "rare" terms are reported and not only never-seen ones. With 0, a term must
+never have been seen, which is the ElastAlert 2 behaviour.
+
+.. admonition:: ElastAlert 3
+   :class: ea3
+
+   ``max_occurrences`` is new in ElastAlert 3 and a rule that sets it does not behave the same in ElastAlert 2. It is rejected
+   at load on any other rule type, or if it is not a non-negative integer. The count is read from the history at startup, so after
+   a restart a rare term that already alerted is counted again, with its new occurrences: it alerts again unless it now exceeds
+   ``max_occurrences``. Rules without the option behave exactly as before.
 
 ``window_step_size``: When querying for existing terms, split up the time range into steps of this size. For example, using the default
 30 day window size, and the default 1 day step size, 30 invidivdual queries will be made. This helps to avoid timeouts for very

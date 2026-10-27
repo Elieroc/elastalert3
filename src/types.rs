@@ -1070,7 +1070,10 @@ impl Compare {
 pub struct NewTerm {
     /// One entry per field (a composite field is a list of sub-fields).
     fields: Vec<Vec<String>>,
+    /// Terms known and not worth an alert: seen more than `max_occurrences` times in the history, or already alerted.
     seen: Vec<FxHashSet<String>>,
+    /// `max_occurrences`: a term seen at most this many times in the history still alerts (once). 0 is plain new_term.
+    max: u64,
     ready: bool,
 }
 
@@ -1100,7 +1103,8 @@ impl NewTerm {
                 other => vec![py_str(other)],
             })
             .collect();
-        Ok(NewTerm { seen: vec![FxHashSet::default(); fields.len()], fields, ready: false })
+        let max = rule.raw.get("max_occurrences").and_then(Value::as_u64).unwrap_or(0);
+        Ok(NewTerm { seen: vec![FxHashSet::default(); fields.len()], fields, max, ready: false })
     }
 
     /// Loads every value seen in the last `terms_window_size` (30 days) with composite aggregations.
@@ -1125,7 +1129,7 @@ impl NewTerm {
                 let body = json!({"size": 0, "query": {"bool": {"filter": must}}, "aggs": {"values": {"composite": comp}}});
                 let resp = es.search(&index, &body).await.map_err(|e| anyhow::anyhow!("Error searching for existing terms: {e:#}"))?;
                 let buckets = resp["aggregations"]["values"]["buckets"].as_array().cloned().unwrap_or_default();
-                for b in &buckets {
+                for b in buckets.iter().filter(|b| b["doc_count"].as_u64().unwrap_or(u64::MAX) > self.max) {
                     let vals: Vec<Value> = (0..fields.len()).map(|n| b["key"][format!("f{n}")].clone()).collect();
                     self.seen[i].insert(if fields.len() == 1 { vals[0].to_string() } else { Value::Array(vals).to_string() });
                 }
@@ -2106,6 +2110,24 @@ mod tests {
         {
             let r = std::panic::catch_unwind(|| rule_from(&format!("type: baseline\n{yaml}")));
             assert!(r.is_err(), "{yaml}");
+        }
+    }
+
+    #[test]
+    fn new_term_max_occurrences_options_and_alert_once() {
+        let r = rule_from("type: new_term\nfields: [proc]\nmax_occurrences: 3\n");
+        let mut nt = NewTerm::new(&r).unwrap();
+        assert_eq!(nt.max, 3);
+        // what `init` keeps from the history: "common" (seen > 3 times) is known, "rare" (seen <= 3 times) is not
+        nt.seen[0].insert(json!("common").to_string());
+        let doc = |v: &str| Event { ts: 0, doc: Doc::from_iter([("proc".to_string(), json!(v))]) };
+        let mut out = Vec::new();
+        nt.add_data(&r, vec![doc("common"), doc("rare"), doc("rare"), doc("unseen")], &mut out);
+        let names: Vec<_> = out.iter().map(|m| m["proc"].clone()).collect();
+        assert_eq!(names, vec![json!("rare"), json!("unseen")]);
+        assert_eq!(NewTerm::new(&rule_from("type: new_term\nfields: [proc]\n")).unwrap().max, 0);
+        for yaml in ["type: new_term\nfields: [p]\nmax_occurrences: -1\n", "type: new_term\nfields: [p]\nmax_occurrences: x\n", "type: any\nmax_occurrences: 2\n"] {
+            assert!(std::panic::catch_unwind(|| rule_from(yaml)).is_err(), "{yaml}");
         }
     }
 

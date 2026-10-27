@@ -30,6 +30,8 @@ New in ElastAlert 3
 - The :ref:`beacon <beacon>` rule type: the events of a ``query_key`` value at regular intervals (C2 beaconing).
 - The :ref:`baseline <baseline>` rule type: the event count of a bucket against the same buckets of the history (seasonal
   z-score or MAD).
+- ``max_occurrences`` of the :ref:`new_term <new_term>` rule type: alert on a term seen at most that many times in the history
+  ("rare"), not only on a never-seen one.
 - :ref:`active_hours <active_hours>`: ignore matches outside time windows, in a given time zone.
 - :ref:`mitre_attack <mitre_attack>`: the ATT&CK techniques of a rule, checked at load, written to the alert documents,
   added as TheHive / IRIS tags, and exported as an ATT&CK Navigator layer by the ``mitre-layer`` subcommand.
@@ -46,7 +48,7 @@ New in ElastAlert 3
 - The ``validate`` subcommand (``validate --es`` checks the filters and fields against the mappings), and ``--es_debug_trace`` with responses.
 - Hot reload keeps the state of a changed rule; pending alerts and aggregation groups survive restarts.
 
-A rule using ``correlation``, ``geo_velocity``, ``beacon``, ``baseline`` or a ``rust.*`` enhancement does not load in ElastAlert 2. ElastAlert 2 ignores
+A rule using ``correlation``, ``geo_velocity``, ``beacon``, ``baseline``, ``max_occurrences`` on ``new_term`` or a ``rust.*`` enhancement does not load in ElastAlert 2. ElastAlert 2 ignores
 ``active_hours``, ``mitre_attack``, ``sigma``, ``sigma_folders``, ``ingest_timestamp_field``, ``fetch_full_source``, ``search_timeout``, ``terminate_after``, ``preference``, ``routing``, ``split_on_limit``, ``read_doc_values`` and ``filter_terms_file``.
 
 Behaviour differences

@@ -58,6 +58,7 @@ See [Getting Started](https://elastalert3.neopipe.fr/running_elastalert.html).
 - [`geo_velocity`](https://elastalert3.neopipe.fr/ruletypes.html#geo-velocity) rule type: impossible travel, an event too far from the previous one of the same user for the time between them.
 - [`beacon`](https://elastalert3.neopipe.fr/ruletypes.html#beacon) rule type: events of the same key at regular intervals, like malware calling home.
 - [`baseline`](https://elastalert3.neopipe.fr/ruletypes.html#baseline) rule type: an event count abnormal for this hour of the week, learned from the history.
+- [`new_term` with `max_occurrences`](https://elastalert3.neopipe.fr/ruletypes.html#new-term): alert on rare terms, not only never-seen ones.
 - [`active_hours`](https://elastalert3.neopipe.fr/ruletypes.html#active-hours): ignore matches outside time windows.
 - [`ingest_timestamp_field`](https://elastalert3.neopipe.fr/ruletypes.html#ingest-timestamp-field): late documents found exactly once.
 - [Sigma rules](https://elastalert3.neopipe.fr/sigma.html) compiled natively into the rule filter (`sigma`, `sigma_folders`, correlation rules, `sigma-convert`).

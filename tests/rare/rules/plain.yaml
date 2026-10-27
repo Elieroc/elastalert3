@@ -1,0 +1,8 @@
+name: plain-process
+type: new_term
+index: logs-rare
+fields: [process.name]
+terms_window_size: {days: 30}
+use_keyword_postfix: false
+alert: debug
+realert: {minutes: 0}

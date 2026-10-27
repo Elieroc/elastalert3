@@ -582,6 +582,14 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
     if use_count_query && !matches!(kind, Kind::Frequency | Kind::Spike | Kind::Flatline) {
         bail!("use_count_query is only supported for frequency, spike and flatline rules");
     }
+    if let Some(v) = raw.get("max_occurrences") {
+        if kind != Kind::NewTerm {
+            bail!("max_occurrences is only supported for new_term rules");
+        }
+        if v.as_u64().is_none() {
+            bail!("max_occurrences must be a non-negative integer");
+        }
+    }
     if use_terms_query && !matches!(kind, Kind::Frequency | Kind::Spike | Kind::Flatline | Kind::NewTerm) {
         bail!("use_terms_query is only supported for frequency, spike, flatline and new_term rules");
     }

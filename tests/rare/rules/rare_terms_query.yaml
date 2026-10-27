@@ -1,0 +1,11 @@
+name: rare-process-terms-query
+type: new_term
+index: logs-rare
+fields: [process.name]
+query_key: process.name
+use_terms_query: true
+terms_window_size: {days: 30}
+max_occurrences: 3
+use_keyword_postfix: false
+alert: debug
+realert: {minutes: 0}
