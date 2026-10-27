@@ -12,7 +12,7 @@ use crate::metrics::Metrics;
 use crate::querylang::{self, QueryLang};
 use crate::rule::{Aggregation, Kind, Rule, TsType};
 use crate::time::{Dur, MINUTE, SECOND, Ts, now, parse_iso, pretty, to_iso};
-use crate::types::{Event, RuleType, parse_ts, ts_value};
+use crate::types::{Event, RuleType, match_time, parse_ts, ts_value};
 use crate::writeback::{Kind as Wb, Writeback};
 use anyhow::{Context, Result, bail};
 use rustc_hash::{FxHashMap, FxHashSet, FxHasher};
@@ -1247,8 +1247,8 @@ impl RuleState {
                 break;
             }
             let mut doc = Map::new();
-            if let Some(t) = field::lookup(m, &self.rule.timestamp_field) {
-                doc.insert("match_time".into(), t.clone());
+            if let Some(t) = match_time(&self.rule, m) {
+                doc.insert("match_time".into(), t);
             }
             doc.insert("rule_name".into(), json!(self.rule.name));
             doc.insert("alert_info".into(), self.alerters.first().map_or(json!({}), Alerter::info));
@@ -1433,8 +1433,8 @@ impl RuleState {
         };
         g.matches.push(m.clone());
         let mut doc = Map::new();
-        if let Some(t) = field::lookup(&m, &self.rule.timestamp_field) {
-            doc.insert("match_time".into(), t.clone());
+        if let Some(t) = match_time(&self.rule, &m) {
+            doc.insert("match_time".into(), t);
         }
         doc.insert("rule_name".into(), json!(self.rule.name));
         doc.insert("alert_info".into(), self.alerters.first().map_or(json!({}), Alerter::info));

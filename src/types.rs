@@ -146,6 +146,17 @@ pub fn ts_value(rule: &Rule, ts: Ts) -> Value {
     }
 }
 
+/// `match_time` of an alert document. Upstream's `add_match` turns the datetime back into ISO text whatever the
+/// `timestamp_type`, and the writeback mapping is a `date`: the wire format of a `custom` / `unix` rule would be rejected.
+/// The match itself keeps the wire format (`parse_ts` reads it back).
+pub fn match_time(rule: &Rule, m: &Doc) -> Option<Value> {
+    let v = field::lookup(m, &rule.timestamp_field)?;
+    if rule.timestamp_type == TsType::Iso {
+        return Some(v.clone());
+    }
+    Some(parse_ts(rule, v).map_or_else(|| v.clone(), |t| json!(to_iso(t))))
+}
+
 fn into_match(rule: &Rule, mut ev: Event) -> Doc {
     let v = ts_value(rule, ev.ts);
     if !field::set(&mut ev.doc, &rule.timestamp_field, v.clone()) {
@@ -1559,6 +1570,22 @@ mod tests {
         assert_eq!(ts_value(&r, t), json!("2026-09-16 23:58:06.271"));
         assert_eq!(parse_ts(&r, &json!("2026-09-16 23:58:06.271")), Some(t));
         assert_eq!(parse_ts(&r, &json!(1)), None);
+    }
+
+    #[test]
+    fn match_time_is_iso_for_custom_and_unix_but_untouched_for_iso() {
+        let r = rule_from("type: any\ntimestamp_field: timestamp\ntimestamp_type: custom\ntimestamp_format: '%Y-%m-%d %H:%M:%S.%f'\ntimestamp_format_expr: 'ts[:23]'\n");
+        let m = Doc::from_iter([("timestamp".to_string(), json!("2026-09-16 23:58:06.271"))]);
+        assert_eq!(match_time(&r, &m), Some(json!("2026-09-16T23:58:06.271Z")));
+        // value that cannot be parsed: kept as is rather than dropped
+        let bad = Doc::from_iter([("timestamp".to_string(), json!("garbage"))]);
+        assert_eq!(match_time(&r, &bad), Some(json!("garbage")));
+        assert_eq!(match_time(&r, &Doc::new()), None);
+        let u = rule_from("type: any\ntimestamp_field: ts\ntimestamp_type: unix\n");
+        assert_eq!(match_time(&u, &Doc::from_iter([("ts".to_string(), json!(1_800_000_000))])), Some(json!("2027-01-15T08:00:00Z")));
+        let i = rule_from("type: any\n");
+        let iso = Doc::from_iter([("@timestamp".to_string(), json!("2026-09-16T23:58:06+02:00"))]);
+        assert_eq!(match_time(&i, &iso), Some(json!("2026-09-16T23:58:06+02:00")));
     }
 
     const MIN: Ts = 60_000_000;
