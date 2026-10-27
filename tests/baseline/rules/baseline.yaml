@@ -1,0 +1,14 @@
+name: baseline-weekly
+type: baseline
+query_key: user
+seasonality: hour_of_week
+filter:
+  - bool: {must_not: [{term: {user: frank}}]}
+index: logs-baseline
+timestamp_field: "@timestamp"
+bucket: {hours: 1}
+history: {weeks: 3}
+threshold: 4
+min_baseline_count: 10
+realert: {minutes: 0}
+alert: debug

@@ -439,6 +439,9 @@ impl RuleState {
         if self.rule.kind == Kind::Correlation {
             return self.correlation_query(ctx, start, end, matches).await;
         }
+        if self.rule.kind == Kind::Baseline {
+            return self.baseline_query(ctx, end, matches).await;
+        }
         let index = self.index_for(start, end)?;
         if self.aggregating() {
             return self.agg_query(ctx, &index, start, end, matches).await;
@@ -661,9 +664,7 @@ impl RuleState {
         }
         if let Some(qk) = &rule.query_key {
             let min = rule.raw.get("min_doc_count").and_then(Value::as_u64).unwrap_or(1);
-            for field in qk.split(',').rev() {
-                aggs = json!({"bucket_aggs": {"terms": {"field": field, "size": rule.terms_size, "min_doc_count": min}, "aggs": aggs}});
-            }
+            aggs = bucket_aggs(aggs, qk, rule.terms_size, min);
         }
         let body = self.with_timeout(json!({"query": self.filters(start, end, vec![]), "size": 0, "aggs": aggs}));
         let resp = ctx.es.search_with(index, &body, &self.rule.search_params).await.map_err(|e| anyhow::anyhow!("Error running query: {e:#}"))?;
@@ -674,6 +675,32 @@ impl RuleState {
         log::info!("Queried rule {} from {} to {}: {} hits", self.rule.name, pretty(start, lt, fmt), pretty(end, lt, fmt), total);
         if let Some(payload) = resp.get("aggregations") {
             self.rtype.add_aggregation(&self.rule, end, payload, matches);
+        }
+        Ok(())
+    }
+
+    /// `baseline`: once per complete bucket, the counts per bucket (and per `query_key` value) over the history
+    /// that ends with it, as `[start, end)` ranges so the date histogram buckets line up.
+    async fn baseline_query(&mut self, ctx: &Ctx, end: Ts, matches: &mut Vec<Doc>) -> Result<()> {
+        let Some((bs, be, hs)) = self.rtype.baseline_due(end) else { return Ok(()) };
+        let rule = &self.rule;
+        let secs = rule.raw.get("bucket").and_then(|v| crate::time::parse_duration_map(v).ok()).unwrap_or(0) / crate::time::SECOND;
+        let mut aggs = json!({"series": {"date_histogram": {"field": rule.timestamp_field, "fixed_interval": format!("{secs}s"), "min_doc_count": 1}}});
+        if let Some(qk) = &rule.query_key {
+            aggs = bucket_aggs(aggs, qk, rule.terms_size, 1);
+        }
+        let mut query = self.filters(hs, be, vec![]);
+        query["bool"]["filter"]["bool"]["must"][0]["range"][self.range_field()] = json!({"gte": self.range_value(hs), "lt": self.range_value(be)});
+        let body = self.with_timeout(json!({"query": query, "size": 0, "aggs": aggs}));
+        let index = self.index_for(hs, be)?;
+        let resp = ctx.es.search_with(&index, &body, &self.rule.search_params).await.map_err(|e| anyhow::anyhow!("Error running query: {e:#}"))?;
+        check_timeout(&resp, self.rule.allow_degraded, &self.rule.name)?;
+        let total = resp["hits"]["total"]["value"].as_u64().or_else(|| resp["hits"]["total"].as_u64()).unwrap_or(0);
+        self.hits += total;
+        let (lt, fmt) = (self.rule.use_local_time, ctx.ts_fmt.as_deref());
+        log::info!("Queried rule {} from {} to {}: {} hits", self.rule.name, pretty(hs, lt, fmt), pretty(be, lt, fmt), total);
+        if let Some(payload) = resp.get("aggregations") {
+            self.rtype.add_baseline(&self.rule, (bs, be), payload, matches);
         }
         Ok(())
     }
@@ -703,6 +730,9 @@ impl RuleState {
         }
         if self.aggregating() {
             bail!("test-rule --data / --use-downloaded cannot replay aggregation rule types (metric_aggregation, percentage_match, spike_aggregation)");
+        }
+        if self.rule.kind == Kind::Baseline {
+            bail!("test-rule --data / --use-downloaded cannot replay baseline rules: they read their history from Elasticsearch");
         }
         let docs = self.mock.as_ref().expect("checked by caller");
         if self.rule.use_count_query {
@@ -1541,9 +1571,25 @@ fn next_alert(realert: Dur, max: Option<Dur>, cached: Option<(Ts, i32)>, ts: Ts)
     if wait >= max { (ts + max, exponent - 1) } else { (ts + wait, exponent) }
 }
 
+/// Wraps `aggs` in one terms aggregation per `query_key` field, the first field outermost.
+fn bucket_aggs(mut aggs: Value, query_key: &str, size: u64, min_doc_count: u64) -> Value {
+    for field in query_key.split(',').rev() {
+        aggs = json!({"bucket_aggs": {"terms": {"field": field, "size": size, "min_doc_count": min_doc_count}, "aggs": aggs}});
+    }
+    aggs
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn bucket_aggs_nest_in_key_order() {
+        let q = bucket_aggs(json!({"m": {}}), "src_ip,host", 50, 1);
+        assert_eq!(q["bucket_aggs"]["terms"], json!({"field": "src_ip", "size": 50, "min_doc_count": 1}));
+        assert_eq!(q["bucket_aggs"]["aggs"]["bucket_aggs"]["terms"], json!({"field": "host", "size": 50, "min_doc_count": 1}));
+        assert_eq!(q["bucket_aggs"]["aggs"]["bucket_aggs"]["aggs"], json!({"m": {}}));
+    }
     use crate::rule::Leaf;
 
     fn leaf(name: &str, filter: Value) -> Leaf {

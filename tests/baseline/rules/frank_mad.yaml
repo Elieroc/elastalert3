@@ -1,0 +1,14 @@
+name: frank-mad
+type: baseline
+query_key: user
+method: mad
+filter:
+  - term: {user: frank}
+index: logs-baseline
+timestamp_field: "@timestamp"
+bucket: {hours: 1}
+history: {weeks: 3}
+threshold: 4
+min_baseline_count: 10
+realert: {minutes: 0}
+alert: debug

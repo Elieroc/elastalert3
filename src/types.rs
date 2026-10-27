@@ -216,6 +216,7 @@ pub enum RuleType {
     Correlation(Correlation),
     GeoVelocity(GeoVelocity),
     Beacon(Beacon),
+    Baseline(Baseline),
 }
 
 impl RuleType {
@@ -234,6 +235,7 @@ impl RuleType {
             Kind::Correlation => RuleType::Correlation(Correlation::new(rule)),
             Kind::GeoVelocity => RuleType::GeoVelocity(GeoVelocity::new(rule)),
             Kind::Beacon => RuleType::Beacon(Beacon::new(rule)),
+            Kind::Baseline => RuleType::Baseline(Baseline::new(rule)),
         })
     }
 
@@ -257,7 +259,8 @@ impl RuleType {
             RuleType::GeoVelocity(g) => g.add_data(rule, events, matches),
             RuleType::Beacon(b) => b.add_data(rule, events, matches),
             // Correlation events arrive tagged with their leaves, through `add_correlation`.
-            RuleType::MetricAgg(_) | RuleType::Percentage(_) | RuleType::Correlation(_) => {}
+            // Baseline buckets arrive through `add_baseline`.
+            RuleType::MetricAgg(_) | RuleType::Percentage(_) | RuleType::Correlation(_) | RuleType::Baseline(_) => {}
         }
     }
 
@@ -274,6 +277,7 @@ impl RuleType {
             RuleType::Correlation(c) => c.suppress_until = Some(ts),
             RuleType::GeoVelocity(g) => g.suppress_until = Some(ts),
             RuleType::Beacon(b) => b.suppress_until = Some(ts),
+            RuleType::Baseline(b) => b.last_end = b.last_end.max(ts.div_euclid(b.bucket) * b.bucket),
             _ => {}
         }
     }
@@ -285,6 +289,21 @@ impl RuleType {
             RuleType::Percentage(p) => walk_buckets(ts, payload, &mut |t, qk, b| p.check(rule, t, qk, b, matches)),
             RuleType::Spike(s) => s.add_aggregation(rule, ts, payload, matches),
             _ => {}
+        }
+    }
+
+    /// `baseline`: the complete bucket `(start, end)` still to judge once `end` is reached, and the start of its history.
+    pub fn baseline_due(&self, end: Ts) -> Option<(Ts, Ts, Ts)> {
+        match self {
+            RuleType::Baseline(b) => b.due(end),
+            _ => None,
+        }
+    }
+
+    /// `baseline`: `payload` is the `aggregations` of the history query that ends with the bucket `(start, end)`.
+    pub fn add_baseline(&mut self, rule: &Rule, bucket: (Ts, Ts), payload: &Value, matches: &mut Vec<Doc>) {
+        if let RuleType::Baseline(b) = self {
+            b.add_buckets(rule, bucket, payload, matches);
         }
     }
 
@@ -402,6 +421,7 @@ impl RuleType {
             RuleType::Correlation(c) => c.match_str(rule, m, ts_fmt),
             RuleType::GeoVelocity(g) => g.match_str(rule, m, ts_fmt),
             RuleType::Beacon(_) => Beacon::match_str(rule, m, ts_fmt),
+            RuleType::Baseline(_) => Baseline::match_str(rule, m, ts_fmt),
             RuleType::MetricAgg(a) => {
                 let shown = m.get(&a.key).map_or_else(|| "None".into(), |v| rule.raw.get("metric_format_string").and_then(Value::as_str).map_or_else(|| py_str(v), |f| format_number(f, v)));
                 let opt = |k: &str| rule.raw.get(k).map_or_else(|| "None".into(), py_str);
@@ -1230,6 +1250,137 @@ impl Cardinality {
     }
 }
 
+// ---- baseline ----
+
+/// Median of a sorted slice.
+fn median(xs: &[f64]) -> f64 {
+    let n = xs.len();
+    if n % 2 == 1 { xs[n / 2] } else { (xs[n / 2 - 1] + xs[n / 2]) / 2.0 }
+}
+
+/// `baseline`: the event count of the last complete `bucket` against the same buckets of the `history` (the same
+/// slot of the `seasonality`): a z-score, or a median / MAD score robust to heavy tails. Each bucket is judged once.
+pub struct Baseline {
+    bucket: Dur,
+    history: Dur,
+    /// Length of one season, 0 for `none`.
+    season: Dur,
+    mad: bool,
+    threshold: f64,
+    min_count: f64,
+    /// End of the newest bucket already judged.
+    last_end: Ts,
+}
+
+impl Baseline {
+    fn new(rule: &Rule) -> Self {
+        let (bucket, history, season) = crate::rule::baseline_shape(&rule.raw).expect("checked at load");
+        Baseline {
+            bucket,
+            history,
+            season,
+            mad: rule.raw.get("method").and_then(Value::as_str) == Some("mad"),
+            threshold: opt_f64(rule, "threshold").unwrap_or(4.0),
+            min_count: opt_f64(rule, "min_baseline_count").unwrap_or(20.0),
+            last_end: 0,
+        }
+    }
+
+    /// `(bucket start, bucket end, history start)` of the newest complete bucket at `end`, unless it was judged already.
+    fn due(&self, end: Ts) -> Option<(Ts, Ts, Ts)> {
+        let be = end.div_euclid(self.bucket) * self.bucket;
+        (be > self.last_end).then_some((be - self.bucket, be, be - self.bucket - self.history))
+    }
+
+    fn slot(&self, t: Ts) -> Ts {
+        if self.season == 0 { 0 } else { t.rem_euclid(self.season) / self.bucket }
+    }
+
+    /// `(center, spread)` of the samples: mean and standard deviation, or median and scaled MAD.
+    fn centre(&self, xs: &mut [f64]) -> (f64, f64) {
+        let n = xs.len() as f64;
+        if !self.mad {
+            let mean = xs.iter().sum::<f64>() / n;
+            return (mean, (xs.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / (n - 1.0)).sqrt());
+        }
+        xs.sort_by(f64::total_cmp);
+        let med = median(xs);
+        let mut dev: Vec<f64> = xs.iter().map(|x| (x - med).abs()).collect();
+        dev.sort_by(f64::total_cmp);
+        (med, 1.4826 * median(&dev))
+    }
+
+    /// The series of the response: `(query_key value, counts by bucket start)`.
+    fn series(rule: &Rule, payload: &Value) -> Vec<(Option<Value>, FxHashMap<Ts, f64>)> {
+        let counts = |h: &Value| h["buckets"].as_array().into_iter().flatten().filter_map(|b| Some((b["key"].as_i64()? * 1000, b["doc_count"].as_f64()?))).collect();
+        match rule.query_key {
+            None => vec![(None, counts(&payload["series"]))],
+            Some(_) => payload["bucket_aggs"]["buckets"].as_array().into_iter().flatten().map(|b| (Some(b["key"].clone()), counts(&b["series"]))).collect(),
+        }
+    }
+
+    fn add_buckets(&mut self, rule: &Rule, (bs, be): (Ts, Ts), payload: &Value, matches: &mut Vec<Doc>) {
+        self.last_end = be;
+        let (slot, first) = (self.slot(bs), bs - self.history);
+        let round = |x: f64| json!((x * 100.0).round() / 100.0);
+        let series = Self::series(rule, payload);
+        // Before the first document of the whole index there is no history, not a history of zeros.
+        let oldest = series.iter().flat_map(|(_, c)| c.keys()).min().copied().unwrap_or(bs);
+        for (key, counts) in series {
+            let mut samples: Vec<f64> = (0..self.history / self.bucket).map(|i| first + i * self.bucket).filter(|t| *t >= oldest && self.slot(*t) == slot).map(|t| counts.get(&t).copied().unwrap_or(0.0)).collect();
+            let total: f64 = samples.iter().sum();
+            // ponytail: one score per series and bucket from a fresh history query, no cache; cache per day if ES load matters.
+            if samples.len() < 2 || total < self.min_count {
+                continue;
+            }
+            let now = counts.get(&bs).copied().unwrap_or(0.0);
+            let n = samples.len();
+            let (center, spread) = self.centre(&mut samples);
+            // Counts move by whole events: a flat history does not make any change infinite.
+            let score = (now - center) / spread.max(1.0);
+            if score.abs() < self.threshold {
+                continue;
+            }
+            let mut doc = Doc::new();
+            if let (Some(qk), Some(k)) = (&rule.query_key, key) {
+                doc.insert(qk.clone(), k);
+            }
+            let mut m = into_match(rule, Event { ts: be, doc });
+            m.insert(
+                "baseline".into(),
+                json!({
+                    "count": now,
+                    "expected": round(center),
+                    "spread": round(spread),
+                    "score": round(score),
+                    "samples": n,
+                    "method": if self.mad { "mad" } else { "zscore" },
+                    "bucket_start": to_iso(bs),
+                    "bucket_end": to_iso(be),
+                }),
+            );
+            matches.push(m);
+        }
+    }
+
+    fn match_str(rule: &Rule, m: &Doc, ts_fmt: Option<&str>) -> String {
+        let Some(info) = m.get("baseline") else { return String::new() };
+        let key = rule.query_key.as_ref().and_then(|q| field::lookup(m, q)).map_or_else(|| "all events".into(), py_str);
+        let at = |k: &str| info[k].as_str().and_then(crate::time::parse_iso).map(|t| pretty(t, rule.use_local_time, ts_fmt)).unwrap_or_default();
+        let n = |k: &str| info[k].as_f64().unwrap_or(0.0);
+        format!(
+            "Abnormal number of events for {key} between {} and {}: {} where about {} is normal (score {:.2}, {} over {} samples)\n\n",
+            at("bucket_start"),
+            at("bucket_end"),
+            py_num(n("count")),
+            py_num(n("expected")),
+            n("score"),
+            py_str(&info["method"]),
+            py_str(&info["samples"]),
+        )
+    }
+}
+
 // ---- beacon ----
 
 /// The event times of one `query_key` value within `timeframe`, and its newest document.
@@ -1837,6 +1988,125 @@ mod tests {
 
     fn beats(src: &str, secs: impl IntoIterator<Item = i64>) -> Vec<Event> {
         secs.into_iter().map(|s| bev(src, s)).collect()
+    }
+
+    const HOUR: Dur = 60 * MIN;
+
+    /// Judges the bucket starting at `bs` (hour aligned) of series `(key, counts by bucket start)`.
+    fn judge(rule: &Rule, rt: &mut RuleType, bs: Ts, series: &[(&str, &dyn Fn(Ts) -> f64)]) -> Vec<Doc> {
+        let (start, end, hist) = rt.baseline_due(bs + HOUR).expect("bucket is due");
+        assert_eq!(start, bs);
+        let buckets = |f: &dyn Fn(Ts) -> f64| {
+            let b: Vec<Value> = (0..(end - hist) / HOUR).map(|i| hist + i * HOUR).map(|t| (t, f(t))).filter(|(_, c)| *c > 0.0).map(|(t, c)| json!({"key": t / 1000, "doc_count": c})).collect();
+            json!({"buckets": b})
+        };
+        let payload = json!({"bucket_aggs": {"buckets": series.iter().map(|(k, f)| json!({"key": k, "series": buckets(f)})).collect::<Vec<_>>()}});
+        let mut out = Vec::new();
+        rt.add_baseline(rule, (start, end), &payload, &mut out);
+        out
+    }
+
+    fn baseline_rule(extra: &str) -> (Rule, RuleType) {
+        let rule = rule_from(&format!("type: baseline\nquery_key: u\nbucket: {{hours: 1}}\nhistory: {{days: 20}}\nthreshold: 4\n{extra}"));
+        let rt = RuleType::new(&rule).unwrap();
+        (rule, rt)
+    }
+
+    /// Wednesday 2023-11-15 12:00 UTC, an hour boundary.
+    const BS: Ts = 1_700_049_600_000_000;
+
+    #[test]
+    fn baseline_zscore_stable_series_and_spike() {
+        let (rule, mut rt) = baseline_rule("");
+        // 9..11 events an hour, 11 in the bucket: nothing. The next bucket sees 60.
+        let calm = |t: Ts| 9.0 + (t / HOUR % 3) as f64;
+        assert!(judge(&rule, &mut rt, BS, &[("a", &|t| if t == BS { 11.0 } else { calm(t) })]).is_empty());
+        let m = judge(&rule, &mut rt, BS + HOUR, &[("a", &|t| if t == BS + HOUR { 60.0 } else { calm(t) }), ("b", &calm)]);
+        assert_eq!(m.len(), 1);
+        let b = &m[0]["baseline"];
+        assert_eq!((&m[0]["u"], &b["count"], &b["method"], &b["samples"]), (&json!("a"), &json!(60.0), &json!("zscore"), &json!(480)));
+        assert!(b["score"].as_f64().unwrap() > 40.0, "{b}");
+        let text = rt.match_str(&rule, &m[0], None);
+        assert!(text.starts_with("Abnormal number of events for a between "), "{text}");
+        // Each bucket is judged once; a drop to nothing is as abnormal as a peak.
+        assert!(rt.baseline_due(BS + 2 * HOUR - 1).is_none());
+        let m = judge(&rule, &mut rt, BS + 2 * HOUR, &[("a", &|t| if t == BS + 2 * HOUR { 0.0 } else { calm(t) })]);
+        assert!(m[0]["baseline"]["score"].as_f64().unwrap() < -4.0);
+    }
+
+    #[test]
+    fn baseline_seasonality_monday_peak_and_min_baseline_count() {
+        let (rule, mut rt) = baseline_rule("seasonality: hour_of_week\nhistory: {weeks: 4}\n");
+        // Busy every Monday 09:00 UTC (2023-11-13 is a Monday, 1_699_866_000 s), with small noise.
+        let monday9 = 1_699_866_000_000_000 % (7 * 24 * HOUR);
+        let week = |t: Ts| if t.rem_euclid(7 * 24 * HOUR) == monday9 { 100.0 + (t / (7 * 24 * HOUR) % 2) as f64 } else { 10.0 + (t / HOUR % 2) as f64 };
+        let mon = 1_699_866_000_000_000 + 7 * 24 * HOUR;
+        assert!(judge(&rule, &mut rt, mon, &[("a", &|t| if t == mon { 101.0 } else { week(t) })]).is_empty(), "the Monday peak is normal on Monday");
+        let (rule, mut rt) = baseline_rule("seasonality: hour_of_week\nhistory: {weeks: 4}\n");
+        let tue = mon + 24 * HOUR;
+        assert_eq!(judge(&rule, &mut rt, tue, &[("a", &|t| if t == tue { 101.0 } else { week(t) })]).len(), 1, "the same traffic on Tuesday is not");
+        // Too little history: four samples of 1 or 2 events stay under min_baseline_count 20.
+        let (rule, mut rt) = baseline_rule("seasonality: hour_of_week\nhistory: {weeks: 4}\n");
+        assert!(judge(&rule, &mut rt, tue, &[("a", &|t| if t == tue { 50.0 } else { 1.0 })]).is_empty());
+        let (rule, mut rt) = baseline_rule("seasonality: hour_of_week\nhistory: {weeks: 4}\nmin_baseline_count: 0\n");
+        assert_eq!(judge(&rule, &mut rt, tue, &[("a", &|t| if t == tue { 50.0 } else { 1.0 })]).len(), 1);
+    }
+
+    #[test]
+    fn baseline_ignores_buckets_before_the_first_document() {
+        // Data starts on the second Monday: only 2 of the 3 Monday samples exist, the third is not a zero.
+        let (rule, mut rt) = baseline_rule("seasonality: hour_of_week\nhistory: {weeks: 3}\nmin_baseline_count: 0\n");
+        let bs = 1_699_866_000_000_000 + 21 * 24 * HOUR;
+        let m = judge(&rule, &mut rt, bs, &[("a", &|t| if t < bs - 15 * 24 * HOUR { 0.0 } else if t == bs { 3.0 } else { 10.0 })]);
+        assert_eq!(m.len(), 1);
+        assert_eq!(m[0]["baseline"]["samples"], json!(2));
+    }
+
+    #[test]
+    fn baseline_mad_resists_heavy_tails_and_restart_skips_judged_buckets() {
+        // A 1000 event outlier in the history inflates the standard deviation: 30 events then look normal to zscore.
+        let hist = |t: Ts| if t == BS - 100 * HOUR { 1000.0 } else { 9.0 + (t / HOUR % 3) as f64 };
+        let series = |t: Ts| if t == BS { 30.0 } else { hist(t) };
+        let (rule, mut rt) = baseline_rule("");
+        assert!(judge(&rule, &mut rt, BS, &[("a", &series)]).is_empty());
+        let (rule, mut rt) = baseline_rule("method: mad\n");
+        let m = judge(&rule, &mut rt, BS, &[("a", &series)]);
+        assert_eq!((m.len(), &m[0]["baseline"]["method"]), (1, &json!("mad")));
+        // After a restart the buckets up to the last run are done; the next one is judged.
+        let (_, mut rt) = baseline_rule("");
+        rt.suppress_until(BS + 30 * MIN);
+        assert_eq!(rt.baseline_due(BS + 59 * MIN), None);
+        assert_eq!(rt.baseline_due(BS + HOUR).map(|d| d.0), Some(BS));
+        // Without a query_key the series is the whole index, and a key with no history is skipped.
+        let rule = rule_from("type: baseline\nbucket: {hours: 1}\nhistory: {days: 2}\n");
+        let mut rt = RuleType::new(&rule).unwrap();
+        let mut out = Vec::new();
+        let hist: Vec<Value> = (1..=48).map(|i| json!({"key": (BS - i * HOUR) / 1000, "doc_count": 10 + i % 2})).chain([json!({"key": BS / 1000, "doc_count": 90})]).collect();
+        rt.add_baseline(&rule, (BS, BS + HOUR), &json!({"series": {"buckets": hist}}), &mut out);
+        assert_eq!(out.len(), 1);
+        assert!(!out[0].contains_key("u"));
+        assert!(rt.match_str(&rule, &out[0], None).starts_with("Abnormal number of events for all events"));
+    }
+
+    #[test]
+    fn baseline_needs_its_options() {
+        let ok = "query_key: u\nbucket: {hours: 1}\nhistory: {days: 2}\n";
+        assert!(std::panic::catch_unwind(|| rule_from(&format!("type: baseline\n{ok}seasonality: hour_of_day\nmethod: mad\n"))).is_ok());
+        for yaml in [
+            "query_key: u\nhistory: {days: 2}\n".to_string(),
+            "query_key: u\nbucket: {hours: 1}\n".to_string(),
+            "query_key: u\nbucket: {hours: 5}\nhistory: {days: 2}\nseasonality: hour_of_day\n".to_string(),
+            "query_key: u\nbucket: {hours: 1}\nhistory: {hours: 1}\n".to_string(),
+            "query_key: u\nbucket: {hours: 1}\nhistory: {days: 5}\nseasonality: hour_of_week\n".to_string(),
+            "query_key: u\nbucket: {hours: 5}\nhistory: {hours: 12}\n".to_string(),
+            "query_key: [a, b]\nbucket: {hours: 1}\nhistory: {days: 2}\n".to_string(),
+        ]
+        .into_iter()
+        .chain(["seasonality: daily\n", "method: median\n", "threshold: 0\n", "min_baseline_count: -1\n", "use_count_query: true\n", "timestamp_type: unix\n"].map(|x| format!("{ok}{x}")))
+        {
+            let r = std::panic::catch_unwind(|| rule_from(&format!("type: baseline\n{yaml}")));
+            assert!(r.is_err(), "{yaml}");
+        }
     }
 
     #[test]

@@ -26,6 +26,7 @@ pub enum Kind {
     Correlation,
     GeoVelocity,
     Beacon,
+    Baseline,
 }
 
 impl Kind {
@@ -36,7 +37,7 @@ impl Kind {
 
     /// Types whose state is rebuilt after a restart by reading the last `timeframe` again, without alerting twice.
     pub fn replays_window(self) -> bool {
-        matches!(self, Kind::Correlation | Kind::GeoVelocity | Kind::Beacon)
+        matches!(self, Kind::Correlation | Kind::GeoVelocity | Kind::Beacon | Kind::Baseline)
     }
 }
 
@@ -424,6 +425,50 @@ pub fn file_hash(file: &Path, conf: &Config) -> u64 {
     h.finish()
 }
 
+/// The ordered `(bucket, history, season)` of a `baseline` rule, each in microseconds; a season of 0 is `none`.
+pub fn baseline_shape(raw: &Map<String, Value>) -> Result<(Dur, Dur, Dur)> {
+    let bucket = dur_opt(raw, "bucket")?.ok_or_else(|| anyhow::anyhow!("missing required option for a baseline rule: bucket"))?;
+    let history = dur_opt(raw, "history")?.ok_or_else(|| anyhow::anyhow!("missing required option for a baseline rule: history"))?;
+    if bucket < SECOND || bucket % SECOND != 0 {
+        bail!("bucket must be a whole number of seconds");
+    }
+    if history % bucket != 0 {
+        bail!("history must be evenly divisible by bucket");
+    }
+    let season = match raw.get("seasonality").map_or(Some("none"), Value::as_str) {
+        Some("none") => 0,
+        Some("hour_of_day") => 24 * 60 * MINUTE,
+        Some("hour_of_week") => 7 * 24 * 60 * MINUTE,
+        _ => bail!("seasonality must be none, hour_of_day or hour_of_week"),
+    };
+    if season > 0 && season % bucket != 0 {
+        bail!("bucket must divide the {} seasonality", raw["seasonality"].as_str().unwrap_or_default());
+    }
+    if history < 2 * season.max(bucket) {
+        bail!("history must cover at least 2 seasons (2 buckets with seasonality none)");
+    }
+    Ok((bucket, history, season))
+}
+
+fn baseline_options(raw: &Map<String, Value>, timestamp_type: TsType, compound: bool) -> Result<()> {
+    baseline_shape(raw)?;
+    if !matches!(raw.get("method").map_or(Some("zscore"), Value::as_str), Some("zscore" | "mad")) {
+        bail!("method must be zscore or mad");
+    }
+    for (k, strict) in [("threshold", true), ("min_baseline_count", false)] {
+        if raw.get(k).is_some_and(|v| !v.as_f64().is_some_and(|n| if strict { n > 0.0 } else { n >= 0.0 })) {
+            bail!("{k} must be a {} number", if strict { "positive" } else { "non-negative" });
+        }
+    }
+    if compound {
+        bail!("a compound query_key is not supported for baseline rules");
+    }
+    if timestamp_type != TsType::Iso || raw.contains_key("ingest_timestamp_field") {
+        bail!("baseline rules need an ISO timestamp_type and do not support ingest_timestamp_field");
+    }
+    Ok(())
+}
+
 fn dur_opt(raw: &Map<String, Value>, key: &str) -> Result<Option<Dur>> {
     raw.get(key)
         .map(|v| parse_duration_map(v).with_context(|| format!("invalid time format for {key}")))
@@ -480,6 +525,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         Some("correlation") => Kind::Correlation,
         Some("geo_velocity") => Kind::GeoVelocity,
         Some("beacon") => Kind::Beacon,
+        Some("baseline") => Kind::Baseline,
         other => bail!("rule type {other:?} is not supported yet"),
     };
     for unsupported in ["include_rule_params_in_matches"] {
@@ -621,6 +667,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         }
         Kind::SpikeAggregation => need(&["timeframe", "spike_height", "spike_type", "metric_agg_key", "metric_agg_type"])?,
         Kind::Correlation => need(&["correlation_leaves", "correlation_query", "query_key", "timeframe"])?,
+        Kind::Baseline => baseline_options(&raw, timestamp_type, compound_query_key.len() > 1)?,
         Kind::Beacon => {
             need(&["query_key", "timeframe", "min_events"])?;
             if !raw["min_events"].as_u64().is_some_and(|n| n >= 3) {
@@ -772,7 +819,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
     }
     include.sort();
     include.dedup();
-    let enrich = !full && !kind.is_agg_query();
+    let enrich = !full && !kind.is_agg_query() && kind != Kind::Baseline;
     let read_doc_values = raw.get("read_doc_values").and_then(Value::as_bool).unwrap_or(false);
     if read_doc_values && !(enrich && matches!(kind, Kind::Frequency | Kind::Flatline | Kind::Spike | Kind::Correlation) && timestamp_type == TsType::Iso) {
         bail!("read_doc_values applies to frequency, flatline, spike and correlation rules with an ISO timestamp, without include or fetch_full_source");
@@ -800,7 +847,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
     let query_lang = querylang::detect(&filter)?;
     if let Some(lang) = query_lang {
         let what = lang.key();
-        if use_count_query || use_terms_query || kind.is_agg_query() || kind == Kind::NewTerm || kind == Kind::Correlation || !top_count_keys.is_empty() {
+        if use_count_query || use_terms_query || kind.is_agg_query() || matches!(kind, Kind::NewTerm | Kind::Correlation | Kind::Baseline) || !top_count_keys.is_empty() {
             bail!("{what} filters only work with plain hit queries: not with use_count_query, use_terms_query, top_count_keys, new_term, correlation or the aggregation rule types");
         }
         querylang::apply_limit(&mut filter, max_query_size);

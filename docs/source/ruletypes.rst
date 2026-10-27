@@ -12,7 +12,7 @@ ElastAlert 2 repository; they run unchanged in ElastAlert 3.
    listed anywhere are ignored, as in ElastAlert 2, so typos are not detected.
 
    Options new in ElastAlert 3: :ref:`active_hours <active_hours>`, :ref:`mitre_attack <mitre_attack>`, :ref:`ingest_timestamp_field <ingest_timestamp_field>`,
-   :ref:`fetch_full_source <fetch_full_source>`, :ref:`Sigma rules <sigma>` (``sigma``), the :ref:`correlation <correlation>`, :ref:`geo_velocity <geo_velocity>` and :ref:`beacon <beacon>` rule types and the ``rust.*``
+   :ref:`fetch_full_source <fetch_full_source>`, :ref:`Sigma rules <sigma>` (``sigma``), the :ref:`correlation <correlation>`, :ref:`geo_velocity <geo_velocity>`, :ref:`beacon <beacon>` and :ref:`baseline <baseline>` rule types and the ``rust.*``
    :doc:`match enhancements <enhancements>`. A rule using one of them does not run in ElastAlert 2 (it ignores
    ``active_hours``, ``mitre_attack``, ``ingest_timestamp_field``, ``fetch_full_source`` and ``sigma``).
 
@@ -2398,3 +2398,72 @@ applications. A series whose events all share the same instant (mean gap 0) neve
 
 Rejected at load: a missing ``query_key``, ``timeframe`` or ``min_events``, ``min_events`` under 3, ``max_jitter``
 outside ]0, 1], a negative ``min_interval``, ``use_count_query`` and ``use_terms_query``.
+
+.. _baseline:
+
+Baseline
+~~~~~~~~
+
+.. admonition:: ElastAlert 3
+   :class: ea3
+
+   New in ElastAlert 3: a rule using this type does not load in ElastAlert 2.
+
+``baseline``: This rule compares the number of events of the last complete ``bucket`` with what is normal for the same
+``bucket`` in the ``history``, and matches when the score is too far from it, up or down. Unlike ``spike``, which
+compares two sliding windows and fires every Monday at 9:00, a seasonal baseline learns "normal for this hour of the
+week".
+
+.. code-block:: yaml
+
+    name: Abnormal activity per user
+    type: baseline
+    index: logs-auth-*
+    query_key: user.name           # optional: one baseline per value (a single field), else one for all events
+    bucket: {hours: 1}             # required: events are counted per bucket
+    history: {weeks: 4}            # required: how far back the baseline is learned
+    seasonality: hour_of_week      # none (default) | hour_of_day | hour_of_week
+    method: zscore                 # zscore (default) | mad
+    threshold: 4                   # default 4
+    min_baseline_count: 20         # default 20
+    alert: [slack]
+
+``bucket`` (time, whole seconds): The width of the counting buckets, aligned on the epoch in UTC. It must divide
+``history`` and, with a seasonality, the season (a day or a week).
+
+``history`` (time): The window read to learn the baseline, ending where the judged bucket starts. It must be at least
+2 seasons (2 buckets with ``seasonality: none``).
+
+``seasonality``: Which past buckets the current one is compared with: ``none`` (all of them), ``hour_of_day``
+(the same time of day) or ``hour_of_week`` (the same time of the same weekday). With ``hour_of_week`` and a ``history``
+of 4 weeks a bucket has 4 samples.
+
+``method``: ``zscore`` scores ``(count - mean) / standard deviation``. ``mad`` scores
+``(count - median) / (1.4826 * median absolute deviation)``, which a few past peaks do not distort.
+The spread is never taken below 1 event, so a perfectly flat history does not make every change infinite.
+
+``threshold`` (number > 0): The match is made when the absolute score reaches it.
+
+``min_baseline_count`` (number >= 0): A series is skipped when the samples of the bucket's slot add up to fewer events
+than this: too little history to judge.
+
+- The last complete bucket is judged once, as soon as its end has passed: one search per ``bucket`` that counts events
+  per ``query_key`` value and bucket over the ``history`` (a ``terms`` and a ``date_histogram`` aggregation). Events
+  that arrive after their bucket was judged are not counted.
+- A series that appears in the history but has no event in the judged bucket is judged with a count of 0, so a drop to
+  nothing matches (negative score). A series with no events in the ``history`` has nothing to compare with.
+- Buckets before the first document of the searched indices are not samples; empty buckets after it count as 0.
+- At most ``terms_size`` values of ``query_key`` (default 50, the most frequent of the ``history``) are followed. Elasticsearch
+  also limits a response to ``search.max_buckets`` (65,535 by default): ``terms_size`` times ``history`` / ``bucket``
+  should stay under it.
+- A ``baseline`` field is added to the match: ``count``, ``expected``, ``spread``, ``score``, ``samples``, ``method``,
+  ``bucket_start`` and ``bucket_end``. The ``query_key`` field is set to the value, and ``@timestamp`` is the end of the
+  bucket. For example ``alert_text_args: [baseline.count, baseline.expected]``.
+- No state is kept besides the end of the last judged bucket. After a restart or a rule reload the buckets that ended
+  before the last run are not judged again.
+- ``test-rule --data`` cannot replay this type: the history is read from Elasticsearch.
+
+Rejected at load: a missing ``bucket`` or ``history``, a ``bucket`` that is not whole seconds, does not divide ``history``
+or the season, a ``history`` under 2 seasons, an unknown ``seasonality`` or ``method``, a non-positive ``threshold``, a
+negative ``min_baseline_count``, a compound ``query_key``, a ``timestamp_type`` other than ``iso``,
+``ingest_timestamp_field``, ``use_count_query`` and ``use_terms_query``.

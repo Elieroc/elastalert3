@@ -1,0 +1,13 @@
+name: carol-none
+type: baseline
+query_key: user
+filter:
+  - term: {user: carol}
+index: logs-baseline
+timestamp_field: "@timestamp"
+bucket: {hours: 1}
+history: {weeks: 3}
+threshold: 4
+min_baseline_count: 10
+realert: {minutes: 0}
+alert: debug
