@@ -1797,7 +1797,7 @@ impl Correlation {
             }
         }
         if chain.positive.done && !was_done {
-            if q.negated.is_empty() {
+            if !q.waits() {
                 let chain = self.chains.remove(&key).expect("present");
                 self.emit(rule, &key, &chain, ev, None, matches);
             } else {
@@ -1831,12 +1831,14 @@ impl Correlation {
             o.insert("last".into(), json!(to_iso(rec.last)));
             leaves.insert(name.clone(), Value::Object(o));
         }
+        // What did not happen: the operands of a `XOR` other than the one that did, and the negated parts.
+        let absent: Vec<&str> = self.query.xor.iter().enumerate().filter(|(i, _)| !chain.positive.operand_done(*i)).map(|(_, t)| t.as_str()).chain(self.query.negated_text.iter().map(String::as_str)).collect();
         let info = json!({
             "key": key_value(key),
             "query": self.query.text,
             "first": to_iso(chain.first_ts),
             "last": to_iso(completed),
-            "absent": if window_end.is_some() { json!(self.query.negated_text) } else { Value::Null },
+            "absent": if window_end.is_some() { json!(absent) } else { Value::Null },
             "leaves": leaves,
         });
         let mut m = into_match(rule, event);
@@ -2440,6 +2442,36 @@ mod tests {
         let mut out = feed(&rule, &mut rt, vec![cev(0, "x", 0), cev(1, "x", 1), cev(2, "x", 2), cev(0, "y", 0), cev(1, "y", 1), cev(2, "y", 2), cev(1, "y", 3)]);
         rt.garbage_collect(&rule, 1_700_000_000_000_000 + 90 * MIN, &mut out);
         assert_eq!(out.iter().map(|d| d["correlation"]["key"].clone()).collect::<Vec<_>>(), vec![json!("x")]);
+    }
+
+    #[test]
+    fn correlation_xor_alerts_at_the_end_of_the_window_with_one_side() {
+        let q = "ssh XOR rdp";
+        let end = |rule: &Rule, rt: &mut RuleType, mut out: Vec<Doc>| {
+            rt.garbage_collect(rule, 1_700_000_000_000_000 + 90 * MIN, &mut out);
+            out
+        };
+        let (rule, mut rt) = corr_rule(&[("rdp", 1), ("ssh", 1)], q, 1);
+        let out = feed(&rule, &mut rt, vec![cev(1, "x", 0), cev(1, "x", 5), cev(1, "y", 0), cev(0, "y", 5), cev(0, "z", 0)]);
+        assert!(out.is_empty(), "nothing before the window ends");
+        let out = end(&rule, &mut rt, out);
+        let keys: Vec<_> = out.iter().map(|d| d["correlation"]["key"].clone()).collect();
+        assert_eq!(keys, vec![json!("x"), json!("z")], "y had both");
+        assert_eq!(out[0]["correlation"]["absent"], json!(["rdp"]));
+        assert_eq!(out[1]["correlation"]["absent"], json!(["ssh"]));
+        assert_eq!(out[0]["who"], json!("x-1-0"), "the match is the event that completed the operand");
+        // Both in the same document: violated at once. A second event after the window is a new chain.
+        let (rule, mut rt) = corr_rule(&[("rdp", 1), ("ssh", 1)], q, 1);
+        let mut out = Vec::new();
+        rt.add_correlation(&rule, vec![(vec![0, 1], cev(0, "x", 0).1)], &mut out);
+        assert!(end(&rule, &mut rt, out).is_empty());
+        // With a NOT: the negated part ends the chain too, and absent lists both kinds.
+        let (rule, mut rt) = corr_rule(&[("c", 1), ("rdp", 1), ("ssh", 1)], "(ssh XOR rdp) AND NOT c", 1);
+        let out = feed(&rule, &mut rt, vec![cev(2, "x", 0), cev(2, "y", 0), cev(0, "y", 1)]);
+        let out = end(&rule, &mut rt, out);
+        assert_eq!(out.len(), 1);
+        assert_eq!(out[0]["correlation"]["key"], json!("x"));
+        assert_eq!(out[0]["correlation"]["absent"], json!(["rdp", "c"]));
     }
 
     #[test]

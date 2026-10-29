@@ -974,7 +974,7 @@ fn correlation_options(raw: &Map<String, Value>, query_key: Option<&str>, compou
             bail!("correlation leaf {name:?}: a name may only contain letters, digits, '_' and '-'");
         }
         if crate::correlation::KEYWORDS.contains(&name.to_ascii_uppercase().as_str()) {
-            bail!("correlation leaf {name:?}: AND, OR, THEN and NOT are keywords of correlation_query");
+            bail!("correlation leaf {name:?}: AND, OR, XOR, THEN and NOT are keywords of correlation_query");
         }
         let m = item.as_object().with_context(|| format!("correlation leaf {name} must be a map"))?;
         if let Some(k) = m.keys().find(|k| !["filter", "index", "query_key", "num_events"].contains(&k.as_str())) {

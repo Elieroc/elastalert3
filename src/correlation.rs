@@ -6,6 +6,7 @@ use anyhow::{Context, Result, bail};
 enum Op {
     And,
     Or,
+    Xor,
     Then,
 }
 
@@ -14,6 +15,7 @@ impl Op {
         match self {
             Op::And => "AND",
             Op::Or => "OR",
+            Op::Xor => "XOR",
             Op::Then => "THEN",
         }
     }
@@ -28,6 +30,8 @@ pub enum Expr {
     Not(Box<Expr>),
     And(Vec<Expr>),
     Or(Vec<Expr>),
+    /// Exactly one operand completes by the end of the window; only at the top of the query.
+    Xor(Vec<Expr>),
     Then(Vec<Expr>),
 }
 
@@ -42,9 +46,18 @@ pub struct Query {
     /// The query with upper-case keywords, and each negated operand the same way, for alert text.
     pub text: String,
     pub negated_text: Vec<String>,
+    /// For a top-level `XOR`, its operands as text (empty otherwise).
+    pub xor: Vec<String>,
 }
 
-pub const KEYWORDS: [&str; 4] = ["AND", "OR", "THEN", "NOT"];
+impl Query {
+    /// The match is known only when the window ends: something must not happen, or only one operand of a `XOR` may.
+    pub fn waits(&self) -> bool {
+        !self.negated.is_empty() || !self.xor.is_empty()
+    }
+}
+
+pub const KEYWORDS: [&str; 5] = ["AND", "OR", "XOR", "THEN", "NOT"];
 
 #[derive(Debug, PartialEq)]
 enum Tok {
@@ -91,6 +104,7 @@ fn tokens(src: &str) -> Result<Vec<Tok>> {
                 out.push(match word.to_ascii_uppercase().as_str() {
                     "AND" => Tok::Op(Op::And),
                     "OR" => Tok::Op(Op::Or),
+                    "XOR" => Tok::Op(Op::Xor),
                     "THEN" => Tok::Op(Op::Then),
                     "NOT" => Tok::Not,
                     _ => Tok::Name(word.to_string()),
@@ -179,6 +193,7 @@ fn join(op: Op, items: Vec<Expr>) -> Expr {
     let mut flat = Vec::new();
     for e in items {
         match (op, e) {
+            // `XOR` is not associative (`a XOR b XOR c` is exactly one of three), so it is never flattened.
             (Op::And, Expr::And(sub)) | (Op::Or, Expr::Or(sub)) | (Op::Then, Expr::Then(sub)) => flat.extend(sub),
             (_, e) => flat.push(e),
         }
@@ -186,13 +201,14 @@ fn join(op: Op, items: Vec<Expr>) -> Expr {
     match op {
         Op::And => Expr::And(flat),
         Op::Or => Expr::Or(flat),
+        Op::Xor => Expr::Xor(flat),
         Op::Then => Expr::Then(flat),
     }
 }
 
 fn render(e: &Expr, leaves: &[String]) -> String {
     let wrap = |e: &Expr| match e {
-        Expr::And(_) | Expr::Or(_) | Expr::Then(_) => format!("({})", render(e, leaves)),
+        Expr::And(_) | Expr::Or(_) | Expr::Xor(_) | Expr::Then(_) => format!("({})", render(e, leaves)),
         _ => render(e, leaves),
     };
     let list = |items: &[Expr], sep: &str| items.iter().map(wrap).collect::<Vec<_>>().join(sep);
@@ -202,6 +218,7 @@ fn render(e: &Expr, leaves: &[String]) -> String {
         Expr::Not(x) => format!("NOT {}", wrap(x)),
         Expr::And(items) => list(items, " AND "),
         Expr::Or(items) => list(items, " OR "),
+        Expr::Xor(items) => list(items, " XOR "),
         Expr::Then(items) => list(items, " THEN "),
     }
 }
@@ -210,7 +227,16 @@ fn has_not(e: &Expr) -> bool {
     match e {
         Expr::Leaf(_) | Expr::Count(..) => false,
         Expr::Not(_) => true,
-        Expr::And(items) | Expr::Or(items) | Expr::Then(items) => items.iter().any(has_not),
+        Expr::And(items) | Expr::Or(items) | Expr::Xor(items) | Expr::Then(items) => items.iter().any(has_not),
+    }
+}
+
+fn has_xor(e: &Expr) -> bool {
+    match e {
+        Expr::Leaf(_) | Expr::Count(..) => false,
+        Expr::Not(x) => has_xor(x),
+        Expr::Xor(_) => true,
+        Expr::And(items) | Expr::Or(items) | Expr::Then(items) => items.iter().any(has_xor),
     }
 }
 
@@ -219,13 +245,15 @@ fn mark_used(e: &Expr, used: &mut [bool]) {
         Expr::Leaf(i) => used[*i] = true,
         Expr::Count(_, ids) => ids.iter().for_each(|i| used[*i] = true),
         Expr::Not(x) => mark_used(x, used),
-        Expr::And(items) | Expr::Or(items) | Expr::Then(items) => items.iter().for_each(|x| mark_used(x, used)),
+        Expr::And(items) | Expr::Or(items) | Expr::Xor(items) | Expr::Then(items) => items.iter().for_each(|x| mark_used(x, used)),
     }
 }
 
 fn one_or(items: Vec<Expr>, many: fn(Vec<Expr>) -> Expr) -> Expr {
     if items.len() == 1 { items.into_iter().next().expect("one item") } else { many(items) }
 }
+
+const XOR_PLACE: &str = "XOR can only be used at the top of correlation_query, over leaves, COUNT or groups without XOR or NOT, alone or as `(a XOR b) AND NOT c`";
 
 const NOT_PLACE: &str = "NOT can only be used at the top of correlation_query, as `x AND NOT y`, `x THEN NOT y` or between two steps of a top-level THEN (`x THEN NOT y THEN z`)";
 
@@ -278,11 +306,25 @@ pub fn parse(src: &str, leaves: &[String]) -> Result<Query> {
     if !clean || negated.iter().any(has_not) {
         bail!("{NOT_PLACE}");
     }
+    let xor = match &positive {
+        Expr::Xor(items) => {
+            if after || items.iter().any(has_xor) {
+                bail!("{XOR_PLACE}");
+            }
+            let operand = |x: &Expr| if matches!(x, Expr::Leaf(_) | Expr::Count(..)) { render(x, leaves) } else { format!("({})", render(x, leaves)) };
+            items.iter().map(operand).collect()
+        }
+        p if has_xor(p) => bail!("{XOR_PLACE}"),
+        _ => vec![],
+    };
+    if negated.iter().any(has_xor) {
+        bail!("{XOR_PLACE}");
+    }
     if matches!(positive, Expr::Leaf(_)) && negated.is_empty() {
         bail!("correlation_query needs at least two leaves joined by AND, OR or THEN");
     }
     let negated_text = negated.iter().map(|x| render(x, leaves)).collect();
-    Ok(Query { positive, negated, after, text, negated_text })
+    Ok(Query { positive, negated, after, text, negated_text, xor })
 }
 
 /// Marks the leaves that a fresh `Progress` of `e` takes: the ones that can start a chain.
@@ -290,7 +332,7 @@ pub fn first_leaves(e: &Expr, out: &mut [bool]) {
     match e {
         Expr::Leaf(i) => out[*i] = true,
         Expr::Count(_, ids) => ids.iter().for_each(|i| out[*i] = true),
-        Expr::And(items) | Expr::Or(items) => items.iter().for_each(|x| first_leaves(x, out)),
+        Expr::And(items) | Expr::Or(items) | Expr::Xor(items) => items.iter().for_each(|x| first_leaves(x, out)),
         Expr::Then(items) => first_leaves(&items[0], out),
         Expr::Not(_) => unreachable!("NOT is split off at load"),
     }
@@ -300,7 +342,7 @@ pub fn first_leaves(e: &Expr, out: &mut [bool]) {
 #[derive(Clone, Debug)]
 pub struct Progress {
     pub done: bool,
-    /// A `NOT` step of a `THEN` happened before the next step completed: the chain is dead.
+    /// A `NOT` step of a `THEN` happened before the next step completed, or two operands of a `XOR` completed: the chain is dead.
     pub violated: bool,
     /// Leaf: events taken. `THEN`: the operand being waited for.
     n: u64,
@@ -309,10 +351,15 @@ pub struct Progress {
 }
 
 impl Progress {
+    /// Whether operand `i` of a `XOR` has completed.
+    pub fn operand_done(&self, i: usize) -> bool {
+        self.children[i].done
+    }
+
     pub fn new(e: &Expr) -> Self {
         let children = match e {
             Expr::Then(items) => items.iter().map(|x| if let Expr::Not(inner) = x { Progress::new(inner) } else { Progress::new(x) }).collect(),
-            Expr::And(items) | Expr::Or(items) => items.iter().map(Progress::new).collect(),
+            Expr::And(items) | Expr::Or(items) | Expr::Xor(items) => items.iter().map(Progress::new).collect(),
             Expr::Leaf(_) | Expr::Count(..) | Expr::Not(_) => vec![],
         };
         Progress { done: false, violated: false, n: 0, children }
@@ -322,10 +369,24 @@ impl Progress {
     /// set for each leaf that did. `need` is `num_events` per leaf (ignored inside `COUNT`). After a `THEN` operand completes, the next one only
     /// counts the documents that follow, so a document matching both sides counts once.
     pub fn feed(&mut self, e: &Expr, tags: &[usize], need: &[u64], took: &mut [bool]) -> bool {
-        if self.done {
+        // A `XOR` keeps counting after its first operand completed: a second one ends the chain.
+        if self.done && !matches!(e, Expr::Xor(_)) {
             return false;
         }
         match e {
+            Expr::Xor(items) => {
+                if self.violated {
+                    return false;
+                }
+                let mut any = false;
+                for (p, x) in self.children.iter_mut().zip(items) {
+                    any |= p.feed(x, tags, need, took);
+                }
+                let done = self.children.iter().filter(|p| p.done).count();
+                self.done = done >= 1;
+                self.violated = done >= 2;
+                any
+            }
             Expr::Leaf(i) => {
                 if !tags.contains(i) {
                     return false;
@@ -467,6 +528,38 @@ mod tests {
         assert!(p.feed(&query.positive, &[0, 1], &one, &mut took));
         assert_eq!(took, [true, true, false, false]);
         assert!(!p.done, "a document matching two leaves of the group is one event");
+    }
+
+    #[test]
+    fn parses_xor() {
+        let query = q("a xor (b and c) xor COUNT{2}(d)").unwrap();
+        assert_eq!(query.text, "a XOR (b AND c) XOR COUNT{2}(d)");
+        assert_eq!(query.xor, vec!["a", "(b AND c)", "COUNT{2}(d)"]);
+        assert!(query.waits());
+        // Not flattened and not nested.
+        assert!(q("(a XOR b) XOR (c XOR d)").is_err());
+        let query = q("(a XOR b) AND NOT (c OR d)").unwrap();
+        assert_eq!((query.xor, query.negated.len(), query.after), (vec!["a".to_string(), "b".into()], 1, false));
+        assert!(!q("a AND b AND c AND d").unwrap().waits());
+        let err = |s: &str| q(s).map(|_| ()).unwrap_err().to_string();
+        for s in ["(a XOR b) THEN c THEN d", "(a XOR b) AND c AND d", "(a XOR b) OR (c AND d)", "a AND NOT (b XOR c) AND d", "(a XOR b) THEN NOT (c OR d)"] {
+            assert!(err(s).contains("XOR can only be used at the top"), "{s}: {}", err(s));
+        }
+        assert!(err("a XOR NOT b XOR c XOR d").contains("NOT can only be used"));
+        assert!(err("a XOR b AND c AND d").contains("XOR and AND cannot be mixed"));
+        assert!(err("a XOR b").contains("leaf c is not used"));
+    }
+
+    #[test]
+    fn xor_is_exactly_one_operand() {
+        let one = [1, 1, 1, 1];
+        let query = q("a XOR (b AND c) XOR d").unwrap();
+        let mut p = Progress::new(&query.positive);
+        let feed = |p: &mut Progress, leaf| p.feed(&query.positive, &[leaf], &one, &mut [false; 4]);
+        assert!(feed(&mut p, 1) && !p.done);
+        assert!(feed(&mut p, 0) && p.done && !p.violated, "a is the only operand done");
+        assert!(p.operand_done(0) && !p.operand_done(1) && !p.operand_done(2));
+        assert!(feed(&mut p, 2) && p.violated, "b AND c completes a second operand");
     }
 
     #[test]

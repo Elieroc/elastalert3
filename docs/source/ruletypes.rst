@@ -2247,7 +2247,7 @@ This rule requires four additional options:
 ``timeframe``: How long a chain stays open, measured from its first event.
 
 ``correlation_leaves``: A map of leaf name to leaf. Names use letters, digits, ``_`` and ``-``, and cannot be ``AND``,
-``OR``, ``THEN`` or ``NOT``. Each leaf has:
+``OR``, ``XOR``, ``THEN`` or ``NOT``. Each leaf has:
 
 - ``filter``: a non-empty list of Query DSL filters. The rule's own ``filter`` is added to every leaf.
 - ``num_events`` (optional): events needed for the leaf to count. Default 1. Under ``NOT``, the leaf is violated
@@ -2268,6 +2268,12 @@ This rule requires four additional options:
   group; ``leaves.<name>.count`` still tells how many events each leaf contributed. It is an operand like a leaf, so
   ``COUNT{5}(ssh_fail OR rdp_fail OR vpn_fail) THEN success`` works, and ``x THEN NOT COUNT{3}(a OR b)`` means fewer than
   3 events in total. A leaf can still be named ``count``: the keyword needs its ``{n}``.
+- ``a XOR b``: exactly one side completes within ``timeframe`` of the first event, and the alert goes out once the
+  window is over, as with ``NOT``. If both complete the chain ends without an alert. Each side is a leaf,
+  ``COUNT{n}(...)`` or a group (``(b AND c) XOR d``). ``a XOR b XOR c`` is exactly one of the three, not an odd
+  number. ``XOR`` only goes at the top of the query, alone or with a ``NOT`` (``(a XOR b) AND NOT c``): not under
+  ``THEN``, ``OR`` or ``AND``, nested, nor negated. The match is the document that completed the side that happened,
+  and ``correlation.absent`` lists the other sides.
 - ``NOT``: what must not happen within ``timeframe`` of the first event. Only at the top of the query, next to
   something that happens: ``x AND NOT y`` (no ``y`` from the start of the chain) or ``x THEN NOT y`` (no ``y`` after
   ``x`` completed). ``NOT`` alone, under ``OR`` or inside parentheses is rejected.
@@ -2358,7 +2364,7 @@ Example with a missing part: a backup job that started but neither finished nor 
     correlation_query: started THEN NOT (finished OR failed)
     alert: [slack]
 
-Rejected at load: a ``COUNT`` without a positive integer or with anything but leaf names joined by ``OR``, a missing ``query_key``, ``timeframe``, ``correlation_leaves`` or ``correlation_query``, invalid
+Rejected at load: a ``COUNT`` without a positive integer or with anything but leaf names joined by ``OR``, a ``XOR`` anywhere but at the top, a missing ``query_key``, ``timeframe``, ``correlation_leaves`` or ``correlation_query``, invalid
 leaf names, unknown leaf options, a leaf that the query does not use or a name that is not a leaf, a query that is a
 single leaf, mixed operators without parentheses, ``NOT`` anywhere but at the top, ``eql`` / ``esql`` filters,
 ``use_count_query``, ``use_terms_query``, a leaf ``query_key`` with a compound rule ``query_key``.
