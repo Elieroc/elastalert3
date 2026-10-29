@@ -142,6 +142,7 @@ pub fn ts_value(rule: &Rule, ts: Ts) -> Value {
         TsType::Iso => json!(to_iso(ts)),
         TsType::Unix => json!(ts.div_euclid(1_000_000)),
         TsType::UnixMs => json!(ts.div_euclid(1_000)),
+        TsType::Custom => json!(rule.ts_custom.as_ref().map(|c| c.format(ts))),
     }
 }
 
@@ -470,6 +471,7 @@ pub fn parse_ts(rule: &Rule, v: &Value) -> Option<Ts> {
         (TsType::Iso, Value::String(s)) => crate::time::parse_iso(s),
         (TsType::Unix, v) => num(v).map(|n| (n * 1e6) as Ts),
         (TsType::UnixMs, v) => num(v).map(|n| (n * 1e3) as Ts),
+        (TsType::Custom, Value::String(s)) => rule.ts_custom.as_ref()?.parse(s),
         _ => None,
     }
 }
@@ -1547,6 +1549,16 @@ mod tests {
         let rule = crate::rule::load(&f, &conf).unwrap();
         std::fs::remove_dir_all(dir).ok();
         rule
+    }
+
+    #[test]
+    fn custom_timestamp_rule_graylog_format() {
+        // Graylog date format, ms cut with ts[:23].
+        let r = rule_from("type: any\ntimestamp_field: timestamp\ntimestamp_type: custom\ntimestamp_format: '%Y-%m-%d %H:%M:%S.%f'\ntimestamp_format_expr: 'ts[:23]'\n");
+        let t = crate::time::parse_iso("2026-09-16T23:58:06.271Z").unwrap();
+        assert_eq!(ts_value(&r, t), json!("2026-09-16 23:58:06.271"));
+        assert_eq!(parse_ts(&r, &json!("2026-09-16 23:58:06.271")), Some(t));
+        assert_eq!(parse_ts(&r, &json!(1)), None);
     }
 
     const MIN: Ts = 60_000_000;

@@ -1185,9 +1185,8 @@ your own ``timestamp_format``. The default is ``iso``.
 .. admonition:: ElastAlert 3
    :class: ea3
 
-   ``iso``, ``unix`` and ``unix_ms`` are supported (``unix`` and ``unix_ms`` are untested). ``custom`` is rejected at load,
-   together with ``timestamp_format``, ``timestamp_format_expr`` and ``timestamp_to_datetime_format_expr`` which only apply to it
-   (the ``*_expr`` options are Python expressions).
+   ``iso``, ``unix``, ``unix_ms`` and ``custom`` are supported (``unix`` and ``unix_ms`` are untested). ``custom`` uses
+   ``timestamp_format``, ``timestamp_format_expr`` and ``timestamp_to_datetime_format_expr``, see below.
 
 
 timestamp_format
@@ -1196,6 +1195,12 @@ timestamp_format
 ``timestamp_format``: In case Elasticsearch used custom date format for date type field, this option provides a way to define custom timestamp
 format to match the type used for Elastisearch date type field. This option is only valid if ``timestamp_type`` set to ``custom``.
 (Optional, string, default '%Y-%m-%dT%H:%M:%SZ').
+
+.. admonition:: ElastAlert 3
+   :class: ea3
+
+   Directives ``%Y %m %d %H %M %S %f %z`` and ``%%`` are supported, any other one is rejected at load. A timestamp
+   without offset is UTC, ``%z`` is written as ``+0000``.
 
 timestamp_format_expr
 ^^^^^^^^^^^^^^^^^^^^^
@@ -1210,6 +1215,13 @@ it gets 6 digits instead of 3 - since the ``%f`` placeholder stands for microsec
 Setting ``timestamp_format_expr: 'ts[:23] + ts[26:]'`` will truncate the value to milliseconds granting Elasticsearch compatibility.
 This option is only valid if ``timestamp_type`` set to ``custom``.
 (Optional, string, no default).
+
+.. admonition:: ElastAlert 3
+   :class: ea3
+
+   Both ``*_expr`` options are Python expressions upstream. Only string literals and ``ts[a:b]`` slices joined by ``+``
+   are accepted (``ts[:23]``, ``ts[:23] + ts[26:]``, ``ts[:-1] + 'x'``), with Python slice semantics; anything else
+   (``dt``, method calls, an index ``ts[3]``) is rejected at load.
 
 timestamp_to_datetime_format_expr
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

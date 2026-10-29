@@ -44,6 +44,8 @@ pub enum TsType {
     Iso,
     Unix,
     UnixMs,
+    /// `timestamp_format` and the `*_expr` options, in `Rule::ts_custom`.
+    Custom,
 }
 
 /// One leaf of a `correlation` rule: the events it stands for, as its own search.
@@ -81,6 +83,7 @@ pub struct Rule {
     pub filter: Vec<Value>,
     pub timestamp_field: String,
     pub timestamp_type: TsType,
+    pub ts_custom: Option<crate::time::CustomTs>,
     pub use_local_time: bool,
     pub query_key: Option<String>,
     pub compound_query_key: Vec<String>,
@@ -538,7 +541,14 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         "iso" => TsType::Iso,
         "unix" => TsType::Unix,
         "unix_ms" => TsType::UnixMs,
-        t => bail!("timestamp_type {t} is not supported (iso, unix, unix_ms)"),
+        "custom" => TsType::Custom,
+        t => bail!("timestamp_type {t} is not supported (iso, unix, unix_ms, custom)"),
+    };
+    let ts_custom = if timestamp_type == TsType::Custom {
+        let opt = |k: &str| raw.get(k).and_then(Value::as_str);
+        Some(crate::time::CustomTs::new(opt("timestamp_format").unwrap_or("%Y-%m-%dT%H:%M:%SZ"), opt("timestamp_format_expr"), opt("timestamp_to_datetime_format_expr"))?)
+    } else {
+        None
     };
     let timestamp_field = raw.get("timestamp_field").and_then(Value::as_str).unwrap_or("@timestamp").to_string();
 
@@ -843,6 +853,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         include,
         timestamp_field,
         timestamp_type,
+        ts_custom,
         query_key,
         compound_query_key,
         timeframe,

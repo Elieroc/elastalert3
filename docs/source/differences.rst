@@ -138,8 +138,7 @@ A rule or a configuration that needs one of these is **rejected at load** with a
   authentication cannot be queried. The SNS, SQS and SES alerters sign their own requests.
 - ``notify_alert`` (ignored; use ``notify_email``), statsd (ignored), ``replace_dots_in_field_names``, the Python
   ``logging:`` section (ignored).
-- ``include_rule_params_in_matches``, ``_source_enabled: false``, ``timestamp_type: custom`` and its ``*_expr``
-  options, ``summary_table_type: html``.
+- ``include_rule_params_in_matches``, ``_source_enabled: false``, ``summary_table_type: html``.
 - ``aggregation_alert_time_compared_with_timestamp_field`` (ignored).
 - Email: ``email_image_keys`` / ``assets_dir`` inline images, ``smtp_cert_file`` / ``smtp_key_file``. PagerDuty: NTLM
   proxy authentication.
