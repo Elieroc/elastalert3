@@ -5,6 +5,7 @@ mod correlation;
 mod discover;
 mod engine;
 mod enhancements;
+mod exceptions;
 mod es;
 mod field;
 mod hours;

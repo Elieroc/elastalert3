@@ -152,6 +152,14 @@ fn build<'a>(rule: &Doc, ctx: &Ctx<'a>) -> Result<Built<'a>> {
     Ok(Built { query: dsl::and(parts), index: pipe.index().map(String::from), include, pipe })
 }
 
+/// A Sigma selection (`field|modifier: value` map, or a list of maps) as a query, with the field names as written.
+pub fn selection(sel: &Value) -> Result<Value> {
+    let pipe = pipeline::Resolved::new(&[], &pipeline::LogSource::default(), "");
+    let env = dsl::Env { keyword_fields: &[], pipe: &pipe };
+    let det: Map<String, Value> = [("s".to_string(), sel.clone()), ("condition".to_string(), "s".into())].into_iter().collect();
+    dsl::detection(&det, &env)
+}
+
 /// Adds a query to the `filter` of the rule, after the filters it has itself.
 fn push_filter(raw: &mut Map<String, Value>, query: Value) -> Result<()> {
     let mut filter = match raw.remove("filter") {

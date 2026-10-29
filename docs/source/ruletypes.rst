@@ -157,6 +157,8 @@ Rule Configuration Cheat Sheet
 +--------------------------------------------------------------+           |
 | ``filter_terms_file`` (map or list, no default)              |           |
 +--------------------------------------------------------------+           |
+| ``exceptions`` (list of maps, no default)                    |           |
++--------------------------------------------------------------+           |
 | ``query_delay`` (time, default 0 min)                        |           |
 +--------------------------------------------------------------+           |
 | ``owner`` (string, default empty string)                     |           |
@@ -1393,6 +1395,48 @@ hashes, users). It is a map, or a list of maps, with:
 The file is read when the rule loads and again whenever it changes, like an imported file, and the rule keeps its
 state. The rule does not load when the file is missing, has no value, or has more than 65,536 values (the limit of
 Elasticsearch for a ``terms`` query).
+
+.. _exceptions:
+
+exceptions
+^^^^^^^^^^
+
+.. admonition:: ElastAlert 3
+   :class: ea3
+
+   New in ElastAlert 3. ElastAlert 2 ignores it, and would alert on the documents it excludes.
+
+``exceptions``: documents the rule must not see, e.g. a scanner or service accounts. Each entry is a map with:
+
+- ``name``: required, unique in the rule.
+- ``match``: a Sigma selection. Keys are ``field`` or ``field|modifier`` (``startswith``, ``contains``, ``endswith``,
+  ``re``, ``cidr``, ``gt``... as in :ref:`Sigma rules <sigma>`), several keys are an AND, a list of values is an OR, and a
+  list of maps is an OR of selections. Field names are used as written.
+- ``query``: instead of ``match``, a raw Query DSL query. Give one of the two.
+- ``reason``: free text. (Optional)
+- ``expires``: ``2026-12-31`` (00:00 UTC of that day) or ``2026-12-31T10:00:00Z``. After that the exception is ignored and
+  the rule is reloaded without it, with a warning. (Optional)
+
+.. code-block:: yaml
+
+    exceptions:
+    - name: scanner_nessus
+      reason: weekly vulnerability scan
+      expires: 2026-12-31
+      match:
+        source.ip|cidr: 10.20.0.0/24
+    - name: service_accounts
+      match:
+        user.name|startswith: svc_
+        host.name: [bastion01, bastion02]
+    - name: raw
+      query:
+        range: {process.pid: {lt: 10}}
+
+The exceptions are one ``bool.must_not`` added to the ``filter``: the documents are excluded by Elasticsearch, so
+``frequency`` counts, ``cardinality``, ``baseline`` and the other rule types never see them, and on a ``correlation``
+rule they apply to every leaf. They do not work with an ``eql`` or ``esql`` filter. Combined with ``import:`` the lists
+are merged, so a base rule can carry the exceptions shared by many rules.
 
 .. _read_doc_values:
 

@@ -417,6 +417,8 @@ pub fn file_hash(file: &Path, conf: &Config) -> u64 {
     files.extend(crate::sigma::files(&raw, &sigma_corpus(conf)));
     files.extend(terms_files(&raw).unwrap_or_default().into_iter().map(|t| t.path));
     let mut h = rustc_hash::FxHasher::default();
+    // An exception that expires changes the rule: reload it.
+    crate::exceptions::expired(&raw, crate::time::now()).hash(&mut h);
     for f in files {
         match std::fs::read(&f) {
             Ok(bytes) => bytes.hash(&mut h),
@@ -880,6 +882,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
     for t in terms_files(&raw)? {
         filter.push(t.filter()?);
     }
+    crate::exceptions::apply(&raw, &mut filter, crate::time::now())?;
     let max_query_size = raw.get("max_query_size").and_then(Value::as_u64).unwrap_or(conf.max_query_size);
     let query_lang = querylang::detect(&filter)?;
     if let Some(lang) = query_lang {

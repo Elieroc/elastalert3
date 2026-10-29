@@ -40,6 +40,7 @@ New in ElastAlert 3
 - :ref:`ingest_timestamp_field <ingest_timestamp_field>`: query on the ingest time, so late documents are found
   exactly once.
 - :ref:`filter_terms_file <filter_terms_file>`: a ``terms`` filter from a list of indicators in a file, reloaded when the file changes.
+- :ref:`exceptions <exceptions>`: named documents a rule ignores (a Sigma selection or a Query DSL query, optional ``reason`` and ``expires``), excluded in the query.
 - :ref:`read_doc_values <read_doc_values>`: read the timestamp and the ``query_key`` from doc values instead of ``_source``.
 - :ref:`split_on_limit <split_on_limit>`: read every result of an EQL / ES|QL range that fills ``max_query_size``.
 - :ref:`search_timeout, terminate_after, preference and routing <search_options>`.
@@ -50,7 +51,7 @@ New in ElastAlert 3
 - Hot reload keeps the state of a changed rule; pending alerts and aggregation groups survive restarts.
 
 A rule using ``correlation``, ``geo_velocity``, ``beacon``, ``baseline``, ``outlier``, ``max_occurrences`` on ``new_term`` or a ``rust.*`` enhancement does not load in ElastAlert 2. ElastAlert 2 ignores
-``active_hours``, ``mitre_attack``, ``sigma``, ``sigma_folders``, ``ingest_timestamp_field``, ``fetch_full_source``, ``search_timeout``, ``terminate_after``, ``preference``, ``routing``, ``split_on_limit``, ``read_doc_values`` and ``filter_terms_file``.
+``active_hours``, ``mitre_attack``, ``sigma``, ``sigma_folders``, ``ingest_timestamp_field``, ``fetch_full_source``, ``search_timeout``, ``terminate_after``, ``preference``, ``routing``, ``split_on_limit``, ``read_doc_values``, ``filter_terms_file`` and ``exceptions``.
 
 Behaviour differences
 =====================
