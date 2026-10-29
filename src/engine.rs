@@ -108,6 +108,8 @@ pub struct RuleState {
     /// `correlation`: whether hits carry the leaves they matched (`matched_queries`), and the tagged events (with
     /// their dedup hash) gathered for the range.
     corr_group: bool,
+    /// With `corr_group`: the leaf an EQL / ES|QL search reads for, whose hits carry no `matched_queries`.
+    corr_lang_leaf: Option<usize>,
     corr_buf: Vec<(usize, Event, u64)>,
     /// `read_doc_values`: per index, the `docvalue_fields` to ask for, or `None` when a field cannot be read that way.
     doc_values: FxHashMap<String, Option<Vec<Value>>>,
@@ -214,6 +216,7 @@ impl RuleState {
             bucket_offset: 0,
             seen: FxHashMap::default(),
             corr_group: false,
+            corr_lang_leaf: None,
             corr_buf: Vec::new(),
             doc_values: FxHashMap::default(),
             mock: None,
@@ -241,6 +244,7 @@ impl RuleState {
             bucket_offset: 0,
             seen: FxHashMap::default(),
             corr_group: false,
+            corr_lang_leaf: None,
             corr_buf: Vec::new(),
             doc_values: FxHashMap::default(),
             mock: None,
@@ -365,7 +369,7 @@ impl RuleState {
                 }
             }
             if self.corr_group {
-                doc.insert(LEAVES_KEY.into(), json!(matched_leaves(hit)));
+                doc.insert(LEAVES_KEY.into(), json!(self.corr_lang_leaf.map_or_else(|| matched_leaves(hit), |l| vec![l])));
             }
             for (key, parts) in [(&self.rule.query_key,&self.rule.compound_query_key), (&self.rule.aggregation_key, &self.rule.compound_aggregation_key)] {
                 if let (Some(key), false) = (key, parts.is_empty()) {
@@ -538,7 +542,7 @@ impl RuleState {
         let spec = self.rule.correlation.clone().expect("correlation rules always have leaves");
         let (base_filter, base_index) = (self.rule.filter.clone(), self.rule.index.clone());
         let mut searches: Vec<(String, Vec<usize>)> = Vec::new();
-        for (i, leaf) in spec.leaves.iter().enumerate() {
+        for (i, leaf) in spec.leaves.iter().enumerate().filter(|(_, l)| l.lang.is_none()) {
             let index = leaf.index.clone().unwrap_or_else(|| base_index.clone());
             match searches.iter_mut().find(|(ix, _)| *ix == index) {
                 Some((_, members)) => members.push(i),
@@ -559,6 +563,24 @@ impl RuleState {
                 break;
             }
         }
+        // An EQL / ES|QL leaf cannot be named in the Query DSL `should`: a search of its own, all its hits are the leaf's.
+        if result.is_ok() {
+            for (i, leaf) in spec.leaves.iter().enumerate().filter(|(_, l)| l.lang.is_some()) {
+                let lang = leaf.lang.expect("filtered above");
+                self.rule.filter = base_filter.iter().chain(&leaf.filter).cloned().collect();
+                self.rule.index = leaf.index.clone().unwrap_or_else(|| base_index.clone());
+                self.corr_lang_leaf = Some(i);
+                result = async {
+                    let index = self.index_for(start, end)?;
+                    self.lang_query(ctx, lang, &index, start, end, &mut Vec::new()).await
+                }
+                .await;
+                if result.is_err() {
+                    break;
+                }
+            }
+        }
+        self.corr_lang_leaf = None;
         (self.rule.filter, self.rule.index, self.corr_group) = (base_filter, base_index, false);
         let mut staged = std::mem::take(&mut self.corr_buf);
         result?;
@@ -1595,7 +1617,7 @@ mod tests {
     use crate::rule::Leaf;
 
     fn leaf(name: &str, filter: Value) -> Leaf {
-        Leaf { name: name.into(), filter: vec![filter], index: None, query_key: None, num_events: 1 }
+        Leaf { name: name.into(), filter: vec![filter], index: None, query_key: None, num_events: 1, lang: None }
     }
 
     #[test]

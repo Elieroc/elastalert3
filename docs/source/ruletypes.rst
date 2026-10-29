@@ -2212,8 +2212,9 @@ Correlation
 ``correlation``: This rule matches when events of several searches, the leaves, happen on the same ``query_key`` value
 (a machine, an IP, a user) within ``timeframe`` of the first one, as ``correlation_query`` combines them with ``AND``,
 ``OR``, ``THEN`` and ``NOT``. The leaves reading the same index share one search (their filters are named
-alternatives, and each hit says which leaves it matched), so it also works on OpenSearch and across indices. It
-replaces EQL ``sequence`` queries, which ElastAlert 3 does not run.
+alternatives, and each hit says which leaves it matched), so it also works on OpenSearch and across indices. A leaf
+may be an ``eql`` or ``esql`` query, which costs one more search. It replaces EQL ``sequence`` queries, which
+ElastAlert 3 does not run.
 
 .. code-block:: yaml
 
@@ -2249,7 +2250,13 @@ This rule requires four additional options:
 ``correlation_leaves``: A map of leaf name to leaf. Names use letters, digits, ``_`` and ``-``, and cannot be ``AND``,
 ``OR``, ``XOR``, ``THEN`` or ``NOT``. Each leaf has:
 
-- ``filter``: a non-empty list of Query DSL filters. The rule's own ``filter`` is added to every leaf.
+- ``filter``: a non-empty list of Query DSL filters. The rule's own ``filter`` is added to every leaf. The list may
+  hold one ``eql`` or one ``esql`` query instead (Elasticsearch 7.10+ / 8.11+): the leaf is then a search of its own, on
+  every run, and every document it returns is an event of the leaf. As in a plain ``eql`` / ``esql`` rule, only event
+  queries run (no ``sequence`` / ``join``), and results beyond ``max_query_size`` are lost with a warning
+  (``split_on_limit`` is not available on a ``correlation`` rule). An ES|QL query
+  must keep ``@timestamp`` and the pivot field in its columns (a ``KEEP`` that drops them fails the run or skips the
+  rows). An ``esql`` leaf reads the indices of its ``FROM`` command: ``index`` is rejected on it.
 - ``num_events`` (optional): events needed for the leaf to count. Default 1. Under ``NOT``, the leaf is violated
   only once it reaches that many events.
 - ``index`` (optional): search another index for this leaf. Default: the rule's ``index``.
@@ -2366,7 +2373,8 @@ Example with a missing part: a backup job that started but neither finished nor 
 
 Rejected at load: a ``COUNT`` without a positive integer or with anything but leaf names joined by ``OR``, a ``XOR`` anywhere but at the top, a missing ``query_key``, ``timeframe``, ``correlation_leaves`` or ``correlation_query``, invalid
 leaf names, unknown leaf options, a leaf that the query does not use or a name that is not a leaf, a query that is a
-single leaf, mixed operators without parentheses, ``NOT`` anywhere but at the top, ``eql`` / ``esql`` filters,
+single leaf, mixed operators without parentheses, ``NOT`` anywhere but at the top, a leaf mixing ``eql`` and ``esql``
+(or a rule ``filter`` with one), an ``index`` on an ``esql`` leaf,
 ``use_count_query``, ``use_terms_query``, a leaf ``query_key`` with a compound rule ``query_key``.
 ``test-rule --data`` / ``--use-downloaded`` cannot replay it, since each leaf needs its own search.
 

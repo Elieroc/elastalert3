@@ -1,0 +1,12 @@
+name: dsl-and
+type: correlation
+index: logs-corrlang
+timestamp_field: "@timestamp"
+query_key: host.name
+timeframe: {minutes: 30}
+realert: {minutes: 0}
+alert: debug
+correlation_query: "ok AND tool"
+correlation_leaves:
+  ok: {filter: [{term: {event.outcome: success}}]}
+  tool: {filter: [{term: {tool: mimikatz}}]}

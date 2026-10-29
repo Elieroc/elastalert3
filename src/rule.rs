@@ -61,6 +61,8 @@ pub struct Leaf {
     /// Field holding the pivot value in this leaf's documents, when it differs from the rule's `query_key`.
     pub query_key: Option<String>,
     pub num_events: u64,
+    /// Set when the filter is an `eql` or `esql` query: the leaf is a search of its own, whatever its index.
+    pub lang: Option<QueryLang>,
 }
 
 /// `correlation_leaves` + `correlation_query` of a `correlation` rule.
@@ -895,7 +897,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         bail!("split_on_limit only applies to rules with an eql or esql filter; other searches are paged");
     }
 
-    let correlation = if kind == Kind::Correlation { Some(correlation_options(&raw, query_key.as_deref(), compound_query_key.len() > 1)?) } else { None };
+    let correlation = if kind == Kind::Correlation { Some(correlation_options(&raw, query_key.as_deref(), compound_query_key.len() > 1, max_query_size)?) } else { None };
 
     Ok(Rule {
         correlation,
@@ -965,8 +967,8 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
     })
 }
 
-/// `correlation_leaves` and `correlation_query`. Every leaf is its own search, so a leaf can only use Query DSL filters.
-fn correlation_options(raw: &Map<String, Value>, query_key: Option<&str>, compound: bool) -> Result<CorrelationSpec> {
+/// `correlation_leaves` and `correlation_query`. A leaf filter is Query DSL, or one `eql` / `esql` query (then the leaf is a search of its own).
+fn correlation_options(raw: &Map<String, Value>, query_key: Option<&str>, compound: bool, max_query_size: u64) -> Result<CorrelationSpec> {
     let map = raw["correlation_leaves"].as_object().context("correlation_leaves must be a map of leaf name to leaf")?;
     let mut leaves: Vec<Leaf> = Vec::new();
     for (name, item) in map {
@@ -980,12 +982,16 @@ fn correlation_options(raw: &Map<String, Value>, query_key: Option<&str>, compou
         if let Some(k) = m.keys().find(|k| !["filter", "index", "query_key", "num_events"].contains(&k.as_str())) {
             bail!("correlation leaf {name}: option {k} is not supported (filter, index, query_key, num_events)");
         }
-        let filter = match m.get("filter") {
+        let mut filter = match m.get("filter") {
             Some(Value::Array(a)) if !a.is_empty() => a.clone(),
             _ => bail!("correlation leaf {name} needs a non-empty filter list"),
         };
-        if querylang::detect(&filter)?.is_some() {
-            bail!("correlation leaf {name}: eql and esql filters are not supported in correlation rules");
+        let lang = querylang::detect(&filter).with_context(|| format!("correlation leaf {name}"))?;
+        if let Some(lang) = lang {
+            if lang == QueryLang::Esql && m.get("index").is_some_and(|v| !v.is_null()) {
+                bail!("correlation leaf {name}: an esql leaf reads the indices of its FROM command, remove index");
+            }
+            querylang::apply_limit(&mut filter, max_query_size);
         }
         let index = match m.get("index") {
             None | Some(Value::Null) => None,
@@ -1004,7 +1010,7 @@ fn correlation_options(raw: &Map<String, Value>, query_key: Option<&str>, compou
             None | Some(Value::Null) => 1,
             Some(v) => v.as_u64().filter(|n| *n > 0).with_context(|| format!("correlation leaf {name}: num_events must be a positive integer"))?,
         };
-        leaves.push(Leaf { name: name.clone(), filter, index, query_key: leaf_key, num_events });
+        leaves.push(Leaf { name: name.clone(), filter, index, query_key: leaf_key, num_events, lang });
     }
     let src = raw["correlation_query"].as_str().context("correlation_query must be a string")?;
     let names: Vec<String> = leaves.iter().map(|l| l.name.clone()).collect();
@@ -1249,7 +1255,8 @@ mod tests {
         bad("dotname", format!("{head}correlation_leaves:\n  a.b: {{filter: [{{term: {{k: a}}}}]}}\n"), "may only contain");
         bad("keyword", format!("{head}correlation_leaves:\n  Then: {{filter: [{{term: {{k: a}}}}]}}\n"), "keywords");
         bad("nofilter", format!("{head}correlation_leaves:\n  a: {{}}\n  b: {{filter: [{{term: {{k: b}}}}]}}\n"), "non-empty filter");
-        bad("eql", format!("{head}correlation_leaves:\n  a: {{filter: [{{eql: 'any where true'}}]}}\n  b: {{filter: [{{term: {{k: b}}}}]}}\n"), "eql and esql");
+        bad("eqlesql", format!("{head}correlation_leaves:\n  a: {{filter: [{{eql: 'any where true'}}, {{esql: 'FROM x'}}]}}\n  b: {{filter: [{{term: {{k: b}}}}]}}\n"), "both an eql and an esql");
+        bad("esqlindex", format!("{head}correlation_leaves:\n  a: {{index: x, filter: [{{esql: 'FROM x'}}]}}\n  b: {{filter: [{{term: {{k: b}}}}]}}\n"), "remove index");
         bad("absent", format!("{head}correlation_leaves:\n  a: {{filter: [{{term: {{k: a}}}}]}}\n  b: {{absent: true, filter: [{{term: {{k: b}}}}]}}\n"), "option absent is not supported");
         bad("zero", format!("{head}correlation_leaves:\n  a: {{num_events: 0, filter: [{{term: {{k: a}}}}]}}\n  b: {{filter: [{{term: {{k: b}}}}]}}\n"), "positive integer");
         bad("compoundleafkey", format!("query_key: [a, b]\ntimeframe: {{hours: 1}}\ncorrelation_query: a AND b\ncorrelation_leaves:\n  a: {{query_key: x, filter: [{{term: {{k: a}}}}]}}\n  b: {{filter: [{{term: {{k: b}}}}]}}\n"), "single-field query_key");
@@ -1258,6 +1265,10 @@ mod tests {
         bad("mixed", format!("query_key: h\ntimeframe: {{hours: 1}}\ncorrelation_query: a AND b THEN a\n{leaves}"), "without parentheses");
         bad("countquery", format!("{head}use_count_query: true\ndoc_type: x\n{leaves}"), "");
         bad("rulefilter", format!("{head}filter:\n- eql: 'any where true'\n{leaves}"), "eql");
+        let ok = load_correlation("langs", &format!("query_key: host.name\ntimeframe: {{hours: 1}}\ncorrelation_query: a AND b AND c\ncorrelation_leaves:\n  a: {{filter: [{{eql: 'any where true'}}]}}\n  b: {{filter: [{{esql: 'FROM x | WHERE y'}}]}}\n  c: {{filter: [{{term: {{k: c}}}}]}}\n")).unwrap();
+        let spec = ok.correlation.unwrap();
+        assert_eq!(spec.leaves.iter().map(|l| l.lang).collect::<Vec<_>>(), [Some(QueryLang::Eql), Some(QueryLang::Esql), None]);
+        assert!(spec.leaves[1].filter[0]["esql"].as_str().unwrap().ends_with("\n| limit 10000"));
         assert!(load_correlation("notok", &format!("query_key: h\ntimeframe: {{hours: 1}}\ncorrelation_query: a then not b\n{leaves}")).is_ok());
     }
 

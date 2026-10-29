@@ -1,0 +1,12 @@
+name: eql-then-ok
+type: correlation
+index: logs-corrlang
+timestamp_field: "@timestamp"
+query_key: host.name
+timeframe: {minutes: 30}
+realert: {minutes: 0}
+alert: debug
+correlation_query: "fail THEN ok"
+correlation_leaves:
+  fail: {num_events: 3, filter: [{term: {event.outcome: failure}}]}
+  ok: {filter: [{eql: 'any where event.outcome == "success"'}]}

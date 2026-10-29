@@ -1,0 +1,12 @@
+name: eql-and-esql
+type: correlation
+index: logs-corrlang
+timestamp_field: "@timestamp"
+query_key: host.name
+timeframe: {minutes: 30}
+realert: {minutes: 0}
+alert: debug
+correlation_query: "ok AND tool"
+correlation_leaves:
+  ok: {filter: [{eql: 'any where event.outcome == "success"'}]}
+  tool: {filter: [{esql: 'FROM logs-corrlang METADATA _id, _index | WHERE tool == "mimikatz"'}]}
