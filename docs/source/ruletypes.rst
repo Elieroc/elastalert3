@@ -2263,6 +2263,11 @@ This rule requires four additional options:
 - ``a THEN b``: ``b`` after ``a``. The order is strict: ``b`` counts only for events after the one that completed
   ``a`` (with ``num_events: 10`` on ``a``, after the tenth). Inside a group, such as ``a THEN (b AND c)``, the order
   of the group's operands is free.
+- ``COUNT{n}(a OR b OR c)``: ``n`` events in total over the leaves in the parentheses, which must be leaf names joined
+  by ``OR``. A document matching several of them counts once. The ``num_events`` of these leaves is ignored inside the
+  group; ``leaves.<name>.count`` still tells how many events each leaf contributed. It is an operand like a leaf, so
+  ``COUNT{5}(ssh_fail OR rdp_fail OR vpn_fail) THEN success`` works, and ``x THEN NOT COUNT{3}(a OR b)`` means fewer than
+  3 events in total. A leaf can still be named ``count``: the keyword needs its ``{n}``.
 - ``NOT``: what must not happen within ``timeframe`` of the first event. Only at the top of the query, next to
   something that happens: ``x AND NOT y`` (no ``y`` from the start of the chain) or ``x THEN NOT y`` (no ``y`` after
   ``x`` completed). ``NOT`` alone, under ``OR`` or inside parentheses is rejected.
@@ -2353,7 +2358,7 @@ Example with a missing part: a backup job that started but neither finished nor 
     correlation_query: started THEN NOT (finished OR failed)
     alert: [slack]
 
-Rejected at load: a missing ``query_key``, ``timeframe``, ``correlation_leaves`` or ``correlation_query``, invalid
+Rejected at load: a ``COUNT`` without a positive integer or with anything but leaf names joined by ``OR``, a missing ``query_key``, ``timeframe``, ``correlation_leaves`` or ``correlation_query``, invalid
 leaf names, unknown leaf options, a leaf that the query does not use or a name that is not a leaf, a query that is a
 single leaf, mixed operators without parentheses, ``NOT`` anywhere but at the top, ``eql`` / ``esql`` filters,
 ``use_count_query``, ``use_terms_query``, a leaf ``query_key`` with a compound rule ``query_key``.

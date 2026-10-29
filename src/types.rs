@@ -2421,6 +2421,28 @@ mod tests {
     }
 
     #[test]
+    fn correlation_count_sums_leaves() {
+        // 5 failures over ssh, rdp and vpn together, then a success; per-leaf counts are reported.
+        let (rule, mut rt) = corr_rule(&[("rdp", 1), ("ssh", 1), ("success", 1), ("vpn", 1)], "COUNT{5}(ssh OR rdp OR vpn) THEN success", 1);
+        let fails = vec![cev(1, "a", 0), cev(0, "a", 1), cev(3, "a", 2), cev(1, "a", 3)];
+        assert!(feed(&rule, &mut rt, fails).is_empty());
+        assert!(feed(&rule, &mut rt, vec![cev(2, "a", 4)]).is_empty(), "4 events are not enough");
+        let (rule, mut rt) = corr_rule(&[("rdp", 1), ("ssh", 1), ("success", 1), ("vpn", 1)], "COUNT{5}(ssh OR rdp OR vpn) THEN success", 1);
+        let fails = vec![cev(1, "a", 0), cev(0, "a", 1), cev(3, "a", 2), cev(1, "a", 3), cev(3, "a", 4)];
+        assert!(feed(&rule, &mut rt, fails).is_empty());
+        let m = feed(&rule, &mut rt, vec![cev(2, "a", 5)]);
+        assert_eq!(m.len(), 1);
+        let leaves = &m[0]["correlation"]["leaves"];
+        assert_eq!((&leaves["ssh"]["count"], &leaves["rdp"]["count"], &leaves["vpn"]["count"]), (&json!(2), &json!(1), &json!(2)));
+        assert_eq!(m[0]["correlation"]["query"], json!("COUNT{5}(ssh OR rdp OR vpn) THEN success"));
+        // Under NOT: fewer than 3 events in total.
+        let (rule, mut rt) = corr_rule(&[("a", 1), ("b", 1), ("c", 1)], "a THEN NOT COUNT{3}(b OR c)", 1);
+        let mut out = feed(&rule, &mut rt, vec![cev(0, "x", 0), cev(1, "x", 1), cev(2, "x", 2), cev(0, "y", 0), cev(1, "y", 1), cev(2, "y", 2), cev(1, "y", 3)]);
+        rt.garbage_collect(&rule, 1_700_000_000_000_000 + 90 * MIN, &mut out);
+        assert_eq!(out.iter().map(|d| d["correlation"]["key"].clone()).collect::<Vec<_>>(), vec![json!("x")]);
+    }
+
+    #[test]
     fn correlation_document_matching_several_leaves_counts_once() {
         let both = |minute| {
             let (_, ev) = cev(0, "a", minute);

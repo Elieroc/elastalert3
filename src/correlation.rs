@@ -1,6 +1,6 @@
 //! `correlation_query` of a `correlation` rule: the boolean expression over the rule's leaves, and its progress for one chain.
 
-use anyhow::{Result, bail};
+use anyhow::{Context, Result, bail};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum Op {
@@ -23,6 +23,8 @@ impl Op {
 pub enum Expr {
     /// Index into the rule's leaves.
     Leaf(usize),
+    /// `COUNT{n}(a OR b ...)`: `n` events in total over these leaves (indices into the rule's leaves).
+    Count(u64, Vec<usize>),
     Not(Box<Expr>),
     And(Vec<Expr>),
     Or(Vec<Expr>),
@@ -49,6 +51,8 @@ enum Tok {
     Open,
     Close,
     Not,
+    /// `COUNT{n}`; the `(` follows as a token of its own.
+    Count(u64),
     Op(Op),
     Name(String),
 }
@@ -72,6 +76,18 @@ fn tokens(src: &str) -> Result<Vec<Tok>> {
                     chars.next();
                 }
                 let word = &src[i..end];
+                // `COUNT{n}` is a keyword only with its braces: a leaf may still be named `count`.
+                let rest = src[end..].trim_start();
+                if word.eq_ignore_ascii_case("count") && rest.starts_with('{') {
+                    let close = rest.find('}').context("COUNT{ is missing its '}'")?;
+                    let n = rest[1..close].trim().parse::<u64>().ok().filter(|n| *n > 0).with_context(|| format!("COUNT{} needs a positive integer", &rest[..=close]))?;
+                    let target = src.len() - rest.len() + close + 1;
+                    while chars.peek().is_some_and(|&(j, _)| j < target) {
+                        chars.next();
+                    }
+                    out.push(Tok::Count(n));
+                    continue;
+                }
                 out.push(match word.to_ascii_uppercase().as_str() {
                     "AND" => Tok::Op(Op::And),
                     "OR" => Tok::Op(Op::Or),
@@ -133,6 +149,20 @@ impl Parser<'_> {
                     _ => bail!("missing ')'"),
                 }
             }
+            Some(&Tok::Count(n)) => {
+                if !matches!(self.next(), Some(Tok::Open)) {
+                    bail!("COUNT{{{n}}} must be followed by '(' and leaves joined by OR");
+                }
+                let ids = match self.seq()? {
+                    Expr::Leaf(i) => vec![i],
+                    Expr::Or(items) if items.iter().all(|x| matches!(x, Expr::Leaf(_))) => items.iter().map(|x| if let Expr::Leaf(i) = x { *i } else { unreachable!("checked above") }).collect(),
+                    _ => bail!("COUNT{{{n}}}(...) takes leaf names joined by OR"),
+                };
+                match self.next() {
+                    Some(Tok::Close) => Ok(Expr::Count(n, ids)),
+                    _ => bail!("missing ')'"),
+                }
+            }
             Some(Tok::Name(n)) => match leaves.iter().position(|l| l == n) {
                 Some(i) => Ok(Expr::Leaf(i)),
                 None => bail!("unknown leaf {n} (leaves: {})", leaves.join(", ")),
@@ -168,6 +198,7 @@ fn render(e: &Expr, leaves: &[String]) -> String {
     let list = |items: &[Expr], sep: &str| items.iter().map(wrap).collect::<Vec<_>>().join(sep);
     match e {
         Expr::Leaf(i) => leaves[*i].clone(),
+        Expr::Count(n, ids) => format!("COUNT{{{n}}}({})", ids.iter().map(|i| leaves[*i].as_str()).collect::<Vec<_>>().join(" OR ")),
         Expr::Not(x) => format!("NOT {}", wrap(x)),
         Expr::And(items) => list(items, " AND "),
         Expr::Or(items) => list(items, " OR "),
@@ -177,7 +208,7 @@ fn render(e: &Expr, leaves: &[String]) -> String {
 
 fn has_not(e: &Expr) -> bool {
     match e {
-        Expr::Leaf(_) => false,
+        Expr::Leaf(_) | Expr::Count(..) => false,
         Expr::Not(_) => true,
         Expr::And(items) | Expr::Or(items) | Expr::Then(items) => items.iter().any(has_not),
     }
@@ -186,6 +217,7 @@ fn has_not(e: &Expr) -> bool {
 fn mark_used(e: &Expr, used: &mut [bool]) {
     match e {
         Expr::Leaf(i) => used[*i] = true,
+        Expr::Count(_, ids) => ids.iter().for_each(|i| used[*i] = true),
         Expr::Not(x) => mark_used(x, used),
         Expr::And(items) | Expr::Or(items) | Expr::Then(items) => items.iter().for_each(|x| mark_used(x, used)),
     }
@@ -257,6 +289,7 @@ pub fn parse(src: &str, leaves: &[String]) -> Result<Query> {
 pub fn first_leaves(e: &Expr, out: &mut [bool]) {
     match e {
         Expr::Leaf(i) => out[*i] = true,
+        Expr::Count(_, ids) => ids.iter().for_each(|i| out[*i] = true),
         Expr::And(items) | Expr::Or(items) => items.iter().for_each(|x| first_leaves(x, out)),
         Expr::Then(items) => first_leaves(&items[0], out),
         Expr::Not(_) => unreachable!("NOT is split off at load"),
@@ -280,13 +313,13 @@ impl Progress {
         let children = match e {
             Expr::Then(items) => items.iter().map(|x| if let Expr::Not(inner) = x { Progress::new(inner) } else { Progress::new(x) }).collect(),
             Expr::And(items) | Expr::Or(items) => items.iter().map(Progress::new).collect(),
-            Expr::Leaf(_) | Expr::Not(_) => vec![],
+            Expr::Leaf(_) | Expr::Count(..) | Expr::Not(_) => vec![],
         };
         Progress { done: false, violated: false, n: 0, children }
     }
 
     /// Hands one document, matching the leaves `tags`, to the expression; true when a leaf took it, and `took[leaf]`
-    /// set for each leaf that did. `need` is `num_events` per leaf. After a `THEN` operand completes, the next one only
+    /// set for each leaf that did. `need` is `num_events` per leaf (ignored inside `COUNT`). After a `THEN` operand completes, the next one only
     /// counts the documents that follow, so a document matching both sides counts once.
     pub fn feed(&mut self, e: &Expr, tags: &[usize], need: &[u64], took: &mut [bool]) -> bool {
         if self.done {
@@ -301,6 +334,19 @@ impl Progress {
                 self.done = self.n >= need[*i];
                 took[*i] = true;
                 true
+            }
+            Expr::Count(n, ids) => {
+                // One document counts once, whatever number of the group's leaves it matches.
+                let mut any = false;
+                for i in ids.iter().filter(|i| tags.contains(i)) {
+                    took[*i] = true;
+                    any = true;
+                }
+                if any {
+                    self.n += 1;
+                    self.done = self.n >= *n;
+                }
+                any
             }
             Expr::And(items) | Expr::Or(items) => {
                 let mut any = false;
@@ -388,6 +434,39 @@ mod tests {
         let query = parse("a THEN NOT b THEN c THEN NOT d", &names(&["a", "b", "c", "d"])).unwrap();
         assert!(query.after && query.negated == vec![Expr::Leaf(3)]);
         assert!(matches!(&query.positive, Expr::Then(items) if items.len() == 3));
+    }
+
+    #[test]
+    fn parses_count() {
+        let query = q("count {5} (a or b or c) then d").unwrap();
+        assert_eq!(query.text, "COUNT{5}(a OR b OR c) THEN d");
+        assert_eq!(query.positive, Expr::Then(vec![Expr::Count(5, vec![0, 1, 2]), Expr::Leaf(3)]));
+        assert_eq!(q("a AND NOT COUNT{2}(b OR c) AND d").unwrap().negated, vec![Expr::Count(2, vec![1, 2])]);
+        // Only with braces is it a keyword.
+        assert_eq!(parse("count THEN x", &names(&["count", "x"])).unwrap().positive, Expr::Then(vec![Expr::Leaf(0), Expr::Leaf(1)]));
+        let err = |s: &str| q(s).map(|_| ()).unwrap_err().to_string();
+        assert!(err("COUNT{0}(a OR b) THEN c AND d").contains("positive integer"));
+        assert!(err("COUNT{x}(a OR b)").contains("positive integer"));
+        assert!(err("COUNT{3 (a OR b)").contains("missing its '}'"));
+        assert!(err("COUNT{3} a OR b").contains("followed by '('"));
+        assert!(err("COUNT{3}(a AND b) THEN c THEN d").contains("joined by OR"));
+        assert!(err("COUNT{3}(a OR COUNT{2}(b OR c)) THEN d").contains("joined by OR"));
+        assert!(err("COUNT{3}(a OR b) THEN c").contains("leaf d is not used"));
+    }
+
+    #[test]
+    fn count_sums_leaves() {
+        let one = [1, 1, 1, 1];
+        // Per-leaf `num_events` is ignored inside COUNT; each document counts once.
+        let need = [9, 9, 9, 1];
+        assert_eq!(run("COUNT{3}(a OR b OR c) THEN d", &need, &[0, 1, 3, 2, 3]), (vec![true, true, false, true, true], true));
+        assert!(!run("COUNT{3}(a OR b OR c) THEN d", &one, &[0, 0, 3]).1);
+        let query = q("COUNT{2}(a OR b) THEN (c AND d)").unwrap();
+        let mut p = Progress::new(&query.positive);
+        let mut took = [false; 4];
+        assert!(p.feed(&query.positive, &[0, 1], &one, &mut took));
+        assert_eq!(took, [true, true, false, false]);
+        assert!(!p.done, "a document matching two leaves of the group is one event");
     }
 
     #[test]
