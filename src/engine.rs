@@ -690,6 +690,10 @@ impl RuleState {
             let min = rule.raw.get("min_doc_count").and_then(Value::as_u64).unwrap_or(1);
             aggs = bucket_aggs(aggs, qk, rule.terms_size, min);
         }
+        // `outlier` with `peer_field`: one population per value of that field.
+        if rule.kind == Kind::Outlier && let Some(peer) = rule.raw.get("peer_field").and_then(Value::as_str) {
+            aggs = json!({"peer_aggs": {"terms": {"field": peer, "size": rule.terms_size, "min_doc_count": 1}, "aggs": aggs}});
+        }
         let body = self.with_timeout(json!({"query": self.filters(start, end, vec![]), "size": 0, "aggs": aggs}));
         let resp = ctx.es.search_with(index, &body, &self.rule.search_params).await.map_err(|e| anyhow::anyhow!("Error running query: {e:#}"))?;
         check_timeout(&resp, self.rule.allow_degraded, &self.rule.name)?;
@@ -1031,6 +1035,7 @@ impl RuleState {
             if ctx.silences.is_silenced(&key) || ctx.silences.is_silenced(&format!("{}._silence", self.rule.name)) {
                 log::info!("Ignoring match for silenced rule {key}");
                 silenced += 1;
+                self.write_risk_only(ctx, &m).await;
                 continue;
             }
             if self.rule.realert > 0 {
@@ -1044,6 +1049,7 @@ impl RuleState {
                 continue;
             }
             if self.rule.aggregation.is_some() {
+                self.write_risk_only(ctx, &m).await;
                 self.add_aggregated(ctx, m).await;
             } else {
                 self.alert(ctx, vec![m]).await;
@@ -1289,6 +1295,39 @@ impl RuleState {
         }
     }
 
+    /// `risk_objects` of a match: the entities of the rule's `risk_objects` found in it, each with the rule's `risk_score`.
+    fn risk_entries(&self, m: &Doc) -> Vec<Value> {
+        let Some(spec) = &self.rule.risk else { return vec![] };
+        spec.objects
+            .iter()
+            .filter_map(|(ty, f)| {
+                let v = field::lookup(m, f).filter(|v| !v.is_null()).map(py_str).filter(|v| !v.is_empty())?;
+                Some(json!({"type": ty, "value": v, "score": spec.score}))
+            })
+            .collect()
+    }
+
+    /// The risk of a match that has no alert doc of its own (silenced, or queued in an aggregation) is written alone,
+    /// already "sent" so that nothing resends it.
+    async fn write_risk_only(&self, ctx: &Ctx, m: &Doc) {
+        let entries = self.risk_entries(m);
+        if entries.is_empty() || ctx.debug {
+            return;
+        }
+        let mut doc = Map::new();
+        if let Some(t) = match_time(&self.rule, m) {
+            doc.insert("match_time".into(), t);
+        }
+        doc.insert("rule_name".into(), json!(self.rule.name));
+        doc.insert("alert_sent".into(), json!(true));
+        doc.insert("risk_only".into(), json!(true));
+        doc.insert("risk_objects".into(), Value::Array(entries));
+        if let Some(m) = crate::mitre::writeback(&self.rule.mitre_attack) {
+            doc.insert("mitre_attack".into(), m);
+        }
+        ctx.writeback.write(Wb::Alert, doc).await;
+    }
+
     /// Writes the alert doc(s) for `p`: one per match, same `_id` every time so updates overwrite.
     /// An aggregated alert is one doc (the first match); the other matches' docs are deleted once it is fully sent.
     async fn write_alert(&self, ctx: &Ctx, p: &mut Pending) {
@@ -1314,6 +1353,11 @@ impl RuleState {
                 doc.insert("alert_exception".into(), json!(p.exception));
             }
             self.add_metadata(&mut doc);
+            // Aggregated matches carry their risk in their own doc (`write_risk_only`): the group's docs are deleted once sent.
+            let risk = if grouped || self.rule.aggregation.is_some() { vec![] } else { self.risk_entries(m) };
+            if !risk.is_empty() {
+                doc.insert("risk_objects".into(), Value::Array(risk));
+            }
             doc.insert("match_body".into(), Value::Object(m.clone()));
             let id = if n == 0 { p.id.clone() } else { Writeback::new_id() };
             ctx.writeback.write_id(Wb::Alert, &id, doc).await;

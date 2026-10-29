@@ -58,7 +58,8 @@ See [Getting Started](https://elastalert3.neopipe.fr/running_elastalert.html).
 - [`geo_velocity`](https://elastalert3.neopipe.fr/ruletypes.html#geo-velocity) rule type: impossible travel, an event too far from the previous one of the same user for the time between them.
 - [`beacon`](https://elastalert3.neopipe.fr/ruletypes.html#beacon) rule type: events of the same key at regular intervals, like malware calling home.
 - [`baseline`](https://elastalert3.neopipe.fr/ruletypes.html#baseline) rule type: an event count abnormal for this hour of the week, learned from the history.
-- [`outlier`](https://elastalert3.neopipe.fr/ruletypes.html#outlier) rule type: an entity far above the median of its peers, like a user sending 50 times more data than the others.
+- [`outlier`](https://elastalert3.neopipe.fr/ruletypes.html#outlier) rule type: an entity far above the median of its peers, like a user sending 50 times more data than the others, optionally compared only within its group (`peer_field`).
+- [`risk`](https://elastalert3.neopipe.fr/ruletypes.html#risk) rule type: behavioural alerts, when the `risk_score` of the alerts of a host or a user adds up to a limit.
 - [`new_term` with `max_occurrences`](https://elastalert3.neopipe.fr/ruletypes.html#new-term): alert on rare terms, not only never-seen ones.
 - [`active_hours`](https://elastalert3.neopipe.fr/ruletypes.html#active-hours): ignore matches outside time windows.
 - [`exceptions`](https://elastalert3.neopipe.fr/ruletypes.html#exceptions): named documents a rule ignores (a Sigma selection or a Query DSL query, with an optional expiry), excluded in the query.

@@ -12,7 +12,7 @@ ElastAlert 2 repository; they run unchanged in ElastAlert 3.
    listed anywhere are ignored, as in ElastAlert 2, so typos are not detected.
 
    Options new in ElastAlert 3: :ref:`active_hours <active_hours>`, :ref:`mitre_attack <mitre_attack>`, :ref:`ingest_timestamp_field <ingest_timestamp_field>`,
-   :ref:`exceptions <exceptions>`, :ref:`fetch_full_source <fetch_full_source>`, :ref:`Sigma rules <sigma>` (``sigma``), the :ref:`correlation <correlation>`, :ref:`geo_velocity <geo_velocity>`, :ref:`beacon <beacon>`, :ref:`baseline <baseline>` and :ref:`outlier <outlier>` rule types, ``max_occurrences`` of the :ref:`new_term <new_term>` type and the ``rust.*``
+   :ref:`exceptions <exceptions>`, :ref:`fetch_full_source <fetch_full_source>`, :ref:`Sigma rules <sigma>` (``sigma``), the :ref:`correlation <correlation>`, :ref:`geo_velocity <geo_velocity>`, :ref:`beacon <beacon>`, :ref:`baseline <baseline>`, :ref:`outlier <outlier>` and :ref:`risk <risk>` rule types, ``risk_score`` and ``risk_objects`` on any rule, ``max_occurrences`` of the :ref:`new_term <new_term>` type and the ``rust.*``
    :doc:`match enhancements <enhancements>`. A rule using one of them does not run in ElastAlert 2 (it ignores
    ``active_hours``, ``mitre_attack``, ``ingest_timestamp_field``, ``exceptions``, ``fetch_full_source`` and ``sigma``).
 
@@ -2576,6 +2576,7 @@ There is no universal threshold: 5 GB sent is normal for a video editor and huge
     outlier_factor: 10             # required: match at value >= factor * reference
     min_population: 10             # default 10, at least 3
     outlier_reference: median      # median (default) | p99
+    peer_field: user.department    # optional: compare each entity only with its group
     realert: {hours: 24}
     alert: [slack]
 
@@ -2592,6 +2593,11 @@ population it belongs to.
 
 ``min_population`` (integer >= 3, default 10): With fewer entities there is no meaningful population, and nothing matches.
 
+``peer_field`` (field, optional): By default every entity is compared with all the others. With ``peer_field`` the entities
+are first split by the value of that field (a department, a role, a host type) and each group is judged on its own, with
+its own reference. A system administrator sending 5 GB is then compared with the other administrators, not with the
+accountants. ``peer_field`` must be a single field, different from ``query_key``, and aggregatable (``keyword``).
+
 - The reference is computed over every entity, the candidate included. With a median this changes little; with a small
   population and ``p99`` it matters, so keep ``min_population`` high.
 - A reference of 0 or less matches nothing: when the typical entity has no value, any entity would be "infinitely"
@@ -2601,8 +2607,14 @@ population it belongs to.
   ``search.max_buckets`` (65,535 by default). ``min_doc_count`` (default 1) applies as for ``metric_aggregation``.
 - No state is kept: each run compares a fresh population. As the same outlier stays one on the next run, set ``realert``
   (it applies per ``query_key`` value) to avoid an alert every ``run_every``.
+- With ``peer_field``, ``min_population`` and the reference apply to each group: a group with fewer entities is skipped
+  (the other groups are still judged) and ``population`` is the size of the group. Entities without a value for
+  ``peer_field`` belong to no group and are never judged. An entity with several values of ``peer_field`` is judged in each of
+  its groups. The groups are the ``terms_size`` most frequent values of ``peer_field`` (default 1000), and each group
+  is limited to ``terms_size`` entities.
 - The match has the ``query_key`` field, the metric (``metric_<key>_<type>`` and ``metric_agg_value``) and an ``outlier``
-  field: ``value``, ``reference``, ``reference_kind``, ``ratio``, ``factor``, ``population`` and ``metric``. For example
+  field: ``value``, ``reference``, ``reference_kind``, ``ratio``, ``factor``, ``population`` and ``metric``. With ``peer_field``
+  the match also has that field (the group) and ``outlier.peer_group``. For example
   ``alert_text_args: [user.name, outlier.value, outlier.ratio]``. ``@timestamp`` is the end of the ``timeframe``.
 - Over a replay (``--start`` / ``--end``) each query segment of ``buffer_time`` is judged with the ``timeframe`` before
   its end.
@@ -2610,4 +2622,82 @@ population it belongs to.
 
 Rejected at load: a missing ``query_key``, ``timeframe``, ``metric_agg_key``, ``metric_agg_type`` or ``outlier_factor``,
 a non-positive ``outlier_factor``, a ``min_population`` under 3, an unknown ``outlier_reference``, a compound ``query_key``,
-``percentiles``, ``bucket_interval``, ``use_count_query``, ``use_terms_query`` and ``ingest_timestamp_field``.
+a ``peer_field`` that is not a single field name or equals ``query_key``, ``percentiles``, ``bucket_interval``, ``use_count_query``, ``use_terms_query`` and ``ingest_timestamp_field``.
+
+.. _risk:
+
+Risk
+~~~~
+
+.. admonition:: ElastAlert 3
+   :class: ea3
+
+   New in ElastAlert 3: a rule using this type, or ``risk_score`` / ``risk_objects``, does not load in ElastAlert 2.
+
+``risk``: This rule alerts on behaviour rather than on one event: an entity (a host, a user) that triggers several
+alerts whose risk adds up to a limit. It works in two steps. The other rules say how much risk each of their alerts puts
+on which entities (``risk_score`` and ``risk_objects``). The ``risk`` rule adds up that risk per entity over ``timeframe``
+and matches when the sum reaches ``risk_threshold``.
+
+.. code-block:: yaml
+
+    # a rule that feeds the risk: any type
+    name: Mimikatz execution
+    type: any
+    index: logs-endpoint-*
+    filter:
+    - term: {process.name: mimikatz.exe}
+    risk_score: 50                  # each alert adds 50 ...
+    risk_objects:                   # ... to these entities: type -> field of the match
+      host: host.name
+      user: user.name
+    alert: [slack]
+
+.. code-block:: yaml
+
+    # the rule that adds the risk up
+    name: Risky host
+    type: risk
+    risk_threshold: 100             # required: match at a total of at least 100
+    timeframe: {hours: 24}          # required
+    risk_object_type: host          # optional: only this type of entity (default: all)
+    min_distinct_rules: 2           # optional, default 1: at least 2 different rules must contribute
+    realert: {hours: 12}
+    alert: [slack]
+
+``risk_score`` (number > 0) and ``risk_objects`` (entity type -> field name) go together, on any rule type but ``risk``.
+Every match of the rule adds ``risk_score`` to each entity found in its ``risk_objects`` fields; an entity whose field is
+missing or null is skipped. The type is free text (``host``, ``user``, ``ip``...). A Sigma rule with ``risk_objects`` and no
+``risk_score`` gets one from its ``level``: ``low`` 25, ``medium`` 50, ``high`` 75, ``critical`` 100 (``informational``
+gets none: set ``risk_score``).
+
+``risk_threshold`` (number > 0): An entity matches when the sum of its risk within ``timeframe`` reaches this value.
+
+``min_distinct_rules`` (integer >= 1, default 1): Also requires that many different rules among the contributors, so that one
+noisy rule cannot reach the threshold alone.
+
+``risk_object_type`` (string, optional): Only the entities of this type are judged.
+
+- The risk is written in the writeback index, on the alert docs: ``risk_objects: [{type, value, score}]``, mapped by
+  ``create-index``. The ``risk`` rule reads that index (``index`` defaults to ``writeback_index``; ``timestamp_field`` is
+  ``@timestamp``, the time the doc was written, whatever the config says). It needs the writeback to be reachable and the
+  alert docs to be kept, and it sees the alerts of every rule of the instance, and of other instances sharing the index.
+- The risk of a match counts even if the match is silenced by ``realert`` or queued in an ``aggregation``: ``realert``
+  limits the notifications, not the risk. Such a match has no alert doc of its own, so it is written alone, with
+  ``risk_only: true`` and ``alert_sent: true``.
+- A match dropped by ``active_hours`` or by a ``match_enhancement`` adds no risk, and nothing is written with ``--debug``.
+- The docs are searchable about 2 seconds after they are written, so ``query_delay`` defaults to **10 seconds** for this type.
+- The entries that made a match are spent, like ``frequency``: the entity starts again from zero, and a new alert needs a
+  new threshold of risk. ``realert`` applies per entity (``host:srv1``).
+- The match has ``risk_object`` (``type``, ``value``), ``risk_score_total``, ``risk_threshold``, ``risk_alerts`` (the number of
+  alerts), ``risk_rules`` (``rule_name``, ``risk_score`` and ``alerts`` of each contributing rule, highest first),
+  ``first_timestamp`` and, when the contributing rules have ``mitre_attack``, the union of their techniques and tactics as
+  ``mitre_attack``. ``@timestamp`` is the time of the last alert. For example
+  ``alert_text_args: [risk_object.value, risk_score_total]``.
+- The state is rebuilt after a restart by reading the last ``timeframe`` again, without alerting twice. ``attach_related`` is
+  not supported: the matches carry ``risk_rules`` instead.
+
+Rejected at load: ``risk_score`` without ``risk_objects`` or the other way round, a ``risk_score`` that is not a positive
+number, ``risk_objects`` that is not a non-empty map of entity types to field names, ``risk_score`` / ``risk_objects`` on a
+``risk`` rule, and on a ``risk`` rule a missing ``risk_threshold`` or ``timeframe``, a non-positive ``risk_threshold``, a
+``min_distinct_rules`` under 1 and an empty ``risk_object_type``.

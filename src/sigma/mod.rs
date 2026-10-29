@@ -267,6 +267,10 @@ fn meta(raw: &mut Map<String, Value>, sigma: &Map<String, Value>, attack: &Attac
             bail!("level {l:?} is not a Sigma level ({})", LEVELS.iter().map(|(n, _)| *n).collect::<Vec<_>>().join(", "));
         };
         raw.entry("priority").or_insert_with(|| (*p).into());
+        // Entities named without a score get one from the level (informational gets none: say it with risk_score).
+        if raw.contains_key("risk_objects") && let Some(score) = [("low", 25), ("medium", 50), ("high", 75), ("critical", 100)].iter().find(|(n, _)| *n == l).map(|(_, s)| *s) {
+            raw.entry("risk_score").or_insert_with(|| score.into());
+        }
     }
     if let Some(t) = text("title")? {
         raw.entry("alert_subject").or_insert_with(|| t.into());
@@ -451,6 +455,20 @@ mod tests {
         let mut r = raw(&d, own, META);
         apply(&mut r, &Attack::embedded(), &Corpus::default()).unwrap();
         assert_eq!((&r["alert_subject"], &r["description"], &r["priority"], &r["mitre_attack"], &r["include"]), (&json!("Mine"), &json!("d"), &json!(4), &json!("T1078"), &json!(["host"])));
+    }
+
+    #[test]
+    fn risk_objects_get_a_score_from_the_level() {
+        let d = tmp("risk");
+        let mut r = raw(&d, "sigma: s.yml\nrisk_objects: {host: host.name}\n", META); // level: high
+        apply(&mut r, &Attack::embedded(), &Corpus::default()).unwrap();
+        assert_eq!(r["risk_score"], 75);
+        let mut r = raw(&d, "sigma: s.yml\nrisk_objects: {host: host.name}\nrisk_score: 10\n", META);
+        apply(&mut r, &Attack::embedded(), &Corpus::default()).unwrap();
+        assert_eq!(r["risk_score"], 10);
+        let mut r = raw(&d, "sigma: s.yml\n", META);
+        apply(&mut r, &Attack::embedded(), &Corpus::default()).unwrap();
+        assert!(!r.contains_key("risk_score"));
     }
 
     #[test]

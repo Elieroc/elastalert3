@@ -1,0 +1,12 @@
+name: outlier-peer-department
+type: outlier
+index: outlier-peers
+query_key: user.name
+peer_field: user.dept
+metric_agg_key: bytes_out
+metric_agg_type: sum
+timeframe: {hours: 24}
+outlier_factor: 10
+min_population: 10
+realert: {hours: 24}
+alert: debug

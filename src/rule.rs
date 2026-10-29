@@ -28,6 +28,7 @@ pub enum Kind {
     Beacon,
     Baseline,
     Outlier,
+    Risk,
 }
 
 impl Kind {
@@ -38,8 +39,41 @@ impl Kind {
 
     /// Types whose state is rebuilt after a restart by reading the last `timeframe` again, without alerting twice.
     pub fn replays_window(self) -> bool {
-        matches!(self, Kind::Correlation | Kind::GeoVelocity | Kind::Beacon | Kind::Baseline)
+        matches!(self, Kind::Correlation | Kind::GeoVelocity | Kind::Beacon | Kind::Baseline | Kind::Risk)
     }
+}
+
+/// The alert docs a `risk` rule reads are searchable about two seconds after they are written (1 s flush + refresh).
+const RISK_QUERY_DELAY: Dur = 10 * crate::time::SECOND;
+
+/// The risk a match adds: `score` to each entity of `objects` (`(type, field holding its name)`).
+#[derive(Clone, Debug)]
+pub struct RiskSpec {
+    pub score: f64,
+    pub objects: Vec<(String, String)>,
+}
+
+fn risk_spec(raw: &Map<String, Value>, kind: Kind) -> Result<Option<RiskSpec>> {
+    let (score, objects) = (raw.get("risk_score"), raw.get("risk_objects"));
+    if kind == Kind::Risk {
+        if score.is_some() || objects.is_some() {
+            bail!("risk_score and risk_objects belong to the rules that feed a risk rule, not to a risk rule itself");
+        }
+        return Ok(None);
+    }
+    let (score, objects) = match (score, objects) {
+        (None, None) => return Ok(None),
+        (Some(s), Some(o)) => (s, o),
+        (Some(_), None) => bail!("risk_score needs risk_objects: the entities the risk is added to"),
+        (None, Some(_)) => bail!("risk_objects needs risk_score (a Sigma rule with a level gets one: low 25, medium 50, high 75, critical 100)"),
+    };
+    let Some(score) = score.as_f64().filter(|n| n.is_finite() && *n > 0.0) else { bail!("risk_score must be a positive number") };
+    let objects = match objects {
+        Value::Object(o) if !o.is_empty() => o.iter().map(|(t, f)| f.as_str().filter(|f| !f.is_empty()).map(|f| (t.clone(), f.to_string()))).collect::<Option<Vec<_>>>(),
+        _ => None,
+    };
+    let Some(objects) = objects else { bail!("risk_objects must map each entity type to the name of its field, e.g. {{host: host.name, user: user.name}}") };
+    Ok(Some(RiskSpec { score, objects }))
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -162,6 +196,8 @@ pub struct Rule {
     pub correlation: Option<CorrelationSpec>,
     /// `mitre_attack` (extension): the ATT&CK techniques the rule detects, checked against the ATT&CK table.
     pub mitre_attack: Vec<crate::mitre::Technique>,
+    /// `risk_score` + `risk_objects` (extension): the risk each match of this rule adds to its entities.
+    pub risk: Option<RiskSpec>,
     /// The merged rule document; alert text and alerters read arbitrary keys from it.
     pub raw: Map<String, Value>,
 }
@@ -460,6 +496,16 @@ fn outlier_options(raw: &Map<String, Value>, compound: bool) -> Result<()> {
     if compound {
         bail!("a compound query_key is not supported for outlier rules");
     }
+    if let Some(peer) = raw.get("peer_field") {
+        match peer.as_str() {
+            Some(f) if !f.is_empty() && !f.contains(',') => {
+                if raw.get("query_key").and_then(Value::as_str) == Some(f) {
+                    bail!("peer_field must differ from query_key");
+                }
+            }
+            _ => bail!("peer_field must be a single field name"),
+        }
+    }
     if raw.get("metric_agg_type").and_then(Value::as_str) == Some("percentiles") {
         bail!("metric_agg_type percentiles is not supported for outlier rules");
     }
@@ -532,6 +578,12 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
     let stem = file.file_stem().and_then(|s| s.to_str()).unwrap_or("rule");
     let name = raw.get("name").and_then(Value::as_str).unwrap_or(stem).to_string();
     raw.insert("name".into(), json!(name));
+    if raw.get("type").and_then(Value::as_str) == Some("risk") {
+        // A risk rule reads the risk of the alert docs: they are in the writeback index, stamped `@timestamp` when written.
+        raw.entry("index").or_insert_with(|| json!(conf.writeback_index));
+        raw.insert("timestamp_field".into(), json!("@timestamp"));
+        raw.insert("timestamp_type".into(), json!("iso"));
+    }
     for key in ["type", "index", "alert"] {
         if !raw.contains_key(key) {
             bail!("missing required option: {key}");
@@ -555,6 +607,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         Some("beacon") => Kind::Beacon,
         Some("baseline") => Kind::Baseline,
         Some("outlier") => Kind::Outlier,
+        Some("risk") => Kind::Risk,
         other => bail!("rule type {other:?} is not supported yet"),
     };
     for unsupported in ["include_rule_params_in_matches"] {
@@ -562,6 +615,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
             bail!("option {unsupported} is not supported yet");
         }
     }
+    let risk = risk_spec(&raw, kind)?;
     let flag = |raw: &Map<String, Value>, k: &str| raw.get(k).and_then(Value::as_bool).unwrap_or(false);
     let limit_execution = match raw.get("limit_execution") {
         None | Some(Value::Null | Value::Bool(false)) => None,
@@ -709,6 +763,21 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
             need(&["query_key", "timeframe", "metric_agg_key", "metric_agg_type", "outlier_factor"])?;
             outlier_options(&raw, compound_query_key.len() > 1)?;
         }
+        Kind::Risk => {
+            need(&["risk_threshold", "timeframe"])?;
+            if !raw["risk_threshold"].as_f64().is_some_and(|n| n > 0.0) {
+                bail!("risk_threshold must be a positive number");
+            }
+            if raw.get("min_distinct_rules").is_some_and(|v| !v.as_u64().is_some_and(|n| n >= 1)) {
+                bail!("min_distinct_rules must be an integer of at least 1");
+            }
+            if flag(&raw, "attach_related") {
+                bail!("attach_related is not supported for risk rules: the match has risk_rules");
+            }
+            if raw.get("risk_object_type").is_some_and(|v| !v.as_str().is_some_and(|s| !s.is_empty())) {
+                bail!("risk_object_type must be a non-empty string");
+            }
+        }
         Kind::Beacon => {
             need(&["query_key", "timeframe", "min_events"])?;
             if !raw["min_events"].as_u64().is_some_and(|n| n >= 3) {
@@ -837,6 +906,9 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
     include.extend(compound_aggregation_key.iter().cloned());
     include.extend(aggregation_key.clone());
     include.push(timestamp_field.clone());
+    if kind == Kind::Risk {
+        include.extend(["risk_objects", "rule_name", "mitre_attack"].map(String::from));
+    }
     if kind == Kind::Correlation {
         let leaves = raw.get("correlation_leaves").and_then(Value::as_object).into_iter().flat_map(Map::values);
         include.extend(leaves.filter_map(|l| l.get("query_key").and_then(Value::as_str)).map(String::from));
@@ -860,7 +932,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
     }
     include.sort();
     include.dedup();
-    let enrich = !full && !kind.is_agg_query() && kind != Kind::Baseline;
+    let enrich = !full && !kind.is_agg_query() && !matches!(kind, Kind::Baseline | Kind::Risk);
     let read_doc_values = raw.get("read_doc_values").and_then(Value::as_bool).unwrap_or(false);
     if read_doc_values && !(enrich && matches!(kind, Kind::Frequency | Kind::Flatline | Kind::Spike | Kind::Correlation) && timestamp_type == TsType::Iso) {
         bail!("read_doc_values applies to frequency, flatline, spike and correlation rules with an ISO timestamp, without include or fetch_full_source");
@@ -910,7 +982,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         use_run_every_query_size,
         sync_bucket_interval: raw.get("sync_bucket_interval").and_then(Value::as_bool).unwrap_or(false),
         allow_buffer_time_overlap: raw.get("allow_buffer_time_overlap").and_then(Value::as_bool).unwrap_or(false),
-        query_delay: dur_opt(&raw, "query_delay")?.unwrap_or(0),
+        query_delay: dur_opt(&raw, "query_delay")?.unwrap_or(if kind == Kind::Risk { RISK_QUERY_DELAY } else { 0 }),
         use_local_time: raw.get("use_local_time").and_then(Value::as_bool).unwrap_or(true),
         file: file.to_path_buf(),
         compare_key,
@@ -943,6 +1015,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         limit_execution_coverage: flag(&raw, "limit_execution_coverage"),
         active_hours,
         mitre_attack,
+        risk,
         kibana_discover,
         opensearch_discover,
         enhancements,
@@ -1423,5 +1496,49 @@ mod tests {
         assert!(r.kibana_discover && !r.opensearch_discover);
         assert!(load_text("kb_bad", "generate_kibana_discover_url: true\nkibana_discover_from_timedelta: {parsecs: 5}\n").is_err());
         assert!(load_text("os_bad", "generate_opensearch_discover_url: true\nopensearch_discover_columns: []\n").is_err());
+    }
+
+    fn risk_load(extra: &str) -> Result<Rule> {
+        let dir = std::env::temp_dir().join(format!("ea-risk-{}-{}", std::process::id(), extra.len()));
+        std::fs::create_dir_all(&dir)?;
+        std::fs::write(dir.join("r.yaml"), format!("name: r\nalert: debug\n{extra}"))?;
+        std::fs::write(dir.join("config.yaml"), "rules_folder: x\nes_host: h\nes_port: 9200\nwriteback_index: wb\nrun_every: {minutes: 1}\nbuffer_time: {minutes: 5}\ntimestamp_field: event.created\n")?;
+        let conf = Config::load(&dir.join("config.yaml"))?;
+        let rule = load(&dir.join("r.yaml"), &conf);
+        std::fs::remove_dir_all(dir).ok();
+        rule
+    }
+
+    #[test]
+    fn risk_options_are_checked_at_load() {
+        let src = "type: any\nindex: l\n";
+        let r = risk_load(&format!("{src}risk_score: 40\nrisk_objects: {{host: host.name}}\n")).unwrap().risk.unwrap();
+        assert_eq!((r.score, r.objects), (40.0, vec![("host".to_string(), "host.name".to_string())]));
+        for (extra, want) in [
+            ("risk_score: 40\n", "risk_score needs risk_objects"),
+            ("risk_objects: {host: host.name}\n", "risk_objects needs risk_score"),
+            ("risk_score: 0\nrisk_objects: {host: h}\n", "positive number"),
+            ("risk_score: 5\nrisk_objects: [host]\n", "must map each entity type"),
+            ("risk_score: 5\nrisk_objects: {}\n", "must map each entity type"),
+        ] {
+            assert!(risk_load(&format!("{src}{extra}")).err().unwrap().to_string().contains(want), "{extra}");
+        }
+    }
+
+    #[test]
+    fn risk_rule_reads_the_writeback_index() {
+        let r = risk_load("type: risk\nrisk_threshold: 100\ntimeframe: {hours: 1}\n").unwrap();
+        assert_eq!((r.index.as_str(), r.timestamp_field.as_str(), r.query_delay), ("wb", "@timestamp", 10 * SECOND));
+        assert!(r.include.contains(&"risk_objects".to_string()) && !r.enrich);
+        for (extra, want) in [
+            ("risk_threshold: 100\n", "timeframe"),
+            ("timeframe: {hours: 1}\n", "risk_threshold"),
+            ("timeframe: {hours: 1}\nrisk_threshold: 0\n", "positive number"),
+            ("timeframe: {hours: 1}\nrisk_threshold: 5\nmin_distinct_rules: 0\n", "at least 1"),
+            ("timeframe: {hours: 1}\nrisk_threshold: 5\nattach_related: true\n", "attach_related"),
+            ("timeframe: {hours: 1}\nrisk_threshold: 5\nrisk_score: 5\nrisk_objects: {host: h}\n", "not to a risk rule"),
+        ] {
+            assert!(risk_load(&format!("type: risk\n{extra}")).err().unwrap().to_string().contains(want), "{extra}");
+        }
     }
 }

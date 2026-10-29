@@ -1,0 +1,7 @@
+name: host-risk
+type: risk
+risk_threshold: 100
+timeframe: {hours: 1}
+min_distinct_rules: 2
+risk_object_type: host
+alert: debug

@@ -1,0 +1,10 @@
+name: mimikatz
+type: any
+index: logs-risk
+filter:
+- term: {event.code: mimikatz}
+query_key: host.name
+realert: {minutes: 10}
+risk_score: 50
+risk_objects: {host: host.name, user: user.name}
+alert: debug

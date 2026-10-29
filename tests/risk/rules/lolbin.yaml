@@ -1,0 +1,9 @@
+name: lolbin
+type: any
+index: logs-risk
+filter:
+- term: {event.code: lolbin}
+aggregation: {minutes: 1}
+risk_score: 60
+risk_objects: {host: host.name}
+alert: debug

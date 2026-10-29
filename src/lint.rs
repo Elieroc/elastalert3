@@ -136,6 +136,9 @@ fn check(rule: &Rule, caps: &Caps) -> Vec<String> {
     if rule.use_terms_query || rule.kind.is_agg_query() || rule.kind == crate::rule::Kind::Baseline {
         agg.extend(rule.query_key.iter().flat_map(|k| k.split(',')));
     }
+    if rule.kind == crate::rule::Kind::Outlier {
+        agg.extend(rule.raw.get("peer_field").and_then(Value::as_str));
+    }
     for f in agg {
         match caps.get(f) {
             None => out.push(format!("{f} is aggregated but not in the mapping")),

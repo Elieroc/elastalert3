@@ -30,7 +30,8 @@ New in ElastAlert 3
 - The :ref:`beacon <beacon>` rule type: the events of a ``query_key`` value at regular intervals (C2 beaconing).
 - The :ref:`baseline <baseline>` rule type: the event count of a bucket against the same buckets of the history (seasonal
   z-score or MAD).
-- The :ref:`outlier <outlier>` rule type: an entity whose metric is far above the median of its peers (``query_key`` values).
+- The :ref:`outlier <outlier>` rule type: an entity whose metric is far above the median of its peers (``query_key`` values), optionally within a group (``peer_field``).
+- The :ref:`risk <risk>` rule type and the ``risk_score`` / ``risk_objects`` options: behavioural alerts when the alerts of an entity (host, user) add up to a risk limit.
 - ``max_occurrences`` of the :ref:`new_term <new_term>` rule type: alert on a term seen at most that many times in the history
   ("rare"), not only on a never-seen one.
 - :ref:`active_hours <active_hours>`: ignore matches outside time windows, in a given time zone.
@@ -50,7 +51,7 @@ New in ElastAlert 3
 - The ``validate`` subcommand (``validate --es`` checks the filters and fields against the mappings), and ``--es_debug_trace`` with responses.
 - Hot reload keeps the state of a changed rule; pending alerts and aggregation groups survive restarts.
 
-A rule using ``correlation``, ``geo_velocity``, ``beacon``, ``baseline``, ``outlier``, ``max_occurrences`` on ``new_term`` or a ``rust.*`` enhancement does not load in ElastAlert 2. ElastAlert 2 ignores
+A rule using ``correlation``, ``geo_velocity``, ``beacon``, ``baseline``, ``outlier``, ``risk``, ``risk_score``, ``max_occurrences`` on ``new_term`` or a ``rust.*`` enhancement does not load in ElastAlert 2. ElastAlert 2 ignores
 ``active_hours``, ``mitre_attack``, ``sigma``, ``sigma_folders``, ``ingest_timestamp_field``, ``fetch_full_source``, ``search_timeout``, ``terminate_after``, ``preference``, ``routing``, ``split_on_limit``, ``read_doc_values``, ``filter_terms_file`` and ``exceptions``.
 
 Behaviour differences

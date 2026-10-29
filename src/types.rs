@@ -218,6 +218,7 @@ pub enum RuleType {
     Beacon(Beacon),
     Baseline(Baseline),
     Outlier(Outlier),
+    Risk(Risk),
 }
 
 impl RuleType {
@@ -238,6 +239,7 @@ impl RuleType {
             Kind::Beacon => RuleType::Beacon(Beacon::new(rule)),
             Kind::Baseline => RuleType::Baseline(Baseline::new(rule)),
             Kind::Outlier => RuleType::Outlier(Outlier::new(rule)),
+            Kind::Risk => RuleType::Risk(Risk::new(rule)),
         })
     }
 
@@ -260,6 +262,7 @@ impl RuleType {
             RuleType::Cardinality(c) => c.add_data(rule, events, matches),
             RuleType::GeoVelocity(g) => g.add_data(rule, events, matches),
             RuleType::Beacon(b) => b.add_data(rule, events, matches),
+            RuleType::Risk(r) => r.add_data(rule, events, matches),
             // Correlation events arrive tagged with their leaves, through `add_correlation`.
             // Baseline buckets arrive through `add_baseline`.
             RuleType::MetricAgg(_) | RuleType::Percentage(_) | RuleType::Correlation(_) | RuleType::Baseline(_) | RuleType::Outlier(_) => {}
@@ -279,6 +282,7 @@ impl RuleType {
             RuleType::Correlation(c) => c.suppress_until = Some(ts),
             RuleType::GeoVelocity(g) => g.suppress_until = Some(ts),
             RuleType::Beacon(b) => b.suppress_until = Some(ts),
+            RuleType::Risk(r) => r.suppress_until = Some(ts),
             RuleType::Baseline(b) => b.last_end = b.last_end.max(ts.div_euclid(b.bucket) * b.bucket),
             _ => {}
         }
@@ -348,18 +352,27 @@ impl RuleType {
             RuleType::Correlation(c) => c.garbage_collect(rule, ts, matches),
             RuleType::GeoVelocity(g) => g.last.retain(|_, l| ts - l.ts <= tf(rule)),
             RuleType::Beacon(b) => b.beats.retain(|_, w| w.times.back().is_some_and(|t| ts - t <= tf(rule))),
+            RuleType::Risk(r) => {
+                r.hits.retain(|_, q| q.back().is_some_and(|h| ts - h.ts <= tf(rule)));
+                r.mitre.retain(|k, _| r.hits.contains_key(k));
+            }
             _ => {}
         }
     }
 
-    /// Silence key part for rules whose matches don't carry the query_key (flatline).
+    /// Silence key part for rules whose matches don't carry the query_key (flatline, risk: the entity).
     pub fn silence_key(&self, m: &Doc) -> Option<String> {
-        matches!(self, RuleType::Flatline(_)).then(|| m.get("key").map(py_str)).flatten()
+        match self {
+            RuleType::Flatline(_) => m.get("key").map(py_str),
+            RuleType::Risk(_) => m.get("risk_object").map(|o| format!("{}:{}", py_str(&o["type"]), py_str(&o["value"]))),
+            _ => None,
+        }
     }
 
-    /// Query filters this type adds (blacklist / whitelist terms).
+    /// Query filters this type adds (blacklist / whitelist terms, the docs that carry risk).
     pub fn extra_filter(&self, rule: &Rule) -> Option<Value> {
         match self {
+            RuleType::Risk(_) => Some(json!({"exists": {"field": "risk_objects.score"}})),
             RuleType::Compare(c) => c.extra_filter(rule),
             _ => None,
         }
@@ -424,6 +437,7 @@ impl RuleType {
             RuleType::Correlation(c) => c.match_str(rule, m, ts_fmt),
             RuleType::GeoVelocity(g) => g.match_str(rule, m, ts_fmt),
             RuleType::Beacon(_) => Beacon::match_str(rule, m, ts_fmt),
+            RuleType::Risk(_) => Risk::match_str(rule, m, ts_fmt),
             RuleType::Baseline(_) => Baseline::match_str(rule, m, ts_fmt),
             RuleType::Outlier(_) => Outlier::match_str(rule, m, ts_fmt),
             RuleType::MetricAgg(a) => {
@@ -847,18 +861,23 @@ fn walk_buckets(ts: Ts, payload: &Value, f: &mut dyn FnMut(Ts, Option<&Value>, &
     }
 }
 
-/// `query_key: a.b` + value -> `{a: {b: value}}` (upstream `expand_string_into_dict`).
+/// `query_key: a.b` + value -> `{a: {b: value}}` (upstream `expand_string_into_dict`). An object already at `a` is
+/// kept and completed (`user.name` then `user.dept` give one `user`).
 fn expand_into(doc: &mut Doc, path: &str, v: Value) {
-    fn nested(path: &str, v: Value) -> Value {
-        match path.split_once('.') {
-            Some((head, rest)) => json!({ head: nested(rest, v) }),
-            None => json!({ path: v }),
+    match path.split_once('.') {
+        Some((head, rest)) => {
+            let child = doc.entry(head.to_string()).or_insert_with(|| json!({}));
+            if !child.is_object() {
+                *child = json!({});
+            }
+            if let Value::Object(m) = child {
+                expand_into(m, rest, v);
+            }
+        }
+        None => {
+            doc.insert(path.into(), v);
         }
     }
-    match path.split_once('.') {
-        Some((head, rest)) => doc.insert(head.into(), nested(rest, v)),
-        None => doc.insert(path.into(), v),
-    };
 }
 
 pub struct MetricAgg {
@@ -1400,9 +1419,11 @@ fn percentile(xs: &[f64], p: f64) -> f64 {
 
 /// `outlier`: one metric per `query_key` value over the last `timeframe`, each run; an entity matches when its value
 /// is at least `outlier_factor` times the median (or the p99) of the whole population. No state: every run judges a
-/// fresh population, `realert` keeps one alert per entity.
+/// fresh population, `realert` keeps one alert per entity. With `peer_field` the population is split by that field
+/// and each group is judged on its own.
 pub struct Outlier {
     key: String,
+    peer: Option<String>,
     ty: String,
     factor: f64,
     min_population: usize,
@@ -1413,6 +1434,7 @@ impl Outlier {
     fn new(rule: &Rule) -> Self {
         Outlier {
             key: metric_key(rule),
+            peer: rule.raw.get("peer_field").and_then(Value::as_str).map(String::from),
             ty: rule.raw.get("metric_agg_type").map(py_str).unwrap_or_default(),
             factor: opt_f64(rule, "outlier_factor").unwrap_or(1.0),
             min_population: rule.raw.get("min_population").and_then(Value::as_u64).unwrap_or(10) as usize,
@@ -1420,11 +1442,23 @@ impl Outlier {
         }
     }
 
-    /// `payload` is the `aggregations` of a terms aggregation on the `query_key` with the metric inside.
+    /// `payload` is the `aggregations` of a terms aggregation on the `query_key` with the metric inside, itself inside
+    /// a terms aggregation on the `peer_field` when there is one.
     fn add_population(&mut self, rule: &Rule, ts: Ts, payload: &Value, matches: &mut Vec<Doc>) {
-        let mut pop: Vec<(&Value, f64)> = payload["bucket_aggs"]["buckets"].as_array().into_iter().flatten().filter_map(|b| Some((&b["key"], b[&self.key]["value"].as_f64()?))).collect();
+        if self.peer.is_none() {
+            return self.judge(rule, ts, &payload["bucket_aggs"], None, matches);
+        }
+        for group in payload["peer_aggs"]["buckets"].as_array().into_iter().flatten() {
+            self.judge(rule, ts, &group["bucket_aggs"], Some(&group["key"]), matches);
+        }
+    }
+
+    /// One population: the `query_key` buckets of `terms`, all the entities or those of one peer `group`.
+    fn judge(&self, rule: &Rule, ts: Ts, terms: &Value, group: Option<&Value>, matches: &mut Vec<Doc>) {
+        let mut pop: Vec<(&Value, f64)> = terms["buckets"].as_array().into_iter().flatten().filter_map(|b| Some((&b["key"], b[&self.key]["value"].as_f64()?))).collect();
+        let label = group.map_or_else(String::new, |g| format!(" in {}={}", self.peer.as_deref().unwrap_or_default(), py_str(g)));
         if pop.len() < self.min_population {
-            log::debug!("Rule {}: {} entities, fewer than min_population ({}), nothing to compare", rule.name, pop.len(), self.min_population);
+            log::debug!("Rule {}: {} entities{label}, fewer than min_population ({}), nothing to compare", rule.name, pop.len(), self.min_population);
             return;
         }
         pop.sort_by(|a, b| b.1.total_cmp(&a.1));
@@ -1439,19 +1473,23 @@ impl Outlier {
         for (key, value) in pop.iter().take_while(|(_, v)| *v >= self.factor * reference) {
             let mut doc = Doc::from_iter([(self.key.clone(), json!(value)), ("metric_agg_value".into(), json!(value))]);
             expand_into(&mut doc, &qk, (*key).clone());
+            if let (Some(field), Some(g)) = (&self.peer, group) {
+                expand_into(&mut doc, field, g.clone());
+            }
             let mut m = into_match(rule, Event { ts, doc });
-            m.insert(
-                "outlier".into(),
-                json!({
-                    "value": value,
-                    "reference": round(reference),
-                    "reference_kind": if self.p99 { "p99" } else { "median" },
-                    "ratio": round(value / reference),
-                    "factor": self.factor,
-                    "population": pop.len(),
-                    "metric": format!("{}({})", self.ty, rule.raw.get("metric_agg_key").map(py_str).unwrap_or_default()),
-                }),
-            );
+            let mut info = json!({
+                "value": value,
+                "reference": round(reference),
+                "reference_kind": if self.p99 { "p99" } else { "median" },
+                "ratio": round(value / reference),
+                "factor": self.factor,
+                "population": pop.len(),
+                "metric": format!("{}({})", self.ty, rule.raw.get("metric_agg_key").map(py_str).unwrap_or_default()),
+            });
+            if let Some(g) = group {
+                info["peer_group"] = g.clone();
+            }
+            m.insert("outlier".into(), info);
             matches.push(m);
         }
     }
@@ -1460,8 +1498,12 @@ impl Outlier {
         let (Some(info), Some(ts)) = (m.get("outlier"), field::lookup(m, &rule.timestamp_field).and_then(|v| parse_ts(rule, v))) else { return String::new() };
         let key = rule.query_key.as_ref().and_then(|q| field::lookup(m, q)).map_or_else(String::new, py_str);
         let n = |k: &str| info[k].as_f64().unwrap_or(0.0);
+        let group = match (rule.raw.get("peer_field"), info.get("peer_group")) {
+            (Some(field), Some(g)) => format!(" in {}={}", py_str(field), py_str(g)),
+            _ => String::new(),
+        };
         format!(
-            "Outlier {key}: {} is {} between {} and {}, {}x the {} of its peers ({}, {} entities)\n\n",
+            "Outlier {key}: {} is {} between {} and {}, {}x the {} of its peers{group} ({}, {} entities)\n\n",
             py_str(&info["metric"]),
             py_num(n("value")),
             pretty(ts - tf(rule), rule.use_local_time, ts_fmt),
@@ -1470,6 +1512,112 @@ impl Outlier {
             py_str(&info["reference_kind"]),
             py_num(n("reference")),
             py_str(&info["population"]),
+        )
+    }
+}
+
+// ---- risk ----
+
+/// One entry of the risk of an entity: `score` added by an alert of `rule` at `ts`.
+struct RiskHit {
+    ts: Ts,
+    rule: String,
+    score: f64,
+}
+
+/// `risk`: adds up the `risk_score` that the alerts of other rules put on an entity (`risk_objects` of the alert
+/// docs) and matches when the sum within `timeframe` reaches `risk_threshold`, and at least `min_distinct_rules`
+/// different rules contributed. Like frequency, the entries that made a match are spent.
+pub struct Risk {
+    threshold: f64,
+    object_type: Option<String>,
+    min_rules: usize,
+    /// `(entity type, entity name)` -> its entries within `timeframe`, oldest first.
+    hits: FxHashMap<(String, String), VecDeque<RiskHit>>,
+    /// Matches at or before this time were alerted by a previous run; replaying them only rebuilds state.
+    suppress_until: Option<Ts>,
+    /// ATT&CK of the contributing alerts, by entity.
+    mitre: FxHashMap<(String, String), (std::collections::BTreeSet<String>, std::collections::BTreeSet<String>)>,
+}
+
+impl Risk {
+    fn new(rule: &Rule) -> Self {
+        Risk {
+            threshold: opt_f64(rule, "risk_threshold").unwrap_or(f64::INFINITY),
+            object_type: rule.raw.get("risk_object_type").and_then(Value::as_str).map(String::from),
+            min_rules: rule.raw.get("min_distinct_rules").and_then(Value::as_u64).unwrap_or(1) as usize,
+            hits: FxHashMap::default(),
+            suppress_until: None,
+            mitre: FxHashMap::default(),
+        }
+    }
+
+    fn add_data(&mut self, rule: &Rule, events: Vec<Event>, matches: &mut Vec<Doc>) {
+        for ev in events {
+            let name = ev.doc.get("rule_name").map_or_else(String::new, py_str);
+            for o in ev.doc.get("risk_objects").and_then(Value::as_array).into_iter().flatten() {
+                let (Some(ty), Some(value), Some(score)) = (o["type"].as_str(), o.get("value").map(py_str), o["score"].as_f64()) else { continue };
+                if self.object_type.as_deref().is_some_and(|t| t != ty) || !score.is_finite() || score <= 0.0 {
+                    continue;
+                }
+                let key = (ty.to_string(), value);
+                let q = self.hits.entry(key.clone()).or_default();
+                let pos = q.partition_point(|h| h.ts <= ev.ts);
+                q.insert(pos, RiskHit { ts: ev.ts, rule: name.clone(), score });
+                while q.back().zip(q.front()).is_some_and(|(n, o)| n.ts - o.ts > tf(rule)) {
+                    q.pop_front();
+                }
+                let (techniques, tactics) = self.mitre.entry(key.clone()).or_default();
+                for (src, dst) in [("techniques", techniques), ("tactics", tactics)] {
+                    dst.extend(ev.doc.get("mitre_attack").and_then(|m| m[src].as_array()).into_iter().flatten().filter_map(Value::as_str).map(String::from));
+                }
+                let total: f64 = q.iter().map(|h| h.score).sum();
+                let mut by_rule: std::collections::BTreeMap<&str, (f64, usize)> = std::collections::BTreeMap::new();
+                for h in q.iter() {
+                    let e = by_rule.entry(&h.rule).or_default();
+                    e.0 += h.score;
+                    e.1 += 1;
+                }
+                if total < self.threshold || by_rule.len() < self.min_rules {
+                    continue;
+                }
+                let mut rules: Vec<(&str, (f64, usize))> = by_rule.into_iter().collect();
+                rules.sort_by(|a, b| b.1.0.total_cmp(&a.1.0).then(a.0.cmp(b.0)));
+                let risk_rules: Vec<Value> = rules.iter().map(|(r, (s, n))| json!({"rule_name": r, "risk_score": s, "alerts": n})).collect();
+                let (first, last, count) = (q[0].ts, q[q.len() - 1].ts, q.len());
+                let (techniques, tactics) = self.mitre.remove(&key).unwrap_or_default();
+                self.hits.remove(&key);
+                if self.suppress_until.is_some_and(|t| last <= t) {
+                    continue;
+                }
+                let mut m = into_match(rule, Event { ts: last, doc: Doc::new() });
+                m.insert("risk_object".into(), json!({"type": key.0, "value": key.1}));
+                m.insert("risk_score_total".into(), json!(total));
+                m.insert("risk_threshold".into(), json!(self.threshold));
+                m.insert("risk_alerts".into(), json!(count));
+                m.insert("risk_rules".into(), Value::Array(risk_rules));
+                m.insert("first_timestamp".into(), json!(to_iso(first)));
+                if !techniques.is_empty() {
+                    m.insert("mitre_attack".into(), json!({"techniques": techniques, "tactics": tactics}));
+                }
+                matches.push(m);
+            }
+        }
+    }
+
+    fn match_str(rule: &Rule, m: &Doc, ts_fmt: Option<&str>) -> String {
+        let Some(o) = m.get("risk_object") else { return String::new() };
+        // 120.0 reads as 120
+        let score = |v: &Value| v.as_f64().map_or_else(|| py_str(v), |n| if n.fract() == 0.0 { format!("{}", n as i64) } else { format!("{n:.2}") });
+        let first = m.get("first_timestamp").and_then(Value::as_str).and_then(crate::time::parse_iso).map(|t| pretty(t, rule.use_local_time, ts_fmt)).unwrap_or_default();
+        let by_rule = m["risk_rules"].as_array().into_iter().flatten().map(|r| format!("  {}: {} ({} alert(s))\n", py_str(&r["rule_name"]), score(&r["risk_score"]), py_str(&r["alerts"]))).collect::<String>();
+        format!(
+            "Risk of {} {}: score {} (threshold {}) from {} alerts since {first}\n{by_rule}\n",
+            py_str(&o["type"]),
+            py_str(&o["value"]),
+            score(&m["risk_score_total"]),
+            score(&m["risk_threshold"]),
+            py_str(&m["risk_alerts"]),
         )
     }
 }
@@ -2298,10 +2446,51 @@ mod tests {
             "query_key: u\ntimeframe: {hours: 1}\nmetric_agg_key: b\nmetric_agg_type: sum\n".to_string(),
         ]
         .into_iter()
-        .chain(["min_population: 2\n", "min_population: x\n", "outlier_factor: 0\n", "outlier_reference: p95\n", "query_key: [a, b]\n", "metric_agg_type: percentiles\npercentile_range: 99\n", "bucket_interval: {hours: 1}\n", "use_count_query: true\n", "ingest_timestamp_field: x\n"].map(|x| format!("{ok}{x}")))
+        .chain(["min_population: 2\n", "min_population: x\n", "outlier_factor: 0\n", "outlier_reference: p95\n", "query_key: [a, b]\n", "metric_agg_type: percentiles\npercentile_range: 99\n", "bucket_interval: {hours: 1}\n", "use_count_query: true\n", "ingest_timestamp_field: x\n", "peer_field: user\n", "peer_field: [a, b]\n", "peer_field: \"a,b\"\n", "peer_field: \"\"\n"].map(|x| format!("{ok}{x}")))
         {
             assert!(std::panic::catch_unwind(|| rule_from(&format!("type: outlier\n{yaml}"))).is_err(), "{yaml}");
         }
+    }
+
+    /// `groups`: (peer group, [(user, bytes)]) as the nested `peer_aggs` > `bucket_aggs` response.
+    fn run_peers(extra: &str, groups: &[(&str, Vec<(String, f64)>)]) -> (Rule, Vec<Doc>) {
+        let rule = rule_from(&format!("type: outlier\nquery_key: user.name\npeer_field: user.dept\ntimeframe: {{hours: 24}}\nmetric_agg_key: bytes\nmetric_agg_type: sum\noutlier_factor: 10\n{extra}"));
+        let mut rt = RuleType::new(&rule).unwrap();
+        let buckets: Vec<Value> = groups
+            .iter()
+            .map(|(g, pop)| json!({"key": g, "bucket_aggs": {"buckets": pop.iter().map(|(k, v)| json!({"key": k, "metric_bytes_sum": {"value": v}})).collect::<Vec<_>>()}}))
+            .collect();
+        let mut out = Vec::new();
+        rt.add_aggregation(&rule, 1_700_000_000_000_000, &json!({"peer_aggs": {"buckets": buckets}}), &mut out);
+        (rule, out)
+    }
+
+    #[test]
+    fn outlier_peer_field_judges_each_group_on_its_own() {
+        // Admins send ~5000, accountants ~100: the admin at 5000 is normal among admins, one at 90000 is not.
+        // Judged together, every admin would be 40x+ the median of the whole population.
+        let admins: Vec<(String, f64)> = (0..12).map(|i| (format!("a{i}"), 5000.0 + i as f64)).chain([("evil".to_string(), 90000.0)]).collect();
+        let (rule, out) = run_peers("", &[("admin", admins.clone()), ("acct", peers(14, &[]))]);
+        assert_eq!(out.len(), 1, "{out:?}");
+        let m = &out[0];
+        // query_key and peer_field share the `user` object: both must be in the match.
+        assert_eq!((&m["user"]["name"], &m["user"]["dept"], &m["outlier"]["peer_group"], &m["outlier"]["population"]), (&json!("evil"), &json!("admin"), &json!("admin"), &json!(13)));
+        assert_eq!(m["outlier"]["reference"], json!(5006.0));
+        let text = Outlier::match_str(&rule, m, None);
+        assert!(text.starts_with("Outlier evil: sum(bytes) is 90000 between "), "{text}");
+        assert!(text.contains("of its peers in user.dept=admin (5006"), "{text}");
+        // Same data without the groups: the median is an accountant, so all 13 admins are flagged.
+        let all: Vec<(String, f64)> = admins.into_iter().chain(peers(14, &[])).collect();
+        assert_eq!(run_outlier("", &all).1.len(), 13);
+    }
+
+    #[test]
+    fn outlier_peer_field_min_population_is_per_group() {
+        let small = ("small", peers(4, &[("x", 5000.0)]));
+        let big = ("big", peers(12, &[("y", 5000.0)]));
+        let out = run_peers("", &[small, big]).1;
+        assert_eq!(out.iter().map(|m| m["user"]["name"].clone()).collect::<Vec<_>>(), vec![json!("y")], "the group of 5 is too small");
+        assert!(run_peers("", &[]).1.is_empty());
     }
 
     #[test]
@@ -2692,5 +2881,74 @@ mod tests {
         assert!(!truthy(Some(&json!(""))));
         assert!(truthy(Some(&json!("a"))));
         assert!(!truthy(None));
+    }
+
+    fn risk_rule(extra: &str) -> (Rule, RuleType) {
+        let rule = rule_from(&format!("type: risk\nrisk_threshold: 100\ntimeframe: {{hours: 1}}\n{extra}"));
+        let rt = RuleType::new(&rule).unwrap();
+        (rule, rt)
+    }
+
+    /// An alert doc of `rule` at `secs` seconds, with one `risk_objects` entry per `(type, value, score)`.
+    fn risk_ev(rule: &str, secs: i64, objects: &[(&str, &str, f64)]) -> Event {
+        let ts = 1_700_000_000_000_000 + secs * crate::time::SECOND;
+        let objs: Vec<Value> = objects.iter().map(|(t, v, s)| json!({"type": t, "value": v, "score": s})).collect();
+        Event { ts, doc: Doc::from_iter([("rule_name".into(), json!(rule)), ("risk_objects".into(), json!(objs)), ("@timestamp".into(), json!(to_iso(ts)))]) }
+    }
+
+    #[test]
+    fn risk_adds_scores_per_entity_and_spends_them() {
+        let (rule, mut rt) = risk_rule("");
+        let mut m = vec![];
+        rt.add_data(&rule, vec![risk_ev("a", 0, &[("host", "h1", 40.0), ("user", "u1", 40.0)]), risk_ev("b", 60, &[("host", "h1", 50.0)]), risk_ev("a", 90, &[("host", "h2", 90.0)])], &mut m);
+        assert!(m.is_empty(), "90 for h1, 40 for u1, 90 for h2");
+        rt.add_data(&rule, vec![risk_ev("c", 120, &[("host", "h1", 25.0), ("user", "u1", 25.0)])], &mut m);
+        assert_eq!(m.len(), 1);
+        assert_eq!((&m[0]["risk_object"]["type"], &m[0]["risk_object"]["value"], &m[0]["risk_score_total"], &m[0]["risk_alerts"]), (&json!("host"), &json!("h1"), &json!(115.0), &json!(3)));
+        assert_eq!(m[0]["risk_rules"], json!([{"rule_name": "b", "risk_score": 50.0, "alerts": 1}, {"rule_name": "a", "risk_score": 40.0, "alerts": 1}, {"rule_name": "c", "risk_score": 25.0, "alerts": 1}]));
+        assert_eq!(m[0]["@timestamp"], json!(to_iso(1_700_000_000_000_000 + 120 * crate::time::SECOND)));
+        // spent: h1 starts again from zero, u1 (65) is untouched
+        rt.add_data(&rule, vec![risk_ev("a", 130, &[("host", "h1", 60.0), ("user", "u1", 40.0)])], &mut m);
+        assert_eq!(m.len(), 2);
+        assert_eq!((&m[1]["risk_object"]["value"], &m[1]["risk_score_total"]), (&json!("u1"), &json!(105.0)));
+    }
+
+    #[test]
+    fn risk_window_slides_and_collects() {
+        let (rule, mut rt) = risk_rule("");
+        let mut m = vec![];
+        rt.add_data(&rule, vec![risk_ev("a", 0, &[("host", "h", 60.0)]), risk_ev("a", 3601, &[("host", "h", 60.0)])], &mut m);
+        assert!(m.is_empty(), "the first entry is more than an hour old");
+        rt.garbage_collect(&rule, 1_700_000_000_000_000 + 8000 * crate::time::SECOND, &mut m);
+        assert!(matches!(&rt, RuleType::Risk(r) if r.hits.is_empty() && r.mitre.is_empty()));
+    }
+
+    #[test]
+    fn risk_min_distinct_rules_and_object_type() {
+        let (rule, mut rt) = risk_rule("min_distinct_rules: 2\nrisk_object_type: host\n");
+        let mut m = vec![];
+        rt.add_data(&rule, vec![risk_ev("a", 0, &[("host", "h", 60.0), ("user", "u", 200.0)]), risk_ev("a", 10, &[("host", "h", 60.0)])], &mut m);
+        assert!(m.is_empty(), "one rule only, and users do not count");
+        rt.add_data(&rule, vec![risk_ev("b", 20, &[("host", "h", 1.0)])], &mut m);
+        assert_eq!((m.len(), &m[0]["risk_score_total"]), (1, &json!(121.0)));
+    }
+
+    #[test]
+    fn risk_replay_is_silent_and_mitre_is_merged() {
+        let (rule, mut rt) = risk_rule("");
+        let mut m = vec![];
+        rt.suppress_until(1_700_000_000_000_000 + 100 * crate::time::SECOND);
+        rt.add_data(&rule, vec![risk_ev("a", 0, &[("host", "h", 150.0)])], &mut m);
+        assert!(m.is_empty());
+        let mut e = risk_ev("a", 200, &[("host", "h", 60.0)]);
+        e.doc.insert("mitre_attack".into(), json!({"techniques": ["T1003"], "tactics": ["credential-access"]}));
+        let mut e2 = risk_ev("b", 210, &[("host", "h", 60.0)]);
+        e2.doc.insert("mitre_attack".into(), json!({"techniques": ["T1059", "T1003"], "tactics": ["execution"]}));
+        rt.add_data(&rule, vec![e, e2], &mut m);
+        assert_eq!(m[0]["mitre_attack"], json!({"techniques": ["T1003", "T1059"], "tactics": ["credential-access", "execution"]}));
+        let s = RuleType::Risk(Risk::new(&rule)).match_str(&rule, &m[0], None);
+        assert!(s.starts_with("Risk of host h: score 120 (threshold 100) from 2 alerts since "), "{s}");
+        assert_eq!(rt.silence_key(&m[0]), Some("host:h".into()));
+        assert_eq!(rt.extra_filter(&rule), Some(json!({"exists": {"field": "risk_objects.score"}})));
     }
 }

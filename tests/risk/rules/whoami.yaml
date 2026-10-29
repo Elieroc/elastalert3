@@ -1,0 +1,10 @@
+name: whoami
+type: any
+index: logs-risk
+filter:
+- term: {event.code: whoami}
+query_key: host.name
+realert: {minutes: 10}
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+alert: debug

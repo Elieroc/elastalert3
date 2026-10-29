@@ -35,6 +35,19 @@
     "aggregate_id": {
       "type": "keyword"
     },
+    "risk_objects": {
+      "properties": {
+        "type": {
+          "type": "keyword"
+        },
+        "value": {
+          "type": "keyword"
+        },
+        "score": {
+          "type": "float"
+        }
+      }
+    },
     "mitre_attack": {
       "properties": {
         "techniques": {
