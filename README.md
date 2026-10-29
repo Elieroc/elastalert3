@@ -61,6 +61,7 @@ See [Getting Started](https://elastalert3.neopipe.fr/running_elastalert.html).
 - [`outlier`](https://elastalert3.neopipe.fr/ruletypes.html#outlier) rule type: an entity far above the median of its peers, like a user sending 50 times more data than the others.
 - [`new_term` with `max_occurrences`](https://elastalert3.neopipe.fr/ruletypes.html#new-term): alert on rare terms, not only never-seen ones.
 - [`active_hours`](https://elastalert3.neopipe.fr/ruletypes.html#active-hours): ignore matches outside time windows.
+- [`exceptions`](https://elastalert3.neopipe.fr/ruletypes.html#exceptions): named documents a rule ignores (a Sigma selection or a Query DSL query, with an optional expiry), excluded in the query.
 - [`ingest_timestamp_field`](https://elastalert3.neopipe.fr/ruletypes.html#ingest-timestamp-field): late documents found exactly once.
 - [Sigma rules](https://elastalert3.neopipe.fr/sigma.html) compiled natively into the rule filter (`sigma`, `sigma_folders`, correlation rules, `sigma-convert`).
 - [Match enhancements in Rust](https://elastalert3.neopipe.fr/enhancements.html) (`rust.add_field`, `rust.drop_if`, `rust.lookup`).
