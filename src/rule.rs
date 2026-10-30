@@ -232,6 +232,15 @@ fn alert_entry(x: &Value) -> Result<(String, Option<Map<String, Value>>)> {
 }
 
 impl Rule {
+    /// How far back a restart reads again to rebuild the state: `timeframe`, or `risk_history` of a `risk` rule that has one.
+    pub fn replay_span(&self) -> Dur {
+        let tf = self.timeframe.unwrap_or_default();
+        match self.kind {
+            Kind::Risk => dur_opt(&self.raw, "risk_history").ok().flatten().map_or(tf, |h| h.max(tf)),
+            _ => tf,
+        }
+    }
+
     /// The rule as the alerter at position `i` sees it: the options of its `alert:` entry laid over the rule's own
     /// (upstream's `normalize_config`). Only alert options and alert text are meant to change this way: query and
     /// rule type options are read once, from the rule itself.
@@ -776,6 +785,19 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
             }
             if raw.get("risk_object_type").is_some_and(|v| !v.as_str().is_some_and(|s| !s.is_empty())) {
                 bail!("risk_object_type must be a non-empty string");
+            }
+            match (raw.get("risk_ratio"), dur_opt(&raw, "risk_history")?) {
+                (None, None) => {}
+                (Some(r), Some(h)) => {
+                    if !r.as_f64().is_some_and(|n| n.is_finite() && n > 1.0) {
+                        bail!("risk_ratio must be a number above 1");
+                    }
+                    let tf = dur_opt(&raw, "timeframe")?.unwrap_or_default();
+                    if tf == 0 || h < 2 * tf || h % tf != 0 {
+                        bail!("risk_history must be a multiple of timeframe, at least twice as long");
+                    }
+                }
+                _ => bail!("risk_ratio and risk_history go together"),
             }
         }
         Kind::Beacon => {
@@ -1537,6 +1559,11 @@ mod tests {
             ("timeframe: {hours: 1}\nrisk_threshold: 5\nmin_distinct_rules: 0\n", "at least 1"),
             ("timeframe: {hours: 1}\nrisk_threshold: 5\nattach_related: true\n", "attach_related"),
             ("timeframe: {hours: 1}\nrisk_threshold: 5\nrisk_score: 5\nrisk_objects: {host: h}\n", "not to a risk rule"),
+            ("timeframe: {hours: 1}\nrisk_threshold: 5\nrisk_ratio: 3\n", "go together"),
+            ("timeframe: {hours: 1}\nrisk_threshold: 5\nrisk_history: {days: 1}\n", "go together"),
+            ("timeframe: {hours: 1}\nrisk_threshold: 5\nrisk_ratio: 1\nrisk_history: {days: 1}\n", "above 1"),
+            ("timeframe: {hours: 1}\nrisk_threshold: 5\nrisk_ratio: 3\nrisk_history: {minutes: 90}\n", "multiple of timeframe"),
+            ("timeframe: {hours: 1}\nrisk_threshold: 5\nrisk_ratio: 3\nrisk_history: {hours: 1}\n", "multiple of timeframe"),
         ] {
             assert!(risk_load(&format!("type: risk\n{extra}")).err().unwrap().to_string().contains(want), "{extra}");
         }

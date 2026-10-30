@@ -1,0 +1,5 @@
+name: risk-fixed
+type: risk
+timeframe: {hours: 1}
+risk_threshold: 100
+alert: [debug]

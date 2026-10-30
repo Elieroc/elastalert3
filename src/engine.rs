@@ -275,7 +275,7 @@ impl RuleState {
             && let Some(prev) = old.previous_endtime
         {
             // Open chains (or last positions) were lost with the old rule type: read the window again, without alerting twice.
-            self.starttime = Some(prev - self.rule.timeframe.unwrap_or_default());
+            self.starttime = Some(prev - self.rule.replay_span());
             self.rtype.suppress_until(prev);
             self.seen.clear();
         }
@@ -933,7 +933,7 @@ impl RuleState {
             self.starttime = Some(self.overlap(last));
             if self.rule.kind.replays_window() {
                 // Chains in progress at the last run are rebuilt from the window before it, without alerting twice.
-                self.starttime = Some(last - self.rule.timeframe.unwrap_or_default());
+                self.starttime = Some(last - self.rule.replay_span());
                 self.rtype.suppress_until(last);
             }
             self.sync_interval();

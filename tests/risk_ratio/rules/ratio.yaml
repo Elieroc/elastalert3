@@ -1,0 +1,7 @@
+name: risk-ratio
+type: risk
+timeframe: {hours: 1}
+risk_threshold: 100
+risk_history: {hours: 10}
+risk_ratio: 3
+alert: [debug]

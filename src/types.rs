@@ -1532,6 +1532,10 @@ pub struct Risk {
     threshold: f64,
     object_type: Option<String>,
     min_rules: usize,
+    /// `risk_ratio` and `risk_history`: a match also needs `risk_ratio` times the usual risk per `timeframe`.
+    ratio: Option<(f64, Dur)>,
+    /// `(entity type, entity name)` -> risk summed by fixed window of `timeframe` (`ts / timeframe`), oldest first.
+    history: FxHashMap<(String, String), VecDeque<(Ts, f64)>>,
     /// `(entity type, entity name)` -> its entries within `timeframe`, oldest first.
     hits: FxHashMap<(String, String), VecDeque<RiskHit>>,
     /// Matches at or before this time were alerted by a previous run; replaying them only rebuilds state.
@@ -1546,6 +1550,8 @@ impl Risk {
             threshold: opt_f64(rule, "risk_threshold").unwrap_or(f64::INFINITY),
             object_type: rule.raw.get("risk_object_type").and_then(Value::as_str).map(String::from),
             min_rules: rule.raw.get("min_distinct_rules").and_then(Value::as_u64).unwrap_or(1) as usize,
+            ratio: opt_f64(rule, "risk_ratio").zip(rule.raw.get("risk_history").and_then(|h| crate::time::parse_duration_map(h).ok())),
+            history: FxHashMap::default(),
             hits: FxHashMap::default(),
             suppress_until: None,
             mitre: FxHashMap::default(),
@@ -1571,6 +1577,24 @@ impl Risk {
                 for (src, dst) in [("techniques", techniques), ("tactics", tactics)] {
                     dst.extend(ev.doc.get("mitre_attack").and_then(|m| m[src].as_array()).into_iter().flatten().filter_map(Value::as_str).map(String::from));
                 }
+                let mut expected = None;
+                if let Some((_, span)) = self.ratio {
+                    let (w, h) = (tf(rule), self.history.entry(key.clone()).or_default());
+                    let win = ev.ts.div_euclid(w);
+                    match h.iter_mut().find(|e| e.0 == win) {
+                        Some(e) => e.1 += score,
+                        None => {
+                            let pos = h.partition_point(|e| e.0 < win);
+                            h.insert(pos, (win, score));
+                        }
+                    }
+                    while h.front().is_some_and(|e| e.0 < (ev.ts - span).div_euclid(w)) {
+                        h.pop_front();
+                    }
+                    // The windows that end before the one that holds the start of the judged window: what the entity does usually.
+                    let before = (q[0].ts).div_euclid(w);
+                    expected = Some(h.iter().filter(|e| e.0 < before).map(|e| e.1).sum::<f64>() / (span / w) as f64);
+                }
                 let total: f64 = q.iter().map(|h| h.score).sum();
                 let mut by_rule: std::collections::BTreeMap<&str, (f64, usize)> = std::collections::BTreeMap::new();
                 for h in q.iter() {
@@ -1578,7 +1602,7 @@ impl Risk {
                     e.0 += h.score;
                     e.1 += 1;
                 }
-                if total < self.threshold || by_rule.len() < self.min_rules {
+                if total < self.threshold || by_rule.len() < self.min_rules || self.ratio.zip(expected).is_some_and(|((r, _), e)| total < r * e) {
                     continue;
                 }
                 let mut rules: Vec<(&str, (f64, usize))> = by_rule.into_iter().collect();
@@ -1586,7 +1610,16 @@ impl Risk {
                 let risk_rules: Vec<Value> = rules.iter().map(|(r, (s, n))| json!({"rule_name": r, "risk_score": s, "alerts": n})).collect();
                 let (first, last, count) = (q[0].ts, q[q.len() - 1].ts, q.len());
                 let (techniques, tactics) = self.mitre.remove(&key).unwrap_or_default();
-                self.hits.remove(&key);
+                let spent = self.hits.remove(&key).unwrap_or_default();
+                // An incident is not "usual": it leaves the history so that it does not make the entity less sensitive.
+                if let Some(h) = self.history.get_mut(&key) {
+                    let w = tf(rule);
+                    for r in &spent {
+                        if let Some(e) = h.iter_mut().find(|e| e.0 == r.ts.div_euclid(w)) {
+                            e.1 -= r.score;
+                        }
+                    }
+                }
                 if self.suppress_until.is_some_and(|t| last <= t) {
                     continue;
                 }
@@ -1595,6 +1628,10 @@ impl Risk {
                 m.insert("risk_score_total".into(), json!(total));
                 m.insert("risk_threshold".into(), json!(self.threshold));
                 m.insert("risk_alerts".into(), json!(count));
+                if let Some(((r, _), e)) = self.ratio.zip(expected) {
+                    m.insert("risk_expected".into(), json!((e * 100.0).round() / 100.0));
+                    m.insert("risk_ratio".into(), json!(r));
+                }
                 m.insert("risk_rules".into(), Value::Array(risk_rules));
                 m.insert("first_timestamp".into(), json!(to_iso(first)));
                 if !techniques.is_empty() {
@@ -1611,8 +1648,9 @@ impl Risk {
         let score = |v: &Value| v.as_f64().map_or_else(|| py_str(v), |n| if n.fract() == 0.0 { format!("{}", n as i64) } else { format!("{n:.2}") });
         let first = m.get("first_timestamp").and_then(Value::as_str).and_then(crate::time::parse_iso).map(|t| pretty(t, rule.use_local_time, ts_fmt)).unwrap_or_default();
         let by_rule = m["risk_rules"].as_array().into_iter().flatten().map(|r| format!("  {}: {} ({} alert(s))\n", py_str(&r["rule_name"]), score(&r["risk_score"]), py_str(&r["alerts"]))).collect::<String>();
+        let usual = m.get("risk_expected").map_or_else(String::new, |e| format!(", usual {} per timeframe, ratio {}", score(e), score(&m["risk_ratio"])));
         format!(
-            "Risk of {} {}: score {} (threshold {}) from {} alerts since {first}\n{by_rule}\n",
+            "Risk of {} {}: score {} (threshold {}{usual}) from {} alerts since {first}\n{by_rule}\n",
             py_str(&o["type"]),
             py_str(&o["value"]),
             score(&m["risk_score_total"]),
@@ -2950,5 +2988,35 @@ mod tests {
         assert!(s.starts_with("Risk of host h: score 120 (threshold 100) from 2 alerts since "), "{s}");
         assert_eq!(rt.silence_key(&m[0]), Some("host:h".into()));
         assert_eq!(rt.extra_filter(&rule), Some(json!({"exists": {"field": "risk_objects.score"}})));
+    }
+
+    #[test]
+    fn risk_ratio_raises_the_bar_of_noisy_entities() {
+        let (rule, mut rt) = risk_rule("risk_ratio: 3\nrisk_history: {hours: 10}\n");
+        let mut m = vec![];
+        // noisy: 70 an hour for 8 hours, never 100 within one hour
+        for i in 0..8 {
+            rt.add_data(&rule, vec![risk_ev("a", i * 3700, &[("host", "noisy", 70.0)])], &mut m);
+        }
+        assert!(m.is_empty());
+        // 110: over the floor of 100 but under 3 x the usual 49..56 per hour
+        let t = 8 * 3700 + 100;
+        rt.add_data(&rule, vec![risk_ev("a", t, &[("host", "noisy", 60.0)]), risk_ev("b", t + 10, &[("host", "noisy", 50.0)])], &mut m);
+        assert!(m.is_empty(), "{m:?}");
+        // 200: over both; a quiet host with no history only needs the floor
+        rt.add_data(&rule, vec![risk_ev("c", t + 20, &[("host", "noisy", 90.0), ("host", "quiet", 110.0)])], &mut m);
+        assert_eq!(m.len(), 2, "{m:?}");
+        let by = |v: &str| m.iter().find(|x| x["risk_object"]["value"] == json!(v)).unwrap();
+        let (noisy, quiet) = (by("noisy"), by("quiet"));
+        assert_eq!((&noisy["risk_score_total"], &noisy["risk_alerts"], &noisy["risk_ratio"]), (&json!(200.0), &json!(3), &json!(3.0)));
+        let e = noisy["risk_expected"].as_f64().unwrap();
+        assert!((49.0..=56.0).contains(&e), "{e}");
+        assert_eq!(quiet["risk_expected"], json!(0.0));
+        let s = RuleType::Risk(Risk::new(&rule)).match_str(&rule, noisy, None);
+        assert!(s.starts_with("Risk of host noisy: score 200 (threshold 100, usual "), "{s}");
+        // the incident left the history: the usual of the noisy host is the same afterwards
+        let RuleType::Risk(r) = &rt else { panic!() };
+        let spent: f64 = r.history[&("host".to_string(), "noisy".to_string())].iter().map(|e| e.1).sum();
+        assert!((spent - 7.0 * 70.0).abs() < 1e-9 || (spent - 8.0 * 70.0).abs() < 1e-9, "{spent}");
     }
 }

@@ -2678,6 +2678,27 @@ noisy rule cannot reach the threshold alone.
 
 ``risk_object_type`` (string, optional): Only the entities of this type are judged.
 
+``risk_ratio`` (number > 1) and ``risk_history`` (time, a multiple of ``timeframe``, at least twice as long; both or neither):
+An unusual-risk threshold per entity, on top of ``risk_threshold`` (which stays the floor, as an entity with no history
+has a usual risk of 0). The usual risk is the risk of the entity summed by fixed window of ``timeframe`` over
+``risk_history``, divided by the number of windows (empty windows count as 0). The windows that hold the judged alerts are
+left out, and the risk of an entity that matched leaves its history, so an incident does not make the entity less
+sensitive. An entity matches when its total reaches ``risk_threshold`` **and** ``risk_ratio`` times its usual risk. The
+match has ``risk_expected`` (the usual risk per ``timeframe``) and ``risk_ratio``.
+With ``--debug`` or ``test-rule`` the history is only what the given time range covers: start it ``risk_history`` before the
+alerts to judge, or the usual risk is 0 and only ``risk_threshold`` applies.
+
+.. code-block:: yaml
+
+    name: host-risk-unusual
+    type: risk
+    timeframe: {hours: 24}
+    risk_threshold: 100          # floor
+    risk_history: {days: 30}     # what is usual
+    risk_ratio: 3                # at least 3 x the usual risk per 24 h
+    risk_object_type: host
+    alert: [debug]
+
 - The risk is written in the writeback index, on the alert docs: ``risk_objects: [{type, value, score}]``, mapped by
   ``create-index``. The ``risk`` rule reads that index (``index`` defaults to ``writeback_index``; ``timestamp_field`` is
   ``@timestamp``, the time the doc was written, whatever the config says). It needs the writeback to be reachable and the
@@ -2694,10 +2715,11 @@ noisy rule cannot reach the threshold alone.
   ``first_timestamp`` and, when the contributing rules have ``mitre_attack``, the union of their techniques and tactics as
   ``mitre_attack``. ``@timestamp`` is the time of the last alert. For example
   ``alert_text_args: [risk_object.value, risk_score_total]``.
-- The state is rebuilt after a restart by reading the last ``timeframe`` again, without alerting twice. ``attach_related`` is
+- The state is rebuilt after a restart by reading the last ``timeframe`` (``risk_history`` with ``risk_ratio``) again, without alerting twice. ``attach_related`` is
   not supported: the matches carry ``risk_rules`` instead.
 
 Rejected at load: ``risk_score`` without ``risk_objects`` or the other way round, a ``risk_score`` that is not a positive
 number, ``risk_objects`` that is not a non-empty map of entity types to field names, ``risk_score`` / ``risk_objects`` on a
 ``risk`` rule, and on a ``risk`` rule a missing ``risk_threshold`` or ``timeframe``, a non-positive ``risk_threshold``, a
-``min_distinct_rules`` under 1 and an empty ``risk_object_type``.
+``min_distinct_rules`` under 1, an empty ``risk_object_type``, ``risk_ratio`` without ``risk_history`` (or the other way
+round), a ``risk_ratio`` of 1 or less and a ``risk_history`` that is not a multiple of ``timeframe`` or shorter than twice it.
