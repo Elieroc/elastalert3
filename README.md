@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="https://elastalert3.neopipe.fr"><img src="https://img.shields.io/badge/docs-elastalert3.neopipe.fr-2980b9" alt="Documentation"></a>
-  <img src="https://img.shields.io/badge/version-3.4.0-e5484d" alt="Version 3.4.0">
+  <img src="https://img.shields.io/badge/version-3.5.0-e5484d" alt="Version 3.5.0">
   <img src="https://img.shields.io/badge/status-beta-orange" alt="Status: beta">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="License: Apache-2.0"></a>
   <img src="https://img.shields.io/badge/rust-1.88%2B%20%C2%B7%20edition%202024-dea584?logo=rust" alt="Rust 1.88+, edition 2024">
