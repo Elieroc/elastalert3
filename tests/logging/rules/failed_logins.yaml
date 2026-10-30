@@ -1,0 +1,10 @@
+name: Failed logins
+type: frequency
+index: logs-*
+num_events: 3
+timeframe: {minutes: 10}
+query_key: user
+realert: {minutes: 0}
+filter:
+  - term: {event.outcome: failure}
+alert: debug

@@ -1521,7 +1521,8 @@ mod tests {
     }
 
     fn risk_load(extra: &str) -> Result<Rule> {
-        let dir = std::env::temp_dir().join(format!("ea-risk-{}-{}", std::process::id(), extra.len()));
+        static N: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
+        let dir = std::env::temp_dir().join(format!("ea-risk-{}-{}", std::process::id(), N.fetch_add(1, std::sync::atomic::Ordering::Relaxed)));
         std::fs::create_dir_all(&dir)?;
         std::fs::write(dir.join("r.yaml"), format!("name: r\nalert: debug\n{extra}"))?;
         std::fs::write(dir.join("config.yaml"), "rules_folder: x\nes_host: h\nes_port: 9200\nwriteback_index: wb\nrun_every: {minutes: 1}\nbuffer_time: {minutes: 5}\ntimestamp_field: event.created\n")?;

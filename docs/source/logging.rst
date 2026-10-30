@@ -19,5 +19,12 @@ sent to Elasticsearch, and ``--es_debug_trace FILE`` writes every request as a `
    to Logstash or to a log collector, redirect standard error, or let your service manager (systemd journal, Docker
    logging driver) collect it.
 
+   ``--log-level error|warn|info|debug|trace`` sets the level directly (``RUST_LOG=debug`` is read when the flag is
+   absent; only a bare level, not per-module filters). ``--log-timestamps`` (or ``ELASTALERT_LOG_TIMESTAMPS=1``)
+   prefixes each line with a local timestamp; it is off by default to keep ElastAlert 2's format. On a terminal the
+   level is colored (``NO_COLOR`` disables it, ``CLICOLOR_FORCE=1`` forces it, for example under ``less -R``).
+   Messages raised while a rule runs or delivers its alerts get a ``[rule name]`` prefix, unless the message already
+   names the rule.
+
    The two lines of a debug alert are emitted as one message, so that rules running in parallel do not interleave
    them.

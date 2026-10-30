@@ -11,6 +11,7 @@ mod field;
 mod hours;
 mod index;
 mod lint;
+mod logger;
 mod metrics;
 mod mitre;
 mod notify;
@@ -56,6 +57,12 @@ struct Args {
     /// Log at info level without suppressing alerts
     #[arg(long)]
     verbose: bool,
+    /// Log level: error, warn, info, debug or trace (overrides --verbose/--debug; RUST_LOG is read when absent)
+    #[arg(long = "log-level", value_name = "LEVEL", global = true)]
+    log_level: Option<String>,
+    /// Prefix every log line with a local timestamp (or set ELASTALERT_LOG_TIMESTAMPS=1)
+    #[arg(long = "log-timestamps", global = true)]
+    log_timestamps: bool,
     /// Run only this rule (file name inside the rules folder, or a path)
     #[arg(long)]
     rule: Option<String>,
@@ -119,21 +126,6 @@ enum Cmd {
     MitreLayer(mitre::LayerArgs),
     /// Print the ElastAlert options a Sigma rule compiles to; no Elasticsearch and no config needed
     SigmaConvert(sigma::ConvertArgs),
-}
-
-struct Logger(log::LevelFilter);
-
-impl log::Log for Logger {
-    fn enabled(&self, m: &log::Metadata) -> bool {
-        m.level() <= self.0 || (m.target() == "elasticsearch" && m.level() <= log::max_level())
-    }
-    fn log(&self, r: &log::Record) {
-        if self.enabled(r.metadata()) {
-            let name = if r.target() == "elasticsearch" { "elasticsearch" } else { "elastalert" };
-            eprintln!("{}:{name}:{}", r.level().as_str().replace("WARN", "WARNING"), r.args());
-        }
-    }
-    fn flush(&self) {}
 }
 
 fn parse_time_arg(s: &str) -> Result<Ts> {
@@ -265,7 +257,7 @@ async fn rule_task(
             st.has_run_once = true;
             let _permit = sem.acquire().await;
             let end = now() - st.rule.query_delay;
-            let outcome = std::panic::AssertUnwindSafe(st.run(&ctx, end, initial.take())).catch_unwind().await;
+            let outcome = std::panic::AssertUnwindSafe(logger::RULE.scope(st.rule.name.clone(), st.run(&ctx, end, initial.take()))).catch_unwind().await;
             match outcome {
                 Ok(Ok(_)) => {}
                 Ok(Err(e)) => {
@@ -302,7 +294,7 @@ async fn rule_task(
         }
         // Wait for the next run, sending aggregated alerts as soon as their time comes.
         loop {
-            st.flush_due(&ctx, false).await;
+            logger::RULE.scope(st.rule.name.clone(), st.flush_due(&ctx, false)).await;
             let wake = match st.next_agg_due() {
                 Some(t) => next.min(tokio::time::Instant::now() + Duration::from_micros((t - now()).max(0) as u64)),
                 None => next,
@@ -454,9 +446,10 @@ impl Runtime {
 #[tokio::main]
 async fn main() -> Result<()> {
     let args = Args::parse();
-    let level = if args.debug || args.verbose || matches!(args.cmd, Some(Cmd::TestRule(_))) { log::LevelFilter::Info } else { log::LevelFilter::Warn };
-    log::set_logger(Box::leak(Box::new(Logger(level)))).expect("logger set once");
-    log::set_max_level(if args.es_debug { log::LevelFilter::Info } else { level });
+    let default = if args.debug || args.verbose || matches!(args.cmd, Some(Cmd::TestRule(_))) { log::LevelFilter::Info } else { log::LevelFilter::Warn };
+    let level = logger::Logger::parse_level(args.log_level.as_deref()).unwrap_or(default);
+    let timestamps = args.log_timestamps || std::env::var_os("ELASTALERT_LOG_TIMESTAMPS").is_some_and(|v| !v.is_empty() && v != "0");
+    logger::Logger::new(level, timestamps).install(args.es_debug);
 
     if let Some(Cmd::TestRule(t)) = args.cmd {
         return testrule::run(t, &args.config).await;

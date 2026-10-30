@@ -1,0 +1,44 @@
+[
+ {
+  "@timestamp": "2026-10-01T09:00:00Z",
+  "user": "bob",
+  "event": {
+   "outcome": "failure"
+  }
+ },
+ {
+  "@timestamp": "2026-10-01T09:01:00Z",
+  "user": "bob",
+  "event": {
+   "outcome": "failure"
+  }
+ },
+ {
+  "@timestamp": "2026-10-01T09:02:00Z",
+  "user": "bob",
+  "event": {
+   "outcome": "failure"
+  }
+ },
+ {
+  "@timestamp": "2026-10-01T09:03:00Z",
+  "user": "bob",
+  "event": {
+   "outcome": "failure"
+  }
+ },
+ {
+  "@timestamp": "2026-10-01T09:04:00Z",
+  "user": "bob",
+  "event": {
+   "outcome": "failure"
+  }
+ },
+ {
+  "@timestamp": "2026-10-01T09:02:30Z",
+  "user": "alice",
+  "event": {
+   "outcome": "failure"
+  }
+ }
+]
