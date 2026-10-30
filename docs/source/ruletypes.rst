@@ -12,7 +12,7 @@ ElastAlert 2 repository; they run unchanged in ElastAlert 3.
    listed anywhere are ignored, as in ElastAlert 2, so typos are not detected.
 
    Options new in ElastAlert 3: :ref:`active_hours <active_hours>`, :ref:`mitre_attack <mitre_attack>`, :ref:`ingest_timestamp_field <ingest_timestamp_field>`,
-   :ref:`exceptions <exceptions>`, :ref:`fetch_full_source <fetch_full_source>`, :ref:`Sigma rules <sigma>` (``sigma``), the :ref:`correlation <correlation>`, :ref:`geo_velocity <geo_velocity>`, :ref:`beacon <beacon>`, :ref:`baseline <baseline>`, :ref:`outlier <outlier>` and :ref:`risk <risk>` rule types, ``risk_score`` and ``risk_objects`` on any rule, ``max_occurrences`` of the :ref:`new_term <new_term>` type and the ``rust.*``
+   :ref:`exceptions <exceptions>`, :ref:`fetch_full_source <fetch_full_source>`, :ref:`Sigma rules <sigma>` (``sigma``), the :ref:`correlation <correlation>`, :ref:`geo_velocity <geo_velocity>`, :ref:`beacon <beacon>`, :ref:`baseline <baseline>`, :ref:`log_loss <log_loss>`, :ref:`outlier <outlier>` and :ref:`risk <risk>` rule types, ``risk_score`` and ``risk_objects`` on any rule, ``max_occurrences`` of the :ref:`new_term <new_term>` type and the ``rust.*``
    :doc:`match enhancements <enhancements>`. A rule using one of them does not run in ElastAlert 2 (it ignores
    ``active_hours``, ``mitre_attack``, ``ingest_timestamp_field``, ``exceptions``, ``fetch_full_source`` and ``sigma``).
 
@@ -2548,6 +2548,94 @@ Rejected at load: a missing ``bucket`` or ``history``, a ``bucket`` that is not 
 or the season, a ``history`` under 2 seasons, an unknown ``seasonality`` or ``method``, a non-positive ``threshold``, a
 negative ``min_baseline_count``, a compound ``query_key``, a ``timestamp_type`` other than ``iso``,
 ``ingest_timestamp_field``, ``use_count_query`` and ``use_terms_query``.
+
+.. _log_loss:
+
+Log loss
+~~~~~~~~
+
+.. admonition:: ElastAlert 3
+   :class: ea3
+
+   New in ElastAlert 3: a rule using this type does not load in ElastAlert 2.
+
+``log_loss``: This rule matches a source (a ``query_key`` value, typically an organisation and an ``event_src``) that has
+stopped sending logs for longer than it ever does at this time of the week. There is no threshold to write per source:
+a firewall that logs every minute is lost after an hour, a workstation switched off every weekend is not lost on
+Saturday, and the rule learns both from the ``history``.
+
+.. code-block:: yaml
+
+    name: Log loss
+    type: log_loss
+    index: logs-*
+    query_key: [organisation, event_src]   # required: what a source is, compound keys allowed
+    history: {weeks: 4}                    # required: how far back the thresholds are learned
+    resolution: {minutes: 10}              # default 10 minutes: precision of the silences
+    seasonality: hour_of_week              # hour_of_week (default) | hour_of_day | none
+    factor: 1.5                            # default 1.5: margin over the learned silence
+    quantile: 0.99                         # default 0.99, with seasonality none only
+    min_threshold: {hours: 1}              # default 1 hour: never alert before this silence
+    max_threshold: {days: 3}               # default 3 days: always lost beyond this silence
+    learn_every: {hours: 6}                # default 6 hours: how often the thresholds are learned again
+    group_field: organisation              # optional, with mass_loss_ratio: also match a group of sources
+    mass_loss_ratio: 0.5
+    min_group_size: 3                      # default 3
+    realert: {hours: 4}
+    alert: [slack]
+
+``query_key`` (field or list of fields): Identifies a source. Every field must be aggregatable (``keyword``).
+
+``history`` (time): The window read to learn the thresholds. It must be at least 2 seasons (4 ``resolution`` with
+``seasonality: none``) and at least ``max_threshold``.
+
+``resolution`` (time, whole seconds): A source is active in a ``resolution`` bucket when it has at least one event in it.
+It must divide ``history`` and the season. Silences are known to this precision: a coarser resolution is cheaper and
+gives larger thresholds.
+
+``seasonality``: ``hour_of_week`` (default) and ``hour_of_day`` take, for each past week (or day) of the ``history``, the
+silence of the source at the same instant: the time since its last active bucket. The longest of them is "normal".
+``none`` has no calendar: "normal" is the ``quantile`` of the gaps between the active buckets of the whole ``history``,
+for sources whose silences do not follow the week.
+
+``factor`` (number > 0), ``min_threshold``, ``max_threshold``: The threshold is ``factor`` times what is normal,
+at least ``min_threshold`` and at most ``max_threshold``. The source is lost when it has been silent for longer than
+the threshold. ``min_threshold`` also decides how fast a source that is always on is reported.
+
+``learn_every`` (time): The thresholds are learned from the ``history`` when the rule first runs and then every
+``learn_every``, and kept in memory. Between two learnings a run only reads the last event time of every source over
+the last ``max_threshold``.
+
+``group_field`` (one field of a compound ``query_key``), ``mass_loss_ratio`` (0 to 1), ``min_group_size`` (integer >= 1):
+When at least ``mass_loss_ratio`` of the judged sources of a group (an organisation, an index) are lost, and the group
+has at least ``min_group_size`` of them, one more match is made for the group, in addition to the matches of the
+sources. A mass loss is an accident of a collector, not of a source: send it to a louder channel with an
+``aggregation_key`` or a second rule.
+
+- A source is judged only with enough history: at least 2 seasons since its first event (2 gaps with ``none``). A source
+  new to the ``history`` is not judged until then, and a source with no event in the whole ``history`` is forgotten at
+  the next learning.
+- A source with no event in the last ``max_threshold`` is judged on its last event of the ``history``, so it stays lost
+  (and alerts at each ``realert``) until it leaves the ``history``.
+- The match has the ``query_key`` fields (and the joined ``query_key`` of a compound key, which ``realert`` uses) and a
+  ``log_loss`` field: ``kind`` ``source`` with ``lastseen``, ``silence`` and ``threshold`` (seconds), or ``kind`` ``mass``
+  with ``group_lost`` and ``group_total``. The group match has the ``group_field`` and a ``query_key`` of ``mass:<group>``.
+  For example ``alert_text_args: [event_src, log_loss.silence]``. ``@timestamp`` is the end of the run.
+- Over a replay (``--start`` / ``--end``) each query segment is judged at its end, with the history before it.
+- Cost: the learning is a ``composite`` aggregation over the sources with a ``date_histogram`` under it, paged to stay
+  under ``search.max_buckets``. A run is a ``composite`` of ``max`` aggregations. Memory is one timestamp per active
+  bucket of each source.
+- A normally silent period shorter than a ``resolution`` is invisible, and only the instant of the past seasons is
+  compared, not a window around it: a source whose weekly stop moves by hours may need a larger ``factor`` or
+  ``min_threshold``.
+- ``test-rule --data`` cannot replay this type: the history is read from Elasticsearch.
+
+Rejected at load: a missing ``query_key`` or ``history``, an unknown ``seasonality``, a ``resolution`` that is not whole
+seconds or does not divide ``history`` and the season, a ``history`` under 2 seasons, a non-positive ``min_threshold`` or
+``factor``, ``min_threshold`` over ``max_threshold``, ``max_threshold`` over ``history``, a ``quantile`` outside 0 to 1,
+``group_field`` without ``mass_loss_ratio`` (or the reverse, or a ``group_field`` that is not in a compound
+``query_key``), a ``timestamp_type`` other than ``iso``, ``ingest_timestamp_field``, ``use_count_query`` and
+``use_terms_query``.
 
 .. _outlier:
 

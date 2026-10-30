@@ -1,0 +1,13 @@
+name: Log loss
+type: log_loss
+index: ll-events
+query_key: [org, src]
+history: {weeks: 4}
+resolution: {hours: 1}
+seasonality: hour_of_week
+min_threshold: {hours: 1}
+max_threshold: {days: 3}
+group_field: org
+mass_loss_ratio: 0.75
+min_group_size: 3
+alert: [debug]

@@ -133,7 +133,7 @@ fn check(rule: &Rule, caps: &Caps) -> Vec<String> {
         }
     }
     let mut agg: Vec<&str> = rule.top_count_keys.iter().map(String::as_str).collect();
-    if rule.use_terms_query || rule.kind.is_agg_query() || rule.kind == crate::rule::Kind::Baseline {
+    if rule.use_terms_query || rule.kind.is_agg_query() || matches!(rule.kind, crate::rule::Kind::Baseline | crate::rule::Kind::LogLoss) {
         agg.extend(rule.query_key.iter().flat_map(|k| k.split(',')));
     }
     if rule.kind == crate::rule::Kind::Outlier {

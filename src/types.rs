@@ -217,6 +217,7 @@ pub enum RuleType {
     GeoVelocity(GeoVelocity),
     Beacon(Beacon),
     Baseline(Baseline),
+    LogLoss(LogLoss),
     Outlier(Outlier),
     Risk(Risk),
 }
@@ -238,6 +239,7 @@ impl RuleType {
             Kind::GeoVelocity => RuleType::GeoVelocity(GeoVelocity::new(rule)),
             Kind::Beacon => RuleType::Beacon(Beacon::new(rule)),
             Kind::Baseline => RuleType::Baseline(Baseline::new(rule)),
+            Kind::LogLoss => RuleType::LogLoss(LogLoss::new(rule)),
             Kind::Outlier => RuleType::Outlier(Outlier::new(rule)),
             Kind::Risk => RuleType::Risk(Risk::new(rule)),
         })
@@ -265,7 +267,7 @@ impl RuleType {
             RuleType::Risk(r) => r.add_data(rule, events, matches),
             // Correlation events arrive tagged with their leaves, through `add_correlation`.
             // Baseline buckets arrive through `add_baseline`.
-            RuleType::MetricAgg(_) | RuleType::Percentage(_) | RuleType::Correlation(_) | RuleType::Baseline(_) | RuleType::Outlier(_) => {}
+            RuleType::MetricAgg(_) | RuleType::Percentage(_) | RuleType::Correlation(_) | RuleType::Baseline(_) | RuleType::LogLoss(_) | RuleType::Outlier(_) => {}
         }
     }
 
@@ -311,6 +313,25 @@ impl RuleType {
     pub fn add_baseline(&mut self, rule: &Rule, bucket: (Ts, Ts), payload: &Value, matches: &mut Vec<Doc>) {
         if let RuleType::Baseline(b) = self {
             b.add_buckets(rule, bucket, payload, matches);
+        }
+    }
+
+    /// `log_loss`: true when the thresholds must be learned again at `end`.
+    pub fn log_loss_learn_due(&self, end: Ts) -> bool {
+        matches!(self, RuleType::LogLoss(l) if l.learn_due(end))
+    }
+
+    /// `log_loss`: composite buckets of the history query (`key`, `series`): learns each source's active buckets.
+    pub fn log_loss_learn(&mut self, rule: &Rule, end: Ts, buckets: &[Value]) {
+        if let RuleType::LogLoss(l) = self {
+            l.learn(rule, end, buckets);
+        }
+    }
+
+    /// `log_loss`: composite buckets of the detection query (`key`, `last`): matches the sources silent too long at `end`.
+    pub fn log_loss_check(&self, rule: &Rule, end: Ts, buckets: &[Value], matches: &mut Vec<Doc>) {
+        if let RuleType::LogLoss(l) = self {
+            l.check(rule, end, buckets, matches);
         }
     }
 
@@ -439,6 +460,7 @@ impl RuleType {
             RuleType::Beacon(_) => Beacon::match_str(rule, m, ts_fmt),
             RuleType::Risk(_) => Risk::match_str(rule, m, ts_fmt),
             RuleType::Baseline(_) => Baseline::match_str(rule, m, ts_fmt),
+            RuleType::LogLoss(_) => LogLoss::match_str(rule, m, ts_fmt),
             RuleType::Outlier(_) => Outlier::match_str(rule, m, ts_fmt),
             RuleType::MetricAgg(a) => {
                 let shown = m.get(&a.key).map_or_else(|| "None".into(), |v| rule.raw.get("metric_format_string").and_then(Value::as_str).map_or_else(|| py_str(v), |f| format_number(f, v)));
@@ -1408,6 +1430,146 @@ impl Baseline {
     }
 }
 
+// ---- log_loss ----
+
+/// One source's learned activity: the starts of the `resolution` buckets that held at least one event.
+struct Learned {
+    values: Vec<Value>,
+    buckets: Vec<Ts>,
+}
+
+/// `log_loss`: a source (`query_key` value) is lost when it has been silent for longer than it ever is at this time of
+/// the week (`seasonality`): `factor` times the longest silence seen at the same instant of the past weeks, or
+/// `factor` times a quantile of its gaps with `seasonality: none`, kept between `min_threshold` and `max_threshold`.
+/// Thresholds are learned from the history every `learn_every` and kept in memory; each run only reads the last
+/// event time of each source.
+pub struct LogLoss {
+    shape: crate::rule::LogLossShape,
+    learned_at: Option<Ts>,
+    seen: FxHashMap<String, Learned>,
+}
+
+impl LogLoss {
+    fn new(rule: &Rule) -> Self {
+        LogLoss { shape: crate::rule::log_loss_options(&rule.raw, &rule.compound_query_key).expect("checked at load"), learned_at: None, seen: FxHashMap::default() }
+    }
+
+    /// The fields that identify a source.
+    fn fields(rule: &Rule) -> Vec<String> {
+        if rule.compound_query_key.is_empty() { rule.query_key.iter().cloned().collect() } else { rule.compound_query_key.clone() }
+    }
+
+    fn learn_due(&self, end: Ts) -> bool {
+        // A replay can go back in time: learn again then.
+        self.learned_at.is_none_or(|t| end < t || end - t >= self.shape.learn_every)
+    }
+
+    /// The values of the composite key of a bucket (`k0`, `k1`...) and their map key.
+    fn key_of(rule: &Rule, b: &Value) -> (String, Vec<Value>) {
+        let values: Vec<Value> = (0..Self::fields(rule).len()).map(|i| b["key"][format!("k{i}")].clone()).collect();
+        (Value::Array(values.clone()).to_string(), values)
+    }
+
+    fn learn(&mut self, rule: &Rule, end: Ts, buckets: &[Value]) {
+        self.learned_at = Some(end);
+        self.seen.clear();
+        for b in buckets {
+            let mut starts: Vec<Ts> = b["series"]["buckets"].as_array().into_iter().flatten().filter_map(|x| Some(x["key"].as_i64()? * 1000)).collect();
+            if starts.is_empty() {
+                continue;
+            }
+            starts.sort_unstable();
+            let (key, values) = Self::key_of(rule, b);
+            self.seen.insert(key, Learned { values, buckets: starts });
+        }
+    }
+
+    /// The silence this source usually does not exceed at `now`, unless there is too little history to say.
+    fn threshold(&self, l: &Learned, now: Ts) -> Option<Dur> {
+        let s = &self.shape;
+        let learned_at = self.learned_at?;
+        let normal = if s.season > 0 {
+            // Silence at the same instant of each past season: time since the last active bucket.
+            let silences = (1..=s.history / s.season).map(|w| now - w * s.season).filter(|t| (l.buckets[0]..=learned_at).contains(t)).map(|t| t - l.buckets[l.buckets.partition_point(|b| *b <= t) - 1]).collect::<Vec<_>>();
+            if silences.len() < 2 {
+                return None;
+            }
+            silences.into_iter().max()?
+        } else {
+            let mut gaps: Vec<Dur> = l.buckets.windows(2).map(|w| w[1] - w[0]).collect();
+            if gaps.len() < 2 {
+                return None;
+            }
+            gaps.sort_unstable();
+            gaps[((gaps.len() - 1) as f64 * s.quantile).ceil() as usize]
+        };
+        // ponytail: one instant per past season, no window around it; add a +-resolution max if jitter alerts.
+        Some(((normal as f64 * s.factor) as Dur).clamp(s.min, s.max))
+    }
+
+    fn check(&self, rule: &Rule, end: Ts, buckets: &[Value], matches: &mut Vec<Doc>) {
+        let last: FxHashMap<String, Ts> = buckets.iter().filter_map(|b| Some((Self::key_of(rule, b).0, (b["last"]["value"].as_f64()? * 1000.0) as Ts))).collect();
+        let fields = Self::fields(rule);
+        let group = self.shape.mass.as_ref().and_then(|(g, ..)| fields.iter().position(|f| f == g));
+        let doc_of = |values: &[Value]| {
+            let mut doc = Doc::new();
+            for (f, v) in fields.iter().zip(values) {
+                expand_into(&mut doc, f, v.clone());
+            }
+            if let (Some(qk), true) = (&rule.query_key, fields.len() > 1) {
+                doc.insert(qk.clone(), json!(values.iter().map(py_str).collect::<Vec<_>>().join(", ")));
+            }
+            doc
+        };
+        let mut groups: FxHashMap<String, (Value, usize, usize)> = FxHashMap::default();
+        let mut lost = Vec::new();
+        for (key, l) in &self.seen {
+            let Some(threshold) = self.threshold(l, end) else { continue };
+            let seen_at = last.get(key).copied().unwrap_or(0).max(l.buckets[l.buckets.len() - 1]);
+            let silence = end - seen_at;
+            if let Some(g) = group {
+                let e = groups.entry(l.values[g].to_string()).or_insert_with(|| (l.values[g].clone(), 0, 0));
+                e.1 += 1;
+                e.2 += (silence > threshold) as usize;
+            }
+            if silence > threshold {
+                lost.push((key, l, seen_at, silence, threshold));
+            }
+        }
+        lost.sort_by_key(|x| x.0);
+        for (_, l, seen_at, silence, threshold) in lost {
+            let mut m = into_match(rule, Event { ts: end, doc: doc_of(&l.values) });
+            m.insert("log_loss".into(), json!({"kind": "source", "lastseen": to_iso(seen_at), "silence": silence / crate::time::SECOND, "threshold": threshold / crate::time::SECOND}));
+            matches.push(m);
+        }
+        let Some((gf, ratio, min_size)) = &self.shape.mass else { return };
+        let mut masses: Vec<_> = groups.into_values().filter(|(_, total, lost)| total >= min_size && *lost as f64 / *total as f64 >= *ratio).collect();
+        masses.sort_by_key(|g| g.0.to_string());
+        for (value, total, lost) in masses {
+            let mut doc = Doc::new();
+            expand_into(&mut doc, gf, value.clone());
+            // The realert key of a mass loss is the group, apart from the sources'.
+            doc.insert(rule.query_key.clone().unwrap_or_default(), json!(format!("mass:{}", py_str(&value))));
+            let mut m = into_match(rule, Event { ts: end, doc });
+            m.insert("log_loss".into(), json!({"kind": "mass", "group_lost": lost, "group_total": total}));
+            matches.push(m);
+        }
+    }
+
+    fn match_str(rule: &Rule, m: &Doc, ts_fmt: Option<&str>) -> String {
+        let Some(info) = m.get("log_loss") else { return String::new() };
+        let n = |k: &str| info[k].as_f64().unwrap_or(0.0);
+        let hours = |s: f64| format!("{:.1}", s / 3600.0);
+        if info["kind"] == "mass" {
+            let group = rule.raw.get("group_field").and_then(Value::as_str).and_then(|g| field::lookup(m, g)).map_or_else(String::new, py_str);
+            return format!("Massive log loss in {group}: {} sources lost out of {}\n\n", py_num(n("group_lost")), py_num(n("group_total")));
+        }
+        let key = rule.query_key.as_ref().and_then(|q| field::lookup(m, q)).map_or_else(String::new, py_str);
+        let seen = info["lastseen"].as_str().and_then(crate::time::parse_iso).map(|t| pretty(t, rule.use_local_time, ts_fmt)).unwrap_or_default();
+        format!("Log loss on {key}: last event at {seen}, silent for {} h where at most {} h is normal now\n\n", hours(n("silence")), hours(n("threshold")))
+    }
+}
+
 // ---- outlier ----
 
 /// Linear-interpolated percentile `p` (0..=1) of a sorted slice.
@@ -2367,6 +2529,99 @@ mod tests {
         assert_eq!(out.len(), 1);
         assert!(!out[0].contains_key("u"));
         assert!(rt.match_str(&rule, &out[0], None).starts_with("Abnormal number of events for all events"));
+    }
+
+    const LL_HOUR: Ts = 3_600_000_000;
+
+    fn ll_rule(extra: &str) -> (Rule, RuleType) {
+        let rule = rule_from(&format!("type: log_loss\nquery_key: [org, src]\nhistory: {{weeks: 4}}\nresolution: {{hours: 1}}\n{extra}"));
+        let rt = RuleType::new(&rule).unwrap();
+        (rule, rt)
+    }
+
+    /// Composite bucket of source `(org, src)` active in the hours of `end - 4 weeks ..= end - cut hours` where `active(weekday, hour)`.
+    fn ll_bucket(src: &str, end: Ts, cut: i64, active: impl Fn(i64, i64) -> bool) -> Value {
+        let hours = (0..=4 * 7 * 24 - cut).map(|i| end - (4 * 7 * 24 - i) * LL_HOUR).filter(|t| active((t / (24 * LL_HOUR) + 3) % 7, t / LL_HOUR % 24));
+        json!({"key": {"k0": "o", "k1": src}, "series": {"buckets": hours.map(|t| json!({"key": t / 1000, "doc_count": 1})).collect::<Vec<_>>()}})
+    }
+
+    fn ll_last(src: &str, at: Ts) -> Value {
+        json!({"key": {"k0": "o", "k1": src}, "last": {"value": (at / 1000) as f64}})
+    }
+
+    fn ll_check(rt: &mut RuleType, rule: &Rule, end: Ts, hist: &[Value], last: &[Value]) -> Vec<Doc> {
+        rt.log_loss_learn(rule, end, hist);
+        let mut out = Vec::new();
+        rt.log_loss_check(rule, end, last, &mut out);
+        out
+    }
+
+    #[test]
+    fn log_loss_learns_the_weekend_silence_of_each_source() {
+        let (rule, mut rt) = ll_rule("");
+        let sat = crate::time::parse_iso("2026-10-10T12:00:00Z").unwrap();
+        // `office` stops on Friday at 18:00, `always` never stops.
+        let office = |wd: i64, _h: i64| wd < 4 || (wd == 4 && _h < 18);
+        let hist = [ll_bucket("office", sat, 4, office), ll_bucket("always", sat, 4, |_, _| true)];
+        // Saturday noon: office silent for 18.5 h where 19 h is normal -> fine; always silent for 3 h -> lost.
+        let m = ll_check(&mut rt, &rule, sat, &hist, &[ll_last("office", sat - 18 * LL_HOUR - LL_HOUR / 2), ll_last("always", sat - 3 * LL_HOUR)]);
+        assert_eq!(m.len(), 1);
+        assert_eq!(m[0]["src"], json!("always"));
+        assert_eq!(m[0]["org,src"], json!("o, always"));
+        assert_eq!(m[0]["log_loss"], json!({"kind": "source", "lastseen": to_iso(sat - 3 * LL_HOUR), "silence": 10800, "threshold": 3600}));
+        // The same silence on a Tuesday is not normal for office.
+        let tue = crate::time::parse_iso("2026-10-13T12:00:00Z").unwrap();
+        let hist = [ll_bucket("office", tue, 4, office)];
+        let m = ll_check(&mut rt, &rule, tue, &hist, &[ll_last("office", tue - 4 * LL_HOUR)]);
+        assert_eq!(m.len(), 1);
+        assert!(LogLoss::match_str(&rule, &m[0], None).starts_with("Log loss on o, office: last event at "));
+    }
+
+    #[test]
+    fn log_loss_needs_history_and_seasonality_none_uses_the_gaps() {
+        let (rule, mut rt) = ll_rule("");
+        let sat = crate::time::parse_iso("2026-10-10T12:00:00Z").unwrap();
+        // One week of history is one sample: no judgement.
+        let young = ll_bucket("new", sat, 4, |_, _| true);
+        let young = json!({"key": young["key"], "series": {"buckets": young["series"]["buckets"].as_array().unwrap()[3 * 7 * 24..]}});
+        assert!(ll_check(&mut rt, &rule, sat, &[young], &[ll_last("new", sat - 40 * LL_HOUR)]).is_empty());
+        // Every 6 h: 99th percentile gap 6 h, x1.5 = 9 h.
+        let (rule, mut rt) = ll_rule("seasonality: none\n");
+        let hist = [ll_bucket("slow", sat, 11, |_, h| h % 6 == 0)];
+        assert!(ll_check(&mut rt, &rule, sat, &hist, &[ll_last("slow", sat - 8 * LL_HOUR)]).is_empty());
+        let m = ll_check(&mut rt, &rule, sat, &hist, &[ll_last("slow", sat - 10 * LL_HOUR)]);
+        assert_eq!(m[0]["log_loss"]["threshold"], json!(9 * 3600));
+        // No detection data (silent beyond max_threshold): the last learned bucket is the last sight, 12 h ago here.
+        assert_eq!(ll_check(&mut rt, &rule, sat, &hist, &[]).len(), 1);
+        assert!(!rt.log_loss_learn_due(sat + LL_HOUR) && rt.log_loss_learn_due(sat + 6 * LL_HOUR) && rt.log_loss_learn_due(sat - 1));
+    }
+
+    #[test]
+    fn log_loss_mass_loss_per_group() {
+        let (rule, mut rt) = ll_rule("group_field: org\nmass_loss_ratio: 0.5\nmin_group_size: 2\n");
+        let sat = crate::time::parse_iso("2026-10-10T12:00:00Z").unwrap();
+        let hist = [ll_bucket("a", sat, 4, |_, _| true), ll_bucket("b", sat, 4, |_, _| true), ll_bucket("c", sat, 4, |_, _| true)];
+        let old = sat - 5 * LL_HOUR;
+        let m = ll_check(&mut rt, &rule, sat, &hist, &[ll_last("a", old), ll_last("b", old), ll_last("c", sat)]);
+        assert_eq!(m.len(), 3);
+        assert_eq!(m[2]["log_loss"], json!({"kind": "mass", "group_lost": 2, "group_total": 3}));
+        assert_eq!(m[2]["org,src"], json!("mass:o"));
+        assert_eq!(LogLoss::match_str(&rule, &m[2], None), "Massive log loss in o: 2 sources lost out of 3\n\n");
+        // One of three lost is under the ratio.
+        assert_eq!(ll_check(&mut rt, &rule, sat, &hist, &[ll_last("a", old), ll_last("b", sat), ll_last("c", sat)]).len(), 1);
+    }
+
+    #[test]
+    fn log_loss_needs_its_options() {
+        let ok = "query_key: [a, b]\nhistory: {weeks: 4}\n";
+        assert!(std::panic::catch_unwind(|| rule_from(&format!("type: log_loss\n{ok}group_field: a\nmass_loss_ratio: 0.5\nseasonality: hour_of_day\n"))).is_ok());
+        for bad in ["", "history: {weeks: 1}\n", "seasonality: daily\n", "factor: 0\n", "quantile: 2\n", "min_threshold: {days: 9}\n", "resolution: {minutes: 11}\n", "group_field: a\n", "mass_loss_ratio: 0.5\n", "group_field: c\nmass_loss_ratio: 0.5\n", "min_group_size: 2\n", "use_terms_query: true\n", "timestamp_type: unix\n"] {
+            let yaml = format!("type: log_loss\n{}{bad}", if bad.starts_with("history") { "query_key: [a, b]\n" } else if bad.is_empty() { "query_key: [a, b]\n" } else { ok });
+            assert!(std::panic::catch_unwind(|| rule_from(&yaml)).is_err(), "{yaml}");
+        }
+        assert!(std::panic::catch_unwind(|| rule_from("type: log_loss\nhistory: {weeks: 4}\n")).is_err());
+        // group_field cannot name a single query_key.
+        assert!(std::panic::catch_unwind(|| rule_from("type: log_loss\nquery_key: a\nhistory: {weeks: 4}\ngroup_field: a\nmass_loss_ratio: 0.5\n")).is_err());
     }
 
     #[test]

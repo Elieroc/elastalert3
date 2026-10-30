@@ -456,6 +456,9 @@ impl RuleState {
         if self.rule.kind == Kind::Baseline {
             return self.baseline_query(ctx, end, matches).await;
         }
+        if self.rule.kind == Kind::LogLoss {
+            return self.log_loss_query(ctx, end, matches).await;
+        }
         let index = self.index_for(start, end)?;
         if self.aggregating() {
             return self.agg_query(ctx, &index, start, end, matches).await;
@@ -743,6 +746,49 @@ impl RuleState {
         Ok(())
     }
 
+    /// `log_loss`: learns the thresholds from the history when due, then reads the last event time of every source.
+    async fn log_loss_query(&mut self, ctx: &Ctx, end: Ts, matches: &mut Vec<Doc>) -> Result<()> {
+        let shape = crate::rule::log_loss_options(&self.rule.raw, &self.rule.compound_query_key)?;
+        if self.rtype.log_loss_learn_due(end) {
+            let secs = shape.resolution / crate::time::SECOND;
+            let series = json!({"series": {"date_histogram": {"field": self.rule.timestamp_field, "fixed_interval": format!("{secs}s"), "min_doc_count": 1}}});
+            // Composite pages are sized to stay well under `search.max_buckets`.
+            let page = (50_000 / (shape.history / shape.resolution) as u64).max(1);
+            let buckets = self.composite(ctx, end - shape.history, end, series, page).await?;
+            self.rtype.log_loss_learn(&self.rule, end, &buckets);
+        }
+        let buckets = self.composite(ctx, end - shape.max, end, json!({"last": {"max": {"field": self.rule.timestamp_field}}}), 10_000).await?;
+        self.rtype.log_loss_check(&self.rule, end, &buckets, matches);
+        Ok(())
+    }
+
+    /// All the buckets of a composite aggregation over the `query_key` fields (`k0`, `k1`...) for [start, end].
+    async fn composite(&mut self, ctx: &Ctx, start: Ts, end: Ts, sub: Value, page: u64) -> Result<Vec<Value>> {
+        let sources: Vec<Value> = self.rule.query_key.iter().flat_map(|q| q.split(',')).enumerate().map(|(i, f)| json!({format!("k{i}"): {"terms": {"field": f}}})).collect();
+        let (query, index) = (self.filters(start, end, vec![]), self.index_for(start, end)?);
+        let (mut after, mut out) = (None, Vec::new());
+        loop {
+            let mut composite = json!({"size": page, "sources": sources});
+            if let Some(a) = after {
+                composite["after"] = a;
+            }
+            let body = self.with_timeout(json!({"query": query, "size": 0, "aggs": {"keys": {"composite": composite, "aggs": sub}}}));
+            let resp = ctx.es.search_with(&index, &body, &self.rule.search_params).await.map_err(|e| anyhow::anyhow!("Error running query: {e:#}"))?;
+            check_timeout(&resp, self.rule.allow_degraded, &self.rule.name)?;
+            let agg = &resp["aggregations"]["keys"];
+            let got = agg["buckets"].as_array().cloned().unwrap_or_default();
+            let full = got.len() as u64 == page;
+            out.extend(got);
+            match agg.get("after_key") {
+                Some(a) if full => after = Some(a.clone()),
+                _ => break,
+            }
+        }
+        let (lt, fmt) = (self.rule.use_local_time, ctx.ts_fmt.as_deref());
+        log::info!("Queried rule {} from {} to {}: {} sources", self.rule.name, pretty(start, lt, fmt), pretty(end, lt, fmt), out.len());
+        Ok(out)
+    }
+
     /// Terms aggregation `field` -> (key, doc_count), most frequent first.
     #[allow(clippy::too_many_arguments)]
     async fn terms(&self, ctx: &Ctx, index: &str, start: Ts, end: Ts, field: String, size: u64, extra: Vec<Value>) -> Result<Vec<(Value, i64)>> {
@@ -769,8 +815,8 @@ impl RuleState {
         if self.aggregating() {
             bail!("test-rule --data / --use-downloaded cannot replay aggregation rule types (metric_aggregation, percentage_match, spike_aggregation, outlier)");
         }
-        if self.rule.kind == Kind::Baseline {
-            bail!("test-rule --data / --use-downloaded cannot replay baseline rules: they read their history from Elasticsearch");
+        if matches!(self.rule.kind, Kind::Baseline | Kind::LogLoss) {
+            bail!("test-rule --data / --use-downloaded cannot replay baseline or log_loss rules: they read their history from Elasticsearch");
         }
         let docs = self.mock.as_ref().expect("checked by caller");
         if self.rule.use_count_query {

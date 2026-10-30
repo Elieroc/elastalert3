@@ -34,6 +34,7 @@ Several rule types with common monitoring paradigms are included with ElastAlert
   ElastAlert 3)
 - "Match when events come at regular intervals (malware beaconing)" (``beacon`` type, new in ElastAlert 3)
 - "Match when the number of events is abnormal for this hour of the week" (``baseline`` type, new in ElastAlert 3)
+- "Match when a source has been silent for longer than it usually is at this time of the week" (``log_loss`` type, new in ElastAlert 3)
 - "Match when an entity is far above its peers (a user sending 50 times more data than the median)" (``outlier`` type, new in ElastAlert 3)
 - "Match when the alerts of a host or a user add up to a risk limit" (``risk`` type, new in ElastAlert 3)
 - "Match when a rarely seen term appears in a field" (``new_term`` type with ``max_occurrences``, new in ElastAlert 3)

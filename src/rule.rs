@@ -27,6 +27,7 @@ pub enum Kind {
     GeoVelocity,
     Beacon,
     Baseline,
+    LogLoss,
     Outlier,
     Risk,
 }
@@ -533,6 +534,62 @@ fn outlier_options(raw: &Map<String, Value>, compound: bool) -> Result<()> {
     Ok(())
 }
 
+/// The options of a `log_loss` rule, validated. Durations are in microseconds; a season of 0 is `none`.
+pub struct LogLossShape {
+    pub resolution: Dur,
+    pub history: Dur,
+    pub season: Dur,
+    pub min: Dur,
+    pub max: Dur,
+    pub learn_every: Dur,
+    pub factor: f64,
+    pub quantile: f64,
+    /// `(group_field, mass_loss_ratio, min_group_size)`.
+    pub mass: Option<(String, f64, usize)>,
+}
+
+pub fn log_loss_options(raw: &Map<String, Value>, compound: &[String]) -> Result<LogLossShape> {
+    let hours = |h: Dur| h * 60 * MINUTE;
+    let dur = |k: &str, default: Dur| -> Result<Dur> { Ok(dur_opt(raw, k)?.unwrap_or(default)) };
+    let (resolution, history) = (dur("resolution", 10 * MINUTE)?, dur_opt(raw, "history")?.ok_or_else(|| anyhow::anyhow!("missing required option for a log_loss rule: history"))?);
+    let (min, max, learn_every) = (dur("min_threshold", hours(1))?, dur("max_threshold", hours(72))?, dur("learn_every", hours(6))?);
+    let season = match raw.get("seasonality").map_or(Some("hour_of_week"), Value::as_str) {
+        Some("none") => 0,
+        Some("hour_of_day") => hours(24),
+        Some("hour_of_week") => hours(24 * 7),
+        _ => bail!("seasonality must be none, hour_of_day or hour_of_week"),
+    };
+    if resolution < SECOND || resolution % SECOND != 0 || history % resolution != 0 || (season > 0 && season % resolution != 0) {
+        bail!("resolution must be whole seconds and divide history and the season");
+    }
+    if history < 2 * season.max(2 * resolution) {
+        bail!("history must cover at least 2 seasons (4 resolutions with seasonality none)");
+    }
+    if min <= 0 || min > max || max > history || learn_every < resolution {
+        bail!("min_threshold must be positive and at most max_threshold, max_threshold at most history, learn_every at least resolution");
+    }
+    let num = |k: &str, default: f64, ok: fn(f64) -> bool| -> Result<f64> {
+        match raw.get(k) {
+            None => Ok(default),
+            Some(v) => v.as_f64().filter(|n| ok(*n)).ok_or_else(|| anyhow::anyhow!("invalid value for {k}")),
+        }
+    };
+    let factor = num("factor", 1.5, |n| n > 0.0)?;
+    let quantile = num("quantile", 0.99, |n| n > 0.0 && n <= 1.0)?;
+    let mass = match (raw.get("group_field"), raw.get("mass_loss_ratio")) {
+        (None, None) => None,
+        (Some(Value::String(g)), Some(_)) if compound.len() > 1 && compound.contains(g) => {
+            let size = raw.get("min_group_size").map_or(Some(3), Value::as_u64).filter(|n| *n >= 1).ok_or_else(|| anyhow::anyhow!("min_group_size must be an integer of at least 1"))?;
+            Some((g.clone(), num("mass_loss_ratio", 0.0, |n| n > 0.0 && n <= 1.0)?, size as usize))
+        }
+        _ => bail!("group_field and mass_loss_ratio go together, and group_field must be one field of a compound query_key"),
+    };
+    if mass.is_none() && raw.contains_key("min_group_size") {
+        bail!("min_group_size needs group_field and mass_loss_ratio");
+    }
+    Ok(LogLossShape { resolution, history, season, min, max, learn_every, factor, quantile, mass })
+}
+
 fn baseline_options(raw: &Map<String, Value>, timestamp_type: TsType, compound: bool) -> Result<()> {
     baseline_shape(raw)?;
     if !matches!(raw.get("method").map_or(Some("zscore"), Value::as_str), Some("zscore" | "mad")) {
@@ -615,6 +672,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         Some("geo_velocity") => Kind::GeoVelocity,
         Some("beacon") => Kind::Beacon,
         Some("baseline") => Kind::Baseline,
+        Some("log_loss") => Kind::LogLoss,
         Some("outlier") => Kind::Outlier,
         Some("risk") => Kind::Risk,
         other => bail!("rule type {other:?} is not supported yet"),
@@ -768,6 +826,13 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
         Kind::SpikeAggregation => need(&["timeframe", "spike_height", "spike_type", "metric_agg_key", "metric_agg_type"])?,
         Kind::Correlation => need(&["correlation_leaves", "correlation_query", "query_key", "timeframe"])?,
         Kind::Baseline => baseline_options(&raw, timestamp_type, compound_query_key.len() > 1)?,
+        Kind::LogLoss => {
+            need(&["query_key", "history"])?;
+            log_loss_options(&raw, &compound_query_key)?;
+            if timestamp_type != TsType::Iso || raw.contains_key("ingest_timestamp_field") || use_count_query || use_terms_query {
+                bail!("log_loss rules need an ISO timestamp_type and do not support ingest_timestamp_field, use_count_query or use_terms_query");
+            }
+        }
         Kind::Outlier => {
             need(&["query_key", "timeframe", "metric_agg_key", "metric_agg_type", "outlier_factor"])?;
             outlier_options(&raw, compound_query_key.len() > 1)?;
@@ -954,7 +1019,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
     }
     include.sort();
     include.dedup();
-    let enrich = !full && !kind.is_agg_query() && !matches!(kind, Kind::Baseline | Kind::Risk);
+    let enrich = !full && !kind.is_agg_query() && !matches!(kind, Kind::Baseline | Kind::LogLoss | Kind::Risk);
     let read_doc_values = raw.get("read_doc_values").and_then(Value::as_bool).unwrap_or(false);
     if read_doc_values && !(enrich && matches!(kind, Kind::Frequency | Kind::Flatline | Kind::Spike | Kind::Correlation) && timestamp_type == TsType::Iso) {
         bail!("read_doc_values applies to frequency, flatline, spike and correlation rules with an ISO timestamp, without include or fetch_full_source");
@@ -983,7 +1048,7 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
     let query_lang = querylang::detect(&filter)?;
     if let Some(lang) = query_lang {
         let what = lang.key();
-        if use_count_query || use_terms_query || kind.is_agg_query() || matches!(kind, Kind::NewTerm | Kind::Correlation | Kind::Baseline) || !top_count_keys.is_empty() {
+        if use_count_query || use_terms_query || kind.is_agg_query() || matches!(kind, Kind::NewTerm | Kind::Correlation | Kind::Baseline | Kind::LogLoss) || !top_count_keys.is_empty() {
             bail!("{what} filters only work with plain hit queries: not with use_count_query, use_terms_query, top_count_keys, new_term, correlation or the aggregation rule types");
         }
         querylang::apply_limit(&mut filter, max_query_size);
