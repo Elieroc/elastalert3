@@ -81,6 +81,14 @@ document may map it later.
 ``test-rule <rule.yaml> [...]`` runs one rule on past data (replaces ``elastalert-test-rule``). See
 :ref:`Testing your rule <testing>`.
 
+.. admonition:: ElastAlert 3
+   :class: ea3
+
+   ``test-rule`` applies ``realert`` (and ``exponential_realert``) on the time of each match, not on the wall clock, so
+   a replayed range shows the alerts the rule would have sent. The output ends with a line
+   ``N matches, M silenced by realert, K would alert``. ElastAlert 2 silences from the current time, so a replay
+   alerts once per key.
+
 Examples::
 
     elastalert --config config.yaml create-index

@@ -492,6 +492,7 @@ async fn main() -> Result<()> {
     let (wb, wb_handle) = Writeback::start((!args.debug).then(|| es.clone()), conf.writeback_index.clone());
     let wb = wb.with_notifier(notifier.clone(), notify_all);
     let ctx = Arc::new(Ctx {
+        replay: false,
         es: es.clone(),
         writeback: wb,
         silences: Arc::new(Silences::default()),

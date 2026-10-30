@@ -322,6 +322,7 @@ async fn run_rule(
         metrics: Arc::new(Metrics::default()),
         notifier: None,
         debug: !args.alert,
+        replay: true,
         disabled: Default::default(),
         disable_rules_on_error: false,
         run_every: conf.run_every,
@@ -333,6 +334,12 @@ async fn run_rule(
     };
     let result = st.run(&ctx, end, Some(start)).await;
     st.flush_due(&ctx, true).await;
+    if let Ok(n) = &result
+        && !args.formatted_output
+        && st.rule.realert > 0
+    {
+        println!("\n{n} matches, {} silenced by realert, {} would alert", st.silenced, *n as u64 - st.silenced.min(*n as u64));
+    }
     if let Err(e) = result {
         eprintln!("Error running rule: {e:#}");
         if args.stop_error {

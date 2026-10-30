@@ -29,7 +29,11 @@ pub struct Silences(Mutex<FxHashMap<String, (Ts, i32)>>);
 
 impl Silences {
     pub fn is_silenced(&self, key: &str) -> bool {
-        self.0.lock().unwrap().get(key).is_some_and(|(until, _)| now() < *until)
+        self.is_silenced_at(key, now())
+    }
+
+    pub fn is_silenced_at(&self, key: &str, at: Ts) -> bool {
+        self.0.lock().unwrap().get(key).is_some_and(|(until, _)| at < *until)
     }
 
     pub fn get(&self, key: &str) -> Option<(Ts, i32)> {
@@ -57,6 +61,8 @@ pub struct Ctx {
     pub metrics: Arc<Metrics>,
     pub notifier: Option<Arc<crate::notify::Notifier>>,
     pub debug: bool,
+    /// `test-rule`: realert runs on the match time instead of the wall clock, so a replayed range shows the alerts it would have sent.
+    pub replay: bool,
     /// Rules disabled after a panic (`disable_rules_on_error`); shown in the log, cleared on reload.
     pub disabled: Arc<Mutex<Vec<String>>>,
     pub disable_rules_on_error: bool,
@@ -122,6 +128,8 @@ pub struct RuleState {
     /// Counters for the current run.
     hits: u64,
     dupes: u64,
+    /// Matches dropped by realert/silence in the last run (`test-rule` summary).
+    pub silenced: u64,
     alerts_sent: AtomicU64,
     alerts_not_sent: AtomicU64,
 }
@@ -224,6 +232,7 @@ impl RuleState {
             next_min_start: None,
             hits: 0,
             dupes: 0,
+            silenced: 0,
             alerts_sent: AtomicU64::new(0),
             alerts_not_sent: AtomicU64::new(0),
         })
@@ -252,6 +261,7 @@ impl RuleState {
             next_min_start: None,
             hits: 0,
             dupes: 0,
+            silenced: 0,
             alerts_sent: AtomicU64::new(0),
             alerts_not_sent: AtomicU64::new(0),
         }
@@ -1020,8 +1030,9 @@ impl RuleState {
         for mut m in matches {
             m.insert("num_hits".into(), json!(self.hits));
             m.insert("num_matches".into(), json!(num_matches));
+            let ts = field::lookup(&m, &self.rule.timestamp_field).and_then(|v| parse_ts(&self.rule, v)).unwrap_or_else(now);
+            let at = if ctx.replay { ts } else { now() };
             if let Some(hours) = &self.rule.active_hours {
-                let ts = field::lookup(&m, &self.rule.timestamp_field).and_then(|v| parse_ts(&self.rule, v)).unwrap_or_else(now);
                 if !hours.contains(ts) {
                     log::info!("Ignoring match for rule {} outside active_hours", self.rule.name);
                     continue;
@@ -1032,14 +1043,14 @@ impl RuleState {
             if let Some(qv) = qv {
                 key = format!("{key}.{qv}");
             }
-            if ctx.silences.is_silenced(&key) || ctx.silences.is_silenced(&format!("{}._silence", self.rule.name)) {
+            if ctx.silences.is_silenced_at(&key, at) || ctx.silences.is_silenced(&format!("{}._silence", self.rule.name)) {
                 log::info!("Ignoring match for silenced rule {key}");
                 silenced += 1;
                 self.write_risk_only(ctx, &m).await;
                 continue;
             }
             if self.rule.realert > 0 {
-                let (until, exponent) = self.next_alert_time(ctx, &key, now());
+                let (until, exponent) = self.next_alert_time(ctx, &key, at);
                 ctx.silences.set(&key, until, exponent);
                 let doc = json!({"exponent": exponent, "rule_name": key, "@timestamp": to_iso(now()), "until": to_iso(until)});
                 ctx.writeback.write(Wb::Silence, doc.as_object().cloned().unwrap_or_default()).await;
@@ -1056,6 +1067,7 @@ impl RuleState {
             }
         }
 
+        self.silenced = silenced;
         self.previous_endtime = Some(endtime);
         let took = t0.elapsed().as_secs_f64();
         let status = json!({
@@ -1738,6 +1750,15 @@ mod tests {
         // Friday evening: sleep until Monday morning.
         let n = at("2026-10-23T20:00:00Z");
         assert_eq!(pause_until(next("2026-10-23T20:00:00Z"), n.timestamp_micros(), run_every), Some(at("2026-10-26T10:00:00Z").timestamp_micros()));
+    }
+
+    #[test]
+    fn silence_checked_at_given_time() {
+        let s = Silences::default();
+        s.set("k", 100 * SECOND, 0);
+        assert!(s.is_silenced_at("k", 99 * SECOND));
+        assert!(!s.is_silenced_at("k", 100 * SECOND));
+        assert!(!s.is_silenced_at("other", 0));
     }
 
     #[test]
