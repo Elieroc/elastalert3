@@ -34,6 +34,12 @@ elastalert_status
 - ``matches``: The number of matches that the rule returned after processing the hits. Note that this does not necessarily mean that alerts were triggered.
 - ``time_taken``: The number of seconds it took for this query to run.
 
+.. admonition:: ElastAlert 3
+   :class: ea3
+
+   Two more fields, additive: ``alerts_sent`` (alerts delivered during this run) and ``alerts_silenced`` (matches
+   dropped by ``realert`` or a silence). Matches held in an aggregation group are sent, and counted, by a later run.
+
 ``elastalert_status`` is what ElastAlert 3 will use to determine what time range to query when it first starts to avoid duplicating queries.
 For each rule, it will start querying from the most recent endtime. If ElastAlert 3 is running in debug mode, it will still attempt to base
 its start time by looking for the most recent search performed, but it will not write the results of any query back to Elasticsearch.

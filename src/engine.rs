@@ -1070,18 +1070,20 @@ impl RuleState {
         self.silenced = silenced;
         self.previous_endtime = Some(endtime);
         let took = t0.elapsed().as_secs_f64();
+        let sent = self.alerts_sent.load(Ordering::Relaxed);
         let status = json!({
             "rule_name": self.rule.name,
             "endtime": to_iso(endtime),
             "starttime": to_iso(original_start),
             "matches": num_matches,
             "hits": self.hits,
+            "alerts_sent": sent,
+            "alerts_silenced": silenced,
             "@timestamp": to_iso(now()),
             "time_taken": took,
         });
         ctx.writeback.write(Wb::Status, status.as_object().cloned().unwrap_or_default()).await;
         let (lt, fmt) = (self.rule.use_local_time, ctx.ts_fmt.as_deref());
-        let sent = self.alerts_sent.load(Ordering::Relaxed);
         log::info!(
             "Ran {} from {} to {}: {} query hits ({} already seen), {} matches, {} alerts sent",
             self.rule.name,
