@@ -14,6 +14,7 @@ clap = { version = "4.6.7", features = ["derive"] }
 croner = "4.0.2"
 futures-util = { version = "0.3.34", default-features = false, features = ["std"] }
 iana-time-zone = "0.1.65"
+libc = "0.2.191"
 lettre = { version = "0.11.23", default-features = false, features = ["builder", "smtp-transport", "tokio1", "tokio1-rustls", "aws-lc-rs", "hostname", "rustls-native-certs"] }
 log = "0.4.34"
 mimalloc = "0.1.52"

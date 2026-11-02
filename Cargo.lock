@@ -470,6 +470,7 @@ dependencies = [
  "futures-util",
  "iana-time-zone",
  "lettre",
+ "libc",
  "log",
  "mimalloc",
  "minijinja",

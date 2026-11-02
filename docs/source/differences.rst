@@ -47,7 +47,7 @@ New in ElastAlert 3
 - :ref:`split_on_limit <split_on_limit>`: read every result of an EQL / ES|QL range that fills ``max_query_size``.
 - :ref:`search_timeout, terminate_after, preference and routing <search_options>`.
 - :ref:`fetch_full_source <fetch_full_source>` and ``use_pit`` (see :ref:`ea3_config`).
-- Prometheus: :doc:`rule lag, last success time and Elasticsearch request durations <recipes/exposing_rule_metrics>`.
+- Prometheus: :doc:`rule lag, last success time, CPU and memory per rule, and Elasticsearch request durations <recipes/exposing_rule_metrics>`.
 - The ``rust.add_field``, ``rust.drop_if`` and ``rust.lookup`` :doc:`match enhancements <enhancements>`.
 - The ``validate`` subcommand (``validate --es`` checks the filters and fields against the mappings), and ``--es_debug_trace`` with responses.
 - Hot reload keeps the state of a changed rule; pending alerts and aggregation groups survive restarts.

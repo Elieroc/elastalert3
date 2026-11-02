@@ -1,10 +1,12 @@
 //! Prometheus metrics (`--prometheus_port`): upstream's names for the per-rule counters, plus rule lag and the
 //! duration of Elasticsearch requests. Hand-rolled text exposition, no dependency.
 
+use std::alloc::{GlobalAlloc, Layout};
+use std::cell::Cell;
 use std::collections::BTreeMap;
 use std::fmt::Write;
 use std::sync::Mutex;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::{AtomicI64, AtomicU64, Ordering};
 
 #[derive(Default, Clone)]
 pub struct RuleCounters {
@@ -19,6 +21,110 @@ pub struct RuleCounters {
     pub last_end: Option<f64>,
     /// When that run finished, seconds since the epoch.
     pub last_success: Option<f64>,
+    /// CPU time of the rule's runs, see [`Usage`].
+    pub cpu_seconds: f64,
+    pub allocated_bytes: u64,
+    /// Peak memory of the last run, see [`Usage`].
+    pub memory_peak: Option<f64>,
+}
+
+/// What one rule costs, measured on its own task while a run is polled ([`measure`]): thread CPU time, and the
+/// heap allocated and freed meanwhile (through [`Tracking`]). Work done on its behalf by other tasks (TLS and HTTP
+/// framing on the shared connections, the writeback task) is not counted.
+#[derive(Default)]
+pub struct Usage {
+    cpu_ns: AtomicU64,
+    allocated: AtomicU64,
+    /// Bytes allocated minus bytes freed since the last `take`, and its maximum.
+    live: AtomicI64,
+    peak: AtomicI64,
+}
+
+impl Usage {
+    /// (CPU seconds, bytes allocated, peak live bytes) since the last call.
+    pub fn take(&self) -> (f64, u64, i64) {
+        self.live.store(0, Ordering::Relaxed);
+        (self.cpu_ns.swap(0, Ordering::Relaxed) as f64 / 1e9, self.allocated.swap(0, Ordering::Relaxed), self.peak.swap(0, Ordering::Relaxed))
+    }
+}
+
+thread_local! {
+    /// The `Usage` of the future being polled on this thread, null outside [`measure`].
+    static CURRENT: Cell<*const Usage> = const { Cell::new(std::ptr::null()) };
+}
+
+fn thread_cpu_ns() -> u64 {
+    #[cfg(unix)]
+    {
+        let mut ts = libc::timespec { tv_sec: 0, tv_nsec: 0 };
+        // SAFETY: valid out pointer; the clock exists on every unix this builds for.
+        unsafe { libc::clock_gettime(libc::CLOCK_THREAD_CPUTIME_ID, &mut ts) };
+        ts.tv_sec as u64 * 1_000_000_000 + ts.tv_nsec as u64
+    }
+    #[cfg(not(unix))]
+    0
+}
+
+/// Runs `fut`, charging the CPU time and allocations of each of its polls to `usage`.
+pub async fn measure<F: Future>(usage: &Usage, fut: F) -> F::Output {
+    struct Guard<'a>(&'a Usage, *const Usage, u64);
+    impl Drop for Guard<'_> {
+        fn drop(&mut self) {
+            CURRENT.with(|c| c.set(self.1));
+            self.0.cpu_ns.fetch_add(thread_cpu_ns().saturating_sub(self.2), Ordering::Relaxed);
+        }
+    }
+    let mut fut = std::pin::pin!(fut);
+    std::future::poll_fn(|cx| {
+        let _g = Guard(usage, CURRENT.with(|c| c.replace(usage)), thread_cpu_ns());
+        fut.as_mut().poll(cx)
+    })
+    .await
+}
+
+/// The global allocator: mimalloc, plus the accounting of [`measure`].
+pub struct Tracking;
+
+fn track(delta: isize) {
+    let _ = CURRENT.try_with(|c| {
+        // SAFETY: only set while `measure` borrows the `Usage`.
+        let Some(u) = (unsafe { c.get().as_ref() }) else { return };
+        if delta > 0 {
+            u.allocated.fetch_add(delta as u64, Ordering::Relaxed);
+        }
+        let live = u.live.fetch_add(delta as i64, Ordering::Relaxed) + delta as i64;
+        if live > u.peak.load(Ordering::Relaxed) {
+            u.peak.store(live, Ordering::Relaxed);
+        }
+    });
+}
+
+unsafe impl GlobalAlloc for Tracking {
+    unsafe fn alloc(&self, l: Layout) -> *mut u8 {
+        let p = unsafe { mimalloc::MiMalloc.alloc(l) };
+        if !p.is_null() {
+            track(l.size() as isize);
+        }
+        p
+    }
+    unsafe fn alloc_zeroed(&self, l: Layout) -> *mut u8 {
+        let p = unsafe { mimalloc::MiMalloc.alloc_zeroed(l) };
+        if !p.is_null() {
+            track(l.size() as isize);
+        }
+        p
+    }
+    unsafe fn dealloc(&self, p: *mut u8, l: Layout) {
+        unsafe { mimalloc::MiMalloc.dealloc(p, l) };
+        track(-(l.size() as isize));
+    }
+    unsafe fn realloc(&self, p: *mut u8, l: Layout, new: usize) -> *mut u8 {
+        let q = unsafe { mimalloc::MiMalloc.realloc(p, l, new) };
+        if !q.is_null() {
+            track(new as isize - l.size() as isize);
+        }
+        q
+    }
 }
 
 const BUCKETS: [f64; 12] = [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0, 30.0];
@@ -98,6 +204,8 @@ impl Metrics {
         family("elastalert_alerts_sent", "Number of alerts sent for rule", &|c| c.alerts_sent.to_string());
         family("elastalert_alerts_not_sent", "Number of alerts not sent", &|c| c.alerts_not_sent.to_string());
         family("elastalert_alerts_silenced", "Number of silenced alerts", &|c| c.alerts_silenced.to_string());
+        family("elastalert_rule_cpu_seconds", "CPU time used by the runs of the rule", &|c| c.cpu_seconds.to_string());
+        family("elastalert_rule_allocated_bytes", "Heap allocated by the runs of the rule", &|c| c.allocated_bytes.to_string());
         let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0.0, |d| d.as_secs_f64());
         let mut gauge = |name: &str, help: &str, value: &dyn Fn(&RuleCounters) -> Option<f64>| {
             let _ = writeln!(out, "# HELP {name} {help}\n# TYPE {name} gauge");
@@ -109,6 +217,7 @@ impl Metrics {
         };
         gauge("elastalert_rule_lag_seconds", "Seconds between now and the end of the last query range of the rule", &|c| c.last_end.map(|e| (now - e).max(0.0)));
         gauge("elastalert_rule_last_success_timestamp_seconds", "Unix time the rule last ran without error", &|c| c.last_success);
+        gauge("elastalert_rule_memory_peak_bytes", "Peak heap held by the last run of the rule, above what it held before", &|c| c.memory_peak);
         let es = self.es.lock().unwrap();
         let _ = writeln!(out, "# HELP elastalert_es_request_duration_seconds Duration of Elasticsearch requests by kind\n# TYPE elastalert_es_request_duration_seconds histogram");
         for (kind, h) in es.iter() {
@@ -182,5 +291,26 @@ mod tests {
         assert!(text.contains("elastalert_es_request_errors_total{kind=\"search\"} 1"), "{text}");
         assert!(text.contains("elastalert_rule_lag_seconds{rule_name=\"r\"}"), "{text}");
         assert!(!text.contains("elastalert_rule_last_success_timestamp_seconds{"), "no sample before the first run: {text}");
+    }
+
+    #[tokio::test]
+    async fn usage_counts_cpu_and_memory_of_the_measured_future_only() {
+        let u = Usage::default();
+        let outside = vec![0u8; 4 << 20];
+        let n = measure(&u, async {
+            let big = vec![1u8; 1 << 20];
+            tokio::task::yield_now().await;
+            let spin = (0..20_000_000u64).fold(0u64, |a, x| a.wrapping_add(std::hint::black_box(x)));
+            drop(big);
+            spin
+        })
+        .await;
+        drop(outside);
+        assert!(n > 0);
+        let (cpu, allocated, peak) = u.take();
+        assert!(cpu > 0.0, "{cpu}");
+        assert!((1 << 20..2 << 20).contains(&allocated), "{allocated}");
+        assert!((1 << 20..2 << 20).contains(&peak), "{peak}");
+        assert_eq!(u.take(), (0.0, 0, 0));
     }
 }
