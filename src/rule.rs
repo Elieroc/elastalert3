@@ -851,6 +851,16 @@ pub fn load(file: &Path, conf: &Config) -> Result<Rule> {
             if raw.get("risk_object_type").is_some_and(|v| !v.as_str().is_some_and(|s| !s.is_empty())) {
                 bail!("risk_object_type must be a non-empty string");
             }
+            match (raw.get("usual_hours"), raw.get("off_hours_bonus")) {
+                (None, None) => {}
+                (Some(h), Some(b)) => {
+                    crate::hours::ActiveHours::parse(h).map_err(|e| anyhow::anyhow!("{e}").context("usual_hours"))?;
+                    if !b.as_f64().is_some_and(|n| n.is_finite() && n > 0.0) {
+                        bail!("off_hours_bonus must be a positive number");
+                    }
+                }
+                _ => bail!("usual_hours and off_hours_bonus go together"),
+            }
             match (raw.get("risk_ratio"), dur_opt(&raw, "risk_history")?) {
                 (None, None) => {}
                 (Some(r), Some(h)) => {
@@ -1626,6 +1636,9 @@ mod tests {
             ("timeframe: {hours: 1}\nrisk_threshold: 5\nattach_related: true\n", "attach_related"),
             ("timeframe: {hours: 1}\nrisk_threshold: 5\nrisk_score: 5\nrisk_objects: {host: h}\n", "not to a risk rule"),
             ("timeframe: {hours: 1}\nrisk_threshold: 5\nrisk_ratio: 3\n", "go together"),
+            ("timeframe: {hours: 1}\nrisk_threshold: 5\noff_hours_bonus: 5\n", "go together"),
+            ("timeframe: {hours: 1}\nrisk_threshold: 5\nusual_hours: {windows: [{from: '08:00', to: '19:00'}]}\noff_hours_bonus: 0\n", "positive number"),
+            ("timeframe: {hours: 1}\nrisk_threshold: 5\nusual_hours: {windows: []}\noff_hours_bonus: 5\n", "usual_hours"),
             ("timeframe: {hours: 1}\nrisk_threshold: 5\nrisk_history: {days: 1}\n", "go together"),
             ("timeframe: {hours: 1}\nrisk_threshold: 5\nrisk_ratio: 1\nrisk_history: {days: 1}\n", "above 1"),
             ("timeframe: {hours: 1}\nrisk_threshold: 5\nrisk_ratio: 3\nrisk_history: {minutes: 90}\n", "multiple of timeframe"),

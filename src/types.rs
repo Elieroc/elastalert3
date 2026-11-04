@@ -1696,6 +1696,8 @@ pub struct Risk {
     min_rules: usize,
     /// `risk_ratio` and `risk_history`: a match also needs `risk_ratio` times the usual risk per `timeframe`.
     ratio: Option<(f64, Dur)>,
+    /// `usual_hours` and `off_hours_bonus`: an entry written outside the usual hours counts this much more.
+    off_hours: Option<(crate::hours::ActiveHours, f64)>,
     /// `(entity type, entity name)` -> risk summed by fixed window of `timeframe` (`ts / timeframe`), oldest first.
     history: FxHashMap<(String, String), VecDeque<(Ts, f64)>>,
     /// `(entity type, entity name)` -> its entries within `timeframe`, oldest first.
@@ -1713,6 +1715,7 @@ impl Risk {
             object_type: rule.raw.get("risk_object_type").and_then(Value::as_str).map(String::from),
             min_rules: rule.raw.get("min_distinct_rules").and_then(Value::as_u64).unwrap_or(1) as usize,
             ratio: opt_f64(rule, "risk_ratio").zip(rule.raw.get("risk_history").and_then(|h| crate::time::parse_duration_map(h).ok())),
+            off_hours: rule.raw.get("usual_hours").and_then(|h| crate::hours::ActiveHours::parse(h).ok()).zip(opt_f64(rule, "off_hours_bonus")),
             history: FxHashMap::default(),
             hits: FxHashMap::default(),
             suppress_until: None,
@@ -1722,12 +1725,14 @@ impl Risk {
 
     fn add_data(&mut self, rule: &Rule, events: Vec<Event>, matches: &mut Vec<Doc>) {
         for ev in events {
+            let bonus = self.off_hours.as_ref().filter(|(h, _)| !h.contains(ev.ts)).map_or(0.0, |(_, b)| *b);
             let name = ev.doc.get("rule_name").map_or_else(String::new, py_str);
             for o in ev.doc.get("risk_objects").and_then(Value::as_array).into_iter().flatten() {
                 let (Some(ty), Some(value), Some(score)) = (o["type"].as_str(), o.get("value").map(py_str), o["score"].as_f64()) else { continue };
                 if self.object_type.as_deref().is_some_and(|t| t != ty) || !score.is_finite() || score <= 0.0 {
                     continue;
                 }
+                let score = score + bonus;
                 let key = (ty.to_string(), value);
                 let q = self.hits.entry(key.clone()).or_default();
                 let pos = q.partition_point(|h| h.ts <= ev.ts);
@@ -3204,6 +3209,23 @@ mod tests {
         rt.add_data(&rule, vec![risk_ev("a", 130, &[("host", "h1", 60.0), ("user", "u1", 40.0)])], &mut m);
         assert_eq!(m.len(), 2);
         assert_eq!((&m[1]["risk_object"]["value"], &m[1]["risk_score_total"]), (&json!("u1"), &json!(105.0)));
+    }
+
+    #[test]
+    fn risk_off_hours_bonus() {
+        // 1_700_000_000 is Tue 22:13 UTC: outside the usual 08:00-19:00, so each alert gets +30.
+        let evs = || vec![risk_ev("a", 0, &[("host", "h1", 40.0)]), risk_ev("b", 60, &[("host", "h1", 40.0)])];
+        let (rule, mut rt) = risk_rule("");
+        let mut m = vec![];
+        rt.add_data(&rule, evs(), &mut m);
+        assert!(m.is_empty(), "80 is under 100");
+        let (rule, mut rt) = risk_rule("usual_hours: {windows: [{from: '08:00', to: '19:00'}]}\noff_hours_bonus: 30\n");
+        rt.add_data(&rule, evs(), &mut m);
+        assert_eq!(m[0]["risk_score_total"], json!(140.0));
+        let (rule, mut rt) = risk_rule("usual_hours: {windows: [{from: '20:00', to: '23:00'}]}\noff_hours_bonus: 30\n");
+        let mut m = vec![];
+        rt.add_data(&rule, evs(), &mut m);
+        assert!(m.is_empty(), "inside the usual hours: no bonus");
     }
 
     #[test]

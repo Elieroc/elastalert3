@@ -32,7 +32,7 @@ New in ElastAlert 3
   z-score or MAD).
 - The :ref:`log_loss <log_loss>` rule type: a source (``query_key``) silent for longer than it usually is at this time of the week, with thresholds learned from the history, and optionally a group of lost sources (mass loss).
 - The :ref:`outlier <outlier>` rule type: an entity whose metric is far above the median of its peers (``query_key`` values), optionally within a group (``peer_field``).
-- The :ref:`risk <risk>` rule type and the ``risk_score`` / ``risk_objects`` options: behavioural alerts when the alerts of an entity (host, user) add up to a risk limit.
+- The :ref:`risk <risk>` rule type and the ``risk_score`` / ``risk_objects`` options: behavioural alerts when the alerts of an entity (host, user) add up to a risk limit. ``usual_hours`` and ``off_hours_bonus`` add risk to alerts raised outside usual hours (nights, weekends).
 - ``max_occurrences`` of the :ref:`new_term <new_term>` rule type: alert on a term seen at most that many times in the history
   ("rare"), not only on a never-seen one.
 - :ref:`active_hours <active_hours>`: ignore matches outside time windows, in a given time zone.

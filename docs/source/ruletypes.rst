@@ -2766,6 +2766,20 @@ noisy rule cannot reach the threshold alone.
 
 ``risk_object_type`` (string, optional): Only the entities of this type are judged.
 
+``usual_hours`` (same syntax as :ref:`active_hours <active_hours>`) and ``off_hours_bonus`` (number > 0; both or neither):
+Every alert whose time falls **outside** ``usual_hours`` (a weekend, the night...) adds ``off_hours_bonus`` to the score of
+each of its entities, on top of the ``risk_score`` of its rule. The time is the ``@timestamp`` of the alert doc, in the
+time zone of ``usual_hours``. The bonus is counted in the ``risk_score`` of the contributing rule in ``risk_rules``, and
+only entities that a rule put in ``risk_objects`` get it, as an alert without ``risk_objects`` adds no risk at all.
+
+.. code-block:: yaml
+
+    usual_hours:
+      timezone: Europe/Paris
+      windows:
+      - {days: [mon, tue, wed, thu, fri], from: "08:00", to: "19:00"}
+    off_hours_bonus: 20
+
 ``risk_ratio`` (number > 1) and ``risk_history`` (time, a multiple of ``timeframe``, at least twice as long; both or neither):
 An unusual-risk threshold per entity, on top of ``risk_threshold`` (which stays the floor, as an entity with no history
 has a usual risk of 0). The usual risk is the risk of the entity summed by fixed window of ``timeframe`` over
@@ -2810,4 +2824,4 @@ Rejected at load: ``risk_score`` without ``risk_objects`` or the other way round
 number, ``risk_objects`` that is not a non-empty map of entity types to field names, ``risk_score`` / ``risk_objects`` on a
 ``risk`` rule, and on a ``risk`` rule a missing ``risk_threshold`` or ``timeframe``, a non-positive ``risk_threshold``, a
 ``min_distinct_rules`` under 1, an empty ``risk_object_type``, ``risk_ratio`` without ``risk_history`` (or the other way
-round), a ``risk_ratio`` of 1 or less and a ``risk_history`` that is not a multiple of ``timeframe`` or shorter than twice it.
+round), ``usual_hours`` without ``off_hours_bonus`` (or the other way round), an invalid ``usual_hours``, an ``off_hours_bonus`` that is not a positive number, a ``risk_ratio`` of 1 or less and a ``risk_history`` that is not a multiple of ``timeframe`` or shorter than twice it.

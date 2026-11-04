@@ -1,0 +1,10 @@
+name: risk-off-hours
+type: risk
+timeframe: {hours: 1}
+risk_threshold: 100
+usual_hours:
+  timezone: UTC
+  windows:
+  - {days: [mon, tue, wed, thu, fri], from: "08:00", to: "19:00"}
+off_hours_bonus: 10
+alert: [debug]
