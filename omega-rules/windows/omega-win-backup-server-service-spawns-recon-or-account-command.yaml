@@ -1,0 +1,93 @@
+name: omega-win-backup-server-service-spawns-recon-or-account-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1190, T1136.001, T1078]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.parent.name: {value: Veeam.Backup.Service.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: Veeam.Backup.MountService.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: Veeam.Backup.CatalogDataService.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: Veeam.Backup.Satellite.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: beremote.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: beserver.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: CVMountd.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: cvd.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - bool:
+        should:
+        - term:
+            process.name: {value: net.exe, case_insensitive: true}
+        - term:
+            process.name: {value: net1.exe, case_insensitive: true}
+        - term:
+            process.name: {value: whoami.exe, case_insensitive: true}
+        - term:
+            process.name: {value: certutil.exe, case_insensitive: true}
+        - term:
+            process.name: {value: bitsadmin.exe, case_insensitive: true}
+        - term:
+            process.name: {value: mshta.exe, case_insensitive: true}
+        - term:
+            process.name: {value: nltest.exe, case_insensitive: true}
+        - term:
+            process.name: {value: curl.exe, case_insensitive: true}
+        - term:
+            process.name: {value: wmic.exe, case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: cmd.exe, case_insensitive: true}
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*user *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*localgroup*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*http://*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*https://*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -enc*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*invoke-webrequest*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*downloadstring*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A backup server service (Veeam.Backup.Service, MountService, CatalogDataService, Backup Exec, Commvault)
+    starts an account, recon or download command: exploitation of the backup server (the favourite ransomware target) to
+    create an administrator or fetch a tool.'
+  source: [process]
+  false_positives: Backup job scripts run from the backup manager (pre/post-job scripts) are normally started by another
+    process; exclude yours by command line if they run from these services.
+  references: ['https://attack.mitre.org/techniques/T1190/', 'https://attack.mitre.org/techniques/T1136/001/', 'https://attack.mitre.org/techniques/T1078/']

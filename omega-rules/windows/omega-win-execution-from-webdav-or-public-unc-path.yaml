@@ -1,0 +1,50 @@
+name: omega-win-execution-from-webdav-or-public-unc-path
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1204.002, T1105, T1553.005]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*davwwwroot*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*@ssl\\*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*@80\\*', case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            process.executable: {value: '*\\davwwwroot\\*', case_insensitive: true}
+        - wildcard:
+            process.executable: {value: '*@ssl\\*', case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - regexp:
+            process.command_line: {value: '.*\\\\[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}[\\@].*', case_insensitive: true}
+        - bool:
+            must_not:
+            - regexp:
+                process.command_line: {value: '.*\\\\(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.|127\.|169\.254\.).*',
+                  case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A program or command that runs from a WebDAV path (DavWWWRoot, @SSL) or from a UNC path on a public IP address:
+    the usual stage of search-ms, library-ms and shortcut attacks that bypass Mark-of-the-Web by pulling the payload over
+    WebDAV or SMB.'
+  source: [process]
+  false_positives: Intranet WebDAV shares used on purpose (exclude their host name). UNC paths on private addresses and
+    on host names are not matched.
+  references: ['https://attack.mitre.org/techniques/T1204/002/', 'https://attack.mitre.org/techniques/T1105/', 'https://attack.mitre.org/techniques/T1553/005/']

@@ -1,0 +1,66 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: reagentc.exe, executable: 'C:\Windows\System32\reagentc.exe', command_line: reagentc /disable}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: reagentc.exe, executable: 'C:\Windows\System32\reagentc.exe', command_line: 'reagentc /setreimage /path
+        D:\x'}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: dism.exe, executable: 'C:\Windows\System32\dism.exe', command_line: 'dism /mount-image /imagefile:C:\Recovery\WindowsRE\winre.wim
+        /index:1 /mountdir:C:\m'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: reagentc.exe, executable: 'C:\Windows\System32\reagentc.exe', command_line: reagentc /info}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: reagentc.exe, executable: 'C:\Windows\System32\reagentc.exe', command_line: reagentc /enable}
+- id: neg3
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: reagentc.exe
+      executable: C:\Windows\System32\reagentc.exe
+      command_line: reagentc /disable
+      parent: {name: TiWorker.exe}
+- id: neg4
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: dism.exe, executable: 'C:\Windows\System32\dism.exe', command_line: dism /online /get-features}

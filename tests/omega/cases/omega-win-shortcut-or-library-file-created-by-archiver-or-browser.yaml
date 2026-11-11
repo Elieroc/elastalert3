@@ -1,0 +1,39 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Downloads\invoice.lnk', name: invoice.lnk, extension: lnk}
+    process: {name: 7zFM.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\AppData\Local\Temp\a.search-ms', name: a.search-ms, extension: search-ms}
+    process: {name: outlook.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Downloads\doc.pdf', name: doc.pdf, extension: pdf}
+    process: {name: chrome.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Desktop\x.lnk', name: x.lnk, extension: lnk}
+    process: {name: explorer.exe}

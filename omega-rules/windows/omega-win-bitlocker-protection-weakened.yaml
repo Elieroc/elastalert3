@@ -1,0 +1,98 @@
+name: omega-win-bitlocker-protection-weakened
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1685, T1553]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: manage-bde.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*-protectors*-disable*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*-protectors*-delete*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -off *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -off', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*suspend-bitlocker*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*disable-bitlocker*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*remove-bitlockerkeyprotector*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*clear-bitlockerautounlock*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*-rebootcount*', case_insensitive: true}
+        minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.parent.name: {value: ccmexec.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: CcmExec.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: AgentExecutor.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: IntuneManagementExtension.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: TiWorker.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: TrustedInstaller.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: setup.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: SetupHost.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: MoUsoCoreWorker.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: SIHClient.exe, case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'BitLocker protection suspended, disabled or its key protectors deleted from the command line (manage-bde
+    -protectors -disable/-delete, -off, Suspend-BitLocker without a reboot count, Disable-BitLocker, Remove-BitLockerKeyProtector):
+    the step that comes before taking the disk or reading it from a recovery environment, such as the WinRE BitLocker bypasses
+    published in 2026.'
+  source: [process]
+  false_positives: Firmware, BIOS and driver updates and some OS upgrades suspend BitLocker for one reboot (Suspend-BitLocker
+    -RebootCount is not matched, and deployment tools are excluded by parent). Administrators decrypting a drive on purpose.
+  references: ['https://attack.mitre.org/techniques/T1685/', 'https://attack.mitre.org/techniques/T1553/']

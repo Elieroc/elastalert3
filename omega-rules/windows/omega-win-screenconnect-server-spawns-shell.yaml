@@ -1,0 +1,71 @@
+name: omega-win-screenconnect-server-spawns-shell
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1190, T1219]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.parent.name: {value: ScreenConnect.Service.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: ScreenConnect.WebServer.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: ScreenConnect.Server.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - term:
+        process.name: {value: cmd.exe, case_insensitive: true}
+    - term:
+        process.name: {value: powershell.exe, case_insensitive: true}
+    - term:
+        process.name: {value: pwsh.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: cscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: mshta.exe, case_insensitive: true}
+    - term:
+        process.name: {value: rundll32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: regsvr32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: certutil.exe, case_insensitive: true}
+    - term:
+        process.name: {value: bitsadmin.exe, case_insensitive: true}
+    - term:
+        process.name: {value: whoami.exe, case_insensitive: true}
+    - term:
+        process.name: {value: net.exe, case_insensitive: true}
+    - term:
+        process.name: {value: net1.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wmic.exe, case_insensitive: true}
+    - term:
+        process.name: {value: reg.exe, case_insensitive: true}
+    - term:
+        process.name: {value: sc.exe, case_insensitive: true}
+    - term:
+        process.name: {value: curl.exe, case_insensitive: true}
+    - term:
+        process.name: {value: msbuild.exe, case_insensitive: true}
+    - term:
+        process.name: {value: nltest.exe, case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'The ScreenConnect (ConnectWise) server process starts a command interpreter or LOLBin: remote code execution
+    on the server, the way the path-traversal flaw CVE-2024-1708 and its successors were used (Kimsuky, ransomware crews).'
+  source: [process]
+  false_positives: Rare. The server does not run commands itself; commands run on the agent side (ScreenConnect.ClientService.exe)
+    and are not matched here.
+  references: ['https://attack.mitre.org/techniques/T1190/', 'https://attack.mitre.org/techniques/T1219/']

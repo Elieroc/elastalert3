@@ -3,7 +3,7 @@ type: any
 index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
 timestamp_field: '@timestamp'
 priority: 2
-mitre_attack: [T1562.001]
+mitre_attack: [T1685]
 risk_score: 80
 risk_objects: {host: host.name, user: user.name}
 filter:
@@ -39,4 +39,4 @@ omega:
     setx of the AMSI/ETW variables.'
   source: [process]
   false_positives: Red teams and security research on lab hosts.
-  references: ['https://attack.mitre.org/techniques/T1562/001/']
+  references: ['https://attack.mitre.org/techniques/T1685/']

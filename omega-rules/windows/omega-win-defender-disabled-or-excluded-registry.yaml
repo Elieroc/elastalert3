@@ -3,7 +3,7 @@ type: any
 index: logs-endpoint.events.registry*,winlogbeat-*,logs-windows.sysmon_operational-*
 timestamp_field: '@timestamp'
 priority: 2
-mitre_attack: [T1562.001]
+mitre_attack: [T1685]
 risk_score: 75
 risk_objects: {host: host.name, user: user.name}
 filter:
@@ -79,4 +79,4 @@ omega:
   false_positives: 'Group policy changes made by administrators (the writer is then svchost/gpsvc: exclude it) and a build-folder
     exclusion.'
   references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/registry/registry_set/registry_set_windows_defender_tamper.yml',
-    'https://attack.mitre.org/techniques/T1562/001/']
+    'https://attack.mitre.org/techniques/T1685/']

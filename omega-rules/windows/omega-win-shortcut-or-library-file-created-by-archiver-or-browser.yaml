@@ -1,0 +1,77 @@
+name: omega-win-shortcut-or-library-file-created-by-archiver-or-browser
+type: any
+index: logs-endpoint.events.file*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1553.005, T1204.002, T1566.001]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change]
+- bool:
+    should:
+    - wildcard:
+        file.extension: {value: lnk, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: url, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: library-ms, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: search-ms, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: scf, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: theme, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: hta, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: appref-ms, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - term:
+        process.name: {value: 7zFM.exe, case_insensitive: true}
+    - term:
+        process.name: {value: 7zG.exe, case_insensitive: true}
+    - term:
+        process.name: {value: 7z.exe, case_insensitive: true}
+    - term:
+        process.name: {value: WinRAR.exe, case_insensitive: true}
+    - term:
+        process.name: {value: winrar.exe, case_insensitive: true}
+    - term:
+        process.name: {value: chrome.exe, case_insensitive: true}
+    - term:
+        process.name: {value: msedge.exe, case_insensitive: true}
+    - term:
+        process.name: {value: firefox.exe, case_insensitive: true}
+    - term:
+        process.name: {value: outlook.exe, case_insensitive: true}
+    - term:
+        process.name: {value: thunderbird.exe, case_insensitive: true}
+    - term:
+        process.name: {value: olk.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        file.path: {value: '*\\Downloads\\*', case_insensitive: true}
+    - wildcard:
+        file.path: {value: '*\\AppData\\Local\\Temp\\*', case_insensitive: true}
+    - wildcard:
+        file.path: {value: '*\\INetCache\\*', case_insensitive: true}
+    - wildcard:
+        file.path: {value: '*\\Content.Outlook\\*', case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'A shortcut, URL, library, search connector or HTA file created by an archiver, a browser or a mail client:
+    the container formats the Windows Shell and Mark-of-the-Web flaws are delivered in. The files themselves are harmless
+    until opened; the rule adds risk so that the execution rule has context.'
+  source: [file]
+  false_positives: Software that ships shortcuts in zip files and browsers saving .url favourites. Adds risk only.
+  references: ['https://attack.mitre.org/techniques/T1553/005/', 'https://attack.mitre.org/techniques/T1204/002/', 'https://attack.mitre.org/techniques/T1566/001/']

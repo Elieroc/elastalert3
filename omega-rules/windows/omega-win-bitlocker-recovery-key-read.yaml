@@ -1,0 +1,102 @@
+name: omega-win-bitlocker-recovery-key-read
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1552]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: manage-bde.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*-protectors*-get*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*-protectors*-add*recoverypassword*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*keyprotector*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*recoverypassword*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*backup-bitlockerkeyprotector*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*backuptoaad-bitlockerkeyprotector*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: repair-bde.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -rp *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -rk *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -pw *', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.parent.name: {value: ccmexec.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: CcmExec.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: AgentExecutor.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: IntuneManagementExtension.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: TiWorker.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: TrustedInstaller.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: setup.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: SetupHost.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: MoUsoCoreWorker.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: SIHClient.exe, case_insensitive: true}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'BitLocker recovery material read from the command line: manage-bde -protectors -get, Get-BitLockerVolume
+    with its KeyProtector or RecoveryPassword, Backup-BitLockerKeyProtector, BackupToAAD-BitLockerKeyProtector, repair-bde
+    with a recovery password or key file.'
+  source: [process]
+  false_positives: Administrators and helpdesk reading a key to unlock a user, and key-escrow tooling (excluded by parent).
+    Adds risk only; on its own an everyday admin action, next to other signals it matters.
+  references: ['https://attack.mitre.org/techniques/T1552/']

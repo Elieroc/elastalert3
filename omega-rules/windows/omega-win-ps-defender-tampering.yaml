@@ -3,7 +3,7 @@ type: any
 index: winlogbeat-*,logs-windows.powershell_operational-*
 timestamp_field: '@timestamp'
 priority: 2
-mitre_attack: [T1562.001]
+mitre_attack: [T1685]
 risk_score: 75
 risk_objects: {host: host.name, user: user.name}
 filter:
@@ -35,4 +35,4 @@ omega:
   references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/powershell/powershell_script/posh_ps_tamper_windows_defender_set_mp.yml',
     'https://github.com/SigmaHQ/sigma/blob/master/rules/windows/powershell/powershell_script/posh_ps_win_defender_exclusions_added.yml',
     'https://github.com/SigmaHQ/sigma/blob/master/rules/windows/powershell/powershell_script/posh_ps_tamper_windows_defender_rem_mp.yml',
-    'https://attack.mitre.org/techniques/T1562/001/']
+    'https://attack.mitre.org/techniques/T1685/']

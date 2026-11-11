@@ -1,0 +1,88 @@
+name: omega-win-explorer-launches-payload-from-shortcut-or-remote-path
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1204.002, T1553.005, T1059]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.parent.name: {value: explorer.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - term:
+        process.name: {value: cmd.exe, case_insensitive: true}
+    - term:
+        process.name: {value: powershell.exe, case_insensitive: true}
+    - term:
+        process.name: {value: pwsh.exe, case_insensitive: true}
+    - term:
+        process.name: {value: mshta.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: cscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: rundll32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: regsvr32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: msiexec.exe, case_insensitive: true}
+    - term:
+        process.name: {value: curl.exe, case_insensitive: true}
+    - term:
+        process.name: {value: bitsadmin.exe, case_insensitive: true}
+    - term:
+        process.name: {value: certutil.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*http://*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*https://*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*-enc *', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*-encodedcommand*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*-w hidden*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*-windowstyle hidden*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*-nop *', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*downloadstring*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*iex *', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*invoke-expression*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*urlcache*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*davwwwroot*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*@ssl*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*start /min*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*/c start *', case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'explorer.exe starts a command interpreter or script host whose command line fetches from a URL or a network
+    share, runs hidden or encoded code, or opens a WebDAV path: a malicious shortcut (.lnk) or Shell file opened by the
+    user, the delivery of the Windows Shell and Mark-of-the-Web bypass flaws (CVE-2026-21510, CVE-2026-21513, CVE-2026-32202).'
+  source: [process]
+  false_positives: 'Users who open a shortcut to a script on a file share. Excluded markers: plain `cmd` or `powershell`
+    without such arguments. The public reports do not describe the exact process tree; this is the common shape of shortcut
+    payloads.'
+  references: ['https://attack.mitre.org/techniques/T1204/002/', 'https://attack.mitre.org/techniques/T1553/005/', 'https://attack.mitre.org/techniques/T1059/']

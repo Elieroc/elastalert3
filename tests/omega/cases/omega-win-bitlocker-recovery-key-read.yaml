@@ -1,0 +1,59 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: manage-bde.exe, executable: 'C:\Windows\System32\manage-bde.exe', command_line: 'manage-bde -protectors
+        -get C: -Type RecoveryPassword'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: powershell.exe, executable: 'C:\Windows\System32\powershell.exe', command_line: 'powershell (Get-BitLockerVolume
+        -MountPoint C:).KeyProtector | Select-Object RecoveryPassword'}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: repair-bde.exe, executable: 'C:\Windows\System32\repair-bde.exe', command_line: 'repair-bde C: D: -rp
+        111111-222222'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: manage-bde.exe, executable: 'C:\Windows\System32\manage-bde.exe', command_line: manage-bde -status}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: powershell.exe, executable: 'C:\Windows\System32\powershell.exe', command_line: powershell Get-BitLockerVolume}
+- id: neg3
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: manage-bde.exe
+      executable: C:\Windows\System32\manage-bde.exe
+      command_line: 'manage-bde -protectors -get C:'
+      parent: {name: IntuneManagementExtension.exe}

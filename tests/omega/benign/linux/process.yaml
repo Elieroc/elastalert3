@@ -43,3 +43,9 @@
 - {process.name: bash, process.command_line: bash -c "cat < /dev/tcp/db01/5432", user.name: alice}
 - {process.name: python3, process.command_line: python3 -m http.server 8000, user.name: alice}
 - {process.name: kworker/0:1, process.command_line: x, user.name: root}
+- {process.name: bash, process.command_line: bash, user.id: '0', process.parent.name: sudo, process.parent.user.id: '0', user.name: root}
+- {process.name: bash, process.command_line: bash -l, user.id: '0', process.parent.name: su, process.parent.user.id: '0', user.name: root}
+- {process.name: bash, process.command_line: bash, user.id: '1000', process.parent.name: bash, process.parent.user.id: '1000', user.name: alice}
+- {process.name: passwd, process.command_line: passwd, user.id: '0', process.parent.name: bash, process.parent.user.id: '1000', user.name: alice}
+- {process.name: bash, process.command_line: bash, user.id: '0', process.parent.name: unshare, process.parent.user.id: '1000', user.name: alice}
+- {process.name: bash, process.command_line: /bin/bash, user.id: '0', process.parent.name: sshd, process.parent.user.id: '0', user.name: root}

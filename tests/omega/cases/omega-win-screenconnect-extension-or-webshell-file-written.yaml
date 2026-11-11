@@ -1,0 +1,39 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Program Files (x86)\ScreenConnect\App_Extensions\ab\x.aspx', name: x.aspx, extension: aspx}
+    process: {name: w3wp.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Program Files (x86)\ScreenConnect\Bin\y.dll', name: y.dll, extension: dll}
+    process: {name: cmd.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Program Files (x86)\ScreenConnect\App_Extensions\ab\x.aspx', name: x.aspx, extension: aspx}
+    process: {name: ScreenConnect.Service.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Program Files (x86)\ScreenConnect\App_Data\log.txt', name: log.txt, extension: txt}
+    process: {name: x.exe}

@@ -1,0 +1,41 @@
+name: omega-win-ikeext-service-spawns-process
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1190, T1210]
+risk_score: 90
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.parent.name: {value: svchost.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.parent.command_line: {value: '*-s IKEEXT*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: WerFault.exe, case_insensitive: true}
+        - term:
+            process.name: {value: conhost.exe, case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: The IKE and AuthIP key-management service (svchost -s IKEEXT) starts a child process. It does not do so normally,
+    and a successful exploit of the IKE service double-free (CVE-2026-33824, wormable, exploited since August 2026) would
+    run attacker code inside it.
+  source: [process]
+  false_positives: None known. The public reports do not describe the post-exploitation process tree, so this rule rests
+    on the service never spawning children (Windows Error Reporting after a crash is excluded).
+  references: ['https://attack.mitre.org/techniques/T1190/', 'https://attack.mitre.org/techniques/T1210/']

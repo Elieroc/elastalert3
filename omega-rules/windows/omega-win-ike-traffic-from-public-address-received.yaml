@@ -1,0 +1,28 @@
+name: omega-win-ike-traffic-from-public-address-received
+type: any
+index: logs-endpoint.events.network*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1190]
+risk_score: 10
+risk_objects: {host: host.name, ip: source.ip}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: network}
+- term: {network.direction: ingress}
+- terms:
+    destination.port: [500, 4500]
+- exists: {field: source.ip}
+- bool:
+    must_not:
+    - terms:
+        source.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16, '::1', 'fe80::/10', 'fc00::/7']
+alert: []
+omega:
+  tier: T1
+  description: 'IKE traffic (UDP 500 or 4500) received from a public address on a Windows host: the exposure that the IKE
+    service flaw (CVE-2026-33824) needs. Worth a look on any host that is not a VPN gateway.'
+  source: [network]
+  false_positives: 'VPN gateways, DirectAccess and Always-On VPN servers, hosts behind a NAT that forwards IPsec. Exclude
+    them by host. Adds a small risk: it shows exposure, not an attack.'
+  references: ['https://attack.mitre.org/techniques/T1190/']

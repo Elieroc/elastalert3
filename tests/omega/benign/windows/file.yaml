@@ -14,3 +14,7 @@
 - {file.path: 'C:\Windows\System32\config\SAM', file.name: SAM, process.name: svchost.exe}
 - {file.path: 'C:\Backups\data.7z', file.name: data.7z, file.extension: 7z, process.name: 7z.exe}
 - {file.path: 'C:\Users\alice\AppData\Local\Microsoft\Windows\INetCache\x.js', file.name: x.js, file.extension: js, process.name: msedge.exe}
+- {file.path: 'C:\Users\alice\Desktop\app.lnk', file.name: app.lnk, file.extension: lnk, process.name: explorer.exe}
+- {file.path: 'C:\Program Files (x86)\ScreenConnect\App_Extensions\ab\ext.dll', file.name: ext.dll, file.extension: dll, process.name: ScreenConnect.Service.exe}
+- {file.path: 'C:\Recovery\WindowsRE\winre.wim', file.name: winre.wim, process.name: TiWorker.exe}
+- {file.path: 'C:\Windows\System32\Recovery\ReAgent.xml', file.name: ReAgent.xml, process.name: reagentc.exe}

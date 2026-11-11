@@ -2,3 +2,5 @@
 - {event.action: ssh_login, event.outcome: success, source.ip: 10.0.0.8, user.name: alice}
 - {event.action: ssh_login, event.outcome: failure, source.ip: 10.0.0.8, user.name: alice}
 - {event.action: sudo, event.outcome: success, process.name: sudo, user.name: alice}
+- {event.action: ssh_login, event.outcome: success, user.name: alice, source.ip: 10.0.0.20, system.auth.ssh.method: publickey}
+- {event.action: ssh_login, event.outcome: success, user.name: root, source.ip: 10.0.0.20, system.auth.ssh.method: publickey}

@@ -1,0 +1,89 @@
+name: omega-win-winre-tampering-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1542, T1490]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: reagentc.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*/disable*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/setreimage*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/setosimage*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: dism.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*winre.wim*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*/mount-image*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/mount-wim*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/mountimage*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.parent.name: {value: ccmexec.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: CcmExec.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: AgentExecutor.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: IntuneManagementExtension.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: TiWorker.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: TrustedInstaller.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: setup.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: SetupHost.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: MoUsoCoreWorker.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: SIHClient.exe, case_insensitive: true}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'The Windows Recovery Environment disabled or repointed (reagentc /disable, /setreimage, /setosimage) or
+    its image mounted for editing (dism /mount-image on winre.wim): preparing a recovery environment that skips BitLocker
+    or runs attacker code.'
+  source: [process]
+  false_positives: Administrators resizing the recovery partition, deployment and imaging tools, and OS upgrades (excluded
+    by parent). Adds risk only.
+  references: ['https://attack.mitre.org/techniques/T1542/', 'https://attack.mitre.org/techniques/T1490/']

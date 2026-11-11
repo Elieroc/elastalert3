@@ -1,0 +1,68 @@
+name: omega-win-winre-image-or-config-modified
+type: any
+index: logs-endpoint.events.file*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1542, T1490]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change]
+- bool:
+    should:
+    - wildcard:
+        file.name: {value: winre.wim, case_insensitive: true}
+    - wildcard:
+        file.name: {value: ReAgent.xml, case_insensitive: true}
+    - wildcard:
+        file.name: {value: ReAgentOld.xml, case_insensitive: true}
+    - wildcard:
+        file.name: {value: Winre.wim.bak, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: reagentc.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TiWorker.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TrustedInstaller.exe, case_insensitive: true}
+        - term:
+            process.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: svchost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: dism.exe, case_insensitive: true}
+        - term:
+            process.name: {value: dismhost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: setup.exe, case_insensitive: true}
+        - term:
+            process.name: {value: SetupHost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: SetupPrep.exe, case_insensitive: true}
+        - term:
+            process.name: {value: MoUsoCoreWorker.exe, case_insensitive: true}
+        - term:
+            process.name: {value: SIHClient.exe, case_insensitive: true}
+        - term:
+            process.name: {value: WaasMedic.exe, case_insensitive: true}
+        - term:
+            process.name: {value: ccmexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: System, case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'winre.wim or ReAgent.xml written by a process other than the servicing stack, reagentc or an OS installer:
+    the recovery image replaced or its configuration edited (outside a Windows update).'
+  source: [file]
+  false_positives: Imaging and deployment tools that rebuild the recovery partition, and third-party recovery products (exclude
+    them by process). Windows Update and OS upgrades write these files through excluded processes.
+  references: ['https://attack.mitre.org/techniques/T1542/', 'https://attack.mitre.org/techniques/T1490/']

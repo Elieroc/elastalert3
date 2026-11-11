@@ -1,0 +1,37 @@
+name: omega-lnx-root-shell-from-unprivileged-parent
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1068, T1548.001]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- terms:
+    process.name: [sh, bash, dash, zsh, ksh, csh, tcsh, fish, ash]
+- term: {user.id: '0'}
+- exists: {field: process.parent.user.id}
+- bool:
+    must_not:
+    - term: {process.parent.user.id: '0'}
+- bool:
+    must_not:
+    - terms:
+        process.parent.name: [sudo, su, pkexec, doas, run0, login, sshd, podman, conmon, bwrap, newuidmap, newgidmap, flatpak,
+          snap-confine, apptainer, singularity, buildah, unshare, nsenter, proot, fakeroot, fakeroot-sysv, faked, lxc-attach,
+          lxc-start, runc, crun, docker-init, containerd-shim]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A shell running as root (uid 0) whose parent process runs as an ordinary user and is not a privilege tool
+    (sudo, su, pkexec, doas, a container or user-namespace helper): a local privilege escalation that ends directly in a
+    root shell, as kernel exploits and setuid abuses do.'
+  source: [process]
+  false_positives: 'User namespaces and rootless container tools that map the user to uid 0 (podman, bwrap, unshare, flatpak,
+    snap are excluded by name). An exploit that overwrites the page cache of su or a PAM file (Copy Fail, Fragnesia) ends
+    in a root shell whose parent is su, which this rule does not see: the T1 rule on su from a service account and the integrity
+    checks cover that. Needs user.id and process.parent.user.id in the process events.'
+  references: ['https://attack.mitre.org/techniques/T1068/', 'https://attack.mitre.org/techniques/T1548/001/']

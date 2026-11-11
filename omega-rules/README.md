@@ -34,8 +34,8 @@ Silent T1 rules still write their doc to the writeback index with `risk_objects`
 
 | Pack | Rules | Data sources (ECS) | State |
 |---|---|---|---|
-| `linux/` | 115: 48 T0, 63 T1, 4 T2 | Elastic Defend / Auditbeat (process, file, network, DNS lookups), system auth (sshd, sudo, su) | first version |
-| `windows/` | 114: 67 T0, 42 T1, 5 T2 | Elastic Defend / Winlogbeat / Sysmon (process, file, registry, network, DNS, named pipes, WMI), Security and System event logs (4624/4625/4662/4697/4698/4732/4768/4769/5140, 1102, 7045), PowerShell script block logging (4104) | first version |
+| `linux/` | 118: 50 T0, 64 T1, 4 T2 | Elastic Defend / Auditbeat (process, file, network, DNS lookups), system auth (sshd, sudo, su) | first version |
+| `windows/` | 127: 76 T0, 46 T1, 5 T2 | Elastic Defend / Winlogbeat / Sysmon (process, file, registry, network, DNS, named pipes, WMI), Security and System event logs (4624/4625/4662/4697/4698/4732/4768/4769/5140, 1102, 7045), PowerShell script block logging (4104) | first version |
 | `web/`, `firewall/` | - | - | planned |
 
 Linux covers, with one rule per behaviour and the type of rule that fits it: blacklists of tools and miners
@@ -62,6 +62,25 @@ Behaviour of note: ransomware (`known-ransom-note-created`, `ransom-note-dropped
 `shadow-copy-or-backup-deletion`, `service-and-process-stop-burst`), credential theft (LSASS, SAM/NTDS, DCSync, Kerberoasting, WDigest,
 LSA packages), persistence in the registry and WMI, Office/server process trees, and PowerShell script block content.
 The T1 signals feed `omega-win-host-risk`, `omega-win-user-risk` and `omega-win-source-ip-risk`.
+
+### Rules tied to 2026 exploited vulnerabilities
+
+Exploitation rarely leaves a version string, so these rules look at what the exploit does on the host, and each one
+says what the public reports do and do not state (the post-exploitation details of several 2026 CVEs are not published).
+Linux: `omega-lnx-root-shell-from-unprivileged-parent` (kernel and setuid local privilege escalations, e.g. Copy Fail
+CVE-2026-31431, Fragnesia CVE-2026-46300), `omega-lnx-ssh-password-login-for-root-or-system-account` and
+`omega-lnx-ssh-password-login-then-key-or-secret-access` (OpenSSH "SSHole" authentication bypass, CVE-2026-123158; musl-based
+systems, fixed in OpenSSH 10.6p2). Windows: `omega-win-system-process-from-unprivileged-parent` (ALPC and update-stack
+privilege escalations), `omega-win-ikeext-service-spawns-process` and `omega-win-ike-traffic-from-public-address-received`
+(IKE service CVE-2026-33824), `omega-win-explorer-launches-payload-from-shortcut-or-remote-path`,
+`omega-win-execution-from-webdav-or-public-unc-path` and `omega-win-shortcut-or-library-file-created-by-archiver-or-browser`
+(Windows Shell and Mark-of-the-Web flaws), `omega-win-screenconnect-*` and
+`omega-win-backup-server-service-spawns-recon-or-account-command` (remote-support and backup servers). The privilege
+rules need `user.id` and `process.parent.user.id` in the process events (ECS fields; check that your sensor fills them).
+BitLocker and recovery environment (the WinRE BitLocker bypasses published in 2026 run before the OS boots, so no rule can see
+them; the rules cover what happens in the OS around them): `omega-win-bitlocker-protection-weakened`,
+`omega-win-bitlocker-recovery-key-read`, `omega-win-winre-tampering-command`, `omega-win-winre-image-or-config-modified`.
+The real protection is a pre-boot PIN (TPM + PIN).
 
 ## Sources and licences
 

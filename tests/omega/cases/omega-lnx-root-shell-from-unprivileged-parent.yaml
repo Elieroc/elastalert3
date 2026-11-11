@@ -1,0 +1,108 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice, id: '0'}
+    process:
+      name: bash
+      command_line: /bin/bash
+      parent:
+        name: bash
+        user: {id: '1000'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice, id: '0'}
+    process:
+      name: sh
+      command_line: sh -c id
+      parent:
+        name: python3
+        user: {id: '33'}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice, id: '0'}
+    process:
+      name: bash
+      command_line: bash -i
+      parent:
+        name: exploit
+        user: {id: '1001'}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice, id: '0'}
+    process:
+      name: bash
+      command_line: bash
+      parent:
+        name: sudo
+        user: {id: '0'}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice, id: '1000'}
+    process:
+      name: bash
+      command_line: bash
+      parent:
+        name: bash
+        user: {id: '1000'}
+- id: neg3
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice, id: '0'}
+    process:
+      name: passwd
+      command_line: passwd
+      parent:
+        name: bash
+        user: {id: '1000'}
+- id: neg4
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice, id: '0'}
+    process:
+      name: bash
+      command_line: bash
+      parent:
+        name: unshare
+        user: {id: '1000'}
+- id: neg5
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice, id: '0'}
+    process:
+      name: bash
+      command_line: bash
+      parent:
+        name: su
+        user: {id: '0'}

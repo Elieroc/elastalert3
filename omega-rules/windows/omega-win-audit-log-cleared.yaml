@@ -3,7 +3,7 @@ type: any
 index: winlogbeat-*,logs-system.security-*,logs-system.system-*
 timestamp_field: '@timestamp'
 priority: 2
-mitre_attack: [T1070.001]
+mitre_attack: [T1685.005]
 risk_score: 80
 risk_objects: {host: host.name, user: user.name}
 filter:
@@ -23,4 +23,4 @@ omega:
   false_positives: Planned log maintenance by administrators (exclude the account). Also fires when a log is archived and
     cleared by a collection tool.
   references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/builtin/security/win_security_audit_log_cleared.yml',
-    'https://attack.mitre.org/techniques/T1070/001/']
+    'https://attack.mitre.org/techniques/T1685/005/']

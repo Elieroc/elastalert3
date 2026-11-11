@@ -1,0 +1,82 @@
+name: omega-win-system-process-from-unprivileged-parent
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1068, T1134]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: cmd.exe, case_insensitive: true}
+    - term:
+        process.name: {value: powershell.exe, case_insensitive: true}
+    - term:
+        process.name: {value: pwsh.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: cscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: mshta.exe, case_insensitive: true}
+    - term:
+        process.name: {value: rundll32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: regsvr32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: certutil.exe, case_insensitive: true}
+    - term:
+        process.name: {value: bitsadmin.exe, case_insensitive: true}
+    - term:
+        process.name: {value: whoami.exe, case_insensitive: true}
+    - term:
+        process.name: {value: net.exe, case_insensitive: true}
+    - term:
+        process.name: {value: net1.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wmic.exe, case_insensitive: true}
+    - term:
+        process.name: {value: reg.exe, case_insensitive: true}
+    - term:
+        process.name: {value: sc.exe, case_insensitive: true}
+    - term:
+        process.name: {value: curl.exe, case_insensitive: true}
+    - term:
+        process.name: {value: msbuild.exe, case_insensitive: true}
+    - term:
+        process.name: {value: nltest.exe, case_insensitive: true}
+    minimum_should_match: 1
+- term: {user.id: S-1-5-18}
+- exists: {field: process.parent.user.id}
+- bool:
+    must_not:
+    - terms:
+        process.parent.user.id: [S-1-5-18, S-1-5-19, S-1-5-20]
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.parent.name: {value: consent.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: psexec.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: psexesvc.exe, case_insensitive: true}
+        - term:
+            process.parent.name: {value: paexec.exe, case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A command interpreter or LOLBin running as SYSTEM whose parent process runs as an ordinary user: a local
+    privilege escalation (token theft, ALPC or update-stack exploits such as CVE-2026-85880 and CVE-2026-81963) that ends
+    in a SYSTEM shell.'
+  source: [process]
+  false_positives: Support tools that launch SYSTEM shells from a user session (excluded when the parent is consent.exe
+    or a PsExec-like service). Needs user.id and process.parent.user.id in the process events.
+  references: ['https://attack.mitre.org/techniques/T1068/', 'https://attack.mitre.org/techniques/T1134/']

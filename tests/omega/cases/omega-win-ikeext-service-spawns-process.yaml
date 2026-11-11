@@ -1,0 +1,63 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c whoami
+      parent: {name: svchost.exe, command_line: 'C:\Windows\system32\svchost.exe -k netsvcs -p -s IKEEXT'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: rundll32.exe
+      executable: C:\Windows\System32\rundll32.exe
+      command_line: rundll32.exe
+      parent: {name: svchost.exe, command_line: 'C:\Windows\system32\svchost.exe -k netsvcs -p -s IKEEXT'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: WerFault.exe
+      executable: C:\Windows\System32\WerFault.exe
+      command_line: WerFault.exe
+      parent: {name: svchost.exe, command_line: 'C:\Windows\system32\svchost.exe -k netsvcs -p -s IKEEXT'}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd.exe
+      parent: {name: svchost.exe, command_line: 'C:\Windows\system32\svchost.exe -k netsvcs -p -s Schedule'}
+- id: neg3
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd.exe
+      parent: {name: explorer.exe, command_line: explorer.exe}

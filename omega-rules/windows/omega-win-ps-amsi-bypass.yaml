@@ -3,7 +3,7 @@ type: any
 index: winlogbeat-*,logs-windows.powershell_operational-*
 timestamp_field: '@timestamp'
 priority: 2
-mitre_attack: [T1562.001]
+mitre_attack: [T1685]
 risk_score: 80
 risk_objects: {host: host.name, user: user.name}
 filter:
@@ -33,4 +33,4 @@ omega:
     the test hosts).
   references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/powershell/powershell_script/posh_ps_amsi_bypass_pattern_nov22.yml',
     'https://github.com/SigmaHQ/sigma/blob/master/rules/windows/powershell/powershell_script/posh_ps_amsi_null_bits_bypass.yml',
-    'https://attack.mitre.org/techniques/T1562/001/']
+    'https://attack.mitre.org/techniques/T1685/']

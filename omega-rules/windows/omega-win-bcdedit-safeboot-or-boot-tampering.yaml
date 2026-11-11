@@ -3,7 +3,7 @@ type: any
 index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
 timestamp_field: '@timestamp'
 priority: 2
-mitre_attack: [T1562.009, T1490]
+mitre_attack: [T1685, T1490]
 risk_score: 75
 risk_objects: {host: host.name, user: user.name}
 filter:
@@ -36,4 +36,4 @@ omega:
   source: [process]
   false_positives: Support staff repairing a boot problem; developers enabling test signing for drivers (exclude by user).
   references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_bcdedit_boot_conf_tamper.yml',
-    'https://attack.mitre.org/techniques/T1562/009/', 'https://attack.mitre.org/techniques/T1490/']
+    'https://attack.mitre.org/techniques/T1685/', 'https://attack.mitre.org/techniques/T1490/']

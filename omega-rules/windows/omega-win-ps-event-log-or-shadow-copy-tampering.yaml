@@ -3,7 +3,7 @@ type: any
 index: winlogbeat-*,logs-windows.powershell_operational-*
 timestamp_field: '@timestamp'
 priority: 1
-mitre_attack: [T1070.001, T1490]
+mitre_attack: [T1685.005, T1490]
 risk_score: 80
 risk_objects: {host: host.name, user: user.name}
 filter:
@@ -37,4 +37,4 @@ omega:
   false_positives: Log-maintenance scripts (rare).
   references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/powershell/powershell_script/posh_ps_susp_clear_eventlog.yml',
     'https://github.com/SigmaHQ/sigma/blob/master/rules/windows/powershell/powershell_script/posh_ps_susp_win32_shadowcopy_deletion.yml',
-    'https://attack.mitre.org/techniques/T1070/001/', 'https://attack.mitre.org/techniques/T1490/']
+    'https://attack.mitre.org/techniques/T1685/005/', 'https://attack.mitre.org/techniques/T1490/']

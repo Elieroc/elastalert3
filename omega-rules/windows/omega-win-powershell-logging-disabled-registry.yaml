@@ -3,7 +3,7 @@ type: any
 index: logs-endpoint.events.registry*,winlogbeat-*,logs-windows.sysmon_operational-*
 timestamp_field: '@timestamp'
 priority: 2
-mitre_attack: [T1562.002, T1112]
+mitre_attack: [T1685, T1112]
 risk_score: 70
 risk_objects: {host: host.name, user: user.name}
 filter:
@@ -65,4 +65,4 @@ omega:
     source of every PowerShell rule removed.'
   source: [registry]
   false_positives: Group policy rollouts that deliberately reduce logging (exclude gpsvc/svchost).
-  references: ['https://attack.mitre.org/techniques/T1562/002/', 'https://attack.mitre.org/techniques/T1112/']
+  references: ['https://attack.mitre.org/techniques/T1685/', 'https://attack.mitre.org/techniques/T1112/']

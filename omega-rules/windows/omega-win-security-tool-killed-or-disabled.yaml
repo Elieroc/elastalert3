@@ -3,7 +3,7 @@ type: any
 index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
 timestamp_field: '@timestamp'
 priority: 1
-mitre_attack: [T1562.001]
+mitre_attack: [T1685]
 risk_score: 75
 risk_objects: {host: host.name, user: user.name}
 filter:
@@ -116,4 +116,4 @@ omega:
     SentinelOne, Sophos, Carbon Black, Cylance, ESET, Symantec, McAfee, Trend, Kaspersky).
   source: [process]
   false_positives: Uninstall and upgrade scripts of those products (exclude by parent). Otherwise a ransomware precursor.
-  references: ['https://attack.mitre.org/techniques/T1562/001/']
+  references: ['https://attack.mitre.org/techniques/T1685/']

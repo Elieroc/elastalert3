@@ -1,0 +1,59 @@
+name: omega-win-screenconnect-extension-or-webshell-file-written
+type: any
+index: logs-endpoint.events.file*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1505.003, T1190]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change]
+- bool:
+    should:
+    - wildcard:
+        file.path: {value: '*\\ScreenConnect\\App_Extensions\\*', case_insensitive: true}
+    - wildcard:
+        file.path: {value: '*\\ScreenConnect\\Bin\\*', case_insensitive: true}
+    - wildcard:
+        file.path: {value: '*\\ScreenConnect\\App_Data\\*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        file.extension: {value: aspx, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: ashx, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: asmx, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: dll, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: exe, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: cshtml, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: ScreenConnect.Service.exe, case_insensitive: true}
+        - term:
+            process.name: {value: ScreenConnect.Setup.exe, case_insensitive: true}
+        - term:
+            process.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: ScreenConnect.ClientSetup.exe, case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'An ASPX, ASHX, ASMX, DLL or EXE file written under the ScreenConnect App_Extensions or Bin folders by something
+    other than its installer: a webshell or a malicious extension planted through the path-traversal flaw.'
+  source: [file]
+  false_positives: ScreenConnect upgrades and extension installs through the console (they are done by the ScreenConnect
+    service itself, which is excluded).
+  references: ['https://attack.mitre.org/techniques/T1505/003/', 'https://attack.mitre.org/techniques/T1190/']

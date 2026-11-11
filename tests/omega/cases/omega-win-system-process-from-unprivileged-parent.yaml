@@ -1,0 +1,73 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice, id: S-1-5-18}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd.exe
+      parent:
+        name: exploit.exe
+        user: {id: S-1-5-21-1-2-3-1001}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice, id: S-1-5-18}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell.exe
+      parent:
+        name: explorer.exe
+        user: {id: S-1-5-21-1-2-3-1001}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice, id: S-1-5-18}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd.exe
+      parent:
+        name: services.exe
+        user: {id: S-1-5-18}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice, id: S-1-5-21-1-2-3-1001}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd.exe
+      parent:
+        name: explorer.exe
+        user: {id: S-1-5-21-1-2-3-1001}
+- id: neg3
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice, id: S-1-5-18}
+    event: {category: process, type: start}
+    process:
+      name: notepad.exe
+      executable: C:\Windows\System32\notepad.exe
+      command_line: notepad.exe
+      parent:
+        name: explorer.exe
+        user: {id: S-1-5-21-1-2-3-1001}
