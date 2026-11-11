@@ -1,0 +1,31 @@
+name: omega-lnx-rare-executable-in-temp-directory
+type: new_term
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1036, T1059.004]
+risk_score: 10
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard: {process.executable: /tmp/*}
+    - wildcard: {process.executable: /var/tmp/*}
+    - wildcard: {process.executable: /dev/shm/*}
+    minimum_should_match: 1
+fields: [process.name]
+terms_window_size: {days: 30}
+max_occurrences: 1
+use_keyword_postfix: false
+realert: {minutes: 1}
+alert: []
+omega:
+  tier: T1
+  description: A program name executed from /tmp, /var/tmp or /dev/shm that was seen at most once in the last 30 days across
+    the fleet.
+  source: [process]
+  false_positives: Build and CI hosts creating new temporary programs all the time (exclude them). Adds a small risk.
+  references: ['https://attack.mitre.org/techniques/T1036/', 'https://attack.mitre.org/techniques/T1059/004/']

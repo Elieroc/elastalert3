@@ -1,0 +1,8 @@
+# Documents are merged on {host.os.type: linux, event.category: network, event.action: connection_attempted}.
+- {process.name: curl, process.executable: /usr/bin/curl, destination.ip: 203.0.113.9, destination.port: 443, user.name: alice}
+- {process.name: apt, process.executable: /usr/bin/apt, destination.ip: 198.51.100.4, destination.port: 80, user.name: root}
+- {process.name: bash, process.executable: /bin/bash, destination.ip: 10.0.0.2, destination.port: 5432, user.name: alice}
+- {process.name: nginx, process.executable: /usr/sbin/nginx, destination.ip: 203.0.113.30, destination.port: 443, user.name: www-data}
+- {process.name: sshd, process.executable: /usr/sbin/sshd, destination.ip: 192.168.1.5, destination.port: 22, user.name: root}
+- {process.name: python3, process.executable: /usr/bin/python3, destination.ip: 203.0.113.40, destination.port: 8443, user.name: alice}
+- {process.name: firefox, process.executable: /usr/lib/firefox/firefox, destination.ip: 203.0.113.50, destination.port: 3333, user.name: alice}

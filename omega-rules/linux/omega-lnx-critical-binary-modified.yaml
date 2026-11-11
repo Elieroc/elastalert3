@@ -1,0 +1,153 @@
+name: omega-lnx-critical-binary-modified
+type: any
+index: logs-endpoint.events.file*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1554, T1014]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change, rename]
+- bool:
+    must_not:
+    - terms:
+        process.name: [dpkg, apt, apt-get, apt-key, aptitude, rpm, yum, dnf, microdnf, zypper, pacman, apk, snapd, snap,
+          unattended-upgr, packagekitd, update-alternatives, dpkg-deb, rpmdb, cloud-init, systemd-tmpfiles]
+- bool:
+    must:
+    - terms:
+        event.type: [change, creation]
+    - bool:
+        should:
+        - bool:
+            should:
+            - wildcard: {file.path: /bin/sshd}
+            - wildcard: {file.path: /usr/bin/sshd}
+            - wildcard: {file.path: /sbin/sshd}
+            - wildcard: {file.path: /usr/sbin/sshd}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {file.path: /bin/ssh}
+            - wildcard: {file.path: /usr/bin/ssh}
+            - wildcard: {file.path: /sbin/ssh}
+            - wildcard: {file.path: /usr/sbin/ssh}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {file.path: /bin/sudo}
+            - wildcard: {file.path: /usr/bin/sudo}
+            - wildcard: {file.path: /sbin/sudo}
+            - wildcard: {file.path: /usr/sbin/sudo}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {file.path: /bin/su}
+            - wildcard: {file.path: /usr/bin/su}
+            - wildcard: {file.path: /sbin/su}
+            - wildcard: {file.path: /usr/sbin/su}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {file.path: /bin/login}
+            - wildcard: {file.path: /usr/bin/login}
+            - wildcard: {file.path: /sbin/login}
+            - wildcard: {file.path: /usr/sbin/login}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {file.path: /bin/passwd}
+            - wildcard: {file.path: /usr/bin/passwd}
+            - wildcard: {file.path: /sbin/passwd}
+            - wildcard: {file.path: /usr/sbin/passwd}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {file.path: /bin/ps}
+            - wildcard: {file.path: /usr/bin/ps}
+            - wildcard: {file.path: /sbin/ps}
+            - wildcard: {file.path: /usr/sbin/ps}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {file.path: /bin/netstat}
+            - wildcard: {file.path: /usr/bin/netstat}
+            - wildcard: {file.path: /sbin/netstat}
+            - wildcard: {file.path: /usr/sbin/netstat}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {file.path: /bin/ss}
+            - wildcard: {file.path: /usr/bin/ss}
+            - wildcard: {file.path: /sbin/ss}
+            - wildcard: {file.path: /usr/sbin/ss}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {file.path: /bin/lsof}
+            - wildcard: {file.path: /usr/bin/lsof}
+            - wildcard: {file.path: /sbin/lsof}
+            - wildcard: {file.path: /usr/sbin/lsof}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {file.path: /bin/top}
+            - wildcard: {file.path: /usr/bin/top}
+            - wildcard: {file.path: /sbin/top}
+            - wildcard: {file.path: /usr/sbin/top}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {file.path: /bin/ls}
+            - wildcard: {file.path: /usr/bin/ls}
+            - wildcard: {file.path: /sbin/ls}
+            - wildcard: {file.path: /usr/sbin/ls}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {file.path: /bin/find}
+            - wildcard: {file.path: /usr/bin/find}
+            - wildcard: {file.path: /sbin/find}
+            - wildcard: {file.path: /usr/sbin/find}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {file.path: /bin/ifconfig}
+            - wildcard: {file.path: /usr/bin/ifconfig}
+            - wildcard: {file.path: /sbin/ifconfig}
+            - wildcard: {file.path: /usr/sbin/ifconfig}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {file.path: /bin/cat}
+            - wildcard: {file.path: /usr/bin/cat}
+            - wildcard: {file.path: /sbin/cat}
+            - wildcard: {file.path: /usr/sbin/cat}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {file.path: /bin/md5sum}
+            - wildcard: {file.path: /usr/bin/md5sum}
+            - wildcard: {file.path: /sbin/md5sum}
+            - wildcard: {file.path: /usr/sbin/md5sum}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {file.path: /bin/sha256sum}
+            - wildcard: {file.path: /usr/bin/sha256sum}
+            - wildcard: {file.path: /sbin/sha256sum}
+            - wildcard: {file.path: /usr/sbin/sha256sum}
+            minimum_should_match: 1
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A core system binary (sshd, sudo, su, login, ps, netstat, ss, lsof...) rewritten outside a package manager:
+    a trojanised or rootkit replacement.'
+  source: [file]
+  false_positives: Manual binary hot-fixes and vendor installers that overwrite system tools. Package updates are excluded
+    by process.name.
+  references: ['https://attack.mitre.org/techniques/T1554/', 'https://attack.mitre.org/techniques/T1014/']

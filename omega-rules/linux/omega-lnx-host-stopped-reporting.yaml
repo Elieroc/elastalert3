@@ -1,0 +1,30 @@
+name: omega-lnx-host-stopped-reporting
+type: log_loss
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1685]
+risk_score: 40
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+query_key: host.name
+history: {days: 3}
+resolution: {hours: 1}
+seasonality: hour_of_day
+factor: 1.5
+min_threshold: {hours: 1}
+max_threshold: {hours: 12}
+learn_every: {hours: 6}
+realert: {hours: 4}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'A Linux host that normally reports every hour has been silent for longer than it ever is at that hour: the
+    agent was killed, auditd/EDR disabled, or the host is down.'
+  source: [process]
+  false_positives: 'Hosts switched off on purpose (laboratories, laptops): the rule learns their pattern after 3 days, and
+    adds the 1 h minimum. Planned maintenance: use realert/active_hours.'
+  references: ['https://attack.mitre.org/techniques/T1685/']

@@ -1,0 +1,36 @@
+name: omega-lnx-ebpf-program-load
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1014, T1685]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - terms:
+            process.name: [bpftool]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*prog load*'}
+            - wildcard: {process.command_line: '*prog loadall*'}
+            - wildcard: {process.command_line: '*cgroup attach*'}
+            - wildcard: {process.command_line: '*net attach*'}
+            minimum_should_match: 1
+    - terms:
+        process.name: [bpftrace]
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'bpftool loading a program or attaching it to a cgroup, or bpftrace running a script: eBPF tooling is also
+    used for rootkits (BPFDoor, Triple Cross).'
+  source: [process]
+  false_positives: Observability and security agents run by administrators. Adds risk.
+  references: ['https://attack.mitre.org/techniques/T1014/', 'https://attack.mitre.org/techniques/T1685/']

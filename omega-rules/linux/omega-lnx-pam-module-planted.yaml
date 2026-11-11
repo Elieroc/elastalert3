@@ -1,0 +1,32 @@
+name: omega-lnx-pam-module-planted
+type: any
+index: logs-endpoint.events.file*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1556.003]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change, rename]
+- bool:
+    must_not:
+    - terms:
+        process.name: [dpkg, apt, apt-get, apt-key, aptitude, rpm, yum, dnf, microdnf, zypper, pacman, apk, snapd, snap,
+          unattended-upgr, packagekitd, update-alternatives, dpkg-deb, rpmdb, cloud-init, systemd-tmpfiles]
+- bool:
+    should:
+    - wildcard: {file.path: '*/security/pam_*.so'}
+    - wildcard: {file.path: '*/pam_*.so'}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A PAM module (pam_*.so) written outside a package install: the way to backdoor authentication or log passwords.'
+  source: [file]
+  false_positives: 'Vendor authentication modules installed by hand (SSSD builds, MFA agents): exclude the installer process
+    or the exact path.'
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/persistence_pluggable_authentication_module_pam_exec_backdoor_exec.toml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/linux/auditd/lnx_auditd_keylogging_with_pam_d.yml', 'https://attack.mitre.org/techniques/T1556/003/']

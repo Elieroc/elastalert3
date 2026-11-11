@@ -1,0 +1,42 @@
+name: omega-lnx-sensitive-data-archive-in-temp
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1560.001, T1074.001]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - terms:
+        process.name: [tar, zip, 7z, 7za, 7zr, rar]
+    - bool:
+        should:
+        - wildcard: {process.command_line: '*/etc/*'}
+        - wildcard: {process.command_line: '*.ssh*'}
+        - wildcard: {process.command_line: '*/home/*'}
+        - wildcard: {process.command_line: '*/root*'}
+        - wildcard: {process.command_line: '*/var/www*'}
+        - wildcard: {process.command_line: '*/var/lib/mysql*'}
+        - wildcard: {process.command_line: '*/var/lib/postgresql*'}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard: {process.command_line: '* /tmp/*'}
+        - wildcard: {process.command_line: '* /var/tmp/*'}
+        - wildcard: {process.command_line: '* /dev/shm/*'}
+        - wildcard: {process.command_line: '*-f /tmp/*'}
+        - wildcard: {process.command_line: '*-f /var/tmp/*'}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'Archive of sensitive directories (/etc, /root, ~/.ssh, /home, /var/www, database files) written into /tmp,
+    /var/tmp or /dev/shm: data staged for exfiltration.'
+  source: [process]
+  false_positives: Backup jobs that stage in /tmp. Adds risk.
+  references: ['https://attack.mitre.org/techniques/T1560/001/', 'https://attack.mitre.org/techniques/T1074/001/']

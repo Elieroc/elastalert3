@@ -1,0 +1,24 @@
+name: omega-lnx-discovery-command
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1082, T1033, T1016, T1049]
+risk_score: 2
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- terms:
+    process.name: [id, whoami, uname, hostname, ifconfig, netstat, ss, arp, route, lsb_release, w, who, last, lastlog, env,
+      printenv, lsmod, lscpu, lsblk, df, mount, crontab, getent, groups, nslookup, dig, nmcli, iptables, lspci, lsusb, dmesg]
+alert: []
+omega:
+  tier: T1
+  description: System, user or network discovery command (id, whoami, uname, ifconfig, netstat, ss, last, env...). Each
+    one alone is normal; many in a short time is not (see the discovery-burst rule).
+  source: [process]
+  false_positives: Every administrator and many scripts. It only adds a very small risk, and feeds the discovery-burst rule.
+  references: ['https://attack.mitre.org/techniques/T1082/', 'https://attack.mitre.org/techniques/T1033/', 'https://attack.mitre.org/techniques/T1016/',
+    'https://attack.mitre.org/techniques/T1049/']

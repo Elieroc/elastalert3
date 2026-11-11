@@ -1,0 +1,48 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /lib/x86_64-linux-gnu/security/pam_unix2.so}
+    process: {name: cp}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /usr/lib64/security/pam_backdoor.so}
+    process: {name: wget}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /lib/x86_64-linux-gnu/security/pam_unix.so}
+    process: {name: dpkg}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /etc/pam.d/sshd}
+    process: {name: vim}
+- id: neg3
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /tmp/readme.txt}
+    process: {name: vim}

@@ -1,0 +1,34 @@
+name: omega-lnx-ssh-bruteforce-then-success
+type: correlation
+index: logs-system.auth-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1110.001, T1078]
+risk_score: 90
+risk_objects: {ip: source.ip, user: user.name, host: host.name}
+filter:
+- term: {event.category: authentication}
+query_key: source.ip
+timeframe: {minutes: 15}
+realert: {hours: 1}
+correlation_leaves:
+  ssh_fail:
+    num_events: 10
+    filter:
+    - term: {event.action: ssh_login}
+    - term: {event.outcome: failure}
+  ssh_success:
+    filter:
+    - term: {event.action: ssh_login}
+    - term: {event.outcome: success}
+correlation_query: ssh_fail THEN ssh_success
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A source address fails SSH logins ten times, then logs in successfully within 15 minutes: the guessed password
+    worked.'
+  source: [auth]
+  false_positives: A user who mistypes a password ten times from a shared NAT address. Raise num_events or exclude the NAT
+    range.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/credential_access_potential_successful_linux_ssh_bruteforce.toml',
+    'https://attack.mitre.org/techniques/T1110/001/', 'https://attack.mitre.org/techniques/T1078/']

@@ -1,0 +1,208 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 203.0.113.7}
+    user: {name: root}
+- id: pos2
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 203.0.113.7}
+    user: {name: root}
+- id: pos3
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 203.0.113.7}
+    user: {name: root}
+- id: pos4
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 203.0.113.7}
+    user: {name: root}
+- id: pos5
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 203.0.113.7}
+    user: {name: root}
+- id: pos6
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 203.0.113.7}
+    user: {name: root}
+- id: pos7
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 203.0.113.7}
+    user: {name: root}
+- id: pos8
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 203.0.113.7}
+    user: {name: root}
+- id: pos9
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 203.0.113.7}
+    user: {name: root}
+- id: pos10
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 203.0.113.7}
+    user: {name: root}
+- id: pos11
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: success}
+    source: {ip: 203.0.113.7}
+    user: {name: root}
+- id: pos12
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 198.51.100.2}
+    user: {name: root}
+- id: pos13
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 198.51.100.2}
+    user: {name: root}
+- id: pos14
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 198.51.100.2}
+    user: {name: root}
+- id: pos15
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 198.51.100.2}
+    user: {name: root}
+- id: pos16
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 198.51.100.2}
+    user: {name: root}
+- id: pos17
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 198.51.100.2}
+    user: {name: root}
+- id: pos18
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 198.51.100.2}
+    user: {name: root}
+- id: pos19
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 198.51.100.2}
+    user: {name: root}
+- id: pos20
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 198.51.100.2}
+    user: {name: root}
+- id: pos21
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 198.51.100.2}
+    user: {name: root}
+- id: pos22
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: success}
+    source: {ip: 192.0.2.5}
+    user: {name: bob}
+- id: pos23
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 203.0.113.9}
+    user: {name: bob}
+- id: pos24
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 203.0.113.9}
+    user: {name: bob}
+- id: pos25
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 203.0.113.9}
+    user: {name: bob}
+- id: pos26
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 203.0.113.9}
+    user: {name: bob}
+- id: pos27
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 203.0.113.9}
+    user: {name: bob}
+- id: pos28
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: success}
+    source: {ip: 203.0.113.9}
+    user: {name: bob}
+- id: neg1
+  doc:
+    host: {name: srv1}
+    event: {category: network, action: ssh_login, outcome: failure}
+    source: {ip: 203.0.113.7}
+    user: {name: root}
+matches: 1
+mappings:
+  source:
+    properties:
+      ip: {type: ip}

@@ -1,0 +1,25 @@
+name: omega-lnx-sudo-su-authentication-failures
+type: frequency
+index: logs-system.auth-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1110, T1548.003]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.category: authentication}
+- terms:
+    process.name: [sudo, su]
+- term: {event.outcome: failure}
+num_events: 5
+timeframe: {minutes: 10}
+query_key: [host.name, user.name]
+realert: {minutes: 30}
+alert: []
+omega:
+  tier: T1
+  description: 'Five failed sudo or su authentications by one account on one host within ten minutes: someone guessing the
+    password of a local privileged account.'
+  source: [auth]
+  false_positives: Users with a sticky keyboard. Adds risk only.
+  references: ['https://attack.mitre.org/techniques/T1110/', 'https://attack.mitre.org/techniques/T1548/003/']

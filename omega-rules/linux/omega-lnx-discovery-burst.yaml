@@ -1,0 +1,29 @@
+name: omega-lnx-discovery-burst
+type: cardinality
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1082, T1033, T1016, T1049]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- terms:
+    process.name: [id, whoami, uname, hostname, ifconfig, netstat, ss, arp, route, lsb_release, w, who, last, lastlog, env,
+      printenv, lsmod, lscpu, lsblk, df, mount, crontab, getent, groups, nslookup, dig, nmcli, iptables, lspci, lsusb, dmesg]
+cardinality_field: process.name
+max_cardinality: 5
+timeframe: {minutes: 10}
+query_key: [host.name, user.name]
+realert: {hours: 1}
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Six or more different discovery commands (id, whoami, uname, ifconfig, netstat, last, env...) run by one
+    account on one host within ten minutes: hands-on-keyboard reconnaissance after an intrusion.'
+  source: [process]
+  false_positives: An administrator who inspects a new machine, system information scripts. Exclude the account or tool.
+  references: ['https://attack.mitre.org/techniques/T1082/', 'https://attack.mitre.org/techniques/T1033/', 'https://attack.mitre.org/techniques/T1016/',
+    'https://attack.mitre.org/techniques/T1049/']

@@ -1,0 +1,40 @@
+name: omega-lnx-shell-profile-modified
+type: any
+index: logs-endpoint.events.file*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1546.004]
+risk_score: 10
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change, rename]
+- bool:
+    must_not:
+    - terms:
+        process.name: [dpkg, apt, apt-get, apt-key, aptitude, rpm, yum, dnf, microdnf, zypper, pacman, apk, snapd, snap,
+          unattended-upgr, packagekitd, update-alternatives, dpkg-deb, rpmdb, cloud-init, systemd-tmpfiles]
+- bool:
+    should:
+    - wildcard: {file.path: '*/.bashrc'}
+    - wildcard: {file.path: '*/.bash_profile'}
+    - wildcard: {file.path: '*/.bash_login'}
+    - wildcard: {file.path: '*/.profile'}
+    - wildcard: {file.path: '*/.zshrc'}
+    - wildcard: {file.path: '*/.zprofile'}
+    - wildcard: {file.path: /etc/profile}
+    - wildcard: {file.path: /etc/bash.bashrc}
+    - wildcard: {file.path: /etc/profile.d/*}
+    - wildcard: {file.path: /etc/zsh/*}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: Shell startup file modified (.bashrc, .profile, .zshrc, /etc/profile, /etc/profile.d).
+  source: [file]
+  false_positives: Users editing their own dotfiles, administrators; adds a small risk only.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/cross-platform/persistence_shell_profile_modification.toml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/linux/auditd/path/lnx_auditd_unix_shell_configuration_modification.yml',
+    'https://attack.mitre.org/techniques/T1546/004/']

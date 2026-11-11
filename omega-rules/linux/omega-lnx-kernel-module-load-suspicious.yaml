@@ -1,0 +1,49 @@
+name: omega-lnx-kernel-module-load-suspicious
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1547.006, T1014]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - terms:
+            process.name: [insmod]
+        - bool:
+            must_not:
+            - bool:
+                should:
+                - wildcard: {process.command_line: '* /lib/modules/*'}
+                - wildcard: {process.command_line: '* /usr/lib/modules/*'}
+                minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [insmod, modprobe]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*diamorphine*'}
+            - wildcard: {process.command_line: '*reptile*'}
+            - wildcard: {process.command_line: '*azazel*'}
+            - wildcard: {process.command_line: '*beurk*'}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: Kernel module inserted from outside /lib/modules (insmod /tmp/x.ko) or named after a public rootkit (diamorphine,
+    reptile, azazel, beurk).
+  source: [process]
+  false_positives: Out-of-tree drivers and DKMS builds loaded with insmod by an administrator; the vendor path is the thing
+    to exclude.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/persistence_insmod_kernel_module_load.toml',
+    'https://github.com/elastic/detection-rules/blob/main/rules/linux/persistence_kernel_module_load_from_unusual_location.toml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/linux/auditd/syscall/lnx_auditd_load_module_insmod.yml', 'https://attack.mitre.org/techniques/T1547/006/',
+    'https://attack.mitre.org/techniques/T1014/']

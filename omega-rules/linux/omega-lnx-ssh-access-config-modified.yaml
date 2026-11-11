@@ -1,0 +1,37 @@
+name: omega-lnx-ssh-access-config-modified
+type: any
+index: logs-endpoint.events.file*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1098.004, T1563.001]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change, rename]
+- bool:
+    must_not:
+    - terms:
+        process.name: [dpkg, apt, apt-get, apt-key, aptitude, rpm, yum, dnf, microdnf, zypper, pacman, apk, snapd, snap,
+          unattended-upgr, packagekitd, update-alternatives, dpkg-deb, rpmdb, cloud-init, systemd-tmpfiles]
+- bool:
+    should:
+    - wildcard: {file.path: '*/.ssh/authorized_keys'}
+    - wildcard: {file.path: '*/.ssh/authorized_keys2'}
+    - wildcard: {file.path: /etc/ssh/sshd_config}
+    - wildcard: {file.path: /etc/ssh/sshd_config.d/*}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - terms:
+        process.name: [sshd, ssh-copy-id, sshd-session]
+alert: []
+omega:
+  tier: T1
+  description: SSH authorized_keys or sshd configuration changed by something other than sshd or ssh-copy-id.
+  source: [file]
+  false_positives: Key rotation and provisioning tools; adds risk only.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/cross-platform/persistence_ssh_authorized_keys_modification.toml',
+    'https://attack.mitre.org/techniques/T1098/004/', 'https://attack.mitre.org/techniques/T1563/001/']

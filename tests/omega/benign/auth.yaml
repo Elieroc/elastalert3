@@ -1,0 +1,4 @@
+# Documents are merged on {event.category: authentication}.
+- {event.action: ssh_login, event.outcome: success, source.ip: 10.0.0.8, user.name: alice}
+- {event.action: ssh_login, event.outcome: failure, source.ip: 10.0.0.8, user.name: alice}
+- {event.action: sudo, event.outcome: success, process.name: sudo, user.name: alice}

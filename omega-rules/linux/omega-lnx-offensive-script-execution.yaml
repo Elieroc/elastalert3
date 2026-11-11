@@ -1,0 +1,67 @@
+name: omega-lnx-offensive-script-execution
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1068, T1082, T1003.007, T1555]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - bool:
+        should:
+        - terms:
+            process.name: [sh, bash, dash, zsh, ksh, csh, tcsh, fish, ash, python, python2, python3, perl, ruby, php, node,
+              lua]
+        - bool:
+            should:
+            - wildcard:
+                process.name: {value: linpeas*, case_insensitive: true}
+            - wildcard:
+                process.name: {value: LinEnum*, case_insensitive: true}
+            - wildcard:
+                process.name: {value: lazagne*, case_insensitive: true}
+            - wildcard:
+                process.name: {value: mimipenguin*, case_insensitive: true}
+            minimum_should_match: 1
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*linpeas*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*LinEnum*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*linux-exploit-suggester*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*unix-privesc-check*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*/lse.sh*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*lazagne*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*mimipenguin*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*linikatz*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*sudo_killer*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*dirtycow*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*reGeorg*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*jexboss*', case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: Interpreter running a well-known enumeration, privilege-escalation or credential-theft script (linPEAS, LinEnum,
+    linux-exploit-suggester, LaZagne, mimipenguin...).
+  source: [process]
+  false_positives: Authorised penetration tests, hardening audits (Lynis is not in the list).
+  references: ['https://attack.mitre.org/techniques/T1068/', 'https://attack.mitre.org/techniques/T1082/', 'https://attack.mitre.org/techniques/T1003/007/',
+    'https://attack.mitre.org/techniques/T1555/']

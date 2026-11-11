@@ -1,0 +1,45 @@
+# Legitimate Linux activity: no T0 rule of type `any` may hit it (T1 signals may, they only add a little risk).
+# Documents are merged on {host.os.type: linux, event.category: process, event.type: start}.
+- {process.name: apt-get, process.executable: /usr/bin/apt-get, process.command_line: apt-get -y upgrade, process.parent.name: cron, user.name: root}
+- {process.name: dpkg, process.executable: /usr/bin/dpkg, process.command_line: dpkg --configure -a, process.parent.name: apt-get, user.name: root}
+- {process.name: systemctl, process.command_line: systemctl restart nginx, process.parent.name: bash, user.name: root}
+- {process.name: systemctl, process.command_line: systemctl status auditd, process.parent.name: bash, user.name: alice}
+- {process.name: systemctl, process.command_line: systemctl start auditd, process.parent.name: bash, user.name: root}
+- {process.name: docker, process.command_line: docker run --rm -v /data:/data nginx, user.name: alice}
+- {process.name: docker, process.command_line: docker build -t app ., user.name: alice}
+- {process.name: python3, process.command_line: python3 /tmp/ansible-tmp-1/AnsiballZ_stat.py, process.parent.name: sshd, user.name: svc-ansible}
+- {process.name: logrotate, process.command_line: logrotate /etc/logrotate.conf, process.parent.name: cron, user.name: root}
+- {process.name: sudo, process.command_line: sudo apt update, user.name: alice}
+- {process.name: ssh, process.command_line: ssh deploy@build01, user.name: alice}
+- {process.name: curl, process.command_line: curl -s https://api.github.com/repos/x/y, user.name: alice}
+- {process.name: wget, process.command_line: wget https://example.org/pkg.tar.gz, user.name: alice}
+- {process.name: bash, process.executable: /bin/bash, process.command_line: bash /usr/local/bin/backup.sh, process.parent.name: cron, user.name: root}
+- {process.name: git, process.command_line: git pull origin main, user.name: alice}
+- {process.name: python3, process.command_line: python3 manage.py runserver, user.name: alice}
+- {process.name: tar, process.command_line: tar czf /backup/etc.tgz /etc, process.parent.name: cron, user.name: root}
+- {process.name: mysqldump, process.command_line: mysqldump --all-databases, user.name: root}
+- {process.name: chmod, process.command_line: chmod +x deploy.sh, user.name: alice}
+- {process.name: chmod, process.command_line: chmod 644 /etc/hosts, user.name: root}
+- {process.name: pip, process.command_line: pip install requests, user.name: alice}
+- {process.name: journalctl, process.command_line: journalctl -u sshd --since today, user.name: alice}
+- {process.name: crontab, process.command_line: crontab -l, user.name: alice}
+- {process.name: useradd, process.command_line: useradd -m svc-app, user.name: root}
+- {process.name: usermod, process.command_line: usermod -aG docker alice, user.name: root}
+- {process.name: nginx, process.executable: /usr/sbin/nginx, process.command_line: nginx -g daemon off, process.parent.name: systemd, user.name: root}
+- {process.name: php-cgi, process.command_line: php-cgi, process.parent.name: apache2, user.name: www-data}
+- {process.name: find, process.command_line: find /var/log -mtime +30 -delete, process.parent.name: cron, user.name: root}
+- {process.name: find, process.command_line: find /var/log -name "*.log" -mtime +7, user.name: alice}
+- {process.name: awk, process.command_line: "awk '{print $1}' access.log", user.name: alice}
+- {process.name: rm, process.command_line: rm -rf /tmp/build-1234, user.name: alice}
+- {process.name: rm, process.command_line: rm -f /var/log/syslog.1.gz, process.parent.name: logrotate, user.name: root}
+- {process.name: dd, process.command_line: dd if=/dev/zero of=/tmp/test.img bs=1M count=10, user.name: alice}
+- {process.name: sysctl, process.command_line: sysctl -w net.ipv4.ip_forward=1, user.name: root}
+- {process.name: insmod, process.command_line: insmod /lib/modules/6.1.0/kernel/drivers/net/dummy.ko, user.name: root}
+- {process.name: modprobe, process.command_line: modprobe overlay, user.name: root}
+- {process.name: setcap, process.command_line: setcap cap_net_bind_service=+ep /usr/bin/nginx, user.name: root}
+- {process.name: gcc, process.executable: /usr/bin/gcc, process.command_line: gcc -o app app.c, user.name: alice}
+- {process.name: app, process.executable: /home/alice/app, process.command_line: ./app, user.name: alice}
+- {process.name: java, process.executable: /usr/bin/java, process.command_line: java -jar app.jar, process.parent.name: systemd, user.name: tomcat}
+- {process.name: bash, process.command_line: bash -c "cat < /dev/tcp/db01/5432", user.name: alice}
+- {process.name: python3, process.command_line: python3 -m http.server 8000, user.name: alice}
+- {process.name: kworker/0:1, process.command_line: x, user.name: root}

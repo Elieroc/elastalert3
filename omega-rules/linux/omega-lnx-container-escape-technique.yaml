@@ -1,0 +1,77 @@
+name: omega-lnx-container-escape-technique
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1611]
+risk_score: 90
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - terms:
+            process.name: [nsenter]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*-t 1 *'}
+            - wildcard: {process.command_line: '*-t1 *'}
+            - wildcard: {process.command_line: '*--target 1 *'}
+            - wildcard: {process.command_line: '*--target=1 *'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [docker, podman, nerdctl]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*run*'}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - bool:
+                must:
+                - bool:
+                    should:
+                    - wildcard: {process.command_line: '*--privileged*'}
+                    minimum_should_match: 1
+                - bool:
+                    should:
+                    - wildcard: {process.command_line: '*-v /:/*'}
+                    - wildcard: {process.command_line: '*--volume /:/*'}
+                    - wildcard: {process.command_line: '*-v /:*'}
+                    - wildcard: {process.command_line: '*--mount*source=/,*'}
+                    minimum_should_match: 1
+            - bool:
+                must:
+                - bool:
+                    should:
+                    - wildcard: {process.command_line: '*--pid=host*'}
+                    - wildcard: {process.command_line: '*--pid host*'}
+                    minimum_should_match: 1
+                - bool:
+                    should:
+                    - wildcard: {process.command_line: '*--privileged*'}
+                    minimum_should_match: 1
+            minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard: {process.command_line: '*release_agent*'}
+        - wildcard: {process.command_line: '*chroot /host*'}
+        - wildcard: {process.command_line: '*/proc/sys/kernel/core_pattern*'}
+        minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Host takeover from a container or privileged context: nsenter into PID 1, docker/podman run with --privileged
+    and the host root mounted, release_agent or core_pattern abuse, chroot /host.'
+  source: [process]
+  false_positives: Container platform maintenance (node debugging with nsenter -t 1). Add exceptions on user.name for the
+    platform team.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/privilege_escalation_docker_escape_via_nsenter.toml',
+    'https://attack.mitre.org/techniques/T1611/']

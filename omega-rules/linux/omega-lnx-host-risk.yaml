@@ -1,0 +1,25 @@
+name: omega-lnx-host-risk
+type: risk
+priority: 2
+mitre_attack: []
+risk_threshold: 100
+timeframe: {hours: 24}
+risk_object_type: host
+min_distinct_rules: 2
+realert: {hours: 12}
+usual_hours:
+  timezone: UTC
+  windows:
+  - days: [mon, tue, wed, thu, fri]
+    from: 07:00
+    to: '19:00'
+off_hours_bonus: 20
+alert: [debug]
+omega:
+  tier: T2
+  description: A host whose alerts add up to 100 risk points within 24 hours, from at least two different rules. Alerts
+    outside usual hours weigh 20 more. This is the SOC view of one machine going wrong, whatever the individual rules said.
+  source: [risk]
+  false_positives: A host being tested by a red team or installed by a noisy script. Lower the threshold only with min_distinct_rules
+    kept at 2.
+  references: ['https://elastalert3.neopipe.fr/ruletypes.html#risk']

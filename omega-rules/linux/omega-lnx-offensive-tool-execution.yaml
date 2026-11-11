@@ -1,0 +1,29 @@
+name: omega-lnx-offensive-tool-execution
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1588.002, T1572, T1110]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- terms:
+    process.name: [sliver-client, sliver-server, havoc, merlin, mythic, brute-ratel, pwncat, pwncat-cs, villain, chisel,
+      ligolo, ligolo-agent, ligolo-proxy, ligolo-ng, frpc, frps, ngrok, stowaway, gost, iodine, iodined, dnscat, ptunnel,
+      ptunnel-ng, rpivot, revsocks, pspy, pspy32, pspy32s, pspy64, pspy64s, traitor, traitor-amd64, deepce, cdk, linpeas,
+      linux-exploit-suggester, peirates, kubehunter, hydra, medusa, patator, john, hashcat, crackmapexec, nxc, netexec,
+      evil-winrm, responder, mitm6, bettercap, ettercap, impacket-secretsdump, impacket-psexec, impacket-wmiexec, impacket-smbexec,
+      impacket-ntlmrelayx, impacket-GetUserSPNs, impacket-GetNPUsers, kerbrute, msfconsole, msfvenom, msfdb, sqlmap, nikto,
+      routersploit, beef-xss]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Execution of a known offensive security binary (C2 implant, tunnelling, privilege-escalation or credential
+    attack tool). '
+  source: [process]
+  false_positives: 'Authorised penetration tests and red-team exercises: add an exception on host.name or user.name for
+    their duration (expires).'
+  references: ['https://attack.mitre.org/techniques/T1588/002/', 'https://attack.mitre.org/techniques/T1572/', 'https://attack.mitre.org/techniques/T1110/']

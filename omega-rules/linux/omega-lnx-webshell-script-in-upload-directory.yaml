@@ -1,0 +1,49 @@
+name: omega-lnx-webshell-script-in-upload-directory
+type: any
+index: logs-endpoint.events.file*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1505.003, T1190]
+risk_score: 90
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change, rename]
+- bool:
+    must_not:
+    - terms:
+        process.name: [dpkg, apt, apt-get, apt-key, aptitude, rpm, yum, dnf, microdnf, zypper, pacman, apk, snapd, snap,
+          unattended-upgr, packagekitd, update-alternatives, dpkg-deb, rpmdb, cloud-init, systemd-tmpfiles]
+- bool:
+    must:
+    - bool:
+        should:
+        - wildcard: {file.path: '*/uploads/*'}
+        - wildcard: {file.path: '*/upload/*'}
+        - wildcard: {file.path: '*/uploaded/*'}
+        - wildcard: {file.path: '*/media/*'}
+        - wildcard: {file.path: '*/wp-content/uploads/*'}
+        - wildcard: {file.path: '*/userfiles/*'}
+        - wildcard: {file.path: '*/attachments/*'}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard: {file.path: '*.php'}
+        - wildcard: {file.path: '*.php5'}
+        - wildcard: {file.path: '*.phtml'}
+        - wildcard: {file.path: '*.jsp'}
+        - wildcard: {file.path: '*.jspx'}
+        - wildcard: {file.path: '*.asp'}
+        - wildcard: {file.path: '*.aspx'}
+        - wildcard: {file.path: '*.war'}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Server-side script (.php, .jsp, .jspx, .phtml, .asp) created in an upload or media directory: executable
+    content where only data should be.'
+  source: [file]
+  false_positives: CMS plugins that unpack PHP into uploads (rare; WordPress does not). Exclude the exact directory.
+  references: ['https://attack.mitre.org/techniques/T1505/003/', 'https://attack.mitre.org/techniques/T1190/']

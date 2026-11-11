@@ -1,0 +1,32 @@
+name: omega-lnx-file-timestamp-tampering
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1070.006]
+risk_score: 8
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - terms:
+        process.name: [touch]
+    - bool:
+        should:
+        - wildcard: {process.command_line: '* -r *'}
+        - wildcard: {process.command_line: '* -t *'}
+        - wildcard: {process.command_line: '* -d *'}
+        - wildcard: {process.command_line: '*--date*'}
+        - wildcard: {process.command_line: '*--reference*'}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'touch copying or setting a file timestamp (-r, -t, -d, --date, --reference): timestomping to blend in.'
+  source: [process]
+  false_positives: Build systems and package scripts using touch -d. Only a tiny risk.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_touch_susp.yml',
+    'https://github.com/elastic/detection-rules/blob/main/rules/cross-platform/defense_evasion_timestomp_touch.toml', 'https://attack.mitre.org/techniques/T1070/006/']

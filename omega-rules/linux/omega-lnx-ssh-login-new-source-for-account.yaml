@@ -1,0 +1,25 @@
+name: omega-lnx-ssh-login-new-source-for-account
+type: new_term
+index: logs-system.auth-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1078]
+risk_score: 15
+risk_objects: {user: user.name, ip: source.ip}
+filter:
+- term: {event.category: authentication}
+- term: {event.action: ssh_login}
+- term: {event.outcome: success}
+fields:
+- [user.name, source.ip]
+terms_window_size: {days: 30}
+use_keyword_postfix: false
+realert: {minutes: 1}
+alert: []
+omega:
+  tier: T1
+  description: A successful SSH login for an account from a source address it has not used in the last 30 days.
+  source: [auth]
+  false_positives: Mobile users, DHCP/ISP address changes, new jump hosts. Adds a small risk; combined with other signals
+    it matters.
+  references: ['https://attack.mitre.org/techniques/T1078/']

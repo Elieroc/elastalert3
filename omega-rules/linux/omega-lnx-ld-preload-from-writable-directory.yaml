@@ -1,0 +1,32 @@
+name: omega-lnx-ld-preload-from-writable-directory
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1574.006]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard: {process.command_line: '*LD_PRELOAD=/tmp/*'}
+    - wildcard: {process.command_line: '*LD_PRELOAD=/dev/shm/*'}
+    - wildcard: {process.command_line: '*LD_PRELOAD=/var/tmp/*'}
+    - wildcard: {process.command_line: '*LD_PRELOAD=/home/*'}
+    - wildcard: {process.command_line: '*LD_PRELOAD=./*'}
+    - wildcard: {process.command_line: '*LD_LIBRARY_PATH=/tmp*'}
+    - wildcard: {process.command_line: '*LD_LIBRARY_PATH=/dev/shm*'}
+    - wildcard: {process.command_line: '*LD_LIBRARY_PATH=/var/tmp*'}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A command run with LD_PRELOAD or LD_LIBRARY_PATH pointing into /tmp, /dev/shm, /var/tmp or a home directory:
+    code injection into a legitimate process.'
+  source: [process]
+  false_positives: Developers testing preload libraries on their own workstation.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/defense_evasion_ld_preload_cmdline.toml',
+    'https://attack.mitre.org/techniques/T1574/006/']

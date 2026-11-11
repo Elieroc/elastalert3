@@ -1,0 +1,48 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /home/bob/.ssh/authorized_keys}
+    process: {name: bash}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /etc/ssh/sshd_config}
+    process: {name: sed}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /home/bob/.ssh/known_hosts}
+    process: {name: ssh}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /home/bob/.ssh/authorized_keys}
+    process: {name: ssh-copy-id}
+- id: neg3
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /home/bob/.ssh/authorized_keys}
+    process: {name: sshd}

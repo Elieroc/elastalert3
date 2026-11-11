@@ -1,0 +1,68 @@
+name: omega-lnx-privileged-account-creation
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1136.001, T1098, T1548.003]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - terms:
+            process.name: [usermod, gpasswd, adduser, useradd]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*-aG sudo*'}
+            - wildcard: {process.command_line: '*-aG wheel*'}
+            - wildcard: {process.command_line: '*-aG admin*'}
+            - wildcard: {process.command_line: '*-aG root*'}
+            - wildcard: {process.command_line: '*-a -G sudo*'}
+            - wildcard: {process.command_line: '*-a -G wheel*'}
+            - wildcard: {process.command_line: '*-G sudo*'}
+            - wildcard: {process.command_line: '*-G wheel*'}
+            - wildcard: {process.command_line: '*gpasswd -a * sudo*'}
+            - wildcard: {process.command_line: '*gpasswd -a * wheel*'}
+            - wildcard: {process.command_line: '*gpasswd --add * sudo*'}
+            - wildcard: {process.command_line: '*adduser * sudo*'}
+            - wildcard: {process.command_line: '*adduser * wheel*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [useradd]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*-u 0 *'}
+            - wildcard: {process.command_line: '*-u 0'}
+            - wildcard: {process.command_line: '*--uid 0*'}
+            - wildcard: {process.command_line: '*-ou 0*'}
+            - wildcard: {process.command_line: '*-o -u 0*'}
+            minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard: {process.command_line: '*>> /etc/passwd*'}
+        - wildcard: {process.command_line: '*>>/etc/passwd*'}
+        - wildcard: {process.command_line: '*>> /etc/sudoers*'}
+        - wildcard: {process.command_line: '*>>/etc/sudoers*'}
+        - wildcard: {process.command_line: '*tee -a /etc/passwd*'}
+        - wildcard: {process.command_line: '*tee -a /etc/sudoers*'}
+        - wildcard: {process.command_line: '*NOPASSWD:ALL*>>*'}
+        minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Account created or promoted to administrator: usermod/gpasswd/adduser into sudo, wheel, admin or root, useradd
+    with UID 0, or a line appended to /etc/passwd or /etc/sudoers.'
+  source: [process]
+  false_positives: Provisioning and onboarding tooling (Ansible, cloud-init, kickstart). Exclude the automation user and
+    add an exception for planned admin changes.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_usermod_susp_group.yml',
+    'https://github.com/elastic/detection-rules/blob/main/rules/linux/privilege_escalation_suspicious_passwd_file_write.toml',
+    'https://attack.mitre.org/techniques/T1136/001/', 'https://attack.mitre.org/techniques/T1098/', 'https://attack.mitre.org/techniques/T1548/003/']

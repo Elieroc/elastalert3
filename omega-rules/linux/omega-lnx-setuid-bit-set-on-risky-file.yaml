@@ -1,0 +1,64 @@
+name: omega-lnx-setuid-bit-set-on-risky-file
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1548.001]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - terms:
+        process.name: [chmod]
+    - bool:
+        should:
+        - wildcard: {process.command_line: '* u+s*'}
+        - wildcard: {process.command_line: '* +s *'}
+        - wildcard: {process.command_line: '* a+s*'}
+        - wildcard: {process.command_line: '* g+s *'}
+        - wildcard: {process.command_line: '* 4755*'}
+        - wildcard: {process.command_line: '* 6755*'}
+        - wildcard: {process.command_line: '* 4777*'}
+        - wildcard: {process.command_line: '* 4750*'}
+        - wildcard: {process.command_line: '* 2755*'}
+        - wildcard: {process.command_line: '* 6777*'}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* /tmp/*'}
+            - wildcard: {process.command_line: '* /dev/shm/*'}
+            - wildcard: {process.command_line: '* /var/tmp/*'}
+            - wildcard: {process.command_line: '* /home/*'}
+            - wildcard: {process.command_line: '* /run/*'}
+            - wildcard: {process.command_line: '* ./*'}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*/bin/bash*'}
+            - wildcard: {process.command_line: '*/bin/sh*'}
+            - wildcard: {process.command_line: '*/bin/dash*'}
+            - wildcard: {process.command_line: '*/bin/zsh*'}
+            - wildcard: {process.command_line: '*/bin/python*'}
+            - wildcard: {process.command_line: '*/bin/find*'}
+            - wildcard: {process.command_line: '*/bin/vim*'}
+            - wildcard: {process.command_line: '*/bin/cp'}
+            - wildcard: {process.command_line: '*/bin/nmap*'}
+            - wildcard: {process.command_line: '*/bin/env*'}
+            minimum_should_match: 1
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: chmod giving the setuid/setgid bit to a file in a world-writable directory, or to a shell or interpreter
+    (SUID bash backdoor).
+  source: [process]
+  false_positives: Packaging scripts run by an installer for software installed in /opt. Developers testing SUID on their
+    own workstation.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_setgid_setuid.yml',
+    'https://attack.mitre.org/techniques/T1548/001/']

@@ -1,0 +1,35 @@
+name: omega-lnx-file-capabilities-set
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1548]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - terms:
+        process.name: [setcap]
+    - bool:
+        should:
+        - wildcard: {process.command_line: '*cap_setuid*'}
+        - wildcard: {process.command_line: '*cap_setgid*'}
+        - wildcard: {process.command_line: '*cap_sys_admin*'}
+        - wildcard: {process.command_line: '*cap_dac_override*'}
+        - wildcard: {process.command_line: '*cap_sys_ptrace*'}
+        - wildcard: {process.command_line: '*cap_sys_module*'}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'setcap giving a dangerous capability (cap_setuid, cap_sys_admin, cap_dac_override, cap_sys_ptrace) to a
+    file: a privilege-escalation backdoor that survives without SUID.'
+  source: [process]
+  false_positives: Software setup granting capabilities to its own binary (ping, web servers on port 80 use cap_net_bind_service,
+    not matched).
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_cap_setuid.yml',
+    'https://attack.mitre.org/techniques/T1548/']

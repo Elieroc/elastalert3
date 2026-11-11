@@ -1,0 +1,61 @@
+name: omega-lnx-reverse-shell-commandline
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1059.004, T1071]
+risk_score: 100
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard: {process.command_line: '*>& /dev/tcp/*'}
+        - wildcard: {process.command_line: '*>&/dev/tcp/*'}
+        - wildcard: {process.command_line: '*>& /dev/udp/*'}
+        - wildcard: {process.command_line: '*<>/dev/tcp/*'}
+        - wildcard: {process.command_line: '*0<&196*'}
+        - wildcard: {process.command_line: '*exec * <>/dev/tcp*'}
+        - wildcard: {process.command_line: '*mkfifo /tmp/*| *nc *'}
+        - wildcard: {process.command_line: '*mkfifo /tmp/*|nc *'}
+        - wildcard: {process.command_line: '*socat*exec:*sh*'}
+        - wildcard: {process.command_line: '*socat*EXEC:*sh*'}
+        - wildcard: {process.command_line: '*socat*exec:*bash*'}
+        - wildcard: {process.command_line: '*python* -c *socket*connect*'}
+        - wildcard: {process.command_line: '*python* -c *import pty*socket*'}
+        - wildcard: {process.command_line: '*perl -e *use Socket*'}
+        - wildcard: {process.command_line: '*ruby -rsocket*'}
+        - wildcard: {process.command_line: '*php -r *fsockopen*'}
+        - wildcard: {process.command_line: '*php -r *socket_create*'}
+        - wildcard: {process.command_line: '*openssl s_client*|*/bin/*sh*'}
+        - wildcard: {process.command_line: '*zsh -c*zmodload zsh/net/tcp*'}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [nc, ncat, nc.traditional, netcat, ncat.openbsd]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* -e *'}
+            - wildcard: {process.command_line: '* -c *'}
+            - wildcard: {process.command_line: '*--exec*'}
+            - wildcard: {process.command_line: '*--sh-exec*'}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Command line that opens an interactive shell over a network socket: bash /dev/tcp, nc -e, mkfifo + nc, socat
+    exec, python/perl/ruby/php socket one-liners.'
+  source: [process]
+  false_positives: Port checks written as `cat < /dev/tcp/host/port` are not matched (a redirect to a shell is required).
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_netcat_reverse_shell.yml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_python_reverse_shell.yml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_perl_reverse_shell.yml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_php_reverse_shell.yml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_ruby_reverse_shell.yml',
+    'https://attack.mitre.org/techniques/T1059/004/', 'https://attack.mitre.org/techniques/T1071/']

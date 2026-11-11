@@ -1,0 +1,32 @@
+name: omega-lnx-pam-config-modified
+type: any
+index: logs-endpoint.events.file*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1556.003]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change, rename]
+- bool:
+    must_not:
+    - terms:
+        process.name: [dpkg, apt, apt-get, apt-key, aptitude, rpm, yum, dnf, microdnf, zypper, pacman, apk, snapd, snap,
+          unattended-upgr, packagekitd, update-alternatives, dpkg-deb, rpmdb, cloud-init, systemd-tmpfiles]
+- bool:
+    should:
+    - wildcard: {file.path: /etc/pam.d/*}
+    - wildcard: {file.path: /etc/pam.conf}
+    - wildcard: {file.path: /etc/security/pam_*.conf}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'PAM configuration changed (/etc/pam.d, pam.conf): authentication behaviour altered.'
+  source: [file]
+  false_positives: Security hardening and authentication tooling (sssd, mfa agents); adds risk only.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/persistence_pluggable_authentication_module_pam_exec_backdoor_exec.toml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/linux/auditd/lnx_auditd_keylogging_with_pam_d.yml', 'https://attack.mitre.org/techniques/T1556/003/']

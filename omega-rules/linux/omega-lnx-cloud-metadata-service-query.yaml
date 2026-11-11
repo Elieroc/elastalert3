@@ -1,0 +1,33 @@
+name: omega-lnx-cloud-metadata-service-query
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1552.005]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - terms:
+        process.name: [curl, wget, python, python3, perl, nc, ncat, socat, http]
+    - bool:
+        should:
+        - wildcard: {process.command_line: '*169.254.169.254*'}
+        - wildcard: {process.command_line: '*metadata.google.internal*'}
+        - wildcard: {process.command_line: '*100.100.100.200*'}
+        - wildcard: {process.command_line: '*169.254.170.2*'}
+        - wildcard: {process.command_line: '*metadata.azure.com*'}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'A shell tool queries the cloud instance metadata service (169.254.169.254 and equivalents): credential theft
+    after an RCE or SSRF.'
+  source: [process]
+  false_positives: Provisioning scripts and user-data. Agents with their own binary (cloud-init, ssm-agent) do not match.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/cross-platform/credential_access_suspicious_instance_metadata_service_api_cli.toml',
+    'https://attack.mitre.org/techniques/T1552/005/']

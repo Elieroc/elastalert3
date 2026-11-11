@@ -1,0 +1,30 @@
+name: omega-lnx-download-from-raw-ip
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1105, T1071.001]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - terms:
+        process.name: [curl, wget]
+    - regexp:
+        process.command_line: {value: '.*https?://[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}([:/].*)?'}
+    - bool:
+        must_not:
+        - regexp:
+            process.command_line: {value: '.*https?://(10\.|127\.|192\.168\.|169\.254\.|172\.(1[6-9]|2[0-9]|3[01])\.)[0-9.]*([:/].*)?'}
+alert: []
+omega:
+  tier: T1
+  description: curl or wget fetching from a bare IPv4 address in the URL, instead of a hostname (private ranges excluded).
+  source: [process]
+  false_positives: Internal tools, health checks to public IPs, vendor appliances. Only adds risk.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules-emerging-threats/2023/TA/UNC4841-Barracuda-ESG-Zero-Day-Exploitation/proc_creation_lnx_apt_unc4841_wget_download_tar_files_direct_ip.yml',
+    'https://attack.mitre.org/techniques/T1105/', 'https://attack.mitre.org/techniques/T1071/001/']

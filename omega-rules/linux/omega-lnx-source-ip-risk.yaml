@@ -1,0 +1,18 @@
+name: omega-lnx-source-ip-risk
+type: risk
+priority: 2
+mitre_attack: []
+risk_threshold: 100
+timeframe: {hours: 6}
+risk_object_type: ip
+min_distinct_rules: 2
+realert: {hours: 12}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'A source address whose alerts add up to 100 risk points within 6 hours, from at least two different rules
+    (password spray, brute force, successful login, impossible travel...): an attacker working through the SSH surface.'
+  source: [risk]
+  false_positives: Shared NAT or proxy addresses that many users go through (exclude them with an exception on the rule
+    that feeds them).
+  references: ['https://elastalert3.neopipe.fr/ruletypes.html#risk']

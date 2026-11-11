@@ -1,0 +1,608 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:40:00Z'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:41:00Z'
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:42:00Z'
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:43:00Z'
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:44:00Z'
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:45:00Z'
+- id: pos7
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:46:00Z'
+- id: pos8
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:47:00Z'
+- id: pos9
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:48:00Z'
+- id: pos10
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:49:00Z'
+- id: pos11
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:50:00Z'
+- id: pos12
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:51:00Z'
+- id: pos13
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:52:00Z'
+- id: pos14
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:53:00Z'
+- id: pos15
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:54:00Z'
+- id: pos16
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:55:00Z'
+- id: pos17
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:56:00Z'
+- id: pos18
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:57:00Z'
+- id: pos19
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:58:00Z'
+- id: pos20
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T09:59:00Z'
+- id: pos21
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.50}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos22
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T09:40:00Z'
+- id: pos23
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T09:40:05Z'
+- id: pos24
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T09:45:00Z'
+- id: pos25
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T09:45:12Z'
+- id: pos26
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T09:46:20Z'
+- id: pos27
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T09:49:40Z'
+- id: pos28
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T09:49:43Z'
+- id: pos29
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T09:51:40Z'
+- id: pos30
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T09:55:50Z'
+- id: pos31
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T09:55:58Z'
+- id: pos32
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T09:56:40Z'
+- id: pos33
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T09:59:50Z'
+- id: pos34
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos35
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T10:01:00Z'
+- id: pos36
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T10:05:00Z'
+- id: pos37
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T10:05:07Z'
+- id: pos38
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T10:08:20Z'
+- id: pos39
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T10:10:50Z'
+- id: pos40
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T10:11:40Z'
+- id: pos41
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 203.0.113.60}
+    '@timestamp': '2026-01-01T10:13:19Z'
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:40:00Z'
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:41:00Z'
+- id: neg3
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:42:00Z'
+- id: neg4
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:43:00Z'
+- id: neg5
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:44:00Z'
+- id: neg6
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:45:00Z'
+- id: neg7
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:46:00Z'
+- id: neg8
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:47:00Z'
+- id: neg9
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:48:00Z'
+- id: neg10
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:49:00Z'
+- id: neg11
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:50:00Z'
+- id: neg12
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:51:00Z'
+- id: neg13
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:52:00Z'
+- id: neg14
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:53:00Z'
+- id: neg15
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:54:00Z'
+- id: neg16
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:55:00Z'
+- id: neg17
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:56:00Z'
+- id: neg18
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:57:00Z'
+- id: neg19
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:58:00Z'
+- id: neg20
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T09:59:00Z'
+- id: neg21
+  doc:
+    host:
+      os: {type: linux}
+      name: h1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    destination: {ip: 10.0.0.8}
+    '@timestamp': '2026-01-01T10:00:00Z'
+matches: 1
+mappings:
+  source:
+    properties:
+      ip: {type: ip}
+  destination:
+    properties:
+      ip: {type: ip}

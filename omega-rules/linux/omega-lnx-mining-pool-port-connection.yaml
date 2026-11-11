@@ -1,0 +1,32 @@
+name: omega-lnx-mining-pool-port-connection
+type: any
+index: logs-endpoint.events.network*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1496, T1071]
+risk_score: 20
+risk_objects: {host: host.name, ip: destination.ip}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: network}
+- terms:
+    destination.port: [3333, 5555, 7777, 14433, 14444, 45560, 45700]
+- bool:
+    must_not:
+    - terms:
+        destination.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16, '::1', 'fe80::/10', 'fc00::/7']
+- exists: {field: destination.ip}
+- bool:
+    must_not:
+    - terms:
+        process.name: [chrome, firefox, java]
+alert: []
+omega:
+  tier: T1
+  description: 'Outbound connection to a public IP on a port typical of mining pools (stratum): 3333, 5555, 7777, 14433,
+    14444, 45560, 45700.'
+  source: [network]
+  false_positives: Any service legitimately using these ports (3333 and 5555 are used by some apps). Only adds risk; the
+    coinminer rule is the alert.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/network_connection/net_connection_lnx_crypto_mining_indicators.yml',
+    'https://attack.mitre.org/techniques/T1496/', 'https://attack.mitre.org/techniques/T1071/']

@@ -1,0 +1,24 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: success}
+    source: {ip: 203.0.113.1}
+    user: {name: root}
+- id: neg1
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: success}
+    source: {ip: 203.0.113.1}
+    user: {name: bob}
+- id: neg2
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: failure}
+    source: {ip: 203.0.113.1}
+    user: {name: root}
+mappings:
+  source:
+    properties:
+      ip: {type: ip}

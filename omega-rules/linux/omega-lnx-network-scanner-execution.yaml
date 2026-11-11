@@ -1,0 +1,23 @@
+name: omega-lnx-network-scanner-execution
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1046]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- terms:
+    process.name: [nmap, masscan, zmap, rustscan, naabu, fscan, nuclei, unicornscan, zgrab2]
+alert: []
+omega:
+  tier: T1
+  description: 'Port or network scanner started: nmap, masscan, zmap, rustscan, naabu, fscan, nuclei.'
+  source: [process]
+  false_positives: Network and security teams, vulnerability management hosts (exclude them). Adds risk; cardinality rules
+    judge the scan itself on the network.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/discovery_suspicious_network_tool_launched_inside_container.toml',
+    'https://attack.mitre.org/techniques/T1046/']

@@ -1,0 +1,58 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change}
+    user: {name: alice}
+    file: {path: /usr/sbin/sshd}
+    process: {name: cp}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /bin/ps}
+    process: {name: mv}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change}
+    user: {name: alice}
+    file: {path: /usr/bin/netstat}
+    process: {name: cp}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change}
+    user: {name: alice}
+    file: {path: /usr/sbin/sshd}
+    process: {name: apt}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /usr/bin/myapp}
+    process: {name: cp}
+- id: neg3
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /usr/local/bin/ss}
+    process: {name: cp}

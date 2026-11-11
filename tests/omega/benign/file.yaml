@@ -1,0 +1,15 @@
+# Documents are merged on {host.os.type: linux, event.category: file, event.type: creation}.
+- {file.path: /etc/hosts, process.name: vim, user.name: root}
+- {file.path: /var/www/html/index.php, process.name: vim, user.name: alice}
+- {file.path: /etc/nginx/nginx.conf, process.name: vim, user.name: root}
+- {file.path: /home/alice/.bash_history, process.name: bash, user.name: alice}
+- {file.path: /var/log/syslog, process.name: rsyslogd, user.name: root}
+- {file.path: /etc/ssh/ssh_host_rsa_key, process.name: ssh-keygen, user.name: root}
+- {file.path: /home/alice/.ssh/known_hosts, process.name: ssh, user.name: alice}
+- {file.path: /var/www/html/wp-content/uploads/2026/photo.jpg, process.name: php-fpm8.2, user.name: www-data}
+- {file.path: /tmp/build.log, process.name: make, user.name: alice}
+- {file.path: /usr/sbin/sshd, process.name: apt, event.type: change, user.name: root}
+- {file.path: /etc/systemd/system/app.service, process.name: dpkg, user.name: root}
+- {file.path: /etc/cron.d/anacron, process.name: dpkg, user.name: root}
+- {file.path: /etc/sudoers, process.name: visudo, user.name: root}
+- {file.path: /etc/pam.d/common-auth, process.name: pam-auth-update, user.name: root}

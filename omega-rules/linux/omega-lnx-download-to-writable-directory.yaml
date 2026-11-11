@@ -1,0 +1,40 @@
+name: omega-lnx-download-to-writable-directory
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1105]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - terms:
+        process.name: [curl, wget, tftp, fetch, aria2c]
+    - bool:
+        should:
+        - wildcard: {process.command_line: '*-o /tmp/*'}
+        - wildcard: {process.command_line: '*-O /tmp/*'}
+        - wildcard: {process.command_line: '*-o /var/tmp/*'}
+        - wildcard: {process.command_line: '*-O /var/tmp/*'}
+        - wildcard: {process.command_line: '*-o /dev/shm/*'}
+        - wildcard: {process.command_line: '*-O /dev/shm/*'}
+        - wildcard: {process.command_line: '*--output /tmp/*'}
+        - wildcard: {process.command_line: '*--output=/tmp/*'}
+        - wildcard: {process.command_line: '*-P /tmp*'}
+        - wildcard: {process.command_line: '*--directory-prefix=/tmp*'}
+        - wildcard: {process.command_line: '*-o /run/*'}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'curl, wget or tftp saving a file into /tmp, /var/tmp, /dev/shm or /run: staging of a tool before running
+    it.'
+  source: [process]
+  false_positives: Package build and CI jobs, update scripts. Only adds risk; the download-then-execute chain is a correlation
+    rule.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_wget_download_suspicious_directory.yml',
+    'https://attack.mitre.org/techniques/T1105/']

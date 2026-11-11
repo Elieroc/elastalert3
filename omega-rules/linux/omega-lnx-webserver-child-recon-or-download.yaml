@@ -1,0 +1,40 @@
+name: omega-lnx-webserver-child-recon-or-download
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1505.003, T1190, T1059.004]
+risk_score: 90
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - bool:
+        should:
+        - terms:
+            process.parent.name: [apache2, httpd, nginx, lighttpd, caddy, php-cgi, uwsgi, gunicorn, tomcat, catalina.sh]
+        - bool:
+            should:
+            - wildcard: {process.parent.name: php-fpm*}
+            - wildcard: {process.parent.name: php-cgi*}
+            - wildcard: {process.parent.name: httpd*}
+            - wildcard: {process.parent.name: tomcat*}
+            minimum_should_match: 1
+        minimum_should_match: 1
+    - terms:
+        process.name: [whoami, id, uname, hostname, ifconfig, ip, netstat, ss, wget, curl, nc, ncat, socat, nmap, base64,
+          python, python3, perl, busybox, telnet, ssh, scp, crontab]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A web server or application server process starts a reconnaissance, download or networking tool (whoami,
+    id, uname, curl, wget, nc, socat, base64): the signature of a webshell or an RCE.'
+  source: [process]
+  false_positives: Applications that shell out to curl or git from PHP/Java. Exclude the exact application user or command
+    line.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/persistence_webserver_suspicious_child_execution.toml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_webshell_detection.yml',
+    'https://attack.mitre.org/techniques/T1505/003/', 'https://attack.mitre.org/techniques/T1190/', 'https://attack.mitre.org/techniques/T1059/004/']

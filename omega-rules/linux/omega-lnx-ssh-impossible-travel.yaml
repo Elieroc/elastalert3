@@ -1,0 +1,27 @@
+name: omega-lnx-ssh-impossible-travel
+type: geo_velocity
+index: logs-system.auth-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1078]
+risk_score: 75
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- term: {event.category: authentication}
+- term: {event.action: ssh_login}
+- term: {event.outcome: success}
+query_key: user.name
+geo_field: source.geo.location
+timeframe: {hours: 24}
+max_speed_kmh: 900
+min_distance_km: 300
+geo_include: [source.ip, source.geo.city_name]
+alert: [debug]
+omega:
+  tier: T0
+  description: The same account logs in over SSH from two places too far apart for the time between the logins (faster than
+    900 km/h, over 300 km).
+  source: [auth]
+  false_positives: VPN or proxy exits that change country between logins, shared accounts. The GeoIP enrichment must populate
+    source.geo.location.
+  references: ['https://attack.mitre.org/techniques/T1078/']

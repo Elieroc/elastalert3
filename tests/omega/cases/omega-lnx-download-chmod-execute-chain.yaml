@@ -1,0 +1,73 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: hA
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: curl, executable: /usr/bin/curl}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: hA
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: chmod, command_line: chmod +x /tmp/x, executable: /bin/chmod}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: hA
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: x, executable: /tmp/x}
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: hB
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: chmod, command_line: chmod +x /tmp/y, executable: /bin/chmod}
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: hB
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: y, executable: /tmp/y}
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: hB
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: wget, executable: /usr/bin/wget}
+- id: pos7
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: hC
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: curl, executable: /usr/bin/curl}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, type: start}
+    user: {name: alice}
+    process: {name: ls}
+matches: 1

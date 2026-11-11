@@ -1,0 +1,43 @@
+name: omega-lnx-interpreter-pty-spawn
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1059.006, T1059.004]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard: {process.name: python*}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*pty.spawn*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [script]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*-qc*/bin/*sh*'}
+            - wildcard: {process.command_line: '*-c */bin/*sh*/dev/null*'}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Interpreter spawning a pseudo-terminal shell (python pty.spawn, script -qc /bin/bash): the usual step after
+    a reverse shell to get a usable TTY.'
+  source: [process]
+  false_positives: 'Rare on servers. Developers on workstations: exclude by host.name.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_python_pty_spawn.yml',
+    'https://attack.mitre.org/techniques/T1059/006/', 'https://attack.mitre.org/techniques/T1059/004/']

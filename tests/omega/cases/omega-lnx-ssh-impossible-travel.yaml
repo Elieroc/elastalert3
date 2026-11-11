@@ -1,0 +1,53 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: success}
+    source:
+      ip: 203.0.113.1
+      geo:
+        location: {lat: 48.85, lon: 2.35}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos2
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: success}
+    source:
+      ip: 198.51.100.1
+      geo:
+        location: {lat: -33.87, lon: 151.21}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:10:00Z'
+- id: pos3
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: success}
+    source:
+      ip: 203.0.113.2
+      geo:
+        location: {lat: 48.85, lon: 2.35}
+    user: {name: alice}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos4
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: success}
+    source:
+      ip: 203.0.113.3
+      geo:
+        location: {lat: 45.76, lon: 4.84}
+    user: {name: alice}
+    '@timestamp': '2026-01-01T10:30:00Z'
+matches: 1
+mappings:
+  source:
+    properties:
+      ip: {type: ip}
+      geo:
+        properties:
+          location: {type: geo_point}

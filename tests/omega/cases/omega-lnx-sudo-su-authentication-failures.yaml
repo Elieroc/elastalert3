@@ -1,0 +1,73 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: sudo, outcome: failure}
+    source: {ip: 10.0.0.5}
+    user: {name: bob}
+    process: {name: sudo}
+- id: pos2
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: sudo, outcome: failure}
+    source: {ip: 10.0.0.5}
+    user: {name: bob}
+    process: {name: sudo}
+- id: pos3
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: sudo, outcome: failure}
+    source: {ip: 10.0.0.5}
+    user: {name: bob}
+    process: {name: sudo}
+- id: pos4
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: sudo, outcome: failure}
+    source: {ip: 10.0.0.5}
+    user: {name: bob}
+    process: {name: sudo}
+- id: pos5
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: sudo, outcome: failure}
+    source: {ip: 10.0.0.5}
+    user: {name: bob}
+    process: {name: sudo}
+- id: pos6
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: su, outcome: failure}
+    source: {ip: 10.0.0.5}
+    user: {name: eve}
+    process: {name: su}
+- id: pos7
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: su, outcome: failure}
+    source: {ip: 10.0.0.5}
+    user: {name: eve}
+    process: {name: su}
+- id: pos8
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: su, outcome: failure}
+    source: {ip: 10.0.0.5}
+    user: {name: eve}
+    process: {name: su}
+- id: neg1
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, action: ssh_login, outcome: success}
+    source: {ip: 10.0.0.5}
+    user: {name: bob}
+    process: {name: sudo}
+matches: 1

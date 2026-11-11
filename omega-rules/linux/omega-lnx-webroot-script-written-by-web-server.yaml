@@ -1,0 +1,48 @@
+name: omega-lnx-webroot-script-written-by-web-server
+type: any
+index: logs-endpoint.events.file*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1505.003]
+risk_score: 30
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change, rename]
+- bool:
+    must_not:
+    - terms:
+        process.name: [dpkg, apt, apt-get, apt-key, aptitude, rpm, yum, dnf, microdnf, zypper, pacman, apk, snapd, snap,
+          unattended-upgr, packagekitd, update-alternatives, dpkg-deb, rpmdb, cloud-init, systemd-tmpfiles]
+- bool:
+    must:
+    - terms:
+        process.name: [php-fpm, php-fpm7.4, php-fpm8.1, php-fpm8.2, php-fpm8.3, php-cgi, apache2, httpd, nginx, java, tomcat,
+          node, gunicorn, uwsgi]
+    - bool:
+        should:
+        - wildcard: {file.path: /var/www/*}
+        - wildcard: {file.path: /srv/www/*}
+        - wildcard: {file.path: /usr/share/nginx/html/*}
+        - wildcard: {file.path: /opt/*/webapps/*}
+        - wildcard: {file.path: /var/lib/tomcat*/webapps/*}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard: {file.path: '*.php'}
+        - wildcard: {file.path: '*.phtml'}
+        - wildcard: {file.path: '*.jsp'}
+        - wildcard: {file.path: '*.jspx'}
+        - wildcard: {file.path: '*.war'}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'A web server or application process writes a server-side script into the web root: a webshell drop, or a
+    CMS updating itself.'
+  source: [file]
+  false_positives: CMS and plugin self-updates (WordPress, Drupal) write PHP from php-fpm. That is why it only adds risk.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/persistence_webserver_php_file_creation_in_wordpress_plugin_dir.toml',
+    'https://attack.mitre.org/techniques/T1505/003/']

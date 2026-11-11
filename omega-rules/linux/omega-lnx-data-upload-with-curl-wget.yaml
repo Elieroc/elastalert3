@@ -1,0 +1,37 @@
+name: omega-lnx-data-upload-with-curl-wget
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1048.003, T1567]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - terms:
+        process.name: [curl, wget]
+    - bool:
+        should:
+        - wildcard: {process.command_line: '* -T *'}
+        - wildcard: {process.command_line: '*--upload-file*'}
+        - wildcard: {process.command_line: '* -F *=@*'}
+        - wildcard: {process.command_line: '* -F @*'}
+        - wildcard: {process.command_line: '*--form*@*'}
+        - wildcard: {process.command_line: '* -d @*'}
+        - wildcard: {process.command_line: '*--data-binary @*'}
+        - wildcard: {process.command_line: '*--post-file*'}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: curl or wget used to upload a local file (-T, --upload-file, -F @file, -d @file, --post-file).
+  source: [process]
+  false_positives: Backup, log shipping and deployment scripts. Adds risk; sensitive-path variants are scored higher by
+    the risk rule through correlation with other alerts.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_susp_curl_fileupload.yml',
+    'https://github.com/elastic/detection-rules/blob/main/rules/cross-platform/exfiltration_potential_curl_data_exfiltration.toml',
+    'https://attack.mitre.org/techniques/T1048/003/', 'https://attack.mitre.org/techniques/T1567/']

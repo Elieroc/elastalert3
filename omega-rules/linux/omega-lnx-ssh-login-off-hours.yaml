@@ -1,0 +1,30 @@
+name: omega-lnx-ssh-login-off-hours
+type: any
+index: logs-system.auth-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1078]
+risk_score: 10
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- term: {event.category: authentication}
+- term: {event.action: ssh_login}
+- term: {event.outcome: success}
+active_hours:
+  timezone: UTC
+  windows:
+  - days: [mon, tue, wed, thu, fri, sat, sun]
+    from: '19:00'
+    to: 07:00
+  - days: [sat, sun]
+    from: 07:00
+    to: '19:00'
+alert: []
+omega:
+  tier: T1
+  description: 'Successful SSH login outside working hours (nights and weekends, UTC by default: edit the time zone and
+    windows to your site).'
+  source: [auth]
+  false_positives: Operations teams on call, backup and monitoring accounts that log in at night (exclude by user.name).
+    Adds a small risk.
+  references: ['https://attack.mitre.org/techniques/T1078/']

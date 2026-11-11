@@ -1,0 +1,31 @@
+name: omega-lnx-outbound-beaconing
+type: beacon
+index: logs-endpoint.events.network*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1071, T1573, T1029]
+risk_score: 50
+risk_objects: {host: host.name, ip: destination.ip}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: network}
+- term: {event.action: connection_attempted}
+- bool:
+    must_not:
+    - terms:
+        destination.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16, '::1', 'fe80::/10', 'fc00::/7']
+query_key: [host.name, destination.ip]
+timeframe: {hours: 6}
+min_events: 20
+max_jitter: 0.15
+min_interval: {seconds: 30}
+realert: {hours: 6}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'A host contacts the same public address at near-constant intervals (20 or more connections in 6 hours, jitter
+    under 15 %, at least 30 s apart): command-and-control beaconing.'
+  source: [network]
+  false_positives: Monitoring agents, NTP, update checks and heartbeats to a fixed address (exclude by destination or process).
+    Hence a risk of 50 and not an alert on its own score.
+  references: ['https://attack.mitre.org/techniques/T1071/', 'https://attack.mitre.org/techniques/T1573/', 'https://attack.mitre.org/techniques/T1029/']

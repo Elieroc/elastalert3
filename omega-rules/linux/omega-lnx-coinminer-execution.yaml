@@ -1,0 +1,37 @@
+name: omega-lnx-coinminer-execution
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1496]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - terms:
+        process.name: [xmrig, xmr-stak, xmr-stak-cpu, minerd, cpuminer, cpuminer-multi, ethminer, nbminer, t-rex, lolMiner,
+          phoenixminer, gminer, teamredminer, bzminer, ccminer, cgminer, bfgminer, kdevtmpfsi, kinsing, kworkerds]
+    - bool:
+        should:
+        - wildcard: {process.command_line: '*stratum+tcp://*'}
+        - wildcard: {process.command_line: '*stratum+ssl://*'}
+        - wildcard: {process.command_line: '*stratum2+tcp://*'}
+        - wildcard: {process.command_line: '*--donate-level*'}
+        - wildcard: {process.command_line: '*--cpu-priority=*'}
+        minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: Execution of a known crypto miner binary, or of any program given a mining pool (stratum) URL or miner-only
+    options.
+  source: [process]
+  false_positives: 'Almost none: a miner-named binary or a stratum URL on a server is the activity itself. Mining research
+    labs: add an exception on host.name.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/auditd/execve/lnx_auditd_coinminer.yml', 'https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_crypto_mining.yml',
+    'https://github.com/elastic/detection-rules/blob/main/rules/linux/execution_suspicious_mining_process_creation_events.toml',
+    'https://attack.mitre.org/techniques/T1496/']

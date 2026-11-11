@@ -1,0 +1,30 @@
+name: omega-lnx-crontab-command-persistence
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1053.003]
+risk_score: 20
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard: {process.command_line: '*| crontab -*'}
+    - wildcard: {process.command_line: '*|crontab -*'}
+    - wildcard: {process.command_line: '*crontab -l*echo*'}
+    - wildcard: {process.command_line: '*crontab -r*'}
+    - wildcard: {process.command_line: '*crontab /tmp/*'}
+    - wildcard: {process.command_line: '*crontab /dev/shm/*'}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'Cron job added through the command line: crontab fed from a pipe, `(crontab -l; echo ...) | crontab -`,
+    or crontab -r wiping the jobs.'
+  source: [process]
+  false_positives: Scripts that install their own cron entry. Adds risk; the file-based cron rule sees the resulting file.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_crontab_removal.yml',
+    'https://attack.mitre.org/techniques/T1053/003/']

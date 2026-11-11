@@ -1,0 +1,26 @@
+name: omega-lnx-shell-outbound-connection
+type: any
+index: logs-endpoint.events.network*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1059.004, T1071.001]
+risk_score: 95
+risk_objects: {host: host.name, ip: destination.ip}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: network}
+- terms:
+    process.name: [bash, sh, dash, zsh, ksh, csh, tcsh, fish, ash]
+- bool:
+    must_not:
+    - terms:
+        destination.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16, '::1', 'fe80::/10', 'fc00::/7']
+- exists: {field: destination.ip}
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A shell (bash, sh, zsh, dash...) opens a connection to a public IP address: a reverse shell, since shells
+    do not talk to the Internet on their own.'
+  source: [network]
+  false_positives: Scripts run by `bash -c` that use /dev/tcp for health checks to external hosts. Private ranges are ignored.
+  references: ['https://attack.mitre.org/techniques/T1059/004/', 'https://attack.mitre.org/techniques/T1071/001/']

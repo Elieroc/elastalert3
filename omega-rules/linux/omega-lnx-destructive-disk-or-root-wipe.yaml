@@ -1,0 +1,55 @@
+name: omega-lnx-destructive-disk-or-root-wipe
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1485, T1561.001]
+risk_score: 90
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard: {process.command_line: rm -rf /}
+        - wildcard: {process.command_line: rm -rf /\*}
+        - wildcard: {process.command_line: rm -fr /\*}
+        - wildcard: {process.command_line: rm -rf --no-preserve-root*}
+        - wildcard: {process.command_line: rm --no-preserve-root*}
+        - wildcard: {process.command_line: rm -rf / *}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [dd]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*of=/dev/sd*'}
+            - wildcard: {process.command_line: '*of=/dev/nvme*'}
+            - wildcard: {process.command_line: '*of=/dev/vd*'}
+            - wildcard: {process.command_line: '*of=/dev/xvd*'}
+            - wildcard: {process.command_line: '*of=/dev/mmcblk*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [shred, wipefs, blkdiscard]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*/dev/sd*'}
+            - wildcard: {process.command_line: '*/dev/nvme*'}
+            - wildcard: {process.command_line: '*/dev/vd*'}
+            - wildcard: {process.command_line: '*/dev/xvd*'}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Command that destroys data: rm -rf /, dd or shred writing onto a block device, wipefs on a disk.'
+  source: [process]
+  false_positives: 'Provisioning and decommissioning of machines (wipefs/dd on a new disk): exclude the provisioning user
+    or host group.'
+  references: ['https://attack.mitre.org/techniques/T1485/', 'https://attack.mitre.org/techniques/T1561/001/']

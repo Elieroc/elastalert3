@@ -1,0 +1,215 @@
+name: omega-lnx-security-tool-tampering
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1685, T1686]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard: {process.command_line: '*stop auditd*'}
+        - wildcard: {process.command_line: '*disable auditd*'}
+        - wildcard: {process.command_line: '*mask auditd*'}
+        - wildcard: {process.command_line: '*disable --now auditd*'}
+        - wildcard: {process.command_line: '*stop rsyslog*'}
+        - wildcard: {process.command_line: '*disable rsyslog*'}
+        - wildcard: {process.command_line: '*mask rsyslog*'}
+        - wildcard: {process.command_line: '*disable --now rsyslog*'}
+        - wildcard: {process.command_line: '*stop syslog-ng*'}
+        - wildcard: {process.command_line: '*disable syslog-ng*'}
+        - wildcard: {process.command_line: '*mask syslog-ng*'}
+        - wildcard: {process.command_line: '*disable --now syslog-ng*'}
+        - wildcard: {process.command_line: '*stop falcon-sensor*'}
+        - wildcard: {process.command_line: '*disable falcon-sensor*'}
+        - wildcard: {process.command_line: '*mask falcon-sensor*'}
+        - wildcard: {process.command_line: '*disable --now falcon-sensor*'}
+        - wildcard: {process.command_line: '*stop elastic-agent*'}
+        - wildcard: {process.command_line: '*disable elastic-agent*'}
+        - wildcard: {process.command_line: '*mask elastic-agent*'}
+        - wildcard: {process.command_line: '*disable --now elastic-agent*'}
+        - wildcard: {process.command_line: '*stop elastic-endpoint*'}
+        - wildcard: {process.command_line: '*disable elastic-endpoint*'}
+        - wildcard: {process.command_line: '*mask elastic-endpoint*'}
+        - wildcard: {process.command_line: '*disable --now elastic-endpoint*'}
+        - wildcard: {process.command_line: '*stop auditbeat*'}
+        - wildcard: {process.command_line: '*disable auditbeat*'}
+        - wildcard: {process.command_line: '*mask auditbeat*'}
+        - wildcard: {process.command_line: '*disable --now auditbeat*'}
+        - wildcard: {process.command_line: '*stop filebeat*'}
+        - wildcard: {process.command_line: '*disable filebeat*'}
+        - wildcard: {process.command_line: '*mask filebeat*'}
+        - wildcard: {process.command_line: '*disable --now filebeat*'}
+        - wildcard: {process.command_line: '*stop wazuh-agent*'}
+        - wildcard: {process.command_line: '*disable wazuh-agent*'}
+        - wildcard: {process.command_line: '*mask wazuh-agent*'}
+        - wildcard: {process.command_line: '*disable --now wazuh-agent*'}
+        - wildcard: {process.command_line: '*stop ossec*'}
+        - wildcard: {process.command_line: '*disable ossec*'}
+        - wildcard: {process.command_line: '*mask ossec*'}
+        - wildcard: {process.command_line: '*disable --now ossec*'}
+        - wildcard: {process.command_line: '*stop osqueryd*'}
+        - wildcard: {process.command_line: '*disable osqueryd*'}
+        - wildcard: {process.command_line: '*mask osqueryd*'}
+        - wildcard: {process.command_line: '*disable --now osqueryd*'}
+        - wildcard: {process.command_line: '*stop sentinelone*'}
+        - wildcard: {process.command_line: '*disable sentinelone*'}
+        - wildcard: {process.command_line: '*mask sentinelone*'}
+        - wildcard: {process.command_line: '*disable --now sentinelone*'}
+        - wildcard: {process.command_line: '*stop s1-agent*'}
+        - wildcard: {process.command_line: '*disable s1-agent*'}
+        - wildcard: {process.command_line: '*mask s1-agent*'}
+        - wildcard: {process.command_line: '*disable --now s1-agent*'}
+        - wildcard: {process.command_line: '*stop cbagentd*'}
+        - wildcard: {process.command_line: '*disable cbagentd*'}
+        - wildcard: {process.command_line: '*mask cbagentd*'}
+        - wildcard: {process.command_line: '*disable --now cbagentd*'}
+        - wildcard: {process.command_line: '*stop mdatp*'}
+        - wildcard: {process.command_line: '*disable mdatp*'}
+        - wildcard: {process.command_line: '*mask mdatp*'}
+        - wildcard: {process.command_line: '*disable --now mdatp*'}
+        - wildcard: {process.command_line: '*stop sophos-spl*'}
+        - wildcard: {process.command_line: '*disable sophos-spl*'}
+        - wildcard: {process.command_line: '*mask sophos-spl*'}
+        - wildcard: {process.command_line: '*disable --now sophos-spl*'}
+        - wildcard: {process.command_line: '*stop apparmor*'}
+        - wildcard: {process.command_line: '*disable apparmor*'}
+        - wildcard: {process.command_line: '*mask apparmor*'}
+        - wildcard: {process.command_line: '*disable --now apparmor*'}
+        - wildcard: {process.command_line: '*stop ufw*'}
+        - wildcard: {process.command_line: '*disable ufw*'}
+        - wildcard: {process.command_line: '*mask ufw*'}
+        - wildcard: {process.command_line: '*disable --now ufw*'}
+        - wildcard: {process.command_line: '*stop firewalld*'}
+        - wildcard: {process.command_line: '*disable firewalld*'}
+        - wildcard: {process.command_line: '*mask firewalld*'}
+        - wildcard: {process.command_line: '*disable --now firewalld*'}
+        - wildcard: {process.command_line: '*stop fail2ban*'}
+        - wildcard: {process.command_line: '*disable fail2ban*'}
+        - wildcard: {process.command_line: '*mask fail2ban*'}
+        - wildcard: {process.command_line: '*disable --now fail2ban*'}
+        - wildcard: {process.command_line: '*stop crowdsec*'}
+        - wildcard: {process.command_line: '*disable crowdsec*'}
+        - wildcard: {process.command_line: '*mask crowdsec*'}
+        - wildcard: {process.command_line: '*disable --now crowdsec*'}
+        - wildcard: {process.command_line: '*stop datadog-agent*'}
+        - wildcard: {process.command_line: '*disable datadog-agent*'}
+        - wildcard: {process.command_line: '*mask datadog-agent*'}
+        - wildcard: {process.command_line: '*disable --now datadog-agent*'}
+        - wildcard: {process.command_line: '*stop ds_agent*'}
+        - wildcard: {process.command_line: '*disable ds_agent*'}
+        - wildcard: {process.command_line: '*mask ds_agent*'}
+        - wildcard: {process.command_line: '*disable --now ds_agent*'}
+        - wildcard: {process.command_line: '*stop qualys-cloud-agent*'}
+        - wildcard: {process.command_line: '*disable qualys-cloud-agent*'}
+        - wildcard: {process.command_line: '*mask qualys-cloud-agent*'}
+        - wildcard: {process.command_line: '*disable --now qualys-cloud-agent*'}
+        - wildcard: {process.command_line: '*stop crowdstrike*'}
+        - wildcard: {process.command_line: '*disable crowdstrike*'}
+        - wildcard: {process.command_line: '*mask crowdstrike*'}
+        - wildcard: {process.command_line: '*disable --now crowdstrike*'}
+        - wildcard: {process.command_line: '*auditd stop*'}
+        - wildcard: {process.command_line: '*auditd disable*'}
+        - wildcard: {process.command_line: '*rsyslog stop*'}
+        - wildcard: {process.command_line: '*rsyslog disable*'}
+        - wildcard: {process.command_line: '*syslog-ng stop*'}
+        - wildcard: {process.command_line: '*syslog-ng disable*'}
+        - wildcard: {process.command_line: '*falcon-sensor stop*'}
+        - wildcard: {process.command_line: '*falcon-sensor disable*'}
+        - wildcard: {process.command_line: '*elastic-agent stop*'}
+        - wildcard: {process.command_line: '*elastic-agent disable*'}
+        - wildcard: {process.command_line: '*elastic-endpoint stop*'}
+        - wildcard: {process.command_line: '*elastic-endpoint disable*'}
+        - wildcard: {process.command_line: '*auditbeat stop*'}
+        - wildcard: {process.command_line: '*auditbeat disable*'}
+        - wildcard: {process.command_line: '*filebeat stop*'}
+        - wildcard: {process.command_line: '*filebeat disable*'}
+        - wildcard: {process.command_line: '*wazuh-agent stop*'}
+        - wildcard: {process.command_line: '*wazuh-agent disable*'}
+        - wildcard: {process.command_line: '*ossec stop*'}
+        - wildcard: {process.command_line: '*ossec disable*'}
+        - wildcard: {process.command_line: '*osqueryd stop*'}
+        - wildcard: {process.command_line: '*osqueryd disable*'}
+        - wildcard: {process.command_line: '*sentinelone stop*'}
+        - wildcard: {process.command_line: '*sentinelone disable*'}
+        - wildcard: {process.command_line: '*s1-agent stop*'}
+        - wildcard: {process.command_line: '*s1-agent disable*'}
+        - wildcard: {process.command_line: '*cbagentd stop*'}
+        - wildcard: {process.command_line: '*cbagentd disable*'}
+        - wildcard: {process.command_line: '*mdatp stop*'}
+        - wildcard: {process.command_line: '*mdatp disable*'}
+        - wildcard: {process.command_line: '*sophos-spl stop*'}
+        - wildcard: {process.command_line: '*sophos-spl disable*'}
+        - wildcard: {process.command_line: '*apparmor stop*'}
+        - wildcard: {process.command_line: '*apparmor disable*'}
+        - wildcard: {process.command_line: '*ufw stop*'}
+        - wildcard: {process.command_line: '*ufw disable*'}
+        - wildcard: {process.command_line: '*firewalld stop*'}
+        - wildcard: {process.command_line: '*firewalld disable*'}
+        - wildcard: {process.command_line: '*fail2ban stop*'}
+        - wildcard: {process.command_line: '*fail2ban disable*'}
+        - wildcard: {process.command_line: '*crowdsec stop*'}
+        - wildcard: {process.command_line: '*crowdsec disable*'}
+        - wildcard: {process.command_line: '*datadog-agent stop*'}
+        - wildcard: {process.command_line: '*datadog-agent disable*'}
+        - wildcard: {process.command_line: '*ds_agent stop*'}
+        - wildcard: {process.command_line: '*ds_agent disable*'}
+        - wildcard: {process.command_line: '*qualys-cloud-agent stop*'}
+        - wildcard: {process.command_line: '*qualys-cloud-agent disable*'}
+        - wildcard: {process.command_line: '*crowdstrike stop*'}
+        - wildcard: {process.command_line: '*crowdstrike disable*'}
+        - wildcard: {process.command_line: '*auditctl -e 0*'}
+        - wildcard: {process.command_line: '*auditctl -D*'}
+        - wildcard: {process.command_line: '*setenforce 0*'}
+        - wildcard: {process.command_line: '*ufw disable*'}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [pkill, killall, kill]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*auditd*'}
+            - wildcard: {process.command_line: '*rsyslog*'}
+            - wildcard: {process.command_line: '*syslog-ng*'}
+            - wildcard: {process.command_line: '*falcon-sensor*'}
+            - wildcard: {process.command_line: '*elastic-agent*'}
+            - wildcard: {process.command_line: '*elastic-endpoint*'}
+            - wildcard: {process.command_line: '*auditbeat*'}
+            - wildcard: {process.command_line: '*filebeat*'}
+            - wildcard: {process.command_line: '*wazuh-agent*'}
+            - wildcard: {process.command_line: '*ossec*'}
+            - wildcard: {process.command_line: '*osqueryd*'}
+            - wildcard: {process.command_line: '*sentinelone*'}
+            - wildcard: {process.command_line: '*s1-agent*'}
+            - wildcard: {process.command_line: '*cbagentd*'}
+            - wildcard: {process.command_line: '*mdatp*'}
+            - wildcard: {process.command_line: '*sophos-spl*'}
+            - wildcard: {process.command_line: '*apparmor*'}
+            - wildcard: {process.command_line: '*ufw*'}
+            - wildcard: {process.command_line: '*firewalld*'}
+            - wildcard: {process.command_line: '*fail2ban*'}
+            - wildcard: {process.command_line: '*crowdsec*'}
+            - wildcard: {process.command_line: '*datadog-agent*'}
+            - wildcard: {process.command_line: '*ds_agent*'}
+            - wildcard: {process.command_line: '*qualys-cloud-agent*'}
+            - wildcard: {process.command_line: '*crowdstrike*'}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: A security agent, audit or log service stopped, disabled or killed (auditd, rsyslog, EDR agents, firewall,
+    fail2ban), auditd rules deleted or SELinux set permissive.
+  source: [process]
+  false_positives: Package upgrades stopping a service in their maintenance scripts, planned maintenance windows. Exclude
+    by process.parent.name or add an active_hours window.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/defense_evasion_attempt_to_disable_auditd_service.toml',
+    'https://github.com/elastic/detection-rules/blob/main/rules/linux/defense_evasion_disable_selinux_attempt.toml', 'https://attack.mitre.org/techniques/T1685/',
+    'https://attack.mitre.org/techniques/T1686/']

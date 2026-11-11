@@ -1,0 +1,29 @@
+name: omega-lnx-aslr-disabled
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1685]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard: {process.command_line: '*kernel.randomize_va_space=0*'}
+    - wildcard: {process.command_line: '*kernel.randomize_va_space = 0*'}
+    - wildcard: {process.command_line: '*echo 0 > /proc/sys/kernel/randomize_va_space*'}
+    - wildcard: {process.command_line: '*echo 0 | tee /proc/sys/kernel/randomize_va_space*'}
+    - wildcard: {process.command_line: '*echo 0 >/proc/sys/kernel/randomize_va_space*'}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: Address space layout randomisation switched off (sysctl kernel.randomize_va_space=0 or a write to /proc/sys/kernel/randomize_va_space),
+    a step before exploiting a memory bug.
+  source: [process]
+  false_positives: Performance benchmarking and exploit development on lab machines.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/auditd/lnx_auditd_disable_aslr_protection.yml',
+    'https://attack.mitre.org/techniques/T1685/']

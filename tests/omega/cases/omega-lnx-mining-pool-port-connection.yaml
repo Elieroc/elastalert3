@@ -1,0 +1,53 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: x, executable: /tmp/x}
+    destination: {ip: 203.0.113.9, port: 3333}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: python3, executable: /usr/bin/python3}
+    destination: {ip: 198.51.100.7, port: 14444}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: x, executable: /tmp/x}
+    destination: {ip: 203.0.113.9, port: 443}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: x, executable: /tmp/x}
+    destination: {ip: 10.0.0.2, port: 3333}
+- id: neg3
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: firefox, executable: /usr/bin/firefox}
+    destination: {ip: 203.0.113.9, port: 3333}
+mappings:
+  destination:
+    properties:
+      ip: {type: ip}
+      port: {type: long}

@@ -1,0 +1,35 @@
+name: omega-lnx-kernel-thread-masquerade
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1036.004, T1014]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - bool:
+        should:
+        - wildcard: {process.name: kworker*}
+        - wildcard: {process.name: kthreadd*}
+        - wildcard: {process.name: ksoftirqd*}
+        - wildcard: {process.name: kdevtmpfs}
+        - wildcard: {process.name: kswapd*}
+        - wildcard: {process.name: migration/*}
+        - wildcard: {process.name: rcu_*}
+        - wildcard: {process.name: watchdog/*}
+        minimum_should_match: 1
+    - exists: {field: process.executable}
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A real program started under the name of a kernel thread (kworker, kthreadd, ksoftirqd, migration...): kernel
+    threads are never exec-ed, so a start event is a disguise.'
+  source: [process]
+  false_positives: 'None known: kernel threads have no process start event with an executable.'
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/defense_evasion_kthreadd_masquerading.toml',
+    'https://attack.mitre.org/techniques/T1036/004/', 'https://attack.mitre.org/techniques/T1014/']

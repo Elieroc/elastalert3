@@ -1,0 +1,52 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: chisel, command_line: 'chisel client 203.0.113.5:8080 R:socks'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: pspy64, command_line: ./pspy64 -pf -i 1000}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: hydra, command_line: 'hydra -l root -P pw.txt ssh://10.0.0.5'}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: ssh, command_line: ssh user@host}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: chisel-notes, command_line: vim chisel-notes.txt}
+- id: neg3
+  doc:
+    host:
+      os: {type: windows}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: chisel, command_line: chisel.exe}

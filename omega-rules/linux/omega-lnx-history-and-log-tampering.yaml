@@ -1,0 +1,62 @@
+name: omega-lnx-history-and-log-tampering
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1070.003, T1685.006, T1690]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard: {process.command_line: '*unset HISTFILE*'}
+    - wildcard: {process.command_line: '*HISTFILE=/dev/null*'}
+    - wildcard: {process.command_line: '*HISTSIZE=0*'}
+    - wildcard: {process.command_line: '*HISTFILESIZE=0*'}
+    - wildcard: {process.command_line: '*history -c*'}
+    - wildcard: {process.command_line: '*set +o history*'}
+    - wildcard: {process.command_line: '*ln -sf /dev/null *history*'}
+    - wildcard: {process.command_line: '*ln -s /dev/null *history*'}
+    - wildcard: {process.command_line: '*rm *_history*'}
+    - wildcard: {process.command_line: '*> ~/.bash_history*'}
+    - wildcard: {process.command_line: '*shred *history*'}
+    - wildcard: {process.command_line: '*truncate -s 0 /var/log/*'}
+    - wildcard: {process.command_line: '*truncate --size=0 /var/log/*'}
+    - wildcard: {process.command_line: '*shred *-u /var/log/*'}
+    - wildcard: {process.command_line: '*shred * /var/log/*'}
+    - wildcard: {process.command_line: '*cat /dev/null > /var/log/*'}
+    - wildcard: {process.command_line: '*echo > /var/log/*'}
+    - wildcard: {process.command_line: '*rm */var/log/auth.log'}
+    - wildcard: {process.command_line: '*rm */var/log/auth.log *'}
+    - wildcard: {process.command_line: '*rm */var/log/secure'}
+    - wildcard: {process.command_line: '*rm */var/log/secure *'}
+    - wildcard: {process.command_line: '*rm */var/log/syslog'}
+    - wildcard: {process.command_line: '*rm */var/log/syslog *'}
+    - wildcard: {process.command_line: '*rm */var/log/messages'}
+    - wildcard: {process.command_line: '*rm */var/log/messages *'}
+    - wildcard: {process.command_line: '*rm */var/log/wtmp'}
+    - wildcard: {process.command_line: '*rm */var/log/wtmp *'}
+    - wildcard: {process.command_line: '*rm */var/log/btmp'}
+    - wildcard: {process.command_line: '*rm */var/log/btmp *'}
+    - wildcard: {process.command_line: '*rm */var/log/lastlog'}
+    - wildcard: {process.command_line: '*rm */var/log/lastlog *'}
+    minimum_should_match: 1
+exceptions:
+- name: logrotate
+  reason: rotation and cleanup by logrotate
+  match:
+    process.parent.name: [logrotate]
+alert: [debug]
+omega:
+  tier: T0
+  description: Shell history disabled or wiped, or system logs truncated, shredded or deleted (unset HISTFILE, history -c,
+    ln -sf /dev/null .bash_history, truncate/shred/rm of /var/log).
+  source: [process]
+  false_positives: 'Logrotate and cleanup scripts started by cron: exclude them with a process.parent.name exception. Users
+    running `history -c` by habit on a shared host.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_susp_history_delete.yml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_clear_logs.yml', 'https://github.com/elastic/detection-rules/blob/main/rules/linux/defense_evasion_shell_history_clearing_via_environment_variables.toml',
+    'https://attack.mitre.org/techniques/T1070/003/', 'https://attack.mitre.org/techniques/T1685/006/', 'https://attack.mitre.org/techniques/T1690/']

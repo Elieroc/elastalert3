@@ -1,0 +1,23 @@
+name: omega-lnx-curl-wget-pipe-shell
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1105, T1059.004]
+risk_score: 20
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- regexp:
+    process.command_line: {value: '.*(curl|wget|fetch) .*\| *(sudo +)?(/usr/bin/|/bin/)?(ba|da|z|k)?sh([^a-zA-Z0-9_.\-].*)?'}
+alert: []
+omega:
+  tier: T1
+  description: 'A downloader piped straight into a shell (curl ... | bash): remote code run with no trace on disk.'
+  source: [process]
+  false_positives: Common installers (brew, rustup, docker convenience script, nvm). Only adds risk; a base64 or reverse-shell
+    variant has its own rule.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/execution_payload_downloaded_by_curl_wget_and_piped_to_interpreter.toml',
+    'https://attack.mitre.org/techniques/T1105/', 'https://attack.mitre.org/techniques/T1059/004/']

@@ -1,0 +1,23 @@
+name: omega-lnx-base64-decode-pipe-shell
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1140, T1059.004]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- regexp:
+    process.command_line: {value: '.*base64 +(-d|-D|--decode).*\| *(sudo +)?(/usr/bin/|/bin/)?(ba|da|z|k|c)?sh([^a-zA-Z0-9_.\-].*)?|.*base64
+        +(-d|-D|--decode).*\| *(/usr/bin/)?(python[0-9.]*|perl|ruby|php)([^a-zA-Z0-9_.\-].*)?'}
+alert: [debug]
+omega:
+  tier: T0
+  description: Base64-decoded payload piped into a shell or interpreter (echo ... | base64 -d | bash).
+  source: [process]
+  false_positives: Installers that ship a self-extracting payload. A decode piped to sha256sum or a file is not matched.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_base64_execution.yml',
+    'https://attack.mitre.org/techniques/T1140/', 'https://attack.mitre.org/techniques/T1059/004/']

@@ -1,0 +1,37 @@
+name: omega-lnx-hidden-executable-in-temp-directory
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1564.001, T1036]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard: {process.executable: /tmp/.*}
+    - wildcard: {process.executable: /tmp/*/.*}
+    - wildcard: {process.executable: /var/tmp/.*}
+    - wildcard: {process.executable: /var/tmp/*/.*}
+    - wildcard: {process.executable: /dev/shm/.*}
+    - wildcard: {process.executable: /dev/shm/*/.*}
+    - wildcard: {process.executable: /run/.*}
+    - wildcard: {process.executable: /run/user/*/.*}
+    minimum_should_match: 1
+exceptions:
+- name: x11-sockets
+  reason: X11 and ICE unix sockets directories
+  match:
+    process.executable|startswith: [/tmp/.X11-unix/, /tmp/.ICE-unix/]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A program started from a hidden file or a hidden directory inside /tmp, /var/tmp, /dev/shm or /run: a dropper
+    hiding from ls.'
+  source: [process]
+  false_positives: Software that unpacks itself to /tmp/.something (some installers, JetBrains/Electron updaters). Exclude
+    by the exact path.
+  references: ['https://attack.mitre.org/techniques/T1564/001/', 'https://attack.mitre.org/techniques/T1036/']

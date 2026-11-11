@@ -1,0 +1,38 @@
+name: omega-lnx-shadow-or-ssh-key-read-by-tool
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1003.008, T1552.004]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - terms:
+        process.name: [cat, cp, head, tail, less, more, base64, tar, scp, dd, strings, vi, vim, nano, grep, awk, sed, xxd,
+          unshadow]
+    - bool:
+        should:
+        - wildcard: {process.command_line: '*/etc/shadow*'}
+        - wildcard: {process.command_line: '*/.ssh/id_*'}
+        - wildcard: {process.command_line: '*/etc/ssh/ssh_host_*_key*'}
+        - wildcard: {process.command_line: '*/etc/gshadow*'}
+        minimum_should_match: 1
+    - bool:
+        must_not:
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*.pub*'}
+            minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: A file-reading or copying tool opens /etc/shadow, an SSH private key or a host key.
+  source: [process]
+  false_positives: Backup jobs and administrators reading their own keys. Only adds risk.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_cp_passwd_or_shadow_tmp.yml',
+    'https://attack.mitre.org/techniques/T1003/008/', 'https://attack.mitre.org/techniques/T1552/004/']

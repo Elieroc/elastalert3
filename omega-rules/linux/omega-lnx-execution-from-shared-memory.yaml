@@ -1,0 +1,43 @@
+name: omega-lnx-execution-from-shared-memory
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1620, T1059.004, T1036]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard: {process.executable: /dev/shm/*}
+        - wildcard: {process.executable: /run/shm/*}
+        - wildcard: {process.executable: '/memfd:*'}
+        - wildcard: {process.executable: /proc/self/fd/*}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [sh, bash, dash, zsh, ksh, csh, tcsh, fish, ash, python, python2, python3, perl, ruby, php, node,
+              lua]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* /dev/shm/*'}
+            - wildcard: {process.command_line: '* /run/shm/*'}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A program or script executed out of /dev/shm, /run/shm or an anonymous memfd: in-memory staging that survives
+    no reboot and is almost never legitimate.'
+  source: [process]
+  false_positives: 'Some databases and HPC jobs use /dev/shm for data, not for executables. Chrome sandbox helpers run from
+    memfd on desktops (workstations: exclude).'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_susp_exec_from_dev_shm.yml',
+    'https://github.com/elastic/detection-rules/blob/main/rules/linux/execution_process_started_in_shared_memory_directory.toml',
+    'https://attack.mitre.org/techniques/T1620/', 'https://attack.mitre.org/techniques/T1059/004/', 'https://attack.mitre.org/techniques/T1036/']

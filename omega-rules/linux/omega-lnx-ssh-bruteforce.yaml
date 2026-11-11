@@ -1,0 +1,25 @@
+name: omega-lnx-ssh-bruteforce
+type: frequency
+index: logs-system.auth-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1110.001]
+risk_score: 10
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: authentication}
+- term: {event.action: ssh_login}
+- term: {event.outcome: failure}
+num_events: 10
+timeframe: {minutes: 5}
+query_key: source.ip
+realert: {minutes: 30}
+alert: []
+omega:
+  tier: T1
+  description: Ten or more failed SSH logins from one source address within five minutes. Internet-facing hosts see this
+    all day, so it only adds risk; the success-after-failures rule is the alert.
+  source: [auth]
+  false_positives: Every SSH server exposed to the Internet. Scanners inside the network (exclude their ranges).
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/credential_access_potential_linux_ssh_bruteforce_external.toml',
+    'https://attack.mitre.org/techniques/T1110/001/']

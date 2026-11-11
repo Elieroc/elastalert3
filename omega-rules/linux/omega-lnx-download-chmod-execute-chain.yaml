@@ -1,0 +1,51 @@
+name: omega-lnx-download-chmod-execute-chain
+type: correlation
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1105, T1222.002, T1059.004]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+query_key: host.name
+timeframe: {minutes: 10}
+realert: {hours: 1}
+correlation_leaves:
+  download:
+    filter:
+    - terms:
+        process.name: [curl, wget, tftp, fetch, aria2c]
+  chmod:
+    filter:
+    - terms:
+        process.name: [chmod]
+    - bool:
+        should:
+        - wildcard: {process.command_line: '* +x *'}
+        - wildcard: {process.command_line: '* u+x*'}
+        - wildcard: {process.command_line: '* a+x*'}
+        - wildcard: {process.command_line: '* 755*'}
+        - wildcard: {process.command_line: '* 777*'}
+        - wildcard: {process.command_line: '* 700*'}
+        minimum_should_match: 1
+  run:
+    filter:
+    - bool:
+        should:
+        - wildcard: {process.executable: /tmp/*}
+        - wildcard: {process.executable: /var/tmp/*}
+        - wildcard: {process.executable: /dev/shm/*}
+        - wildcard: {process.executable: /run/user/*}
+        minimum_should_match: 1
+correlation_query: download THEN chmod THEN run
+alert: [debug]
+omega:
+  tier: T0
+  description: 'On one host within ten minutes: a download tool runs, then chmod makes a file executable, then a program
+    starts from a temporary directory: the drop-and-run sequence.'
+  source: [process]
+  false_positives: Installers that download, chmod and run from /tmp (some vendor agents). Exclude by host or by user.
+  references: ['https://attack.mitre.org/techniques/T1105/', 'https://attack.mitre.org/techniques/T1222/002/', 'https://attack.mitre.org/techniques/T1059/004/']

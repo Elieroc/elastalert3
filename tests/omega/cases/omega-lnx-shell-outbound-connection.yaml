@@ -1,0 +1,52 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: bash, executable: /bin/bash}
+    destination: {ip: 203.0.113.9}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: sh, executable: /bin/dash}
+    destination: {ip: 198.51.100.7}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: bash, executable: /bin/bash}
+    destination: {ip: 10.0.0.5}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: curl, executable: /usr/bin/curl}
+    destination: {ip: 203.0.113.9}
+- id: neg3
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: bash, executable: /bin/bash}
+    destination: {ip: 192.168.1.9}
+mappings:
+  destination:
+    properties:
+      ip: {type: ip}

@@ -1,0 +1,44 @@
+name: omega-lnx-gtfobins-shell-escape
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1548, T1059.004]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard: {process.command_line: '*find *-exec /bin/*sh -p*'}
+    - wildcard: {process.command_line: '*find *-exec /bin/*sh \\;*-quit*'}
+    - wildcard: {process.command_line: '*awk *BEGIN*system("/bin/*sh*'}
+    - wildcard: {process.command_line: '*awk *BEGIN*system("sh*'}
+    - wildcard: {process.command_line: '*vim *-c :!/bin/*sh*'}
+    - wildcard: {process.command_line: '*vim *-c ":!/bin/*sh*'}
+    - wildcard: {process.command_line: '*vi *-c :!/bin/*sh*'}
+    - wildcard: {process.command_line: '*nice /bin/*sh*'}
+    - wildcard: {process.command_line: '*rsync *-e sh -c*'}
+    - wildcard: {process.command_line: '*ssh *-o ProxyCommand=*sh*'}
+    - wildcard: {process.command_line: '*tar *--checkpoint-action=exec=*sh*'}
+    - wildcard: {process.command_line: '*capsh --*'}
+    - wildcard: {process.command_line: '*python* -c *os.system("/bin/*sh*'}
+    - wildcard: {process.command_line: '*python* -c *os.execl("/bin/*sh*'}
+    - wildcard: {process.command_line: '*perl -e *exec "/bin/*sh*'}
+    - wildcard: {process.command_line: '*ruby -e *exec*"/bin/*sh*'}
+    - wildcard: {process.command_line: '*lua -e *os.execute*sh*'}
+    - wildcard: {process.command_line: '*php -r *system*"/bin/*sh*'}
+    - wildcard: {process.command_line: '*flock -u / /bin/*sh*'}
+    - wildcard: {process.command_line: '*zip *-T -TT*sh*'}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A common binary used to break out into a shell (find -exec sh -p, awk system(), vim -c !sh, nice/rsync/ssh
+    ProxyCommand/tar checkpoint, python os.system("/bin/sh")): GTFOBins privilege-escalation or restricted-shell escape.'
+  source: [process]
+  false_positives: Administrative scripts that deliberately launch a shell through find -exec. The patterns require the
+    shell-spawning form, not any use of the tool.
+  references: ['https://attack.mitre.org/techniques/T1548/', 'https://attack.mitre.org/techniques/T1059/004/']

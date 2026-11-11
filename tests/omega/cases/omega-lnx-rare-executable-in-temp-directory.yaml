@@ -1,0 +1,73 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {executable: /tmp/common, name: common}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {executable: /tmp/implant, name: implant}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {executable: /bin/ls, name: ls}
+- id: hist1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {executable: /tmp/common, name: common}
+    '@timestamp': '2025-12-29T10:00:00Z'
+- id: hist2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {executable: /tmp/common, name: common}
+    '@timestamp': '2025-12-29T09:59:00Z'
+- id: hist3
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {executable: /tmp/common, name: common}
+    '@timestamp': '2025-12-29T09:58:00Z'
+- id: hist4
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {executable: /tmp/common, name: common}
+    '@timestamp': '2025-12-29T09:57:00Z'
+- id: hist5
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {executable: /tmp/common, name: common}
+    '@timestamp': '2025-12-29T09:56:00Z'
+matches: 1

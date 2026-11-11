@@ -1,0 +1,52 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: xmrig, command_line: './xmrig -o pool.minexmr.com:4444'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: kdevtmpfsi, command_line: /tmp/kdevtmpfsi}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: a.out, command_line: './a.out -o stratum+tcp://xmr.pool.example:3333 -u wallet'}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: curl, command_line: 'curl https://xmrig.org/'}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: ls, command_line: ls -la}
+- id: neg3
+  doc:
+    host:
+      os: {type: windows}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: xmrig, command_line: xmrig.exe}

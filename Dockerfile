@@ -31,6 +31,7 @@ RUN apt-get update \
 
 COPY --from=build /src/target/release/elastalert /src/target/release/elastalert-test-rule /usr/local/bin/
 COPY NOTICE /usr/share/doc/elastalert3/NOTICE
+COPY omega-rules /usr/share/elastalert3/omega-rules
 
 USER elastalert
 WORKDIR /opt/elastalert

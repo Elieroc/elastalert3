@@ -1,0 +1,29 @@
+name: omega-lnx-ld-so-preload-modified
+type: any
+index: logs-endpoint.events.file*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1574.006]
+risk_score: 90
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change, rename]
+- bool:
+    must_not:
+    - terms:
+        process.name: [dpkg, apt, apt-get, apt-key, aptitude, rpm, yum, dnf, microdnf, zypper, pacman, apk, snapd, snap,
+          unattended-upgr, packagekitd, update-alternatives, dpkg-deb, rpmdb, cloud-init, systemd-tmpfiles]
+- term: {file.path: /etc/ld.so.preload}
+alert: [debug]
+omega:
+  tier: T0
+  description: '/etc/ld.so.preload created or changed: every process then loads the listed library, the classic userland
+    rootkit hook.'
+  source: [file]
+  false_positives: Some security and performance products (not package-installed) register a preload library; add an exception
+    on the writer process.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/privilege_escalation_ld_preload_shared_object_modif.toml',
+    'https://attack.mitre.org/techniques/T1574/006/']

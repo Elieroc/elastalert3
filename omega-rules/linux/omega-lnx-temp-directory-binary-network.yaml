@@ -1,0 +1,32 @@
+name: omega-lnx-temp-directory-binary-network
+type: any
+index: logs-endpoint.events.network*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1071, T1105, T1036.005]
+risk_score: 80
+risk_objects: {host: host.name, ip: destination.ip}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: network}
+- bool:
+    should:
+    - wildcard: {process.executable: /tmp/*}
+    - wildcard: {process.executable: /dev/shm/*}
+    - wildcard: {process.executable: /var/tmp/*}
+    - wildcard: {process.executable: /run/user/*}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - terms:
+        destination.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16, '::1', 'fe80::/10', 'fc00::/7']
+- exists: {field: destination.ip}
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A program running from /tmp, /dev/shm, /var/tmp or /run/user connects to a public IP address: a dropped
+    implant calling home.'
+  source: [network]
+  false_positives: Build tools and installers that fetch dependencies from a temporary directory. Exclude by process.name
+    where needed.
+  references: ['https://attack.mitre.org/techniques/T1071/', 'https://attack.mitre.org/techniques/T1105/', 'https://attack.mitre.org/techniques/T1036/005/']

@@ -1,0 +1,27 @@
+name: omega-lnx-webserver-new-child-process
+type: new_term
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1505.003, T1059]
+risk_score: 30
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- terms:
+    process.parent.name: [apache2, httpd, nginx, php-fpm, php-fpm8.2, php-cgi, tomcat, gunicorn, uwsgi]
+fields:
+- [process.parent.name, process.name]
+terms_window_size: {days: 30}
+use_keyword_postfix: false
+realert: {minutes: 1}
+alert: []
+omega:
+  tier: T1
+  description: A web server or application process starts a child program it has not started in the last 30 days.
+  source: [process]
+  false_positives: Deployments that add a new helper binary to a web application. Adds risk; the recon/download children
+    are alerts of their own.
+  references: ['https://attack.mitre.org/techniques/T1505/003/', 'https://attack.mitre.org/techniques/T1059/']

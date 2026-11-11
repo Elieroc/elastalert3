@@ -1,0 +1,48 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: x, executable: /tmp/.x/x}
+    destination: {ip: 203.0.113.9}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: agent, executable: /dev/shm/agent}
+    destination: {ip: 198.51.100.7}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: curl, executable: /usr/bin/curl}
+    destination: {ip: 203.0.113.9}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: x, executable: /tmp/x}
+    destination: {ip: 10.0.0.9}
+- id: neg3
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: nginx, executable: /usr/sbin/nginx}
+    destination: {ip: 203.0.113.9}

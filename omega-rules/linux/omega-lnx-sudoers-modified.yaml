@@ -1,0 +1,36 @@
+name: omega-lnx-sudoers-modified
+type: any
+index: logs-endpoint.events.file*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1548.003]
+risk_score: 30
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change, rename]
+- bool:
+    must_not:
+    - terms:
+        process.name: [dpkg, apt, apt-get, apt-key, aptitude, rpm, yum, dnf, microdnf, zypper, pacman, apk, snapd, snap,
+          unattended-upgr, packagekitd, update-alternatives, dpkg-deb, rpmdb, cloud-init, systemd-tmpfiles]
+- bool:
+    should:
+    - wildcard: {file.path: /etc/sudoers}
+    - wildcard: {file.path: /etc/sudoers.d/*}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - terms:
+        process.name: [visudo]
+alert: []
+omega:
+  tier: T1
+  description: /etc/sudoers or a sudoers.d drop-in changed (visudo excluded).
+  source: [file]
+  false_positives: Configuration management; adds risk only.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/file_event/file_event_lnx_persistence_sudoers_files.yml',
+    'https://github.com/elastic/detection-rules/blob/main/rules/cross-platform/privilege_escalation_sudoers_file_mod.toml',
+    'https://attack.mitre.org/techniques/T1548/003/']
