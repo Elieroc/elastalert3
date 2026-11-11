@@ -1,0 +1,110 @@
+name: omega-win-lolbin-download-from-url-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1105]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: presentationhost.exe, case_insensitive: true}
+            - term:
+                process.name: {value: msoxmled.exe, case_insensitive: true}
+            - term:
+                process.name: {value: configsecuritypolicy.exe, case_insensitive: true}
+            - term:
+                process.name: {value: imewdbld.exe, case_insensitive: true}
+            - term:
+                process.name: {value: winproj.exe, case_insensitive: true}
+            - term:
+                process.name: {value: msohtmed.exe, case_insensitive: true}
+            - term:
+                process.name: {value: ecmangen.exe, case_insensitive: true}
+            - term:
+                process.name: {value: vslaunchbrowser.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*http://*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*https://*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: desktopimgdownldr.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*/lockscreenurl:*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: cmdl32.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*/vpn*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*/lan*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: ftp.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -s:*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* /s:*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: finger.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*@*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*|*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A signed Windows or Office binary handed an http(s) URL to fetch (presentationhost, msoxmled, ConfigSecurityPolicy, IMEWDBLD, WinProj, MsoHtmEd, ECMangen, VSLaunchBrowser), desktopimgdownldr /lockscreenurl, cmdl32 /vpn /lan, ftp -s script or finger piped to a shell.'
+  source: [process]
+  false_positives: 'Almost none for these binaries; WinProj opens URLs when users click Office links (exclude by parent if needed).'
+  references: ['https://lolbas-project.github.io/lolbas/Binaries/Presentationhost/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/Msoxmled/', 'https://lolbas-project.github.io/lolbas/Binaries/ConfigSecurityPolicy/', 'https://lolbas-project.github.io/lolbas/Binaries/IMEWDBLD/', 'https://lolbas-project.github.io/lolbas/Binaries/Desktopimgdownldr/', 'https://lolbas-project.github.io/lolbas/Binaries/cmdl32/', 'https://lolbas-project.github.io/lolbas/Binaries/Ftp/', 'https://lolbas-project.github.io/lolbas/Binaries/Finger/', 'https://attack.mitre.org/techniques/T1105/']

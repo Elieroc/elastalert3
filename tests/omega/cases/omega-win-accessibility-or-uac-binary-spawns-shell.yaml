@@ -38,6 +38,19 @@ docs:
       executable: C:\Windows\System32\cmd.exe
       command_line: cmd.exe
       parent: {name: eventvwr.exe}
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd.exe
+      parent: {name: eudcedit.exe}
 - id: neg1
   doc:
     host:

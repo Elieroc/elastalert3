@@ -1,0 +1,48 @@
+name: omega-win-mofcomp-compiles-mof-from-user-path
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1546.003]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: mofcomp.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*.mof*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*\\users\\public\\*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\appdata\\*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\temp\\*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\programdata\\*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\perflogs\\*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\\\*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*http://*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*https://*', case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'mofcomp compiling a MOF file from a user-writable or remote path: registers WMI classes and event subscriptions (persistence).'
+  source: [process]
+  false_positives: 'Software installers compiling their own MOF from Temp; exclude by parent.'
+  references: ['https://lolbas-project.github.io/lolbas/Binaries/Mofcomp/', 'https://attack.mitre.org/techniques/T1546/003/']

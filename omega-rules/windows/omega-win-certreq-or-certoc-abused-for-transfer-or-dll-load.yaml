@@ -1,0 +1,76 @@
+name: omega-win-certreq-or-certoc-abused-for-transfer-or-dll-load
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1105, T1218]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: certreq.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*-post*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/post*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*http://*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*https://*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: certoc.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*-loaddll*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/loaddll*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: certoc.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*-getcacaps*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*http://*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*https://*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'certreq -Post to a URL (upload or download of a file) or certoc -GetCACAPS from a URL or -LoadDLL (proxy execution of a DLL).'
+  source: [process]
+  false_positives: 'Almost none: certreq talks to a CA name, not an http URL, with -Post; certoc is rarely run by hand.'
+  references: ['https://lolbas-project.github.io/lolbas/Binaries/CertReq/', 'https://lolbas-project.github.io/lolbas/Binaries/CertOC/', 'https://attack.mitre.org/techniques/T1105/']

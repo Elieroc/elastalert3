@@ -38,6 +38,12 @@ filter:
         process.parent.name: {value: wsreset.exe, case_insensitive: true}
     - term:
         process.parent.name: {value: slui.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: eudcedit.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: odbcad32.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: iscsicpl.exe, case_insensitive: true}
     minimum_should_match: 1
 - bool:
     should:
@@ -63,7 +69,7 @@ filter:
 alert: [debug]
 omega:
   tier: T0
-  description: sethc, utilman, osk, narrator, magnify, displayswitch or atbroker starting a shell (accessibility backdoor),
+  description: sethc, utilman, osk, narrator, magnify, displayswitch or atbroker, eudcedit, odbcad32 or iscsicpl starting a shell (accessibility backdoor),
     or fodhelper, eventvwr, sdclt, computerdefaults, wsreset or slui starting a shell or script (UAC bypass).
   source: [process]
   false_positives: None known.

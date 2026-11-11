@@ -1,0 +1,102 @@
+name: omega-win-debugger-or-tracer-launches-program
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1218]
+risk_score: 20
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: cdb.exe, case_insensitive: true}
+            - term:
+                process.name: {value: ntsd.exe, case_insensitive: true}
+            - term:
+                process.name: {value: windbg.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -cf *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -c *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: adplus.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -sc *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: tttracer.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*.exe*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: ttdinject.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* /launch *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: dbgsrv.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -t tcp:*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: devtoolslauncher.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*launchfordeploy*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*launchfordebug*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'cdb, ntsd or WinDbg with a command script or -c, adplus -sc, tttracer on a program, ttdinject with /launch, dbgsrv listening or devtoolslauncher LaunchForDeploy: debugger tooling running a program for the user.'
+  source: [process]
+  false_positives: 'Developers and support engineers with the Windows SDK; exclude their hosts.'
+  references: ['https://lolbas-project.github.io/lolbas/OtherMSBinaries/Cdb/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/adplus/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/Tttracer/', 'https://lolbas-project.github.io/lolbas/Binaries/Ttdinject/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/DbgSrv/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/Devtoolslauncher/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/WinDbg/', 'https://attack.mitre.org/techniques/T1218/']

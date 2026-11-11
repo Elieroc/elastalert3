@@ -1,0 +1,62 @@
+name: omega-win-packet-or-screen-capture-lolbin
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1040, T1113]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: pktmon.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* start*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* filter add*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: psr.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* /start*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: nmcap.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* /network*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* /capture*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'pktmon start / filter, nmcap /network, or Steps Recorder psr /start: built-in or bundled capture tools that record the network or the screen.'
+  source: [process]
+  false_positives: 'Network support and help desk staff. Exclude by user.'
+  references: ['https://lolbas-project.github.io/lolbas/Binaries/Pktmon/', 'https://lolbas-project.github.io/lolbas/Binaries/Psr/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/Nmcap/', 'https://attack.mitre.org/techniques/T1040/']

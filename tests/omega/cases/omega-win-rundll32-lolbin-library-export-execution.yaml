@@ -1,0 +1,36 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: rundll32.exe
+      executable: 'C:\Windows\System32\rundll32.exe'
+      command_line: 'rundll32.exe advpack.dll,LaunchINFSection C:\Users\Public\evil.inf,DefaultInstall,1,'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: rundll32.exe
+      executable: 'C:\Windows\System32\rundll32.exe'
+      command_line: 'rundll32.exe shell32.dll,ShellExec_RunDLL C:\Users\Public\evil.exe'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: rundll32.exe
+      executable: 'C:\Windows\System32\rundll32.exe'
+      command_line: 'rundll32.exe shell32.dll,Control_RunDLL desk.cpl'

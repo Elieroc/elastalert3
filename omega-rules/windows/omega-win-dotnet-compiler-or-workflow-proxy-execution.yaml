@@ -1,0 +1,144 @@
+name: omega-win-dotnet-compiler-or-workflow-proxy-execution
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1127, T1218]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: microsoft.workflow.compiler.exe, case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: aspnet_compiler.exe, case_insensitive: true}
+            - term:
+                process.name: {value: applaunch.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*\\users\\public\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\appdata\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\temp\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\programdata\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\perflogs\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*http://*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*https://*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: addinutil.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*-addinroot:*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: coregen.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* /l *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: tracker.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* /d *', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* /c *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: msxsl.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*.xsl*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*.xml*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: acccheckconsole.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*-dll*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: csi.exe, case_insensitive: true}
+            - term:
+                process.name: {value: rcsi.exe, case_insensitive: true}
+            - term:
+                process.name: {value: fsi.exe, case_insensitive: true}
+            - term:
+                process.name: {value: fsianycpu.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*.csx*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*.fsx*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Microsoft.Workflow.Compiler, aspnet_compiler or AppLaunch on a payload in a user-writable path, AddinUtil -AddinRoot, coregen /L, Tracker /d /c, msxsl, AccCheckConsole -dll, or csi / rcsi / fsi running a .csx / .fsx script: .NET tooling used to run code from a signed binary.'
+  source: [process]
+  false_positives: 'Developers with the .NET SDK, Visual Studio or Windows SDK tools; exclude their build hosts.'
+  references: ['https://lolbas-project.github.io/lolbas/OtherMSBinaries/Microsoft.Workflow.Compiler/', 'https://lolbas-project.github.io/lolbas/Binaries/Aspnet_Compiler/', 'https://lolbas-project.github.io/lolbas/Binaries/Applaunch/', 'https://lolbas-project.github.io/lolbas/Binaries/AddinUtil/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/coregen/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/Tracker/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/Msxsl/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/AccCheckConsole/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/csi/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/rcsi/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/Fsi/', 'https://attack.mitre.org/techniques/T1127/']

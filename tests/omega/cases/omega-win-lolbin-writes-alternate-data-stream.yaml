@@ -1,0 +1,24 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: makecab.exe
+      executable: 'C:\Windows\System32\makecab.exe'
+      command_line: 'makecab.exe C:\Users\Public\evil.exe C:\Users\Public\log.txt:evil.cab'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: makecab.exe
+      executable: 'C:\Windows\System32\makecab.exe'
+      command_line: 'makecab.exe C:\Temp\data.txt C:\Temp\data.cab'

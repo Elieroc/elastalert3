@@ -1,0 +1,37 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: msdt.exe
+      executable: 'C:\Windows\System32\msdt.exe'
+      command_line: 'msdt.exe /id PCWDiagnostic /skip force /param "IT_RebrowseForFile=? IT_LaunchMethod=ContextMenu IT_BrowseForFile=$(calc)"'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: msdt.exe
+      executable: 'C:\Windows\System32\msdt.exe'
+      command_line: 'msdt.exe'
+      parent: {name: winword.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: msdt.exe
+      executable: 'C:\Windows\System32\msdt.exe'
+      command_line: 'msdt.exe /id NetworkDiagnosticsWeb'

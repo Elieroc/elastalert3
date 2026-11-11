@@ -1,0 +1,60 @@
+name: omega-lnx-overlay-or-reverse-proxy-service-client-execution
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1572, T1219]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - terms:
+            process.name: [cloudflared, devtunnel, tmate, iroh, expose, dataplicity, shellhub-agent, shellhub, goshs, pinggy]
+    - bool:
+        must:
+        - terms:
+            process.name: [tailscale]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* up*'}
+            - wildcard: {process.command_line: '* serve*'}
+            - wildcard: {process.command_line: '* funnel*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [zerotier-cli]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* join *'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [netbird]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* up*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [code, code-tunnel]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* tunnel*'}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'Client of a public tunnelling, overlay-network or instant-share service started: cloudflared, tailscale up/serve/funnel, zerotier-cli join, netbird up, devtunnel, tmate, iroh, expose, dataplicity, shellhub, goshs, pinggy, or the VS Code CLI tunnel.'
+  source: [process]
+  false_positives: 'Sanctioned use of Cloudflare Tunnel, Tailscale, ZeroTier, NetBird or VS Code tunnels (exclude the approved hosts). Adds risk.'
+  references: ['https://lottunnels.github.io/', 'https://attack.mitre.org/techniques/T1572/']

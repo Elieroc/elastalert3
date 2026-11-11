@@ -1,0 +1,80 @@
+name: omega-lnx-tunnel-service-command-line
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1572, T1090.003, T1505.003]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - terms:
+            process.name: [cloudflared]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* tunnel *'}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*--url*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [ssh, autossh]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*serveo.net*'}
+            - wildcard: {process.command_line: '*localhost.run*'}
+            - wildcard: {process.command_line: '*pinggy.io*'}
+            - wildcard: {process.command_line: '*tuns.sh*'}
+            - wildcard: {process.command_line: '*ssi.sh*'}
+            - wildcard: {process.command_line: '*pyjam.as*'}
+            - wildcard: {process.command_line: '*ssh-j.com*'}
+            - wildcard: {process.command_line: '*lhr.life*'}
+            - wildcard: {process.command_line: '*sshjmp*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [npx, node, npm, lt]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*localtunnel*'}
+            - wildcard: {process.command_line: '*localxpose*'}
+            - wildcard: {process.command_line: '*loophole*'}
+            - wildcard: {process.command_line: '* lt --port*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [python, python2, python3]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*neoreg*'}
+            - wildcard: {process.command_line: '*regeorg*'}
+            - wildcard: {process.command_line: '*suo5*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [bash, sh, dash, curl, wget]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*gsocket.io*'}
+            - wildcard: {process.command_line: '*gs.thc.org*'}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Command line that opens a tunnel through a public service or tool: cloudflared quick tunnel (tunnel --url), ssh or autossh to serveo, localhost.run, pinggy, tuns.sh, ssi.sh, pyjam.as, ssh-j, lhr.life, node tunnels (localtunnel, localxpose, loophole), reGeorg / Neo-reGeorg / suo5 clients, and the gsocket one-line installer.'
+  source: [process]
+  false_positives: 'Developers sharing a local web server through these services (exclude by user); a cloudflared tunnel run from a named, managed tunnel does not match.'
+  references: ['https://lottunnels.github.io/', 'https://attack.mitre.org/techniques/T1572/']

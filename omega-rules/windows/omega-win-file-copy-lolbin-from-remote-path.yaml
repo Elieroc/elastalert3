@@ -1,0 +1,43 @@
+name: omega-win-file-copy-lolbin-from-remote-path
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1105]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: expand.exe, case_insensitive: true}
+    - term:
+        process.name: {value: extrac32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: replace.exe, case_insensitive: true}
+    - term:
+        process.name: {value: makecab.exe, case_insensitive: true}
+    - term:
+        process.name: {value: diantz.exe, case_insensitive: true}
+    - term:
+        process.name: {value: print.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*\\\\*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*http://*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*https://*', case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'expand, extrac32, replace, makecab, diantz or print reading from a UNC (WebDAV) path or an http URL: the copy-and-download trick that fetches a payload without PowerShell or curl.'
+  source: [process]
+  false_positives: 'Admins copying from a file share with expand or replace; exclude by source share.'
+  references: ['https://lolbas-project.github.io/lolbas/Binaries/Expand/', 'https://lolbas-project.github.io/lolbas/Binaries/Extrac32/', 'https://lolbas-project.github.io/lolbas/Binaries/Replace/', 'https://lolbas-project.github.io/lolbas/Binaries/Makecab/', 'https://lolbas-project.github.io/lolbas/Binaries/Diantz/', 'https://lolbas-project.github.io/lolbas/Binaries/Print/', 'https://attack.mitre.org/techniques/T1105/']

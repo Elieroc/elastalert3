@@ -1,0 +1,64 @@
+name: omega-win-msdt-diagnostic-script-or-follina-execution
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1218, T1203]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: msdt.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*it_browseforfile*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*it_rebrowseforfile*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*it_launchmethod*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*ms-msdt:*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -af *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* /af *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: msdt.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - term:
+                process.parent.name: {value: winword.exe, case_insensitive: true}
+            - term:
+                process.parent.name: {value: excel.exe, case_insensitive: true}
+            - term:
+                process.parent.name: {value: powerpnt.exe, case_insensitive: true}
+            - term:
+                process.parent.name: {value: outlook.exe, case_insensitive: true}
+            - term:
+                process.parent.name: {value: onenote.exe, case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'msdt.exe started with IT_BrowseForFile, an ms-msdt: URL or -af to a diagnostic XML, or started by an Office process: the Follina (CVE-2022-30190) family and other MSDT diagnostic script execution.'
+  source: [process]
+  false_positives: 'Windows troubleshooters launched from Settings use msdt.exe with /id and no IT_ parameters; none of those match.'
+  references: ['https://lolbas-project.github.io/lolbas/Binaries/Msdt/', 'https://attack.mitre.org/techniques/T1218/', 'https://nvd.nist.gov/vuln/detail/CVE-2022-30190']

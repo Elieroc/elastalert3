@@ -1,0 +1,48 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: pktmon.exe
+      executable: 'C:\Windows\System32\pktmon.exe'
+      command_line: 'pktmon.exe start --capture'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: psr.exe
+      executable: 'C:\Windows\System32\psr.exe'
+      command_line: 'psr.exe /start /output C:\Users\Public\steps.zip /gui 0'
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: nmcap.exe
+      executable: 'C:\Windows\System32\nmcap.exe'
+      command_line: 'nmcap.exe /network * /capture /file C:\Users\Public\c.cap'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: pktmon.exe
+      executable: 'C:\Windows\System32\pktmon.exe'
+      command_line: 'pktmon.exe list'

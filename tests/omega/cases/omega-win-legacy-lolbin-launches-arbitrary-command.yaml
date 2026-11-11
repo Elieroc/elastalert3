@@ -1,0 +1,144 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: pcalua.exe
+      executable: 'C:\Windows\System32\pcalua.exe'
+      command_line: 'pcalua.exe -a C:\Users\Public\payload.exe'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: pcwrun.exe
+      executable: 'C:\Windows\System32\pcwrun.exe'
+      command_line: 'pcwrun.exe C:\Users\Public\payload.exe'
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: scriptrunner.exe
+      executable: 'C:\Windows\System32\scriptrunner.exe'
+      command_line: 'ScriptRunner.exe -appvscript calc.exe'
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: syncappvpublishingserver.exe
+      executable: 'C:\Windows\System32\syncappvpublishingserver.exe'
+      command_line: 'SyncAppvPublishingServer.exe "n; Start-Process calc.exe"'
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: register-cimprovider.exe
+      executable: 'C:\Windows\System32\register-cimprovider.exe'
+      command_line: 'Register-cimprovider.exe -path C:\Users\Public\evil.dll'
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: infdefaultinstall.exe
+      executable: 'C:\Windows\System32\infdefaultinstall.exe'
+      command_line: 'InfDefaultInstall.exe C:\Users\Public\evil.inf'
+- id: pos7
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: runscripthelper.exe
+      executable: 'C:\Windows\System32\runscripthelper.exe'
+      command_line: 'runscripthelper.exe surfacecheck \\?\C:\Users\Public\test.txt C:\Users\Public'
+- id: pos8
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: rasautou.exe
+      executable: 'C:\Windows\System32\rasautou.exe'
+      command_line: 'rasautou.exe -d evil.dll -p export -a a -e e'
+- id: pos9
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: wlrmdr.exe
+      executable: 'C:\Windows\System32\wlrmdr.exe'
+      command_line: 'wlrmdr.exe -s 3600 -f 0 -t _ -m _ -a 11 -u calc.exe'
+- id: pos10
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: runexehelper.exe
+      executable: 'C:\Windows\System32\runexehelper.exe'
+      command_line: 'runexehelper.exe C:\Users\Public\payload.exe'
+- id: pos11
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: msconfig.exe
+      executable: 'C:\Windows\System32\msconfig.exe'
+      command_line: 'msconfig.exe -5'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: pcalua.exe
+      executable: 'C:\Windows\System32\pcalua.exe'
+      command_line: 'pcalua.exe'

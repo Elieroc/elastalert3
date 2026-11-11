@@ -1,0 +1,175 @@
+name: omega-win-developer-tool-launches-arbitrary-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1218]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: msdeploy.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*runcommand*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: vshadow.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*-exec=*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -exec *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: vsdiagnostics.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*/launch:*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* /launch *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: vsjitdebugger.exe, case_insensitive: true}
+            - term:
+                process.name: {value: mpiexec.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*.exe*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: appvlp.exe, case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: dxcap.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -c *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: devinit.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* run *', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -t *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: pixtool.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* launch *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: bginfo.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*.bgi*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*/popup*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/nolicprompt*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/timer:*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: sqlps.exe, case_insensitive: true}
+            - term:
+                process.name: {value: sqltoolsps.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*-noprofile*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*-command*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: dotnet-trace.exe, case_insensitive: true}
+            - term:
+                process.name: {value: dotnet-counters.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -- *', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'Developer and SDK tools that run any program they are given: msdeploy RunCommand, vshadow -exec, VSDiagnostics /launch, vsjitdebugger or mpiexec on an exe, appvlp, Dxcap -c, devinit run, pixtool launch, bginfo with a .bgi script, Sqlps / SQLToolsPS -command, dotnet-trace and dotnet-counters -- command.'
+  source: [process]
+  false_positives: 'Build and test hosts. Exclude them by host or parent; these tools are rare on ordinary workstations.'
+  references: ['https://lolbas-project.github.io/lolbas/OtherMSBinaries/Msdeploy/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/Vshadow/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/VSDiagnostics/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/vsjitdebugger/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/Mpiexec/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/Appvlp/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/Dxcap/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/Devinit/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/Pixtool/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/Bginfo/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/Sqlps/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/SQLToolsPS/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/dotnet-trace/', 'https://attack.mitre.org/techniques/T1218/']

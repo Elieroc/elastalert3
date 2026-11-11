@@ -1,0 +1,108 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: microsoft.workflow.compiler.exe
+      executable: 'C:\Windows\System32\microsoft.workflow.compiler.exe'
+      command_line: 'Microsoft.Workflow.Compiler.exe tests.xml results.xml'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: aspnet_compiler.exe
+      executable: 'C:\Windows\System32\aspnet_compiler.exe'
+      command_line: 'aspnet_compiler.exe -v none -p C:\Users\Public\app -f C:\Users\Public\out'
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: addinutil.exe
+      executable: 'C:\Windows\System32\addinutil.exe'
+      command_line: 'AddinUtil.exe -AddinRoot:C:\Users\Public\addins'
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: coregen.exe
+      executable: 'C:\Windows\System32\coregen.exe'
+      command_line: 'coregen.exe /L C:\Users\Public\evil.dll dummy'
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: tracker.exe
+      executable: 'C:\Windows\System32\tracker.exe'
+      command_line: 'Tracker.exe /d .\evil.dll /c C:\Windows\write.exe'
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: msxsl.exe
+      executable: 'C:\Windows\System32\msxsl.exe'
+      command_line: 'msxsl.exe https://example.org/a.xml https://example.org/a.xsl'
+- id: pos7
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: acccheckconsole.exe
+      executable: 'C:\Windows\System32\acccheckconsole.exe'
+      command_line: 'AccCheckConsole.exe -window "Calculator" -DLL C:\Users\Public\evil.dll'
+- id: pos8
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: csi.exe
+      executable: 'C:\Windows\System32\csi.exe'
+      command_line: 'rcsi.exe C:\Users\Public\bypass.csx'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: aspnet_compiler.exe
+      executable: 'C:\Windows\System32\aspnet_compiler.exe'
+      command_line: 'aspnet_compiler.exe -v /MyApp -p C:\inetpub\wwwroot\MyApp C:\build\out'

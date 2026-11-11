@@ -1,0 +1,78 @@
+name: omega-win-appinstaller-or-winget-remote-source
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1105, T1218]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: appinstaller.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*\\\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*http://*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*https://*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: winget.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* install *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* import *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* configure *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* source add *', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*--manifest*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -m *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*--source*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -s *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* source add*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*\\\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*http://*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*https://*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'AppInstaller or winget fed a remote package: ms-appinstaller with an http source, winget install --manifest or configure with a URL, or a winget source added from a URL or UNC path.'
+  source: [process]
+  false_positives: 'Packaging teams testing App Installer files; exclude them by user.'
+  references: ['https://lolbas-project.github.io/lolbas/Binaries/AppInstaller/', 'https://lolbas-project.github.io/lolbas/Binaries/Winget/', 'https://attack.mitre.org/techniques/T1105/']

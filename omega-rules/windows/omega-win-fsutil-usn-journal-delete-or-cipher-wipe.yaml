@@ -1,0 +1,48 @@
+name: omega-win-fsutil-usn-journal-delete-or-cipher-wipe
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1070.004, T1485]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: fsutil.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*usn*deletejournal*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: cipher.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* /w:*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* /w *', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'fsutil usn deletejournal, or cipher /w wiping free space: anti-forensics and ransomware clean-up steps.'
+  source: [process]
+  false_positives: 'cipher /w by IT before returning a disk; fsutil usn deletejournal is rare outside troubleshooting. Exclude by user.'
+  references: ['https://lolbas-project.github.io/lolbas/Binaries/Fsutil/', 'https://lolbas-project.github.io/lolbas/Binaries/Cipher/', 'https://attack.mitre.org/techniques/T1070/004/']

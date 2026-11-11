@@ -1,0 +1,117 @@
+name: omega-lnx-tunnel-service-domain-lookup
+type: any
+index: logs-endpoint.events.network*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1572, T1090.003]
+risk_score: 20
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: network}
+- term: {event.action: lookup_requested}
+- bool:
+    should:
+    - wildcard: {dns.question.name: '*.ap-1.sharedwithexpose.com'}
+    - wildcard: {dns.question.name: '*.au-1.sharedwithexpose.com'}
+    - wildcard: {dns.question.name: '*.beeceptor.com'}
+    - wildcard: {dns.question.name: '*.bore.digital'}
+    - wildcard: {dns.question.name: '*.btunnel.co.in'}
+    - wildcard: {dns.question.name: '*.btunnel.in'}
+    - wildcard: {dns.question.name: '*.burrow.io'}
+    - wildcard: {dns.question.name: '*.burrow.link'}
+    - wildcard: {dns.question.name: '*.cfargotunnel.com'}
+    - wildcard: {dns.question.name: '*.cftunnel.com'}
+    - wildcard: {dns.question.name: '*.data.rel.tunnels.api.visualstudio.com'}
+    - wildcard: {dns.question.name: '*.dataplicity.com'}
+    - wildcard: {dns.question.name: '*.devtunnels.ms'}
+    - wildcard: {dns.question.name: '*.equinox.io'}
+    - wildcard: {dns.question.name: '*.eu-1.sharedwithexpose.com'}
+    - wildcard: {dns.question.name: '*.eu-2.sharedwithexpose.com'}
+    - wildcard: {dns.question.name: '*.expos.es'}
+    - wildcard: {dns.question.name: '*.global.rel.tunnels.api.visualstudio.com'}
+    - wildcard: {dns.question.name: '*.gsocket.io'}
+    - wildcard: {dns.question.name: '*.in-1.sharedwithexpose.com'}
+    - wildcard: {dns.question.name: '*.jprq.io'}
+    - wildcard: {dns.question.name: '*.lhr.life'}
+    - wildcard: {dns.question.name: '*.loca.lt'}
+    - wildcard: {dns.question.name: '*.localhost.run'}
+    - wildcard: {dns.question.name: '*.localto.net'}
+    - wildcard: {dns.question.name: '*.localtunnel.me'}
+    - wildcard: {dns.question.name: '*.localxpose.io'}
+    - wildcard: {dns.question.name: '*.loophole.site'}
+    - wildcard: {dns.question.name: '*.netbird.io'}
+    - wildcard: {dns.question.name: '*.ngrok-agent.com'}
+    - wildcard: {dns.question.name: '*.ngrok-cname.com'}
+    - wildcard: {dns.question.name: '*.ngrok.com'}
+    - wildcard: {dns.question.name: '*.ngrok.dev'}
+    - wildcard: {dns.question.name: '*.ngrok.pizza'}
+    - wildcard: {dns.question.name: '*.ngrok.pro'}
+    - wildcard: {dns.question.name: '*.oast.fun'}
+    - wildcard: {dns.question.name: '*.oast.live'}
+    - wildcard: {dns.question.name: '*.oast.me'}
+    - wildcard: {dns.question.name: '*.oast.online'}
+    - wildcard: {dns.question.name: '*.oast.pro'}
+    - wildcard: {dns.question.name: '*.oast.site'}
+    - wildcard: {dns.question.name: '*.opentunnel.xyz'}
+    - wildcard: {dns.question.name: '*.packetriot.net'}
+    - wildcard: {dns.question.name: '*.pagekite.net'}
+    - wildcard: {dns.question.name: '*.pinggy.io'}
+    - wildcard: {dns.question.name: '*.pinggy.link'}
+    - wildcard: {dns.question.name: '*.pitunnel.com'}
+    - wildcard: {dns.question.name: '*.pktriot.net'}
+    - wildcard: {dns.question.name: '*.portmap.host'}
+    - wildcard: {dns.question.name: '*.portmap.io'}
+    - wildcard: {dns.question.name: '*.qsocket.io'}
+    - wildcard: {dns.question.name: '*.rel.tunnels.api.visualstudio.com'}
+    - wildcard: {dns.question.name: '*.sa-1.sharedwithexpose.com'}
+    - wildcard: {dns.question.name: '*.sharedwithexpose.com'}
+    - wildcard: {dns.question.name: '*.shellhub.io'}
+    - wildcard: {dns.question.name: '*.ssh-j.com'}
+    - wildcard: {dns.question.name: '*.ssi.sh'}
+    - wildcard: {dns.question.name: '*.staqlab-tunnel.com'}
+    - wildcard: {dns.question.name: '*.staqlab.com'}
+    - wildcard: {dns.question.name: '*.tailscale.io'}
+    - wildcard: {dns.question.name: '*.telebit.cloud'}
+    - wildcard: {dns.question.name: '*.telebit.fun'}
+    - wildcard: {dns.question.name: '*.telebit.io'}
+    - wildcard: {dns.question.name: '*.tmate.io'}
+    - wildcard: {dns.question.name: '*.ts.net'}
+    - wildcard: {dns.question.name: '*.tunnel.pyjam.as'}
+    - wildcard: {dns.question.name: '*.tunnel.staqlab.com'}
+    - wildcard: {dns.question.name: '*.tunnels.api.visualstudio.com'}
+    - wildcard: {dns.question.name: '*.tunnelto.dev'}
+    - wildcard: {dns.question.name: '*.tuns.sh'}
+    - wildcard: {dns.question.name: '*.twingate.com'}
+    - wildcard: {dns.question.name: '*.us-1.sharedwithexpose.com'}
+    - wildcard: {dns.question.name: '*.us-2.sharedwithexpose.com'}
+    - wildcard: {dns.question.name: '*.zerotier.com'}
+    - wildcard: {dns.question.name: '*tunnel.pyjam.as'}
+    - wildcard: {dns.question.name: 'api.netbird.io'}
+    - wildcard: {dns.question.name: 'aps1-1.relay.n0.iroh.link'}
+    - wildcard: {dns.question.name: 'bore.digital'}
+    - wildcard: {dns.question.name: 'bore.pub'}
+    - wildcard: {dns.question.name: 'dns.iroh.link'}
+    - wildcard: {dns.question.name: 'euc1-1.relay.n0.iroh.link'}
+    - wildcard: {dns.question.name: 'expose.sh'}
+    - wildcard: {dns.question.name: 'get.telebit.io'}
+    - wildcard: {dns.question.name: 'io.burrow.link'}
+    - wildcard: {dns.question.name: 'loophole.eu.auth0.com'}
+    - wildcard: {dns.question.name: 'openport.io'}
+    - wildcard: {dns.question.name: 'opentunnel.xyz'}
+    - wildcard: {dns.question.name: 'ssh-j.com'}
+    - wildcard: {dns.question.name: 'tailscale.com'}
+    - wildcard: {dns.question.name: 'tc301a.ipn.dev'}
+    - wildcard: {dns.question.name: 'tc302a.ipn.dev'}
+    - wildcard: {dns.question.name: 'tc303a.ipn.dev'}
+    - wildcard: {dns.question.name: 'tc304a.ipn.dev'}
+    - wildcard: {dns.question.name: 'use1-1.relay.n0.iroh.link'}
+    - wildcard: {dns.question.name: 'usw1-1.relay.n0.iroh.link'}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'DNS lookup of a tunnelling, reverse-proxy or overlay-network service domain from the LOTTunnels list (Cloudflare tunnel hostnames, Dev Tunnels, bore, burrow, localhost.run, pinggy, tailscale, zerotier, interactsh oast, tmate and others). The domains of the older c2-or-tunnel-service lookup rule are not repeated.'
+  source: [network]
+  false_positives: 'Developers and admins using Tailscale, ZeroTier, NetBird, Twingate, Dev Tunnels or Cloudflare tunnels (exclude by host); Tailscale and ZeroTier names also appear on every host that runs them.'
+  references: ['https://lottunnels.github.io/domains.csv', 'https://attack.mitre.org/techniques/T1572/']

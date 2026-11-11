@@ -1,0 +1,73 @@
+name: omega-win-lolbin-writes-alternate-data-stream
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1564.004]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: makecab.exe, case_insensitive: true}
+    - term:
+        process.name: {value: diantz.exe, case_insensitive: true}
+    - term:
+        process.name: {value: extrac32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: expand.exe, case_insensitive: true}
+    - term:
+        process.name: {value: print.exe, case_insensitive: true}
+    - term:
+        process.name: {value: regedit.exe, case_insensitive: true}
+    - term:
+        process.name: {value: regini.exe, case_insensitive: true}
+    - term:
+        process.name: {value: tar.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*.txt:*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.log:*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.dat:*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.ini:*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.jpg:*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.png:*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.doc:*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.docx:*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.pdf:*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.dll:*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.exe:*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.bat:*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.ps1:*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.js:*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.vbs:*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.cab:*', case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'makecab, diantz, extrac32, expand, print, regedit, regini or tar writing to a file name with an alternate data stream (file.txt:payload.exe): a way to hide a payload from directory listings.'
+  source: [process]
+  false_positives: 'Rare; a few backup scripts name streams explicitly.'
+  references: ['https://lolbas-project.github.io/lolbas/Binaries/Makecab/', 'https://lolbas-project.github.io/lolbas/Binaries/Extrac32/', 'https://lolbas-project.github.io/lolbas/Binaries/Expand/', 'https://lolbas-project.github.io/lolbas/Binaries/Print/', 'https://lolbas-project.github.io/lolbas/Binaries/Regedit/', 'https://lolbas-project.github.io/lolbas/Binaries/Regini/', 'https://lolbas-project.github.io/lolbas/Binaries/Tar/', 'https://attack.mitre.org/techniques/T1564/004/']

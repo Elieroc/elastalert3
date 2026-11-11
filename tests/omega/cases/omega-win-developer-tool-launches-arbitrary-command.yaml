@@ -1,0 +1,144 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: msdeploy.exe
+      executable: 'C:\Windows\System32\msdeploy.exe'
+      command_line: 'msdeploy.exe -verb:sync -source:RunCommand -dest:runCommand="C:\Users\Public\x.bat"'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: vshadow.exe
+      executable: 'C:\Windows\System32\vshadow.exe'
+      command_line: 'vshadow.exe -exec=C:\Users\Public\x.exe C:'
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: vsdiagnostics.exe
+      executable: 'C:\Windows\System32\vsdiagnostics.exe'
+      command_line: 'VSDiagnostics.exe start 1 /launch:C:\Users\Public\x.exe'
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: vsjitdebugger.exe
+      executable: 'C:\Windows\System32\vsjitdebugger.exe'
+      command_line: 'Vsjitdebugger.exe C:\Users\Public\x.exe'
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: appvlp.exe
+      executable: 'C:\Windows\System32\appvlp.exe'
+      command_line: 'AppVLP.exe C:\Users\Public\x.exe'
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: dxcap.exe
+      executable: 'C:\Windows\System32\dxcap.exe'
+      command_line: 'Dxcap.exe -c C:\Users\Public\x.exe'
+- id: pos7
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: devinit.exe
+      executable: 'C:\Windows\System32\devinit.exe'
+      command_line: 'devinit.exe run -t msi-install -i https://example.org/x.msi'
+- id: pos8
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: pixtool.exe
+      executable: 'C:\Windows\System32\pixtool.exe'
+      command_line: 'PIXTool.exe launch C:\Users\Public\x.exe'
+- id: pos9
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: bginfo.exe
+      executable: 'C:\Windows\System32\bginfo.exe'
+      command_line: 'bginfo.exe C:\Users\Public\x.bgi /popup /nolicprompt'
+- id: pos10
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: sqlps.exe
+      executable: 'C:\Windows\System32\sqlps.exe'
+      command_line: 'SQLToolsPS.exe -noprofile -command calc.exe'
+- id: pos11
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: dotnet-trace.exe
+      executable: 'C:\Windows\System32\dotnet-trace.exe'
+      command_line: 'dotnet-trace.exe collect -- C:\Users\Public\x.exe'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: msdeploy.exe
+      executable: 'C:\Windows\System32\msdeploy.exe'
+      command_line: 'msdeploy.exe -verb:sync -source:iisApp="C:\site" -dest:iisApp="Default Web Site"'

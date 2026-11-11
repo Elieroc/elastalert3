@@ -1,0 +1,21 @@
+name: omega-lnx-self-hosted-or-anonymous-tunnel-tool-execution
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1572, T1090, T1071.004]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- terms:
+    process.name: [bore, burrow, dnscat2, gs-netcat, gs-dummy, gs-sftp, gs-mount, gsocket, interactsh-client, jprq, localtonet, loclx, loophole, openport, pagekite, pagekite.py, pktriot, packetriot, qs-netcat, qsocket, shootback, suo5, tailcat, telebit, tunnelto, wstunnel]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Execution of a dedicated tunnelling or reverse-access tool listed by LOTTunnels and not covered by the offensive-tool rule: bore, burrow, dnscat2, gsocket (gs-netcat, gs-sftp...), interactsh-client, jprq, localtonet, loclx, loophole, openport, pagekite, pktriot, qsocket, shootback, suo5, tailcat, telebit, tunnelto, wstunnel.'
+  source: [process]
+  false_positives: 'Developers who expose a local service with one of these tools. Exclude the host or user for a known use, with an expiry.'
+  references: ['https://lottunnels.github.io/', 'https://attack.mitre.org/techniques/T1572/']

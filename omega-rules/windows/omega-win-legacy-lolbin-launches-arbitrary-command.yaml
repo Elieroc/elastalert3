@@ -1,0 +1,171 @@
+name: omega-win-legacy-lolbin-launches-arbitrary-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1218]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: pcalua.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -a*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* /a*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: pcwrun.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*.exe*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*.bat*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*.cmd*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*.lnk*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: scriptrunner.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*-appvscript*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: syncappvpublishingserver.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*;*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*start-process*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*powershell*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: register-cimprovider.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*-path*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: infdefaultinstall.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*.inf*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: runscripthelper.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*surfacecheck*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: rasautou.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -d *', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -p *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: wlrmdr.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -u *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: runexehelper.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*.exe*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: msconfig.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -5*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Old built-in launchers that run any program or script they are given: pcalua -a, pcwrun, scriptrunner -appvscript, SyncAppvPublishingServer with a command, Register-CimProvider -path, infdefaultinstall on an INF, runscripthelper surfacecheck, rasautou -d -p, wlrmdr -u, runexehelper, msconfig -5.'
+  source: [process]
+  false_positives: 'Almost none on modern endpoints; App-V and legacy compatibility scripts. Exclude by parent.'
+  references: ['https://lolbas-project.github.io/lolbas/Binaries/Pcalua/', 'https://lolbas-project.github.io/lolbas/Binaries/Pcwrun/', 'https://lolbas-project.github.io/lolbas/Binaries/Scriptrunner/', 'https://lolbas-project.github.io/lolbas/Binaries/SyncAppvPublishingServer/', 'https://lolbas-project.github.io/lolbas/Binaries/Register-cimprovider/', 'https://lolbas-project.github.io/lolbas/Binaries/Infdefaultinstall/', 'https://lolbas-project.github.io/lolbas/Binaries/Runscripthelper/', 'https://lolbas-project.github.io/lolbas/Binaries/Rasautou/', 'https://lolbas-project.github.io/lolbas/Binaries/Wlrmdr/', 'https://lolbas-project.github.io/lolbas/Binaries/Runexehelper/', 'https://lolbas-project.github.io/lolbas/Binaries/Msconfig/', 'https://attack.mitre.org/techniques/T1218/']

@@ -1,0 +1,36 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: mmc.exe
+      executable: 'C:\Windows\System32\mmc.exe'
+      command_line: 'mmc.exe C:\Users\Public\evil.msc'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: control.exe
+      executable: 'C:\Windows\System32\control.exe'
+      command_line: 'control.exe C:\Users\Public\evil.cpl'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: mmc.exe
+      executable: 'C:\Windows\System32\mmc.exe'
+      command_line: 'mmc.exe C:\Windows\System32\compmgmt.msc'

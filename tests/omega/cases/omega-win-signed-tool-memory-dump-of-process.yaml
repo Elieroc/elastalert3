@@ -1,0 +1,84 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: createdump.exe
+      executable: 'C:\Windows\System32\createdump.exe'
+      command_line: 'createdump.exe -u -f C:\Users\Public\c.dmp 4321'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: dumpminitool.exe
+      executable: 'C:\Windows\System32\dumpminitool.exe'
+      command_line: 'DumpMinitool.exe --file C:\Users\Public\o.dmp --processId 4321 --dumpType Full'
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: dump64.exe
+      executable: 'C:\Windows\System32\dump64.exe'
+      command_line: 'Dump64.exe 4321 C:\Users\Public\o.dmp'
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: sqldumper.exe
+      executable: 'C:\Windows\System32\sqldumper.exe'
+      command_line: 'sqldumper.exe 4321 0 0x0128 0 C:\Users\Public'
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: rdrleakdiag.exe
+      executable: 'C:\Windows\System32\rdrleakdiag.exe'
+      command_line: 'rdrleakdiag.exe /p 4321 /o C:\Users\Public /fullmemdmp /snap'
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: adplus.exe
+      executable: 'C:\Windows\System32\adplus.exe'
+      command_line: 'adplus.exe -hang -pn lsass.exe -o C:\Users\Public -quiet'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: createdump.exe
+      executable: 'C:\Windows\System32\createdump.exe'
+      command_line: 'createdump.exe --help'

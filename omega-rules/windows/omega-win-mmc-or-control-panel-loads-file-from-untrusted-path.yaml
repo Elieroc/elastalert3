@@ -1,0 +1,86 @@
+name: omega-win-mmc-or-control-panel-loads-file-from-untrusted-path
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1218.014, T1218.002]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: mmc.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*.msc*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*\\users\\public\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\appdata\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\temp\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\programdata\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\perflogs\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*http://*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*https://*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: control.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*.dll*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*.cpl*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*\\users\\public\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\appdata\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\temp\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\programdata\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\perflogs\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*http://*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*https://*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'mmc.exe opening a .msc, or control.exe loading a .dll / .cpl, from a user-writable, remote or URL path: MMC snap-in and control panel item proxy execution.'
+  source: [process]
+  false_positives: 'Admin snap-ins kept on a file share (exclude the share) and CPL files unpacked into Temp by installers.'
+  references: ['https://lolbas-project.github.io/lolbas/Binaries/Mmc/', 'https://lolbas-project.github.io/lolbas/Binaries/Control/', 'https://attack.mitre.org/techniques/T1218/014/', 'https://attack.mitre.org/techniques/T1218/002/']

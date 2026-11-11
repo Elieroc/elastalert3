@@ -1,0 +1,118 @@
+name: omega-win-signed-tool-memory-dump-of-process
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1003, T1003.001]
+risk_score: 30
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: createdump.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -u *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -f *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*--full*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*--withheap*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -n *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: dumpminitool.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*--dumptype*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: dump64.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*.dmp*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: sqldumper.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* 0x*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: rdrleakdiag.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*memdmp*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* /p *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -p *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: adplus.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -hang*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -crash*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -pn *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -p *', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'createdump, DumpMinitool, Dump64, sqldumper, rdrleakdiag memdmp or adplus dumping a process: legitimate crash-dump tools that also work on lsass. The lsass-specific command rule is a separate T0.'
+  source: [process]
+  false_positives: '.NET and SQL Server support tooling, crash handling by an application. Exclude the service accounts that run them.'
+  references: ['https://lolbas-project.github.io/lolbas/OtherMSBinaries/Createdump/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/DumpMinitool/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/Dump64/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/Sqldumper/', 'https://lolbas-project.github.io/lolbas/Binaries/rdrleakdiag/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/adplus/', 'https://attack.mitre.org/techniques/T1003/001/']

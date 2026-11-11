@@ -1,0 +1,31 @@
+name: omega-win-minifilter-driver-unloaded-with-fltmc
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1685]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: fltmc.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '* unload *', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '* detach *', case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'fltmc unload (or detach): removes a file-system minifilter, the way to blind an EDR or Sysmon driver (SysmonDrv, WdFilter).'
+  source: [process]
+  false_positives: 'Uninstallers of backup or security products. Exclude by parent.'
+  references: ['https://lolbas-project.github.io/lolbas/Binaries/fltMC/', 'https://attack.mitre.org/techniques/T1562/001/']

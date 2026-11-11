@@ -1,0 +1,108 @@
+name: omega-win-rundll32-lolbin-library-export-execution
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1218.011]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: rundll32.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*advpack*,*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*setupapi*,installhinfsection*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*syssetup*,setupinfobjectinstallaction*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*\\users\\public\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\appdata\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\temp\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\programdata\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\perflogs\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*http://*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*https://*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: rundll32.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*pcwutl*,launchapplication*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*zipfldr*,routethecall*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*shell32*,shellexec_rundll*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*mshtml*,printhtml*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*photoviewer*,imageview_fullscreen*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*shimgvw*,imageview_fullscreen*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*shdocvw*,openurl*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*ieframe*,openurl*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*url.dll,openurl*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*url.dll,fileprotocolhandler*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*.exe*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*.hta*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*.js*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*.vbs*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*.bat*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*.cmd*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*.ps1*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*.scr*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*.url*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'rundll32 calling an export built to run files: advpack/ieadvpack/setupapi/syssetup INF installers on a file in a user-writable or remote path, or pcwutl LaunchApplication, zipfldr RouteTheCall, shell32 ShellExec_RunDLL, mshtml PrintHTML, url.dll / shdocvw / ieframe OpenURL and FileProtocolHandler, photoviewer / shimgvw ImageView_Fullscreen on an executable or script.'
+  source: [process]
+  false_positives: 'Installers calling InstallHinfSection on their own INF in Temp; exclude by parent. shell32 ShellExec_RunDLL is used by a few installers.'
+  references: ['https://lolbas-project.github.io/lolbas/Libraries/Advpack/', 'https://lolbas-project.github.io/lolbas/Libraries/Ieadvpack/', 'https://lolbas-project.github.io/lolbas/Libraries/Setupapi/', 'https://lolbas-project.github.io/lolbas/Libraries/Syssetup/', 'https://lolbas-project.github.io/lolbas/Libraries/Pcwutl/', 'https://lolbas-project.github.io/lolbas/Libraries/Zipfldr/', 'https://lolbas-project.github.io/lolbas/Libraries/Shell32/', 'https://lolbas-project.github.io/lolbas/Libraries/Mshtml/', 'https://lolbas-project.github.io/lolbas/Libraries/Shdocvw/', 'https://lolbas-project.github.io/lolbas/Libraries/Ieframe/', 'https://lolbas-project.github.io/lolbas/Libraries/Shimgvw/', 'https://lolbas-project.github.io/lolbas/Libraries/PhotoViewer/', 'https://attack.mitre.org/techniques/T1218/011/']

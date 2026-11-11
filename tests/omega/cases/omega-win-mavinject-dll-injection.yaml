@@ -1,0 +1,24 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: mavinject.exe
+      executable: 'C:\Windows\System32\mavinject.exe'
+      command_line: 'mavinject.exe 4321 /INJECTRUNNING C:\Users\Public\evil.dll'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: mavinject.exe
+      executable: 'C:\Windows\System32\mavinject.exe'
+      command_line: 'mavinject.exe /?'

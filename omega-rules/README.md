@@ -34,8 +34,8 @@ Silent T1 rules still write their doc to the writeback index with `risk_objects`
 
 | Pack | Rules | Data sources (ECS) | State |
 |---|---|---|---|
-| `linux/` | 118: 50 T0, 64 T1, 4 T2 | Elastic Defend / Auditbeat (process, file, network, DNS lookups), system auth (sshd, sudo, su) | first version |
-| `windows/` | 127: 76 T0, 46 T1, 5 T2 | Elastic Defend / Winlogbeat / Sysmon (process, file, registry, network, DNS, named pipes, WMI), Security and System event logs (4624/4625/4662/4697/4698/4732/4768/4769/5140, 1102, 7045), PowerShell script block logging (4104) | first version |
+| `linux/` | 122: 52 T0, 66 T1, 4 T2 | Elastic Defend / Auditbeat (process, file, network, DNS lookups), system auth (sshd, sudo, su) | first version |
+| `windows/` | 150: 87 T0, 58 T1, 5 T2 | Elastic Defend / Winlogbeat / Sysmon (process, file, registry, network, DNS, named pipes, WMI), Security and System event logs (4624/4625/4662/4697/4698/4732/4768/4769/5140, 1102, 7045), PowerShell script block logging (4104) | first version |
 | `web/`, `firewall/` | - | - | planned |
 
 Linux covers, with one rule per behaviour and the type of rule that fits it: blacklists of tools and miners
@@ -62,6 +62,24 @@ Behaviour of note: ransomware (`known-ransom-note-created`, `ransom-note-dropped
 `shadow-copy-or-backup-deletion`, `service-and-process-stop-burst`), credential theft (LSASS, SAM/NTDS, DCSync, Kerberoasting, WDigest,
 LSA packages), persistence in the registry and WMI, Office/server process trees, and PowerShell script block content.
 The T1 signals feed `omega-win-host-risk`, `omega-win-user-risk` and `omega-win-source-ip-risk`.
+
+### LOTTunnels coverage (Linux)
+
+Tunnelling tools from https://lottunnels.github.io/ are covered by four rules: `omega-lnx-self-hosted-or-anonymous-tunnel-tool-execution` (T0, dedicated
+tools), `omega-lnx-overlay-or-reverse-proxy-service-client-execution` (T1, dual-use clients such as cloudflared, tailscale, tmate),
+`omega-lnx-tunnel-service-command-line` (T0, quick tunnels, `ssh -R` to public tunnel services, reGeorg, gsocket installer) and
+`omega-lnx-tunnel-service-domain-lookup` (T1, the LOTTunnels domain list). `chisel`, `ligolo`, `frp`, `ngrok`, `gost`, `iodine`, `dnscat`
+and `ptunnel` were already in `omega-lnx-offensive-tool-execution`, and plain `ssh -R/-L/-D` in `omega-lnx-ssh-port-forward-tunnel`.
+
+### LOLBAS coverage
+
+The Windows pack covers the LOLBAS binaries that have a detectable command line: transfers (`certreq`, `certoc`, `desktopimgdownldr`,
+`cmdl32`, `ftp`, `finger`, `expand`/`extrac32`/`replace`/`makecab` from UNC paths, `winget`, `AppInstaller`, Squirrel `Update.exe`),
+alternate data streams, .NET and SDK tooling (`Microsoft.Workflow.Compiler`, `aspnet_compiler`, `csi`/`rcsi`/`fsi`, `msdeploy`, debuggers,
+`vshadow`...), legacy launchers (`pcalua`, `scriptrunner`, `infdefaultinstall`...), `msdt` (Follina), `rundll32` library exports, `mmc` and
+`control` from untrusted paths, `mavinject`, `fltmc unload`, `fsutil`/`cipher`, `pnputil`, `mofcomp`, memory-dump tools, `wsl`/`bash` and capture
+tools. Binaries that only matter through a DLL planted next to them (`iediagcmd`, `ie4uinit`, `OfflineScannerShell`...) or that
+run constantly in normal use (`verclsid`, `msedge_proxy`) have no rule: a command-line rule would be pure noise.
 
 ### Rules tied to 2026 exploited vulnerabilities
 

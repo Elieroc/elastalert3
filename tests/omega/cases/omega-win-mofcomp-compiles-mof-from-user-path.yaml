@@ -1,0 +1,24 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: mofcomp.exe
+      executable: 'C:\Windows\System32\mofcomp.exe'
+      command_line: 'mofcomp.exe C:\Users\Public\evil.mof'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: mofcomp.exe
+      executable: 'C:\Windows\System32\mofcomp.exe'
+      command_line: 'mofcomp.exe C:\Windows\System32\wbem\cimwin32.mof'

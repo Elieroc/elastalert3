@@ -1,0 +1,31 @@
+name: omega-win-mavinject-dll-injection
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1055.001, T1218.013]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: mavinject.exe, case_insensitive: true}
+    - term:
+        process.name: {value: mavinject32.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*injectrunning*', case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'mavinject /INJECTRUNNING: injects a DLL into a running process with a Microsoft-signed binary (App-V), the standard LOLBin injector.'
+  source: [process]
+  false_positives: 'App-V only; exclude if you run App-V agents.'
+  references: ['https://lolbas-project.github.io/lolbas/Binaries/Mavinject/', 'https://attack.mitre.org/techniques/T1055/001/']

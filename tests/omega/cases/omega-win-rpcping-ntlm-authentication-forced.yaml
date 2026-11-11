@@ -1,0 +1,24 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: rpcping.exe
+      executable: 'C:\Windows\System32\rpcping.exe'
+      command_line: 'rpcping.exe -s 203.0.113.9 -e 1234 -a privacy -u NTLM'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: rpcping.exe
+      executable: 'C:\Windows\System32\rpcping.exe'
+      command_line: 'rpcping.exe -s fileserver -t ncacn_ip_tcp'

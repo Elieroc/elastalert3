@@ -1,0 +1,44 @@
+name: omega-win-squirrel-update-exe-fetches-payload
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1105, T1218]
+risk_score: 10
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: update.exe, case_insensitive: true}
+    - term:
+        process.name: {value: squirrel.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*--download*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*--update=*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*--update *', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*\\\\*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*http://*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*https://*', case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'Update.exe (Squirrel) started with --download or --update pointing at an http URL or UNC path: the updater of Teams, Slack and Discord reused as a downloader.'
+  source: [process]
+  false_positives: 'The applications that ship Squirrel update themselves this way (Discord, Slack, GitHub Desktop); exclude the real update URLs.'
+  references: ['https://lolbas-project.github.io/lolbas/OtherMSBinaries/Squirrel/', 'https://lolbas-project.github.io/lolbas/OtherMSBinaries/Update/', 'https://attack.mitre.org/techniques/T1105/']

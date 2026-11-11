@@ -1,0 +1,84 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cdb.exe
+      executable: 'C:\Windows\System32\cdb.exe'
+      command_line: 'cdb.exe -cf C:\Users\Public\x.wds -o notepad.exe'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: adplus.exe
+      executable: 'C:\Windows\System32\adplus.exe'
+      command_line: 'adplus.exe -crash -o C:\Temp -sc C:\Users\Public\cmd.exe'
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: tttracer.exe
+      executable: 'C:\Windows\System32\tttracer.exe'
+      command_line: 'tttracer.exe C:\Windows\System32\calc.exe'
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: ttdinject.exe
+      executable: 'C:\Windows\System32\ttdinject.exe'
+      command_line: 'ttdinject.exe /ClientParams "7 tmp.run 0 0 0 0 0 0 0 0 0 0" /Launch "C:/Windows/System32/calc.exe"'
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: dbgsrv.exe
+      executable: 'C:\Windows\System32\dbgsrv.exe'
+      command_line: 'DbgSrv.exe -t tcp:port=5555'
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: devtoolslauncher.exe
+      executable: 'C:\Windows\System32\devtoolslauncher.exe'
+      command_line: 'devtoolslauncher.exe LaunchForDeploy C:\Users\Public\x.exe "arg" test'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cdb.exe
+      executable: 'C:\Windows\System32\cdb.exe'
+      command_line: 'cdb.exe -z C:\dumps\crash.dmp'

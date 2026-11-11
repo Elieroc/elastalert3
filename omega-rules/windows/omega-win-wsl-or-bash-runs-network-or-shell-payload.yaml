@@ -1,0 +1,56 @@
+name: omega-win-wsl-or-bash-runs-network-or-shell-payload
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1202, T1059.004]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: wsl.exe, case_insensitive: true}
+    - term:
+        process.name: {value: bash.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '* -e *', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '* --exec *', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '* -c *', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '* /c *', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*curl *', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*wget *', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*/dev/tcp/*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*python*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*base64 *', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*nc *', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*chmod +x*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*powershell*', case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'wsl.exe or bash.exe with -e, --exec, -c or /c running curl, wget, python, a /dev/tcp reverse shell or a base64 pipe: the Linux subsystem used as a way past Windows process monitoring.'
+  source: [process]
+  false_positives: 'Developers using WSL; exclude by user or parent (the IDE).'
+  references: ['https://lolbas-project.github.io/lolbas/OtherMSBinaries/Wsl/', 'https://lolbas-project.github.io/lolbas/Binaries/Bash/', 'https://attack.mitre.org/techniques/T1202/']

@@ -1,0 +1,37 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: csc.exe
+      executable: 'C:\Windows\System32\csc.exe'
+      command_line: 'csc.exe /out:C:\Users\Public\x.exe C:\Users\Public\x.cs'
+      parent: {name: wscript.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: dotnet.exe
+      executable: 'C:\Windows\System32\dotnet.exe'
+      command_line: 'dotnet.exe C:\Users\Public\payload.dll'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: csc.exe
+      executable: 'C:\Windows\System32\csc.exe'
+      command_line: 'csc.exe /out:C:\build\x.exe C:\build\x.cs'

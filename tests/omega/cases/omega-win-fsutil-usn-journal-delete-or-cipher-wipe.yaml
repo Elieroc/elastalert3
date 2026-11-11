@@ -1,0 +1,36 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: fsutil.exe
+      executable: 'C:\Windows\System32\fsutil.exe'
+      command_line: 'fsutil.exe usn deletejournal /d C:'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cipher.exe
+      executable: 'C:\Windows\System32\cipher.exe'
+      command_line: 'cipher.exe /w:C:\\'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: fsutil.exe
+      executable: 'C:\Windows\System32\fsutil.exe'
+      command_line: 'fsutil.exe volume diskfree C:'
