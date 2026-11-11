@@ -1,0 +1,35 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: curl, command_line: 'curl -s http://203.0.113.9/x', working_directory: /app/node_modules/evil-pkg}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: base64, command_line: base64 -d p, working_directory: /tmp/pip-build-abc}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: curl, command_line: 'curl http://x', working_directory: /home/bob}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: ls, command_line: ls, working_directory: /app/node_modules/x}

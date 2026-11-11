@@ -1,0 +1,39 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /etc/default/grub}
+    process: {name: sed}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /boot/grub/grub.cfg}
+    process: {name: bash}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /boot/grub/grub.cfg}
+    process: {name: grub-mkconfig}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /boot/grub/notes.txt}
+    process: {name: vim}

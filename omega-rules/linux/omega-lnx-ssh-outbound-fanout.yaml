@@ -1,0 +1,29 @@
+name: omega-lnx-ssh-outbound-fanout
+type: cardinality
+index: logs-endpoint.events.network*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1021.004]
+risk_score: 30
+risk_objects: {host: host.name, ip: destination.ip}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: network}
+- terms:
+    process.name: [ssh, scp, sftp]
+- term: {destination.port: 22}
+- exists: {field: destination.ip}
+cardinality_field: destination.ip
+max_cardinality: 9
+timeframe: {minutes: 10}
+query_key: [host.name, user.name]
+realert: {minutes: 30}
+alert: []
+omega:
+  tier: T1
+  description: 'One account on one host opens SSH connections to 10 or more different addresses in 10 minutes: an SSH worm
+    or an attacker moving through the network.'
+  source: [network]
+  false_positives: Configuration management controllers, jump hosts and orchestration tools that fan out over SSH (exclude
+    them). Adds risk.
+  references: ['https://attack.mitre.org/techniques/T1021/004/']

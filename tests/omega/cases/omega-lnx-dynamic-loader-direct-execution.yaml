@@ -1,0 +1,35 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: ld-linux-x86-64.so.2, command_line: /lib64/ld-linux-x86-64.so.2 /tmp/x}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: ld.so, command_line: /lib/ld.so ./implant}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: ld-linux-x86-64.so.2, command_line: /lib64/ld-linux-x86-64.so.2 --list /bin/ls}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: ls, command_line: ls}

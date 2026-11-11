@@ -1,0 +1,54 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: bash, command_line: 'bash -c '':(){ :|:& };:'''}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: bash, command_line: 'bash -c ''bomb(){ bomb|bomb& };bomb'''}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: python3, command_line: 'python3 -c ''import os
+
+        while True: os.fork()'''}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: bash, command_line: 'bash -c ''f(){ echo hi; }; f'''}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: bash, command_line: bash -c "echo hello"}
+- id: neg3
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: ls, command_line: ls}

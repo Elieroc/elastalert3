@@ -1,0 +1,119 @@
+name: omega-lnx-critical-service-stopped
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1489]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - terms:
+            process.name: [systemctl, service]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* stop *'}
+            - wildcard: {process.command_line: '* disable *'}
+            - wildcard: {process.command_line: '* mask *'}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* mysql'}
+            - wildcard: {process.command_line: '* mysqld'}
+            - wildcard: {process.command_line: '* mariadb'}
+            - wildcard: {process.command_line: '* postgresql'}
+            - wildcard: {process.command_line: '* mongod'}
+            - wildcard: {process.command_line: '* redis'}
+            - wildcard: {process.command_line: '* redis-server'}
+            - wildcard: {process.command_line: '* sqlservr'}
+            - wildcard: {process.command_line: '* docker'}
+            - wildcard: {process.command_line: '* containerd'}
+            - wildcard: {process.command_line: '* kubelet'}
+            - wildcard: {process.command_line: '* apache2'}
+            - wildcard: {process.command_line: '* nginx'}
+            - wildcard: {process.command_line: '* httpd'}
+            - wildcard: {process.command_line: '* named'}
+            - wildcard: {process.command_line: '* dhcpd'}
+            - wildcard: {process.command_line: '* smbd'}
+            - wildcard: {process.command_line: '* veeam'}
+            - wildcard: {process.command_line: '* vmtoolsd'}
+            - wildcard: {process.command_line: '* mysql *'}
+            - wildcard: {process.command_line: '* mysqld *'}
+            - wildcard: {process.command_line: '* mariadb *'}
+            - wildcard: {process.command_line: '* postgresql *'}
+            - wildcard: {process.command_line: '* mongod *'}
+            - wildcard: {process.command_line: '* redis *'}
+            - wildcard: {process.command_line: '* redis-server *'}
+            - wildcard: {process.command_line: '* sqlservr *'}
+            - wildcard: {process.command_line: '* docker *'}
+            - wildcard: {process.command_line: '* containerd *'}
+            - wildcard: {process.command_line: '* kubelet *'}
+            - wildcard: {process.command_line: '* apache2 *'}
+            - wildcard: {process.command_line: '* nginx *'}
+            - wildcard: {process.command_line: '* httpd *'}
+            - wildcard: {process.command_line: '* named *'}
+            - wildcard: {process.command_line: '* dhcpd *'}
+            - wildcard: {process.command_line: '* smbd *'}
+            - wildcard: {process.command_line: '* veeam *'}
+            - wildcard: {process.command_line: '* vmtoolsd *'}
+            - wildcard: {process.command_line: '* mysql.service*'}
+            - wildcard: {process.command_line: '* mysqld.service*'}
+            - wildcard: {process.command_line: '* mariadb.service*'}
+            - wildcard: {process.command_line: '* postgresql.service*'}
+            - wildcard: {process.command_line: '* mongod.service*'}
+            - wildcard: {process.command_line: '* redis.service*'}
+            - wildcard: {process.command_line: '* redis-server.service*'}
+            - wildcard: {process.command_line: '* sqlservr.service*'}
+            - wildcard: {process.command_line: '* docker.service*'}
+            - wildcard: {process.command_line: '* containerd.service*'}
+            - wildcard: {process.command_line: '* kubelet.service*'}
+            - wildcard: {process.command_line: '* apache2.service*'}
+            - wildcard: {process.command_line: '* nginx.service*'}
+            - wildcard: {process.command_line: '* httpd.service*'}
+            - wildcard: {process.command_line: '* named.service*'}
+            - wildcard: {process.command_line: '* dhcpd.service*'}
+            - wildcard: {process.command_line: '* smbd.service*'}
+            - wildcard: {process.command_line: '* veeam.service*'}
+            - wildcard: {process.command_line: '* vmtoolsd.service*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [pkill, killall]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*mysql*'}
+            - wildcard: {process.command_line: '*mysqld*'}
+            - wildcard: {process.command_line: '*mariadb*'}
+            - wildcard: {process.command_line: '*postgresql*'}
+            - wildcard: {process.command_line: '*mongod*'}
+            - wildcard: {process.command_line: '*redis*'}
+            - wildcard: {process.command_line: '*redis-server*'}
+            - wildcard: {process.command_line: '*sqlservr*'}
+            - wildcard: {process.command_line: '*docker*'}
+            - wildcard: {process.command_line: '*containerd*'}
+            - wildcard: {process.command_line: '*kubelet*'}
+            - wildcard: {process.command_line: '*apache2*'}
+            - wildcard: {process.command_line: '*nginx*'}
+            - wildcard: {process.command_line: '*httpd*'}
+            - wildcard: {process.command_line: '*named*'}
+            - wildcard: {process.command_line: '*dhcpd*'}
+            - wildcard: {process.command_line: '*smbd*'}
+            - wildcard: {process.command_line: '*veeam*'}
+            - wildcard: {process.command_line: '*vmtoolsd*'}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'A database, web, container or file service stopped, disabled or killed: ransomware stops them to unlock
+    files; sabotage looks the same.'
+  source: [process]
+  false_positives: Planned maintenance. Adds risk; a restart is not matched.
+  references: ['https://attack.mitre.org/techniques/T1489/']

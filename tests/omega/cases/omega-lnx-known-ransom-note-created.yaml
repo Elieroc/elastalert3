@@ -1,0 +1,107 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation, action: creation}
+    user: {name: alice}
+    file: {path: /home/bob/Restore-My-Files.txt, name: Restore-My-Files.txt}
+    process: {name: x}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation, action: creation}
+    user: {name: alice}
+    file: {path: /home/bob/akira_readme.txt, name: akira_readme.txt}
+    process: {name: x}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation, action: creation}
+    user: {name: alice}
+    file: {path: /home/bob/HOW_TO_DECRYPT.txt, name: HOW_TO_DECRYPT.txt}
+    process: {name: x}
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation, action: creation}
+    user: {name: alice}
+    file: {path: /home/bob/README-RECOVER-abc123.txt, name: README-RECOVER-abc123.txt}
+    process: {name: x}
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation, action: creation}
+    user: {name: alice}
+    file: {path: /home/bob/RECOVER-ab12-FILES.txt, name: RECOVER-ab12-FILES.txt}
+    process: {name: x}
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation, action: creation}
+    user: {name: alice}
+    file: {path: /home/bob/!__README__!.txt, name: '!__README__!.txt'}
+    process: {name: x}
+- id: pos7
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation, action: creation}
+    user: {name: alice}
+    file: {path: /home/bob/ransom.html, name: ransom.html}
+    process: {name: x}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation, action: creation}
+    user: {name: alice}
+    file: {path: /home/bob/readme.txt, name: readme.txt}
+    process: {name: vim}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation, action: creation}
+    user: {name: alice}
+    file: {path: /home/bob/README.md, name: README.md}
+    process: {name: git}
+- id: neg3
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation, action: creation}
+    user: {name: alice}
+    file: {path: /home/bob/how_to_install.txt, name: how_to_install.txt}
+    process: {name: vim}
+- id: neg4
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation, action: creation}
+    user: {name: alice}
+    file: {path: /home/bob/notes.txt, name: notes.txt}
+    process: {name: vim}

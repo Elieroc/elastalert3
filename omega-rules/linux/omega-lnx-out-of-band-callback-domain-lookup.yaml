@@ -1,0 +1,37 @@
+name: omega-lnx-out-of-band-callback-domain-lookup
+type: any
+index: logs-endpoint.events.network*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1190, T1071.004]
+risk_score: 80
+risk_objects: {host: host.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: network}
+- term: {event.action: lookup_requested}
+- bool:
+    should:
+    - wildcard: {dns.question.name: '*.oast.fun'}
+    - wildcard: {dns.question.name: '*.oast.pro'}
+    - wildcard: {dns.question.name: '*.oast.live'}
+    - wildcard: {dns.question.name: '*.oast.site'}
+    - wildcard: {dns.question.name: '*.oast.online'}
+    - wildcard: {dns.question.name: '*.oast.me'}
+    - wildcard: {dns.question.name: '*.interact.sh'}
+    - wildcard: {dns.question.name: '*.interactsh.com'}
+    - wildcard: {dns.question.name: '*.burpcollaborator.net'}
+    - wildcard: {dns.question.name: '*.oastify.com'}
+    - wildcard: {dns.question.name: '*.dnslog.cn'}
+    - wildcard: {dns.question.name: '*.ceye.io'}
+    - wildcard: {dns.question.name: '*.canarytokens.com'}
+    - wildcard: {dns.question.name: '*.requestbin.net'}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A server resolves an out-of-band interaction domain (interact.sh, oast.*, Burp Collaborator, dnslog.cn,
+    ceye.io, canarytokens): the callback of a remote code execution or SSRF being tested against this host.'
+  source: [network]
+  false_positives: Penetration tests and bug-bounty scans of your own systems (exclude them while they run).
+  references: ['https://attack.mitre.org/techniques/T1190/', 'https://attack.mitre.org/techniques/T1071/004/']

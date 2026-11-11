@@ -1,0 +1,60 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process:
+      name: python3
+      parent: {entity_id: pa}
+    destination: {ip: 203.0.113.9}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: sh
+      parent: {entity_id: pa}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: sh
+      parent: {entity_id: pb}
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process:
+      name: python3
+      parent: {entity_id: pc}
+    destination: {ip: 10.0.0.5}
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process:
+      name: curl
+      parent: {entity_id: pd}
+    destination: {ip: 203.0.113.9}
+matches: 1

@@ -1,0 +1,50 @@
+name: omega-lnx-c2-or-tunnel-service-dns-lookup
+type: any
+index: logs-endpoint.events.network*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1102, T1567]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: network}
+- term: {event.action: lookup_requested}
+- bool:
+    should:
+    - wildcard: {dns.question.name: api.telegram.org}
+    - wildcard: {dns.question.name: '*.telegram.org'}
+    - wildcard: {dns.question.name: discord.com}
+    - wildcard: {dns.question.name: '*.discord.com'}
+    - wildcard: {dns.question.name: '*.discordapp.com'}
+    - wildcard: {dns.question.name: '*.ngrok.io'}
+    - wildcard: {dns.question.name: '*.ngrok-free.app'}
+    - wildcard: {dns.question.name: '*.ngrok.app'}
+    - wildcard: {dns.question.name: '*.trycloudflare.com'}
+    - wildcard: {dns.question.name: '*.localtonet.com'}
+    - wildcard: {dns.question.name: serveo.net}
+    - wildcard: {dns.question.name: '*.serveo.net'}
+    - wildcard: {dns.question.name: '*.pagekite.me'}
+    - wildcard: {dns.question.name: pastebin.com}
+    - wildcard: {dns.question.name: paste.ee}
+    - wildcard: {dns.question.name: transfer.sh}
+    - wildcard: {dns.question.name: temp.sh}
+    - wildcard: {dns.question.name: webhook.site}
+    - wildcard: {dns.question.name: '*.webhook.site'}
+    - wildcard: {dns.question.name: ipinfo.io}
+    - wildcard: {dns.question.name: ifconfig.me}
+    - wildcard: {dns.question.name: api.ipify.org}
+    - wildcard: {dns.question.name: icanhazip.com}
+    - wildcard: {dns.question.name: '*.pipedream.net'}
+    - wildcard: {dns.question.name: '*.requestbin.net'}
+    minimum_should_match: 1
+- terms:
+    process.name: [curl, wget, python, python3, perl, ruby, php, nc, ncat, bash, sh, node, lua]
+alert: []
+omega:
+  tier: T1
+  description: A shell, interpreter or download tool resolves a chat, paste, tunnelling or IP-lookup service used for command
+    and control or exfiltration (Telegram, Discord, ngrok, Cloudflare quick tunnels, pastebin, transfer.sh, webhook.site...).
+  source: [network]
+  false_positives: Chat bots and notification scripts that post to Telegram or Discord. Adds risk.
+  references: ['https://attack.mitre.org/techniques/T1102/', 'https://attack.mitre.org/techniques/T1567/']

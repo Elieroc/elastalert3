@@ -1,0 +1,35 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: at, command_line: at -f /tmp/x.sh now + 1 minute}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: at, command_line: at now}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: at, command_line: at -l}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: atq, command_line: atq}

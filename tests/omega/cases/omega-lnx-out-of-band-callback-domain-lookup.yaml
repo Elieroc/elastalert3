@@ -1,0 +1,36 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: lookup_requested}
+    user: {name: alice}
+    process: {name: curl}
+    destination: {ip: 203.0.113.9, port: 53}
+    dns:
+      question: {name: c9x2.oast.fun}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: lookup_requested}
+    user: {name: alice}
+    process: {name: java}
+    destination: {ip: 203.0.113.9, port: 53}
+    dns:
+      question: {name: abc.oastify.com}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: lookup_requested}
+    user: {name: alice}
+    process: {name: curl}
+    destination: {ip: 203.0.113.9, port: 53}
+    dns:
+      question: {name: example.org}

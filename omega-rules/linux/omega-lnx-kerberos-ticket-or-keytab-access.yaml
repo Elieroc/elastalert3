@@ -1,0 +1,48 @@
+name: omega-lnx-kerberos-ticket-or-keytab-access
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1550.003, T1558]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard: {process.command_line: '*KRB5CCNAME=/tmp/*'}
+        - wildcard: {process.command_line: '*KRB5CCNAME=FILE:/tmp/*'}
+        - wildcard: {process.command_line: '*KRB5CCNAME=/dev/shm/*'}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [ktutil, klist]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*/etc/krb5.keytab*'}
+            - wildcard: {process.command_line: '* -k*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [cp, cat, tar, scp, base64]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*/etc/krb5.keytab*'}
+            - wildcard: {process.command_line: '*krb5cc_*'}
+            - wildcard: {process.command_line: '*/var/lib/sss/secrets/*'}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'Kerberos material handled by hand: KRB5CCNAME pointed at a ticket in /tmp or /dev/shm, ktutil/klist on a
+    keytab, or a keytab / ticket cache copied by a reading tool.'
+  source: [process]
+  false_positives: Kerberos administrators and automation using keytabs. Adds risk.
+  references: ['https://attack.mitre.org/techniques/T1550/003/', 'https://attack.mitre.org/techniques/T1558/']

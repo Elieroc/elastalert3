@@ -1,0 +1,23 @@
+name: omega-lnx-fileless-exec-o-tempfile
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1620]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- regexp:
+    process.executable: {value: '.*/\#[0-9]+.*'}
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A binary executed from an O_TEMPFILE-style path (/tmp/#123456): an unnamed temporary file executed without
+    ever having a visible name.'
+  source: [process]
+  false_positives: None known.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/defense_evasion_fileless_execution_via_o_tempfile.toml',
+    'https://attack.mitre.org/techniques/T1620/']

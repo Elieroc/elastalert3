@@ -1,0 +1,36 @@
+name: omega-lnx-fork-bomb-commandline
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1499]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard: {process.command_line: '*:(){ :|:& };:*'}
+        - wildcard: {process.command_line: '*:(){:|:&};:*'}
+        - wildcard: {process.command_line: '*:(){ :|: & };:*'}
+        - wildcard: {process.command_line: '*:(){ :|:& } ; :*'}
+        - wildcard: {process.command_line: '*while True: os.fork()*'}
+        - wildcard: {process.command_line: '*while 1: os.fork()*'}
+        - wildcard: {process.command_line: '*while(1) fork()*'}
+        - wildcard: {process.command_line: '*for(;;) fork()*'}
+        minimum_should_match: 1
+    - regexp:
+        process.command_line: {value: '.*\(\) *\{ *[^ ]+ *\| *[^ ]+ *\& *\} *; *[^ ]+.*'}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Fork bomb in a command line: the classic :(){ :|:& };: or any function that pipes itself into itself in
+    the background, or a while-true loop calling fork.'
+  source: [process]
+  false_positives: None known; a function that pipes into itself and is run in the background is a fork bomb by definition.
+  references: ['https://attack.mitre.org/techniques/T1499/']

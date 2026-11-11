@@ -1,0 +1,52 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: gdb, command_line: 'gdb -p 812 -batch -ex "call (void)dlopen(\"/tmp/x.so\",2)"'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: dd, command_line: dd of=/proc/812/mem bs=1 seek=4096}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: injector, command_line: injector 812 /tmp/x.so}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: gdb, command_line: gdb ./myapp core}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: dd, command_line: dd if=/dev/zero of=/tmp/x}
+- id: neg3
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: gdb, command_line: gdb -p 812 -batch -ex bt}

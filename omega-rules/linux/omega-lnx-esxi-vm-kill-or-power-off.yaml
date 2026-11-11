@@ -1,0 +1,29 @@
+name: omega-lnx-esxi-vm-kill-or-power-off
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1489]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard: {process.command_line: '*esxcli vm process kill*'}
+    - wildcard: {process.command_line: '*vim-cmd vmsvc/power.off*'}
+    - wildcard: {process.command_line: '*vim-cmd vmsvc/power.shutdown*'}
+    - wildcard: {process.command_line: '*vim-cmd vmsvc/destroy*'}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Virtual machines killed or powered off from the ESXi shell (esxcli vm process kill, vim-cmd vmsvc/power.off,
+    power.shutdown, destroy): the first step of ransomware on a hypervisor.'
+  source: [process]
+  false_positives: Planned VM maintenance by virtualisation administrators. Needs process events from the ESXi host (syslog/auditd
+    forwarding).
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_esxcli_vm_kill.yml',
+    'https://attack.mitre.org/techniques/T1489/']

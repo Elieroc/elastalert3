@@ -1,0 +1,38 @@
+name: omega-lnx-udev-rule-created
+type: any
+index: logs-endpoint.events.file*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1546.017]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change, rename]
+- bool:
+    must_not:
+    - terms:
+        process.name: [dpkg, apt, apt-get, apt-key, aptitude, rpm, yum, dnf, microdnf, zypper, pacman, apk, snapd, snap,
+          unattended-upgr, packagekitd, update-alternatives, dpkg-deb, rpmdb, cloud-init, systemd-tmpfiles]
+- bool:
+    should:
+    - wildcard: {file.path: /etc/udev/rules.d/*.rules}
+    - wildcard: {file.path: /lib/udev/rules.d/*.rules}
+    - wildcard: {file.path: /usr/lib/udev/rules.d/*.rules}
+    - wildcard: {file.path: /run/udev/rules.d/*.rules}
+    - wildcard: {file.path: /usr/local/lib/udev/rules.d/*.rules}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - terms:
+        process.name: [dockerd, podman, puppet, chef-client, containerd, kaniko, netplan, systemd, udevadm]
+alert: []
+omega:
+  tier: T1
+  description: 'A udev rule written outside a package: it can run a program each time a device appears (T1546.017).'
+  source: [file]
+  false_positives: Hardware vendor tools, Docker/Kubernetes node setup and configuration management (excluded by process
+    name).
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/persistence_udev_rule_creation.toml', 'https://attack.mitre.org/techniques/T1546/017/']

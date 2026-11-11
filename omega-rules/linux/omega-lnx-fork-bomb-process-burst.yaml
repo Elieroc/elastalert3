@@ -1,0 +1,30 @@
+name: omega-lnx-fork-bomb-process-burst
+type: frequency
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1499]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must_not:
+    - terms:
+        process.parent.name: [make, gmake, ninja, cmake, gcc, cc, c++, cargo, rustc, go, mvn, gradle, bazel, docker, dockerd,
+          containerd, runc, systemd, init, xargs, parallel, find, pytest, jenkins]
+num_events: 500
+timeframe: {seconds: 5}
+query_key: [host.name, process.parent.pid]
+realert: {minutes: 10}
+alert: [debug]
+omega:
+  tier: T0
+  description: '500 or more processes started by the same parent process in 5 seconds: a fork bomb or runaway spawning loop,
+    whatever language it is written in.'
+  source: [process]
+  false_positives: Build and test systems (make, ninja, gradle), xargs/parallel and find -exec loops are excluded by parent
+    name; raise num_events for unusual workloads.
+  references: ['https://attack.mitre.org/techniques/T1499/']

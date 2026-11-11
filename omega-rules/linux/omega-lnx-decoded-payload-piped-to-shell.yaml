@@ -1,0 +1,23 @@
+name: omega-lnx-decoded-payload-piped-to-shell
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1140, T1059.004]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- regexp:
+    process.command_line: {value: '.*(xxd +-r|base32 +(-d|--decode)|openssl +enc +[^|]*-d|uudecode)[^|]*\| *(sudo +)?(/usr/bin/|/bin/)?((ba|da|z|k|c)?sh|python[0-9.]*|perl|ruby|php)([^a-zA-Z0-9_.\-].*)?'}
+alert: [debug]
+omega:
+  tier: T0
+  description: A payload decoded with xxd -r, base32 -d, openssl enc -d or uudecode and piped straight into a shell or interpreter
+    (the base64 variant has its own rule).
+  source: [process]
+  false_positives: Self-extracting installers using uudecode (rare). A decode to a file or into a checksum is not matched.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/defense_evasion_interpreter_launched_from_decoded_payload.toml',
+    'https://attack.mitre.org/techniques/T1140/', 'https://attack.mitre.org/techniques/T1059/004/']

@@ -1,0 +1,80 @@
+name: omega-lnx-decoded-payload-then-interpreter
+type: correlation
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1140, T1059]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+query_key: [host.name, process.parent.entity_id]
+timeframe: {seconds: 3}
+realert: {minutes: 5}
+correlation_leaves:
+  decode:
+    filter:
+    - bool:
+        should:
+        - bool:
+            must:
+            - terms:
+                process.name: [base64, base32, base16, base64plain, base64url, base64mime, base64pem]
+            - bool:
+                should:
+                - wildcard: {process.command_line: '* -*d*'}
+                - wildcard: {process.command_line: '* --decode*'}
+                minimum_should_match: 1
+        - bool:
+            must:
+            - terms:
+                process.name: [openssl]
+            - bool:
+                should:
+                - wildcard: {process.command_line: '* enc *'}
+                minimum_should_match: 1
+            - bool:
+                should:
+                - wildcard: {process.command_line: '* -d*'}
+                - wildcard: {process.command_line: '* -base64*'}
+                - wildcard: {process.command_line: '* -a *'}
+                minimum_should_match: 1
+        - bool:
+            must:
+            - bool:
+                should:
+                - wildcard: {process.name: python*}
+                minimum_should_match: 1
+            - bool:
+                should:
+                - wildcard: {process.command_line: '*b64decode*'}
+                - wildcard: {process.command_line: '*base64 -d*'}
+                minimum_should_match: 1
+        minimum_should_match: 1
+  interp:
+    filter:
+    - bool:
+        should:
+        - terms:
+            process.name: [sh, bash, dash, zsh, ksh, csh, tcsh, fish, ash]
+        - bool:
+            should:
+            - wildcard: {process.name: python*}
+            - wildcard: {process.name: perl*}
+            - wildcard: {process.name: ruby*}
+            - wildcard: {process.name: lua*}
+            - wildcard: {process.name: php*}
+            minimum_should_match: 1
+        minimum_should_match: 1
+correlation_query: decode THEN interp
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A decoder (base64, base32, openssl enc -d, python b64decode) and then a shell or interpreter started by
+    the same parent within 3 seconds: decode-and-run, seen from the process tree rather than the command line.'
+  source: [process]
+  false_positives: Scripts that decode a file then run an unrelated shell in the same second. Exclude the parent if so.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/defense_evasion_interpreter_launched_from_decoded_payload.toml',
+    'https://attack.mitre.org/techniques/T1140/', 'https://attack.mitre.org/techniques/T1059/']

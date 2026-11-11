@@ -1,0 +1,174 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: openssl
+      command_line: openssl enc -aes-256-cbc -in f0 -out f0.enc -pass pass:x
+      parent: {entity_id: pa}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: openssl
+      command_line: openssl enc -aes-256-cbc -in f1 -out f1.enc -pass pass:x
+      parent: {entity_id: pa}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: openssl
+      command_line: openssl enc -aes-256-cbc -in f2 -out f2.enc -pass pass:x
+      parent: {entity_id: pa}
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: openssl
+      command_line: openssl enc -aes-256-cbc -in f3 -out f3.enc -pass pass:x
+      parent: {entity_id: pa}
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: openssl
+      command_line: openssl enc -aes-256-cbc -in f4 -out f4.enc -pass pass:x
+      parent: {entity_id: pa}
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: openssl
+      command_line: openssl enc -aes-256-cbc -in f5 -out f5.enc -pass pass:x
+      parent: {entity_id: pa}
+- id: pos7
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: openssl
+      command_line: openssl enc -aes-256-cbc -in f6 -out f6.enc -pass pass:x
+      parent: {entity_id: pa}
+- id: pos8
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: openssl
+      command_line: openssl enc -aes-256-cbc -in f7 -out f7.enc -pass pass:x
+      parent: {entity_id: pa}
+- id: pos9
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: openssl
+      command_line: openssl enc -aes-256-cbc -in f8 -out f8.enc -pass pass:x
+      parent: {entity_id: pa}
+- id: pos10
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: openssl
+      command_line: openssl enc -aes-256-cbc -in f9 -out f9.enc -pass pass:x
+      parent: {entity_id: pa}
+- id: pos11
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: openssl
+      command_line: openssl enc -aes-256-cbc -in g0 -out g0.enc -pass pass:x
+      parent: {entity_id: pb}
+- id: pos12
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: openssl
+      command_line: openssl enc -aes-256-cbc -in g1 -out g1.enc -pass pass:x
+      parent: {entity_id: pb}
+- id: pos13
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: openssl
+      command_line: openssl enc -aes-256-cbc -in g2 -out g2.enc -pass pass:x
+      parent: {entity_id: pb}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: openssl, command_line: 'openssl enc -d -aes-256-cbc -in f -out g -pass pass:x'}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: openssl, command_line: openssl x509 -in c.pem -text}
+matches: 1

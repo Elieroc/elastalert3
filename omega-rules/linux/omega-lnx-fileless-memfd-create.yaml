@@ -1,0 +1,46 @@
+name: omega-lnx-fileless-memfd-create
+type: new_term
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1620]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- term: {event.action: memfd_create}
+- bool:
+    should:
+    - wildcard: {process.executable: '*memfd:*'}
+    - wildcard: {process.executable: /tmp/*}
+    - wildcard: {process.executable: /var/tmp/*}
+    - wildcard: {process.executable: /dev/shm/*}
+    - wildcard: {process.executable: ./*}
+    - wildcard: {process.executable: /run/user/*}
+    - wildcard: {process.executable: /var/run/user/*}
+    - wildcard: {process.executable: /boot/*}
+    - wildcard: {process.executable: /sys/*}
+    - wildcard: {process.executable: /lost+found/*}
+    - wildcard: {process.executable: /proc/*}
+    - wildcard: {process.executable: /var/mail/*}
+    - wildcard: {process.executable: /root/*}
+    - wildcard: {process.executable: '*(deleted)*'}
+    minimum_should_match: 1
+- exists: {field: process.parent.executable}
+fields:
+- [host.name, process.parent.executable, process.executable]
+terms_window_size: {days: 10}
+use_keyword_postfix: false
+realert: {minutes: 1}
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A program running from a temporary, hidden or deleted path calls memfd_create for the first time (per host
+    and parent): an anonymous in-memory file used to run code without writing it to disk.'
+  source: [process]
+  false_positives: Browsers and container runtimes use memfd on desktops; the combination with a temporary path and a first-seen
+    parent is rare. Exclude the known cases.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/defense_evasion_fileless_execution_via_unusual_memfd_create.toml',
+    'https://attack.mitre.org/techniques/T1620/']

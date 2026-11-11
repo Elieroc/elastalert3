@@ -1,0 +1,23 @@
+name: omega-lnx-network-sniffing-tool
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1040]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- terms:
+    process.name: [tcpdump, tshark, dumpcap, ngrep, tcpflow, tcpick]
+alert: []
+omega:
+  tier: T1
+  description: 'Packet capture tool started: tcpdump, tshark, dumpcap, ngrep, tcpflow, tcpick.'
+  source: [process]
+  false_positives: Network troubleshooting by administrators. Adds a small risk; credentials sent in clear text are the
+    target of attackers.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/auditd/execve/lnx_auditd_network_sniffing.yml',
+    'https://attack.mitre.org/techniques/T1040/']

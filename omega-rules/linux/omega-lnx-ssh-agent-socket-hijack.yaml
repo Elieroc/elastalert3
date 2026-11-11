@@ -1,0 +1,26 @@
+name: omega-lnx-ssh-agent-socket-hijack
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1563.001]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard: {process.command_line: '*SSH_AUTH_SOCK=/tmp/*'}
+    - wildcard: {process.command_line: '*SSH_AUTH_SOCK=/run/user/*'}
+    - wildcard: {process.command_line: '*SSH_AUTH_SOCK=/var/tmp/*'}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'A command run with SSH_AUTH_SOCK pointing at an agent socket in /tmp or /run/user: using another user''s
+    forwarded SSH agent to log in as them.'
+  source: [process]
+  false_positives: Users who set their own agent socket by hand. Adds risk.
+  references: ['https://attack.mitre.org/techniques/T1563/001/']

@@ -1,0 +1,49 @@
+name: omega-lnx-screen-audio-or-clipboard-capture
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1113, T1123, T1115]
+risk_score: 10
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - terms:
+        process.name: [xclip, xsel, wl-paste, wl-copy, clipman, copyq, scrot, xwd, maim, grim, gnome-screenshot, arecord,
+          parecord, parec]
+    - bool:
+        must:
+        - terms:
+            process.name: [ffmpeg]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*x11grab*'}
+            - wildcard: {process.command_line: '*-f alsa*'}
+            - wildcard: {process.command_line: '*-f pulse*'}
+            - wildcard: {process.command_line: '*v4l2*'}
+            - wildcard: {process.command_line: '*kmsgrab*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [import]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*-window root*'}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'Screen, microphone or clipboard capture: scrot, xwd, grim, maim, gnome-screenshot, arecord/parecord, xclip/xsel/wl-paste,
+    ffmpeg x11grab/alsa/pulse/v4l2.'
+  source: [process]
+  false_positives: Desktop users and screen-sharing tools. Rare on servers. Adds a small risk.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/collection_linux_clipboard_activity.toml',
+    'https://github.com/elastic/detection-rules/blob/main/rules/linux/collection_potential_audio_recording_activity.toml',
+    'https://github.com/elastic/detection-rules/blob/main/rules/linux/collection_potential_video_recording_or_screenshot_activity.toml',
+    'https://attack.mitre.org/techniques/T1113/', 'https://attack.mitre.org/techniques/T1123/', 'https://attack.mitre.org/techniques/T1115/']

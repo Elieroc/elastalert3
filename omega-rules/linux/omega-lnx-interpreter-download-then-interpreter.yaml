@@ -1,0 +1,64 @@
+name: omega-lnx-interpreter-download-then-interpreter
+type: correlation
+index: logs-endpoint.events.network*,logs-endpoint.events.process*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1105, T1059.004]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+query_key: [host.name, process.parent.entity_id]
+timeframe: {seconds: 2}
+realert: {minutes: 5}
+correlation_leaves:
+  fetch:
+    filter:
+    - term: {host.os.type: linux}
+    - term: {event.category: network}
+    - term: {event.action: connection_attempted}
+    - bool:
+        should:
+        - terms:
+            process.name: [sh, bash, dash, zsh, ksh, csh, tcsh, fish, ash]
+        - bool:
+            should:
+            - wildcard: {process.name: python*}
+            - wildcard: {process.name: perl*}
+            - wildcard: {process.name: ruby*}
+            - wildcard: {process.name: lua*}
+            - wildcard: {process.name: php*}
+            minimum_should_match: 1
+        minimum_should_match: 1
+    - bool:
+        must_not:
+        - terms:
+            destination.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16, '::1', 'fe80::/10',
+              'fc00::/7']
+    - exists: {field: destination.ip}
+  run:
+    filter:
+    - term: {host.os.type: linux}
+    - term: {event.category: process}
+    - term: {event.type: start}
+    - bool:
+        should:
+        - terms:
+            process.name: [sh, bash, dash, zsh, ksh, csh, tcsh, fish, ash]
+        - bool:
+            should:
+            - wildcard: {process.name: python*}
+            - wildcard: {process.name: perl*}
+            - wildcard: {process.name: ruby*}
+            - wildcard: {process.name: lua*}
+            - wildcard: {process.name: php*}
+            minimum_should_match: 1
+        minimum_should_match: 1
+correlation_query: fetch THEN run
+alert: [debug]
+omega:
+  tier: T0
+  description: 'An interpreter or shell connects to a public address and, within 2 seconds, another interpreter is started
+    by the same parent: a payload fetched in memory by one interpreter and piped to another.'
+  source: [network, process]
+  false_positives: Install scripts that fetch with python and pipe to sh. Exclude the parent command if it is yours.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/execution_payload_downloaded_by_interpreter_and_piped_to_interpreter.toml',
+    'https://attack.mitre.org/techniques/T1105/', 'https://attack.mitre.org/techniques/T1059/004/']

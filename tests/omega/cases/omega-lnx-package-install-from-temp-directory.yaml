@@ -1,0 +1,58 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: dpkg
+      command_line: dpkg -i /tmp/agent.deb
+      parent: {name: bash}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: rpm
+      command_line: rpm -ivh /home/bob/x.rpm
+      parent: {name: sh}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: dpkg
+      command_line: dpkg -i /tmp/agent.deb
+      parent: {name: apt}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: dpkg
+      command_line: dpkg -l
+      parent: {name: bash}
+- id: neg3
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: rpm
+      command_line: rpm -qa
+      parent: {name: bash}

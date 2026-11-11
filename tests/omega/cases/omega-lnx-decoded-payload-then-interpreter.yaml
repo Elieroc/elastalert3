@@ -1,0 +1,62 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: base64
+      command_line: base64 -d p.b64
+      parent: {entity_id: pa}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {entity_id: pa}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: base64
+      command_line: base64 -d q.b64
+      parent: {entity_id: pb}
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {entity_id: pc}
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {entity_id: pa}
+matches: 1

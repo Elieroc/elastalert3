@@ -1,0 +1,89 @@
+name: omega-lnx-interpreter-inline-decode-exec
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1027.010, T1059.006]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard: {process.name: python*}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*base64*'}
+            - wildcard: {process.command_line: '*b64decode*'}
+            - wildcard: {process.command_line: '*zlib.decompress*'}
+            - wildcard: {process.command_line: '*marshal.loads*'}
+            - wildcard: {process.command_line: '*bytes.fromhex*'}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*exec(*'}
+            - wildcard: {process.command_line: '*eval(*'}
+            - wildcard: {process.command_line: '*os.system(*'}
+            - wildcard: {process.command_line: '*subprocess*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [perl]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*decode_base64*'}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*eval*'}
+            - wildcard: {process.command_line: '*system*'}
+            - wildcard: {process.command_line: '*exec*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [php]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*base64_decode*'}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*eval(*'}
+            - wildcard: {process.command_line: '*assert(*'}
+            - wildcard: {process.command_line: '*system(*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard: {process.name: ruby*}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*Base64.decode64*'}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*eval*'}
+            - wildcard: {process.command_line: '*system*'}
+            - wildcard: {process.command_line: '*exec*'}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'An interpreter one-liner that decodes data and executes it: python exec(b64decode(...)), perl eval(decode_base64),
+    php eval(base64_decode), ruby eval(Base64...), marshal/zlib loaders.'
+  source: [process]
+  false_positives: Rare in production. Admin scripts using base64 only to encode or print are not matched.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_python_base64_encoded_execution.yml',
+    'https://attack.mitre.org/techniques/T1027/010/', 'https://attack.mitre.org/techniques/T1059/006/']

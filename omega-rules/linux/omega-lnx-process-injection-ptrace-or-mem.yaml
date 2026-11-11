@@ -1,0 +1,46 @@
+name: omega-lnx-process-injection-ptrace-or-mem
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1055.008, T1055.009]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - terms:
+            process.name: [gdb, gdbserver]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*call*dlopen*'}
+            - wildcard: {process.command_line: '*call*system*'}
+            - wildcard: {process.command_line: '*call*__libc_dlopen_mode*'}
+            - wildcard: {process.command_line: '*-ex*call *(void)*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [dd]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*of=/proc/*/mem*'}
+            minimum_should_match: 1
+    - terms:
+        process.name: [linux-inject, ptrace-inject, injector]
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Code injected into another process: gdb calling dlopen/system in an attached process, dd writing /proc/<pid>/mem,
+    or a known ptrace injector.'
+  source: [process]
+  false_positives: Developers debugging their own programs with gdb call(); they do not call dlopen or system in a production
+    process.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_dd_process_injection.yml',
+    'https://attack.mitre.org/techniques/T1055/008/', 'https://attack.mitre.org/techniques/T1055/009/']

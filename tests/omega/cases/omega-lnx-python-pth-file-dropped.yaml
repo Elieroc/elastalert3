@@ -1,0 +1,39 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /usr/lib/python3/dist-packages/x.pth}
+    process: {name: bash}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /home/bob/.local/lib/python3.11/site-packages/y.pth}
+    process: {name: curl}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /usr/lib/python3/dist-packages/x.pth}
+    process: {name: pip3}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation}
+    user: {name: alice}
+    file: {path: /usr/lib/python3/dist-packages/x.txt}
+    process: {name: bash}

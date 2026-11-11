@@ -1,0 +1,35 @@
+name: omega-lnx-container-discovery-command
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1613]
+risk_score: 3
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - terms:
+        process.name: [docker, podman, nerdctl, crictl, kubectl]
+    - bool:
+        should:
+        - wildcard: {process.command_line: '* ps*'}
+        - wildcard: {process.command_line: '* inspect*'}
+        - wildcard: {process.command_line: '* images*'}
+        - wildcard: {process.command_line: '* get pods*'}
+        - wildcard: {process.command_line: '* get secrets*'}
+        - wildcard: {process.command_line: '* get nodes*'}
+        - wildcard: {process.command_line: '* config view*'}
+        - wildcard: {process.command_line: '* describe *'}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'Container and cluster inventory commands: docker ps/inspect/images, crictl ps, kubectl get pods/secrets/nodes,
+    config view.'
+  source: [process]
+  false_positives: Every operator. Tiny risk, kept so a burst of discovery next to other signals counts.
+  references: ['https://attack.mitre.org/techniques/T1613/']

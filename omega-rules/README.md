@@ -34,7 +34,7 @@ Silent T1 rules still write their doc to the writeback index with `risk_objects`
 
 | Pack | Rules | Data sources (ECS) | State |
 |---|---|---|---|
-| `linux/` | 72: 33 T0, 35 T1, 4 T2 | Elastic Defend / Auditbeat (process, file, network), system auth (sshd, sudo, su) | first version |
+| `linux/` | 115: 48 T0, 63 T1, 4 T2 | Elastic Defend / Auditbeat (process, file, network, DNS lookups), system auth (sshd, sudo, su) | first version |
 | `windows/`, `web/`, `firewall/` | - | - | planned |
 
 Linux covers, with one rule per behaviour and the type of rule that fits it: blacklists of tools and miners

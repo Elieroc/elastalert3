@@ -1,0 +1,51 @@
+name: omega-lnx-container-risky-deploy
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1610]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - terms:
+            process.name: [kubectl]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*apply*-f http*'}
+            - wildcard: {process.command_line: '*create*-f http*'}
+            - wildcard: {process.command_line: '*apply*--filename=http*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [docker, podman, nerdctl]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* run *'}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*docker.sock*'}
+            - wildcard: {process.command_line: '*--cap-add=SYS_ADMIN*'}
+            - wildcard: {process.command_line: '*--cap-add SYS_ADMIN*'}
+            - wildcard: {process.command_line: '*apparmor=unconfined*'}
+            - wildcard: {process.command_line: '*seccomp=unconfined*'}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'A workload started in a risky way: kubectl apply/create from a URL, or docker/podman run with the Docker
+    socket, SYS_ADMIN, unconfined AppArmor/seccomp.'
+  source: [process]
+  false_positives: CI runners and platform tools that mount the Docker socket on purpose. Adds risk; the privileged-with-host-mount
+    case is an alert in the escape rule.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/execution_kubectl_apply_pod_from_url.toml',
+    'https://attack.mitre.org/techniques/T1610/']

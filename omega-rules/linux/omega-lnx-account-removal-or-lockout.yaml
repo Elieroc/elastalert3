@@ -1,0 +1,62 @@
+name: omega-lnx-account-removal-or-lockout
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1531]
+risk_score: 20
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - terms:
+        process.name: [userdel, deluser, groupdel, delgroup]
+    - bool:
+        must:
+        - terms:
+            process.name: [passwd]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* -l *'}
+            - wildcard: {process.command_line: '* -l'}
+            - wildcard: {process.command_line: '* -d *'}
+            - wildcard: {process.command_line: '* -d'}
+            - wildcard: {process.command_line: '*--lock*'}
+            - wildcard: {process.command_line: '*--delete*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [usermod]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* -L *'}
+            - wildcard: {process.command_line: '* -L'}
+            - wildcard: {process.command_line: '*--lock*'}
+            - wildcard: {process.command_line: '* -s /sbin/nologin*'}
+            - wildcard: {process.command_line: '* -s /usr/sbin/nologin*'}
+            - wildcard: {process.command_line: '* -e 1*'}
+            - wildcard: {process.command_line: '*--expiredate 1*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [chage]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* -E 0*'}
+            - wildcard: {process.command_line: '* -E 1*'}
+            - wildcard: {process.command_line: '*--expiredate 0*'}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'Accounts deleted or locked: userdel, passwd -l/-d, usermod -L or nologin shell, chage expiring an account.'
+  source: [process]
+  false_positives: Offboarding and account clean-up. Adds risk; on its own a normal admin action.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_userdel.yml',
+    'https://attack.mitre.org/techniques/T1531/']

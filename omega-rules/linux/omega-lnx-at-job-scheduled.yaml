@@ -1,0 +1,34 @@
+name: omega-lnx-at-job-scheduled
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1053.002]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - terms:
+        process.name: [at, batch]
+    - bool:
+        must_not:
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* -l*'}
+            - wildcard: {process.command_line: '* -d*'}
+            - wildcard: {process.command_line: '* -r*'}
+            - wildcard: {process.command_line: '* -c *'}
+            minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'A job scheduled with at or batch: a one-shot persistence or delayed execution that cron monitoring does
+    not see.'
+  source: [process]
+  false_positives: Administrators scheduling one-off tasks. Listing (-l, -d, -r) and atq are not matched.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_at_command.yml',
+    'https://attack.mitre.org/techniques/T1053/002/']

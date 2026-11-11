@@ -1,0 +1,21 @@
+name: omega-lnx-packer-or-script-obfuscator-execution
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1027.002, T1027]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- terms:
+    process.name: [upx, shc, bashfuscator, pyarmor, gzexe]
+alert: []
+omega:
+  tier: T1
+  description: 'Execution of a packer or script obfuscator: upx, shc, bashfuscator, pyarmor, gzexe.'
+  source: [process]
+  false_positives: Developers shipping compressed binaries. Adds risk; malware often arrives packed.
+  references: ['https://attack.mitre.org/techniques/T1027/002/', 'https://attack.mitre.org/techniques/T1027/']

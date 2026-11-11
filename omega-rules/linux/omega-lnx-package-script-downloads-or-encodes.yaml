@@ -1,0 +1,31 @@
+name: omega-lnx-package-script-downloads-or-encodes
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1195.002]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard: {process.working_directory: '*/node_modules/*'}
+    - wildcard: {process.working_directory: '*/site-packages/*'}
+    - wildcard: {process.working_directory: /tmp/pip-*}
+    - wildcard: {process.working_directory: '*/.cache/pip/*'}
+    - wildcard: {process.working_directory: '*/gems/*'}
+    - wildcard: {process.working_directory: '*/.cargo/registry/*'}
+    minimum_should_match: 1
+- terms:
+    process.name: [curl, wget, nc, ncat, socat, base64, openssl, tftp]
+alert: []
+omega:
+  tier: T1
+  description: 'A download or encoding tool started from inside an installed package directory (node_modules, site-packages,
+    pip build, gems, cargo registry): the install script of a trojaned npm, PyPI, RubyGems or crates package.'
+  source: [process]
+  false_positives: Packages whose install script fetches a binary (puppeteer, node-gyp, some native modules). Adds risk.
+  references: ['https://attack.mitre.org/techniques/T1195/002/']

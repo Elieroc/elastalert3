@@ -1,0 +1,46 @@
+name: omega-lnx-package-install-from-temp-directory
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1546.016]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - terms:
+        process.name: [dpkg, rpm]
+    - bool:
+        should:
+        - wildcard: {process.command_line: '* -i *'}
+        - wildcard: {process.command_line: '* --install *'}
+        - wildcard: {process.command_line: '* -ivh *'}
+        - wildcard: {process.command_line: '* -Uvh *'}
+        - wildcard: {process.command_line: '* -U *'}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard: {process.command_line: '* /tmp/*'}
+        - wildcard: {process.command_line: '* /var/tmp/*'}
+        - wildcard: {process.command_line: '* /dev/shm/*'}
+        - wildcard: {process.command_line: '* /home/*'}
+        - wildcard: {process.command_line: '* ./*'}
+        minimum_should_match: 1
+    - bool:
+        must_not:
+        - terms:
+            process.parent.name: [apt, apt-get, aptitude, yum, dnf, zypper, unattended-upgr, packagekitd, puppet, chef-client]
+alert: []
+omega:
+  tier: T1
+  description: 'dpkg or rpm installing a package file kept in /tmp, /var/tmp, /dev/shm, a home directory or the current
+    directory, started by something other than a package manager: a hand-delivered backdoored package.'
+  source: [process]
+  false_positives: Administrators installing a vendor package they just downloaded. Adds risk.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/persistence_dpkg_package_installation_from_unusual_parent.toml',
+    'https://github.com/elastic/detection-rules/blob/main/rules/linux/persistence_rpm_package_installation_from_unusual_parent.toml',
+    'https://attack.mitre.org/techniques/T1546/016/']

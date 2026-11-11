@@ -1,0 +1,45 @@
+name: omega-lnx-system-shutdown-or-reboot
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1529]
+risk_score: 8
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - terms:
+        process.name: [shutdown, reboot, poweroff, halt]
+    - bool:
+        must:
+        - terms:
+            process.name: [init, telinit]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* 0'}
+            - wildcard: {process.command_line: '* 6'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [systemctl]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* reboot*'}
+            - wildcard: {process.command_line: '* poweroff*'}
+            - wildcard: {process.command_line: '* halt*'}
+            - wildcard: {process.command_line: '* kexec*'}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: Shutdown, reboot, poweroff or halt command (shutdown, reboot, init 0/6, systemctl reboot/poweroff).
+  source: [process]
+  false_positives: Maintenance and patching. Tiny risk, kept for the sabotage case where it follows other signals.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/auditd/execve/lnx_auditd_system_shutdown_reboot.yml',
+    'https://attack.mitre.org/techniques/T1529/']

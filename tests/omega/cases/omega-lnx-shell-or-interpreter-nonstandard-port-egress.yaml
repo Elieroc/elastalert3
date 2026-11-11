@@ -1,0 +1,48 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: python3}
+    destination: {ip: 203.0.113.9, port: 4444}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: nc}
+    destination: {ip: 198.51.100.4, port: 31337}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: curl}
+    destination: {ip: 203.0.113.9, port: 443}
+- id: neg2
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: python3}
+    destination: {ip: 10.0.0.5, port: 4444}
+- id: neg3
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: firefox}
+    destination: {ip: 203.0.113.9, port: 4444}

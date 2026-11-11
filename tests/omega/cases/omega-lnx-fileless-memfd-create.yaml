@@ -1,0 +1,53 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start, action: memfd_create}
+    user: {name: alice}
+    process:
+      name: x
+      command_line: x
+      executable: /tmp/known
+      parent: {executable: /bin/bash}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start, action: memfd_create}
+    user: {name: alice}
+    process:
+      name: y
+      command_line: y
+      executable: /dev/shm/payload
+      parent: {executable: /usr/sbin/sshd}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start, action: exec}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      executable: /bin/ls
+      parent: {executable: /bin/bash}
+- id: hist1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start, action: memfd_create}
+    user: {name: alice}
+    process:
+      name: x
+      command_line: x
+      executable: /tmp/known
+      parent: {executable: /bin/bash}
+    '@timestamp': '2025-12-28T10:00:00Z'
+matches: 1

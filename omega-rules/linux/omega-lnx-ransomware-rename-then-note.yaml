@@ -1,0 +1,84 @@
+name: omega-lnx-ransomware-rename-then-note
+type: correlation
+index: logs-endpoint.events.file*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1486]
+risk_score: 95
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change, rename]
+- bool:
+    must_not:
+    - terms:
+        process.name: [dpkg, apt, apt-get, apt-key, aptitude, rpm, yum, dnf, microdnf, zypper, pacman, apk, snapd, snap,
+          unattended-upgr, packagekitd, update-alternatives, dpkg-deb, rpmdb, cloud-init, systemd-tmpfiles]
+query_key: [host.name, process.entity_id]
+timeframe: {seconds: 5}
+realert: {minutes: 30}
+correlation_leaves:
+  renamed:
+    num_events: 25
+    filter:
+    - term: {event.action: rename}
+    - bool:
+        should:
+        - wildcard: {process.executable: ./*}
+        - wildcard: {process.executable: /tmp/*}
+        - wildcard: {process.executable: /var/tmp/*}
+        - wildcard: {process.executable: /dev/shm/*}
+        - wildcard: {process.executable: /var/run/*}
+        - wildcard: {process.executable: /boot/*}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard: {file.path: /home/*/Downloads/*}
+        - wildcard: {file.path: /home/*/Documents/*}
+        - wildcard: {file.path: /root/*}
+        - wildcard: {file.path: /bin/*}
+        - wildcard: {file.path: /usr/bin/*}
+        - wildcard: {file.path: /var/log/*}
+        - wildcard: {file.path: /var/backup/*}
+        - wildcard: {file.path: /var/www/*}
+        minimum_should_match: 1
+    - bool:
+        must_not:
+        - terms:
+            process.name: [dpkg, yum, dnf, rpm, dockerd, go, java, containerd, php, git, node, conda, pip, pip3, python,
+              python3]
+  note:
+    filter:
+    - term: {event.action: creation}
+    - bool:
+        should:
+        - wildcard:
+            file.name: {value: '*restore*', case_insensitive: true}
+        - wildcard:
+            file.name: {value: '*lock*', case_insensitive: true}
+        - wildcard:
+            file.name: {value: '*recovery*', case_insensitive: true}
+        - wildcard:
+            file.name: {value: '*read*', case_insensitive: true}
+        - wildcard:
+            file.name: {value: '*instruction*', case_insensitive: true}
+        - wildcard:
+            file.name: {value: '*how_to*', case_insensitive: true}
+        - wildcard:
+            file.name: {value: '*ransom*', case_insensitive: true}
+        - wildcard:
+            file.name: {value: '*decrypt*', case_insensitive: true}
+        minimum_should_match: 1
+correlation_query: renamed THEN note
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A program running from a temporary directory renames 25 or more files in sensitive locations, then drops
+    a ransom-note style file: file encryption by a dropped binary.'
+  source: [file]
+  false_positives: Package managers and build tools that rename many files are excluded by name; a legitimate installer
+    run from /tmp that renames files and writes a README can match.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/impact_potential_linux_ransomware_note_detected.toml',
+    'https://attack.mitre.org/techniques/T1486/']

@@ -1,0 +1,33 @@
+name: omega-lnx-dynamic-loader-direct-execution
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1218]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - terms:
+        process.name: [ld.so, ld-linux-x86-64.so.2, ld-linux.so.2, ld-linux-aarch64.so.1, ld-musl-x86_64.so.1, ld-linux-armhf.so.3]
+    - bool:
+        should:
+        - wildcard: {process.command_line: '* /tmp/*'}
+        - wildcard: {process.command_line: '* /dev/shm/*'}
+        - wildcard: {process.command_line: '* /var/tmp/*'}
+        - wildcard: {process.command_line: '* ./*'}
+        - wildcard: {process.command_line: '* /home/*'}
+        - wildcard: {process.command_line: '* /run/user/*'}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A program run through the dynamic loader (ld.so, ld-linux-*.so) from a temporary or home path: a way to
+    execute a binary on a noexec mount or around execution controls.'
+  source: [process]
+  false_positives: Rare; some debugging and toolchain tests run binaries this way.
+  references: ['https://attack.mitre.org/techniques/T1218/']

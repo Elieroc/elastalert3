@@ -1,0 +1,141 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: ssh}
+    destination: {ip: 10.1.0.1, port: 22}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: ssh}
+    destination: {ip: 10.1.0.2, port: 22}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: ssh}
+    destination: {ip: 10.1.0.3, port: 22}
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: ssh}
+    destination: {ip: 10.1.0.4, port: 22}
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: ssh}
+    destination: {ip: 10.1.0.5, port: 22}
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: ssh}
+    destination: {ip: 10.1.0.6, port: 22}
+- id: pos7
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: ssh}
+    destination: {ip: 10.1.0.7, port: 22}
+- id: pos8
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: ssh}
+    destination: {ip: 10.1.0.8, port: 22}
+- id: pos9
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: ssh}
+    destination: {ip: 10.1.0.9, port: 22}
+- id: pos10
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: ssh}
+    destination: {ip: 10.1.0.10, port: 22}
+- id: pos11
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: bob}
+    process: {name: ssh}
+    destination: {ip: 10.2.0.1, port: 22}
+- id: pos12
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: bob}
+    process: {name: ssh}
+    destination: {ip: 10.2.0.2, port: 22}
+- id: pos13
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: bob}
+    process: {name: ssh}
+    destination: {ip: 10.2.0.3, port: 22}
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: network, action: connection_attempted}
+    user: {name: alice}
+    process: {name: ssh}
+    destination: {ip: 10.1.0.5, port: 2222}
+matches: 1

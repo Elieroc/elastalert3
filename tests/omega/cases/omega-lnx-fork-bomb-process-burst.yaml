@@ -1,0 +1,7813 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos7
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos8
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos9
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos10
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos11
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos12
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos13
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos14
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos15
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos16
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos17
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos18
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos19
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos20
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos21
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos22
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos23
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos24
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos25
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos26
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos27
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos28
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos29
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos30
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos31
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos32
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos33
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos34
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos35
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos36
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos37
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos38
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos39
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos40
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos41
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos42
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos43
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos44
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos45
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos46
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos47
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos48
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos49
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos50
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos51
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos52
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos53
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos54
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos55
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos56
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos57
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos58
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos59
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos60
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos61
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos62
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos63
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos64
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos65
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos66
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos67
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos68
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos69
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos70
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos71
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos72
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos73
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos74
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos75
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos76
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos77
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos78
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos79
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos80
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos81
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos82
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos83
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos84
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos85
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos86
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos87
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos88
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos89
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos90
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos91
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos92
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos93
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos94
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos95
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos96
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos97
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos98
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos99
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos100
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos101
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos102
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos103
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos104
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos105
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos106
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos107
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos108
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos109
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos110
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos111
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos112
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos113
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos114
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos115
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos116
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos117
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos118
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos119
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos120
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos121
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos122
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos123
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos124
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos125
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos126
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos127
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos128
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos129
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos130
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos131
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos132
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos133
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos134
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos135
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos136
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos137
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos138
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos139
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos140
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos141
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos142
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos143
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos144
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos145
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos146
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos147
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos148
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos149
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos150
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos151
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos152
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos153
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos154
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos155
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos156
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos157
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos158
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos159
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos160
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos161
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos162
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos163
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos164
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos165
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos166
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos167
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos168
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos169
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos170
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos171
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos172
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos173
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos174
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos175
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos176
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos177
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos178
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos179
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos180
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos181
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos182
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos183
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos184
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos185
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos186
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos187
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos188
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos189
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos190
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos191
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos192
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos193
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos194
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos195
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos196
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos197
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos198
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos199
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos200
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos201
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos202
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos203
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos204
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos205
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos206
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos207
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos208
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos209
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos210
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos211
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos212
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos213
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos214
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos215
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos216
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos217
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos218
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos219
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos220
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos221
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos222
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos223
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos224
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos225
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos226
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos227
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos228
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos229
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos230
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos231
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos232
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos233
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos234
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos235
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos236
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos237
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos238
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos239
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos240
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos241
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos242
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos243
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos244
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos245
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos246
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos247
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos248
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos249
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos250
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos251
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos252
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos253
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos254
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos255
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos256
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos257
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos258
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos259
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos260
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos261
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos262
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos263
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos264
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos265
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos266
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos267
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos268
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos269
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos270
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos271
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos272
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos273
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos274
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos275
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos276
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos277
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos278
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos279
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos280
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos281
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos282
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos283
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos284
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos285
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos286
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos287
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos288
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos289
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos290
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos291
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos292
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos293
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos294
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos295
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos296
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos297
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos298
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos299
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos300
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos301
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos302
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos303
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos304
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos305
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos306
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos307
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos308
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos309
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos310
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos311
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos312
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos313
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos314
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos315
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos316
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos317
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos318
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos319
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos320
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos321
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos322
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos323
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos324
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos325
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos326
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos327
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos328
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos329
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos330
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos331
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos332
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos333
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos334
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos335
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos336
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos337
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos338
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos339
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos340
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos341
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos342
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos343
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos344
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos345
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos346
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos347
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos348
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos349
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos350
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos351
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos352
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos353
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos354
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos355
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos356
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos357
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos358
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos359
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos360
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos361
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos362
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos363
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos364
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos365
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos366
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos367
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos368
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos369
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos370
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos371
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos372
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos373
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos374
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos375
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos376
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos377
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos378
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos379
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos380
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos381
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos382
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos383
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos384
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos385
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos386
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos387
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos388
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos389
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos390
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos391
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos392
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos393
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos394
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos395
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos396
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos397
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos398
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos399
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos400
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos401
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos402
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos403
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos404
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos405
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos406
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos407
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos408
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos409
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos410
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos411
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos412
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos413
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos414
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos415
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos416
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos417
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos418
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos419
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos420
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos421
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos422
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos423
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos424
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos425
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos426
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos427
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos428
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos429
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos430
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos431
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos432
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos433
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos434
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos435
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos436
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos437
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos438
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos439
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos440
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos441
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos442
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos443
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos444
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos445
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos446
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos447
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos448
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos449
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos450
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos451
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos452
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos453
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos454
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos455
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos456
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos457
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos458
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos459
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos460
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos461
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos462
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos463
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos464
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos465
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos466
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos467
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos468
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos469
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos470
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos471
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos472
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos473
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos474
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos475
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos476
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos477
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos478
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos479
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos480
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos481
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos482
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos483
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos484
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos485
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos486
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos487
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos488
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos489
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos490
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos491
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos492
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos493
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos494
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos495
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos496
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos497
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos498
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos499
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos500
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: bash
+      command_line: bash
+      parent: {pid: 4242, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos501
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos502
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos503
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos504
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos505
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos506
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos507
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos508
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos509
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos510
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos511
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos512
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos513
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos514
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos515
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos516
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos517
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos518
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos519
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos520
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos521
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos522
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos523
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos524
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos525
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos526
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos527
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos528
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos529
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos530
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos531
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos532
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos533
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos534
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos535
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos536
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos537
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos538
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos539
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos540
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos541
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos542
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos543
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos544
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos545
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos546
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos547
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos548
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos549
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos550
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos551
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos552
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos553
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos554
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos555
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos556
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos557
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos558
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos559
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos560
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos561
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos562
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos563
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos564
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos565
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos566
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos567
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos568
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos569
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos570
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos571
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos572
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos573
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos574
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos575
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos576
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos577
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos578
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos579
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos580
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos581
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos582
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos583
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos584
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos585
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos586
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos587
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos588
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos589
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos590
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos591
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos592
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos593
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos594
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos595
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos596
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos597
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos598
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos599
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos600
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: ls
+      command_line: ls
+      parent: {pid: 777, name: bash}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: neg1
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process:
+      name: cc1
+      command_line: cc1
+      parent: {pid: 9, name: make}
+matches: 1

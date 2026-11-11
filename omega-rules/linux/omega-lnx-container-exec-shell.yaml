@@ -1,0 +1,39 @@
+name: omega-lnx-container-exec-shell
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1609]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - terms:
+        process.name: [docker, podman, nerdctl, kubectl, crictl, ctr]
+    - bool:
+        should:
+        - wildcard: {process.command_line: '* exec *'}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard: {process.command_line: '* sh'}
+        - wildcard: {process.command_line: '* sh *'}
+        - wildcard: {process.command_line: '* bash'}
+        - wildcard: {process.command_line: '* bash *'}
+        - wildcard: {process.command_line: '*/bin/sh*'}
+        - wildcard: {process.command_line: '*/bin/bash*'}
+        - wildcard: {process.command_line: '* ash'}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: A shell opened inside a container or pod through docker/podman/kubectl/crictl exec.
+  source: [process]
+  false_positives: Every operator and developer debugging containers. Adds a small risk; useful when the same host also
+    shows other signals.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/discovery_unusual_process_connection_to_container_runtime_socket.toml',
+    'https://attack.mitre.org/techniques/T1609/']

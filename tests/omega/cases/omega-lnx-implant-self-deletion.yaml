@@ -1,0 +1,49 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: x, executable: /tmp/x}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: deletion, action: deletion}
+    user: {name: alice}
+    file: {path: /tmp/x}
+    process: {name: x}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: y, executable: /tmp/y}
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: deletion, action: deletion}
+    user: {name: alice}
+    file: {path: /tmp/z}
+    process: {name: rm}
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: process, type: start}
+    user: {name: alice}
+    process: {name: ls, executable: /bin/ls}
+matches: 1

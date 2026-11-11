@@ -1,0 +1,31 @@
+name: omega-lnx-remote-copy-to-temp-directory
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1570]
+risk_score: 20
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - terms:
+        process.name: [scp, rsync, sftp]
+    - bool:
+        should:
+        - wildcard: {process.command_line: '*:/tmp/*'}
+        - wildcard: {process.command_line: '*:/dev/shm/*'}
+        - wildcard: {process.command_line: '*:/var/tmp/*'}
+        - wildcard: {process.command_line: '*:/run/*'}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'scp, rsync or sftp sending files into /tmp, /var/tmp, /dev/shm or /run of another host: staging a tool for
+    lateral movement.'
+  source: [process]
+  false_positives: Software distribution to temporary directories by administrators. Adds risk.
+  references: ['https://attack.mitre.org/techniques/T1570/']

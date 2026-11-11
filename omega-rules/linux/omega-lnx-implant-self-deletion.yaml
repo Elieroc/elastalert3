@@ -1,0 +1,55 @@
+name: omega-lnx-implant-self-deletion
+type: correlation
+index: logs-endpoint.events.*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1070.004]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+query_key: process.executable
+timeframe: {seconds: 30}
+realert: {minutes: 5}
+correlation_leaves:
+  exec:
+    filter:
+    - term: {host.os.type: linux}
+    - term: {event.category: process}
+    - term: {event.type: start}
+    - bool:
+        should:
+        - wildcard: {process.executable: /tmp/*}
+        - wildcard: {process.executable: /var/tmp/*}
+        - wildcard: {process.executable: /dev/shm/*}
+        - wildcard: {process.executable: /run/*}
+        - wildcard: {process.executable: /var/run/*}
+        - wildcard: {process.executable: /var/www/*}
+        - wildcard: {process.executable: /proc/*/fd/*}
+        - wildcard: {process.executable: 'memfd:*'}
+        - wildcard: {process.executable: '/memfd:*'}
+        minimum_should_match: 1
+  deleted:
+    query_key: file.path
+    filter:
+    - term: {host.os.type: linux}
+    - term: {event.category: file}
+    - term: {event.action: deletion}
+    - bool:
+        should:
+        - wildcard: {file.path: /tmp/*}
+        - wildcard: {file.path: /var/tmp/*}
+        - wildcard: {file.path: /dev/shm/*}
+        - wildcard: {file.path: /run/*}
+        - wildcard: {file.path: /var/run/*}
+        - wildcard: {file.path: /var/www/*}
+        minimum_should_match: 1
+correlation_query: exec THEN deleted
+alert: []
+omega:
+  tier: T1
+  description: 'A program started from a temporary or web directory deletes its own file within 30 seconds: a dropper or
+    implant covering its tracks. Needs process and file events in the same data stream.'
+  source: [process, file]
+  false_positives: Installers and mktemp scripts that clean up after themselves. The pivot is the file path only, so a build
+    farm running the same path on two hosts can chain; adds risk only.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/defense_evasion_execution_followed_by_self_deletion.toml',
+    'https://attack.mitre.org/techniques/T1070/004/']

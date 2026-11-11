@@ -1,0 +1,38 @@
+name: omega-lnx-python-pth-file-dropped
+type: any
+index: logs-endpoint.events.file*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1546.018]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change, rename]
+- bool:
+    must_not:
+    - terms:
+        process.name: [dpkg, apt, apt-get, apt-key, aptitude, rpm, yum, dnf, microdnf, zypper, pacman, apk, snapd, snap,
+          unattended-upgr, packagekitd, update-alternatives, dpkg-deb, rpmdb, cloud-init, systemd-tmpfiles]
+- bool:
+    should:
+    - wildcard: {file.path: /usr/local/lib/python*/dist-packages/*.pth}
+    - wildcard: {file.path: /usr/lib/python*/dist-packages/*.pth}
+    - wildcard: {file.path: /usr/local/lib/python*/site-packages/*.pth}
+    - wildcard: {file.path: /usr/lib/python*/site-packages/*.pth}
+    - wildcard: {file.path: /home/*/.local/lib/python*/site-packages/*.pth}
+    - wildcard: {file.path: /opt/*/lib/python*/site-packages/*.pth}
+    minimum_should_match: 1
+- terms:
+    process.name: [sh, bash, dash, zsh, cp, mv, tee, echo, curl, wget, cat, install, vim, vi, nano]
+alert: []
+omega:
+  tier: T1
+  description: 'A .pth file written into site-packages by a shell or a copy tool (not pip): Python runs its `import` lines
+    at every interpreter start.'
+  source: [file]
+  false_positives: Hand-installed Python packages, editable installs done with cp. pip and other installers are not matched.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/persistence_pth_file_creation.toml', 'https://github.com/SigmaHQ/sigma/blob/master/rules-threat-hunting/linux/file/file_event/file_event_lnx_python_path_configuration_files.yml',
+    'https://attack.mitre.org/techniques/T1546/018/']

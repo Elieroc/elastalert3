@@ -1,0 +1,47 @@
+name: omega-lnx-keylogging-or-input-capture
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1056.001]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - terms:
+        process.name: [logkeys, kidlogger, xkeylogger, pykeylogger]
+    - bool:
+        must:
+        - terms:
+            process.name: [cat, dd, xxd, hexdump, strings, python, python3, od]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '*/dev/input/event*'}
+            - wildcard: {process.command_line: '*/dev/input/by-id/*kbd*'}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - terms:
+            process.name: [xinput]
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* test*'}
+            minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard: {process.command_line: '*pam_tty_audit*'}
+        - wildcard: {process.command_line: '*aureport --tty*'}
+        minimum_should_match: 1
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'Keyboard capture: a keylogger binary, reading /dev/input/event*, xinput test, or PAM TTY audit enabled to
+    record typing.'
+  source: [process]
+  false_positives: Accessibility and automation tools on workstations. Rare on servers. Adds risk.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/auditd/lnx_auditd_keylogging_with_pam_d.yml', 'https://attack.mitre.org/techniques/T1056/001/']

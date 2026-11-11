@@ -1,0 +1,574 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc0.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc1.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc2.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc3.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc4.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc5.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos7
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc6.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos8
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc7.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos9
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc8.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos10
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc9.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos11
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc10.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos12
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc11.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos13
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc12.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos14
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc13.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos15
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc14.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos16
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc15.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos17
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc16.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos18
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc17.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos19
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc18.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos20
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc19.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos21
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc20.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos22
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc21.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos23
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc22.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos24
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc23.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos25
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/doc24.txt.enc}
+    process: {name: x, executable: /tmp/x, entity_id: e1}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos26
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation, action: creation}
+    user: {name: alice}
+    file: {path: /root/README_RESTORE.txt, name: README_RESTORE.txt}
+    process: {name: x, entity_id: e1, executable: /tmp/x}
+    '@timestamp': '2026-01-01T10:00:02Z'
+- id: pos27
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d0.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos28
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d1.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos29
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d2.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos30
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d3.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos31
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d4.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos32
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d5.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos33
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d6.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos34
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d7.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos35
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d8.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos36
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d9.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos37
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d10.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos38
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d11.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos39
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d12.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos40
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d13.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos41
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d14.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos42
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d15.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos43
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d16.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos44
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d17.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos45
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d18.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos46
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d19.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos47
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d20.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos48
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d21.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos49
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d22.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos50
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d23.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos51
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: change, action: rename}
+    user: {name: alice}
+    file: {path: /root/d24.enc}
+    process: {name: y, executable: /tmp/y, entity_id: e2}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos52
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    event: {category: file, type: creation, action: creation}
+    user: {name: alice}
+    file: {path: /root/README_RESTORE.txt, name: README_RESTORE.txt}
+    process: {name: z, entity_id: e3, executable: /tmp/z}
+    '@timestamp': '2026-01-01T10:00:00Z'
+matches: 1

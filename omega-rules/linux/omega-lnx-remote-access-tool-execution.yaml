@@ -1,0 +1,23 @@
+name: omega-lnx-remote-access-tool-execution
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1219]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- terms:
+    process.name: [anydesk, AnyDesk, teamviewer, teamviewerd, TeamViewer, TeamViewer_Service, rustdesk, screenconnect, ScreenConnect.ClientService,
+      meshagent, nxserver.bin, nxnode.bin, x11vnc, vncserver, Xvnc, tigervncserver, AteraAgent, ateraagent, splashtop, srserver]
+alert: []
+omega:
+  tier: T1
+  description: 'Remote access or remote desktop software started: AnyDesk, TeamViewer, RustDesk, ScreenConnect, MeshAgent,
+    Atera, NoMachine, VNC servers.'
+  source: [process]
+  false_positives: Support teams that use these tools (exclude the sanctioned one). Adds risk.
+  references: ['https://attack.mitre.org/techniques/T1219/']

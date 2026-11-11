@@ -1,0 +1,43 @@
+name: omega-lnx-grub-config-modified
+type: any
+index: logs-endpoint.events.file*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1542]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change, rename]
+- bool:
+    must_not:
+    - terms:
+        process.name: [dpkg, apt, apt-get, apt-key, aptitude, rpm, yum, dnf, microdnf, zypper, pacman, apk, snapd, snap,
+          unattended-upgr, packagekitd, update-alternatives, dpkg-deb, rpmdb, cloud-init, systemd-tmpfiles]
+- bool:
+    should:
+    - wildcard: {file.path: /etc/default/grub}
+    - wildcard: {file.path: /etc/default/grub.d/*}
+    - wildcard: {file.path: /etc/grub.d/*}
+    - wildcard: {file.path: /boot/grub2/grub.cfg}
+    - wildcard: {file.path: /boot/grub/grub.cfg}
+    - wildcard: {file.path: /boot/efi/EFI/*/grub.cfg}
+    - wildcard: {file.path: /etc/sysconfig/grub}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - terms:
+        process.name: [update-grub, grub-mkconfig, grub2-mkconfig, grub-install, grub2-install, dracut, kernel-install,
+          puppet, chef-client]
+alert: []
+omega:
+  tier: T1
+  description: 'GRUB configuration written outside the tools that generate it (grub.cfg, /etc/default/grub, /etc/grub.d):
+    a boot-time persistence or a kernel parameter change.'
+  source: [file]
+  false_positives: Kernel parameter tuning by administrators and configuration management. grub-mkconfig and similar tools
+    are excluded.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/persistence_grub_configuration_creation.toml',
+    'https://attack.mitre.org/techniques/T1542/']

@@ -1,0 +1,57 @@
+name: omega-lnx-openssl-mass-encryption
+type: frequency
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1486]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - terms:
+        process.name: [openssl]
+    - bool:
+        should:
+        - wildcard: {process.command_line: '* enc *'}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard: {process.command_line: '* -in *'}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard: {process.command_line: '* -out *'}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard: {process.command_line: '*-pass*'}
+        - wildcard: {process.command_line: '* -k *'}
+        - wildcard: {process.command_line: '* -K *'}
+        - wildcard: {process.command_line: '*-kfile*'}
+        - wildcard: {process.command_line: '* -iv *'}
+        minimum_should_match: 1
+    - bool:
+        must_not:
+        - bool:
+            should:
+            - wildcard: {process.command_line: '* -d *'}
+            - wildcard: {process.command_line: '* -a *'}
+            - wildcard: {process.command_line: '*-base64*'}
+            minimum_should_match: 1
+num_events: 10
+timeframe: {seconds: 10}
+query_key: [host.name, process.parent.entity_id]
+realert: {minutes: 10}
+alert: [debug]
+omega:
+  tier: T0
+  description: 'openssl enc run ten times in ten seconds by one parent, with an input, an output and a key or password:
+    files being encrypted in a loop, ransomware style.'
+  source: [process]
+  false_positives: Backup scripts that encrypt many files with openssl in a loop. Exclude the parent command line.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/linux/impact_data_encrypted_via_openssl.toml',
+    'https://attack.mitre.org/techniques/T1486/']
