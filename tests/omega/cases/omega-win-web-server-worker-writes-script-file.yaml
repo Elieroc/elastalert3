@@ -1,0 +1,39 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\inetpub\wwwroot\aspnet_client\shell.aspx', name: shell.aspx, extension: aspx}
+    process: {name: w3wp.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\xampp\htdocs\up\x.php', name: x.php, extension: php}
+    process: {name: httpd.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\root\a.aspx', name: a.aspx, extension: aspx}
+    process: {name: w3wp.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\inetpub\logs\x.log', name: x.log, extension: log}
+    process: {name: w3wp.exe}

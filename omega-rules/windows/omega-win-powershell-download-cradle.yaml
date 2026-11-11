@@ -1,0 +1,71 @@
+name: omega-win-powershell-download-cradle
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1059.001, T1105]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: powershell.exe, case_insensitive: true}
+    - term:
+        process.name: {value: pwsh.exe, case_insensitive: true}
+    - term:
+        process.name: {value: powershell_ise.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*iex*downloadstring*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*invoke-expression*downloadstring*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*iex*net.webclient*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*iex*invoke-webrequest*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*iex*iwr*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*iex (*new-object*net.webclient*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*downloadstring(*http*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*iex*(irm *', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*iex*invoke-restmethod*', case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*downloadfile(*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*start-process*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*invoke-item*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*& *', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'PowerShell command line that downloads and runs code: IEX / Invoke-Expression with DownloadString, Net.WebClient,
+    Invoke-WebRequest, iwr, or DownloadFile followed by Start-Process.'
+  source: [process]
+  false_positives: Install one-liners some vendors publish (chocolatey, scoop). Exclude the installer user or the exact
+    command.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_powershell_download_iex.yml',
+    'https://attack.mitre.org/techniques/T1059/001/', 'https://attack.mitre.org/techniques/T1105/']

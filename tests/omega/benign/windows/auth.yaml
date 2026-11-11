@@ -1,0 +1,18 @@
+# Legitimate Windows Security/System events: no T0 rule of type `any` may hit them.
+# Merged on {host.name: win9, event.category: authentication, event.provider: Microsoft-Windows-Security-Auditing}.
+- {event.code: '4624', event.outcome: success, user.name: alice, source.ip: 10.0.0.20, winlog.logon.type: '2'}
+- {event.code: '4624', event.outcome: success, user.name: alice, source.ip: 10.0.0.20, winlog.logon.type: '10'}
+- {event.code: '4624', event.outcome: success, user.name: 'WIN1$', source.ip: 10.0.0.5, winlog.logon.type: '3', winlog.event_data.AuthenticationPackageName: Kerberos}
+- {event.code: '4624', event.outcome: success, user.name: svc-backup, source.ip: 10.0.0.30, winlog.logon.type: '3', winlog.event_data.AuthenticationPackageName: NTLM, winlog.event_data.KeyLength: '128'}
+- {event.code: '4625', event.outcome: failure, user.name: alice, source.ip: 10.0.0.20, winlog.logon.type: '2'}
+- {event.code: '4768', user.name: alice, source.ip: 10.0.0.20, winlog.event_data.PreAuthType: '2', winlog.event_data.TicketEncryptionType: '0x12'}
+- {event.code: '4769', user.name: alice, source.ip: 10.0.0.20, winlog.event_data.TicketEncryptionType: '0x12', winlog.event_data.ServiceName: 'FS01$'}
+- {event.code: '4662', user.name: 'DC01$', winlog.event_data.Properties: '{1131f6ad-9c07-11d1-f79f-00c04fc2dcd2}'}
+- {event.code: '4662', user.name: alice, winlog.event_data.Properties: '{bf967aba-0de6-11d0-a285-00aa003049e2}'}
+- {event.code: '4720', user.name: helpdesk, winlog.event_data.TargetUserName: newuser}
+- {event.code: '4732', user.name: admin, winlog.event_data.TargetSid: S-1-5-32-545}
+- {event.code: '5140', user.name: alice, source.ip: 10.0.0.20, winlog.event_data.ShareName: '\\*\Data'}
+- {event.code: '7045', event.provider: Service Control Manager, winlog.event_data.ServiceName: 'Windows Update Medic', winlog.event_data.ServiceFileName: 'C:\Windows\System32\svchost.exe -k wusvcs'}
+- {event.code: '7045', event.provider: Service Control Manager, winlog.event_data.ServiceName: 'Vendor Agent', winlog.event_data.ServiceFileName: '"C:\Program Files\Vendor\agent.exe" -service'}
+- {event.code: '4698', user.name: svc-sccm, winlog.event_data.TaskContent: '<Exec><Command>C:\Program Files\Vendor\task.exe</Command></Exec>'}
+- {event.code: '104', event.provider: Microsoft-Windows-Eventlog-Other}

@@ -1,0 +1,109 @@
+name: omega-win-shadow-copy-or-backup-deletion
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1490]
+risk_score: 90
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: vssadmin.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*delete shadows*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*resize shadowstorage*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: wmic.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*shadowcopy*delete*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: wbadmin.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*delete catalog*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*delete backup*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*delete systemstatebackup*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: bcdedit.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*recoveryenabled*no*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*bootstatuspolicy*ignoreallfailures*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: diskshadow.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*delete shadows*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*win32_shadowcopy*delete*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*get-wmiobject*shadowcopy*remove*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Recovery points destroyed: vssadmin/wmic/diskshadow deleting shadow copies, wbadmin deleting catalog or
+    backups, bcdedit turning off recovery, resizing shadow storage.'
+  source: [process]
+  false_positives: Backup software that manages its own shadow copies (exclude by parent). Otherwise the signature of ransomware.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_wbadmin_delete_backups.yml',
+    'https://github.com/elastic/detection-rules/blob/main/rules/windows/impact_volume_shadow_copy_deletion_or_resized_via_vssadmin.toml',
+    'https://attack.mitre.org/techniques/T1490/']

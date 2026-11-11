@@ -1,0 +1,45 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: wevtutil.exe, executable: 'C:\Windows\System32\wevtutil.exe', command_line: wevtutil cl Security}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: powershell.exe, executable: 'C:\Windows\System32\powershell.exe', command_line: powershell Clear-EventLog
+        -LogName Application}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: auditpol.exe, executable: 'C:\Windows\System32\auditpol.exe', command_line: auditpol /clear /y}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: wevtutil.exe, executable: 'C:\Windows\System32\wevtutil.exe', command_line: 'wevtutil qe Security /c:5'}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: auditpol.exe, executable: 'C:\Windows\System32\auditpol.exe', command_line: 'auditpol /get /category:*'}

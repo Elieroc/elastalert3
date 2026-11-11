@@ -1,0 +1,55 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\Userinit
+      data:
+        strings: ['C:\Windows\system32\userinit.exe,C:\Users\Public\a.exe']
+      value: Userinit
+    process: {name: reg.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\Shell
+      data:
+        strings: ['explorer.exe, evil.exe']
+      value: Shell
+    process: {name: reg.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\Userinit
+      data:
+        strings: ['C:\Windows\system32\userinit.exe,']
+      value: Userinit
+    process: {name: reg.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\Shell
+      data:
+        strings: [explorer.exe]
+      value: Shell
+    process: {name: reg.exe}

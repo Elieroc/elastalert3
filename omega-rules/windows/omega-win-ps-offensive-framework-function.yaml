@@ -1,0 +1,60 @@
+name: omega-win-ps-offensive-framework-function
+type: any
+index: winlogbeat-*,logs-windows.powershell_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1059.001, T1087, T1055]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.code: '4104'}
+- bool:
+    should:
+    - wildcard:
+        powershell.file.script_block_text: {value: '*invoke-reflectivepeinjection*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*invoke-shellcode*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*invoke-tokenmanipulation*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*get-domainuser*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*get-domaincomputer*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*find-localadminaccess*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*invoke-userhunter*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*invoke-sharefinder*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*invoke-smbexec*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*invoke-wmiexec*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*invoke-thehash*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*invoke-powershelltcp*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*invoke-bloodhound*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*invoke-inveigh*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*get-netsession*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*invoke-eternalblue*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*invoke-psinject*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*powerup*invoke-allchecks*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*invoke-allchecks*', case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'PowerShell script block with functions of public attack frameworks (PowerSploit, Empire, Nishang, PowerView,
+    PowerUpSQL, Inveigh): Invoke-ReflectivePEInjection, Invoke-Shellcode, Invoke-TokenManipulation, Get-DomainUser, Find-LocalAdminAccess,
+    Invoke-Portscan, Invoke-SMBExec.'
+  source: [powershell]
+  false_positives: Red-team scripts and detection-lab tests.
+  references: ['https://attack.mitre.org/techniques/T1059/001/', 'https://attack.mitre.org/techniques/T1087/', 'https://attack.mitre.org/techniques/T1055/']

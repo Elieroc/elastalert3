@@ -1,0 +1,60 @@
+name: omega-win-scheduled-task-file-created-by-unusual-process
+type: any
+index: logs-endpoint.events.file*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1053.005]
+risk_score: 20
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change]
+- bool:
+    should:
+    - wildcard:
+        file.path: {value: 'C:\\Windows\\System32\\Tasks\\*', case_insensitive: true}
+    - wildcard:
+        file.path: {value: 'C:\\Windows\\Tasks\\*.job', case_insensitive: true}
+    - wildcard:
+        file.path: {value: 'C:\\Windows\\SysWOW64\\Tasks\\*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: svchost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: schtasks.exe, case_insensitive: true}
+        - term:
+            process.name: {value: taskeng.exe, case_insensitive: true}
+        - term:
+            process.name: {value: taskhostw.exe, case_insensitive: true}
+        - term:
+            process.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TiWorker.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TrustedInstaller.exe, case_insensitive: true}
+        - term:
+            process.name: {value: MsMpEng.exe, case_insensitive: true}
+        - term:
+            process.name: {value: OfficeClickToRun.exe, case_insensitive: true}
+        - term:
+            process.name: {value: setup.exe, case_insensitive: true}
+        - term:
+            process.name: {value: ccmexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: dismhost.exe, case_insensitive: true}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'A task definition file written into Windows\System32\Tasks by a process other than the task scheduler, schtasks
+    or an installer: a task created by direct file write or WMI to dodge schtasks logging.'
+  source: [file]
+  false_positives: Software that writes task XML directly. Adds risk only.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/file/file_event/file_event_win_susp_task_write.yml',
+    'https://attack.mitre.org/techniques/T1053/005/']

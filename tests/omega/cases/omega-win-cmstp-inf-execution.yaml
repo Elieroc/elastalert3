@@ -1,0 +1,18 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: cmstp.exe, executable: 'C:\Windows\System32\cmstp.exe', command_line: 'cmstp.exe /s /ns C:\Users\bob\AppData\Local\Temp\x.inf'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: cmstp.exe, executable: 'C:\Windows\System32\cmstp.exe', command_line: 'cmstp.exe /?'}

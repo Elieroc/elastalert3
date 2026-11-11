@@ -1,0 +1,25 @@
+name: omega-win-new-service-on-host
+type: new_term
+index: winlogbeat-*,logs-system.system-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1543.003]
+risk_score: 10
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.code: '7045'}
+- exists: {field: winlog.event_data.ServiceName}
+fields:
+- [host.name, winlog.event_data.ServiceName]
+terms_window_size: {days: 30}
+use_keyword_postfix: false
+realert: {minutes: 1}
+alert: []
+omega:
+  tier: T1
+  description: A service name installed on a host that has never had a service with that name in the last 30 days (event
+    7045).
+  source: [auth]
+  false_positives: Software installs and updates create new services. Adds a small risk; most useful next to a suspicious
+    ImagePath.
+  references: ['https://attack.mitre.org/techniques/T1543/003/']

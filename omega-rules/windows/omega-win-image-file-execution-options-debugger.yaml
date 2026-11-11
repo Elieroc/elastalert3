@@ -1,0 +1,45 @@
+name: omega-win-image-file-execution-options-debugger
+type: any
+index: logs-endpoint.events.registry*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1546.012]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: registry}
+- terms:
+    event.type: [change, creation]
+- bool:
+    should:
+    - wildcard:
+        registry.path: {value: '*\\Image File Execution Options\\*\\Debugger', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Image File Execution Options\\*\\GlobalFlag', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\SilentProcessExit\\*\\MonitorProcess', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            registry.data.strings: {value: '*vsjitdebugger*', case_insensitive: true}
+        - wildcard:
+            registry.data.strings: {value: '*drwtsn32*', case_insensitive: true}
+        - wildcard:
+            registry.data.strings: {value: '*windbg*', case_insensitive: true}
+        - wildcard:
+            registry.data.strings: {value: '*procexp*', case_insensitive: true}
+        - wildcard:
+            registry.data.strings: {value: '*ntsd.exe*', case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A Debugger, GlobalFlag or SilentProcessExit MonitorProcess value created under Image File Execution Options:
+    a program that is started instead of (or after) another one, used for persistence and accessibility-binary backdoors.'
+  source: [registry]
+  false_positives: Developers attaching a debugger on purpose (Visual Studio does this). Exclude devenv.exe and the vsjitdebugger.
+  references: ['https://attack.mitre.org/techniques/T1546/012/']

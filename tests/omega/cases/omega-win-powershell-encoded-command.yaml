@@ -1,0 +1,37 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: powershell.exe, executable: 'C:\Windows\System32\powershell.exe', command_line: powershell.exe -nop
+        -w hidden -enc SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkA}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: pwsh.exe, executable: 'C:\Windows\System32\pwsh.exe', command_line: pwsh -EncodedCommand SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkA}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: powershell.exe, executable: 'C:\Windows\System32\powershell.exe', command_line: powershell -ep bypass
+        -File a.ps1}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: powershell.exe, executable: 'C:\Windows\System32\powershell.exe', command_line: powershell -e 1234}

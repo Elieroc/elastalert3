@@ -1,0 +1,52 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:00:00Z'
+    rule_name: omega-win-a
+    alert_sent: true
+    risk_objects:
+    - {type: user, value: alice, score: 60}
+- id: pos2
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:10:00Z'
+    rule_name: omega-win-b
+    alert_sent: true
+    risk_objects:
+    - {type: user, value: alice, score: 50}
+- id: pos3
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:20:00Z'
+    rule_name: omega-win-a
+    alert_sent: true
+    risk_objects:
+    - {type: user, value: bob, score: 90}
+- id: pos4
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:21:00Z'
+    rule_name: omega-win-a
+    alert_sent: true
+    risk_objects:
+    - {type: user, value: bob, score: 90}
+- id: pos5
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:30:00Z'
+    rule_name: omega-win-a
+    alert_sent: true
+    risk_objects:
+    - {type: host, value: h9, score: 90}
+- id: pos6
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:31:00Z'
+    rule_name: omega-win-b
+    alert_sent: true
+    risk_objects:
+    - {type: host, value: h9, score: 90}
+matches: 1
+start: '2026-01-01T00:00:00Z'
+end: '2026-01-01T12:00:00Z'

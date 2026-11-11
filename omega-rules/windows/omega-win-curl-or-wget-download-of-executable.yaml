@@ -1,0 +1,71 @@
+name: omega-win-curl-or-wget-download-of-executable
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1105]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: curl.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wget.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*http://*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*https://*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*ftp://*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '* -o *', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '* -O *', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*--output*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '* -outfile*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*.exe*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.dll*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.ps1*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.bat*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.vbs*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.js *', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.hta*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.msi*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.zip*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.scr*', case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: curl.exe or wget downloading an executable, DLL, script or archive to disk (-o/-O/--output), outside a developer
+    toolchain.
+  source: [process]
+  false_positives: Developers and package scripts. Adds risk only.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules-threat-hunting/windows/process_creation/proc_creation_win_curl_download.yml',
+    'https://attack.mitre.org/techniques/T1105/']

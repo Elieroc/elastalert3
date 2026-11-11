@@ -1,0 +1,60 @@
+name: omega-win-service-installed-with-unusual-command
+type: any
+index: winlogbeat-*,logs-system.system-*,logs-system.security-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1543.003, T1569.002]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- bool:
+    should:
+    - term: {event.code: '7045'}
+    - term: {event.code: '4697'}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.ServiceFileName: {value: '*%comspec%*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.ServiceFileName: {value: '*cmd*/c*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.ServiceFileName: {value: '*cmd.exe*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.ServiceFileName: {value: '*powershell*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.ServiceFileName: {value: '*pwsh*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.ServiceFileName: {value: '*mshta*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.ServiceFileName: {value: '*wscript*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.ServiceFileName: {value: '*cscript*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.ServiceFileName: {value: '*\\\\*\\admin$\\*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.ServiceFileName: {value: '*\\users\\public\\*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.ServiceFileName: {value: '*\\windows\\temp\\*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.ServiceFileName: {value: '*\\appdata\\*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.ServiceFileName: {value: '*psexesvc*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.ServiceFileName: {value: '*paexec*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.ServiceFileName: {value: '*rundll32*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.ServiceFileName: {value: '*regsvr32*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.ServiceFileName: {value: '* -enc *', case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: A service installed (event 7045 or 4697) whose binary is a command interpreter, a script host, an ADMIN$
+    file, a user-writable path, a PsExec-style name or a base64 PowerShell command.
+  source: [auth]
+  false_positives: Installers that register services from ProgramData or Temp (some AV and RMM products). Exclude their
+    service names.
+  references: ['https://attack.mitre.org/techniques/T1543/003/', 'https://attack.mitre.org/techniques/T1569/002/']

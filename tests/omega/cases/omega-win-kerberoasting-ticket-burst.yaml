@@ -1,0 +1,87 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4769'}
+    user: {name: bob}
+    source: {ip: 10.0.0.9}
+    winlog:
+      event_data: {TicketEncryptionType: '0x17', ServiceName: svc0}
+- id: pos2
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4769'}
+    user: {name: bob}
+    source: {ip: 10.0.0.9}
+    winlog:
+      event_data: {TicketEncryptionType: '0x17', ServiceName: svc1}
+- id: pos3
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4769'}
+    user: {name: bob}
+    source: {ip: 10.0.0.9}
+    winlog:
+      event_data: {TicketEncryptionType: '0x17', ServiceName: svc2}
+- id: pos4
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4769'}
+    user: {name: bob}
+    source: {ip: 10.0.0.9}
+    winlog:
+      event_data: {TicketEncryptionType: '0x17', ServiceName: svc3}
+- id: pos5
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4769'}
+    user: {name: bob}
+    source: {ip: 10.0.0.9}
+    winlog:
+      event_data: {TicketEncryptionType: '0x17', ServiceName: svc4}
+- id: neg1
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4769'}
+    user: {name: bob}
+    source: {ip: 10.0.0.9}
+    winlog:
+      event_data: {TicketEncryptionType: '0x12', ServiceName: svcx0}
+- id: neg2
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4769'}
+    user: {name: bob}
+    source: {ip: 10.0.0.9}
+    winlog:
+      event_data: {TicketEncryptionType: '0x12', ServiceName: svcx1}
+- id: neg3
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4769'}
+    user: {name: bob}
+    source: {ip: 10.0.0.9}
+    winlog:
+      event_data: {TicketEncryptionType: '0x12', ServiceName: svcx2}
+- id: neg4
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4769'}
+    user: {name: bob}
+    source: {ip: 10.0.0.9}
+    winlog:
+      event_data: {TicketEncryptionType: '0x12', ServiceName: svcx3}
+- id: neg5
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4769'}
+    user: {name: bob}
+    source: {ip: 10.0.0.9}
+    winlog:
+      event_data: {TicketEncryptionType: '0x12', ServiceName: svcx4}
+matches: 1

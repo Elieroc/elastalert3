@@ -1,0 +1,55 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_USERS\S-1-5-21-1-2-3-1001\Software\Classes\CLSID\{b5f8350b-0548-48b1-a6ee-88bd00b4a5e7}\InprocServer32\(Default)
+      data:
+        strings: ['C:\Users\bob\AppData\Roaming\x.dll']
+      value: (Default)
+    process: {name: reg.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_USERS\S-1-5-21-1-2-3-1001\Software\Classes\CLSID\{abc}\InprocServer32
+      data:
+        strings: ['C:\Windows\System32\scrobj.dll']
+      value: InprocServer32
+    process: {name: reg.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_USERS\S-1-5-21-1-2-3-1001\Software\Classes\CLSID\{abc}\InprocServer32
+      data:
+        strings: ['C:\Windows\System32\shell32.dll']
+      value: InprocServer32
+    process: {name: reg.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{abc}\InprocServer32
+      data:
+        strings: ['C:\x\a.dll']
+      value: InprocServer32
+    process: {name: reg.exe}

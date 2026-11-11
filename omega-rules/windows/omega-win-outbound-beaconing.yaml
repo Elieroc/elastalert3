@@ -1,0 +1,31 @@
+name: omega-win-outbound-beaconing
+type: beacon
+index: logs-endpoint.events.network*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1071, T1573, T1029]
+risk_score: 50
+risk_objects: {host: host.name, ip: destination.ip}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: network}
+- term: {event.action: connection_attempted}
+- term: {event.action: connection_attempted}
+- exists: {field: destination.ip}
+- bool:
+    must_not:
+    - terms:
+        destination.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16, '::1', 'fe80::/10', 'fc00::/7']
+query_key: [host.name, destination.ip]
+timeframe: {hours: 6}
+min_events: 20
+max_jitter: 0.15
+realert: {hours: 6}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'A host contacts the same public address at near-constant intervals (at least 20 connections in 6 hours with
+    under 15 % jitter): a command-and-control beacon.'
+  source: [network]
+  false_positives: Monitoring agents, NTP, update checks and heartbeats to a fixed address (exclude by destination or process).
+  references: ['https://attack.mitre.org/techniques/T1071/', 'https://attack.mitre.org/techniques/T1573/', 'https://attack.mitre.org/techniques/T1029/']

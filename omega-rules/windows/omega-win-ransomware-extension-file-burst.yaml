@@ -1,0 +1,121 @@
+name: omega-win-ransomware-extension-file-burst
+type: frequency
+index: logs-endpoint.events.file*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1486]
+risk_score: 90
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change]
+- bool:
+    should:
+    - wildcard:
+        file.extension: {value: lockbit, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: lockbit3, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: ryk, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: ryuk, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: conti, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: royal, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: akira, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: blackcat, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: hive, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: basta, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: medusa, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: phobos, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: djvu, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: dharma, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: wncry, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: wnry, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: cerber, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: locky, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: zepto, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: maze, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: sodinokibi, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: revil, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: babuk, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: blacksuit, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: rhysida, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: mallox, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: qilin, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: cuba, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: abyss, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: hunters, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: petya, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: teslacrypt, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: crysis, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: gandcrab, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: nemty, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: clop, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: avos, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: avoslocker, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: cring, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: ragnar, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: netwalker, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: thanos, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: xorist, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: stop, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: encrypted, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: locked, case_insensitive: true}
+    minimum_should_match: 1
+num_events: 30
+timeframe: {minutes: 1}
+query_key: [host.name]
+realert: {minutes: 30}
+alert: [debug]
+omega:
+  tier: T0
+  description: '30 or more files created or renamed with a known ransomware extension (.lockbit, .akira, .basta, .royal,
+    .hive, .ryk, .encrypted, ...) by one host in one minute: encryption in progress.'
+  source: [file]
+  false_positives: Archives or backups that legitimately use a name like .locked or .encrypted at volume (exclude by process
+    or path). The count keeps single files from firing.
+  references: ['https://attack.mitre.org/techniques/T1486/']

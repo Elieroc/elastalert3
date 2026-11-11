@@ -1,0 +1,119 @@
+name: omega-win-security-tool-killed-or-disabled
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1562.001]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    must:
+    - bool:
+        should:
+        - term:
+            process.name: {value: taskkill.exe, case_insensitive: true}
+        - term:
+            process.name: {value: sc.exe, case_insensitive: true}
+        - term:
+            process.name: {value: net.exe, case_insensitive: true}
+        - term:
+            process.name: {value: net1.exe, case_insensitive: true}
+        - term:
+            process.name: {value: powershell.exe, case_insensitive: true}
+        - term:
+            process.name: {value: pwsh.exe, case_insensitive: true}
+        - term:
+            process.name: {value: wmic.exe, case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*msmpeng*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*mssense*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*sense*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*csfalcon*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*csagent*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*falconsensor*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*sentinelagent*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*sentinelone*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*sentinelstaticengine*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*sophos*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*savservice*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*cb.exe*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*carbonblack*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*cylance*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*cyserver*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*ekrn*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*egui*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*symantec*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*ccsvchst*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*mcshield*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*mfemms*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*mfefire*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*tmbmsrv*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*ntrtscan*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*avp.exe*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*kavfs*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*windefend*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*wdnissvc*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*wscsvc*', case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*taskkill*/f*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*taskkill*/im*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '* stop *', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*config*start= disabled*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*config*start=disabled*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*stop-service*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*delete *', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*-disable*', case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: taskkill or sc/net stop/config disable against antivirus and EDR processes and services (Defender, CrowdStrike,
+    SentinelOne, Sophos, Carbon Black, Cylance, ESET, Symantec, McAfee, Trend, Kaspersky).
+  source: [process]
+  false_positives: Uninstall and upgrade scripts of those products (exclude by parent). Otherwise a ransomware precursor.
+  references: ['https://attack.mitre.org/techniques/T1562/001/']

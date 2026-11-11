@@ -1,0 +1,66 @@
+name: omega-win-ntds-or-sam-file-copy-created
+type: any
+index: logs-endpoint.events.file*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1003.002, T1003.003]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change]
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard:
+            file.name: {value: ntds.dit, case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            file.name: {value: sam.save, case_insensitive: true}
+        - wildcard:
+            file.name: {value: sam.hive, case_insensitive: true}
+        - wildcard:
+            file.name: {value: security.save, case_insensitive: true}
+        - wildcard:
+            file.name: {value: system.save, case_insensitive: true}
+        - wildcard:
+            file.name: {value: sam.bak, case_insensitive: true}
+        - wildcard:
+            file.name: {value: sam.dmp, case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            file.path: {value: 'C:\\Windows\\NTDS\\*', case_insensitive: true}
+        - wildcard:
+            file.path: {value: 'C:\\Windows\\System32\\config\\*', case_insensitive: true}
+        - wildcard:
+            file.path: {value: 'C:\\Windows\\System32\\config\\RegBack\\*', case_insensitive: true}
+        - wildcard:
+            file.path: {value: 'C:\\Windows\\ServiceProfiles\\*', case_insensitive: true}
+        minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: wbengine.exe, case_insensitive: true}
+        - term:
+            process.name: {value: vssvc.exe, case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'ntds.dit or a SAM/SYSTEM/SECURITY hive copy written outside its system folder: the output of an Active Directory
+    or local credential dump.'
+  source: [file]
+  false_positives: Forensic and backup tools writing to a backup volume. Exclude their processes.
+  references: ['https://attack.mitre.org/techniques/T1003/002/', 'https://attack.mitre.org/techniques/T1003/003/']

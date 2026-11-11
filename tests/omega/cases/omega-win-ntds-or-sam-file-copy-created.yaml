@@ -1,0 +1,39 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\Public\ntds.dit', name: ntds.dit}
+    process: {name: esentutl.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Temp\sam.save', name: sam.save}
+    process: {name: reg.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Windows\NTDS\ntds.dit', name: ntds.dit}
+    process: {name: lsass.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\notes.txt', name: notes.txt}
+    process: {name: notepad.exe}

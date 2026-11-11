@@ -1,0 +1,46 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: net.exe, executable: 'C:\Windows\System32\net.exe', command_line: net user support P@ss1 /add}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: net.exe, executable: 'C:\Windows\System32\net.exe', command_line: net localgroup administrators support
+        /add}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: powershell.exe, executable: 'C:\Windows\System32\powershell.exe', command_line: powershell Add-LocalGroupMember
+        -Group Administrators -Member x}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: net.exe, executable: 'C:\Windows\System32\net.exe', command_line: net user}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: net.exe, executable: 'C:\Windows\System32\net.exe', command_line: 'net use Z: \\srv\share'}

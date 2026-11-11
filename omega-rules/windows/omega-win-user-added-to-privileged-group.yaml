@@ -1,0 +1,36 @@
+name: omega-win-user-added-to-privileged-group
+type: any
+index: winlogbeat-*,logs-system.security-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1098, T1078.002]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- terms:
+    event.code: ['4728', '4732', '4756']
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.TargetSid: {value: S-1-5-32-544, case_insensitive: true}
+    - wildcard:
+        winlog.event_data.TargetSid: {value: S-1-5-32-551, case_insensitive: true}
+    - wildcard:
+        winlog.event_data.TargetSid: {value: S-1-5-32-548, case_insensitive: true}
+    - wildcard:
+        winlog.event_data.TargetSid: {value: S-1-5-21-*-512, case_insensitive: true}
+    - wildcard:
+        winlog.event_data.TargetSid: {value: S-1-5-21-*-518, case_insensitive: true}
+    - wildcard:
+        winlog.event_data.TargetSid: {value: S-1-5-21-*-519, case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'A member added to a privileged group: local Administrators (S-1-5-32-544), Domain Admins (-512), Schema
+    Admins (-518), Enterprise Admins (-519), Backup Operators or Account Operators (events 4728, 4732, 4756).'
+  source: [auth]
+  false_positives: Normal administration and onboarding. Adds risk only; unexpected additions are the signal.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/builtin/security/win_security_user_added_to_local_administrators.yml',
+    'https://attack.mitre.org/techniques/T1098/', 'https://attack.mitre.org/techniques/T1078/002/']

@@ -1,0 +1,47 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: netsh.exe, executable: 'C:\Windows\System32\netsh.exe', command_line: netsh interface portproxy add
+        v4tov4 listenport=3389 connectaddress=10.0.0.5 connectport=3389}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: plink.exe, executable: 'C:\Windows\System32\plink.exe', command_line: 'plink.exe -ssh -R 3389:127.0.0.1:3389
+        user@203.0.113.9'}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: netsh.exe, executable: 'C:\Windows\System32\netsh.exe', command_line: netsh advfirewall firewall add
+        rule name=x dir=in action=allow protocol=TCP localport=3389}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: netsh.exe, executable: 'C:\Windows\System32\netsh.exe', command_line: netsh interface show interface}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: ssh.exe, executable: 'C:\Windows\System32\ssh.exe', command_line: ssh bob@host}

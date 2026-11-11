@@ -1,0 +1,69 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender\DisableAntiSpyware
+      data:
+        strings: ['0x00000001']
+      value: DisableAntiSpyware
+    process: {name: reg.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Exclusions\Paths\C:\Users\Public
+      data:
+        strings: ['0x00000000']
+      value: Public
+    process: {name: reg.exe}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection\DisableRealtimeMonitoring
+      data:
+        strings: ['1']
+      value: DisableRealtimeMonitoring
+    process: {name: reg.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection\DisableRealtimeMonitoring
+      data:
+        strings: ['0x00000001']
+      value: DisableRealtimeMonitoring
+    process: {name: svchost.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Signature Updates\x
+      data:
+        strings: ['1']
+      value: x
+    process: {name: reg.exe}

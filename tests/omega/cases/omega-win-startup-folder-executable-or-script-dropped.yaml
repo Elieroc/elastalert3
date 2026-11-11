@@ -1,0 +1,40 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\a.lnk', name: a.lnk, extension: lnk}
+    process: {name: powershell.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\x.bat', name: x.bat, extension: bat}
+    process: {name: cmd.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\a.lnk', name: a.lnk, extension: lnk}
+    process: {name: explorer.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\readme.txt', name: readme.txt,
+      extension: txt}
+    process: {name: notepad.exe}

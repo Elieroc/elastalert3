@@ -1,0 +1,31 @@
+name: omega-win-powershell-encoded-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1059.001, T1027.010]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: powershell.exe, case_insensitive: true}
+    - term:
+        process.name: {value: pwsh.exe, case_insensitive: true}
+    minimum_should_match: 1
+- regexp:
+    process.command_line: {value: '.* -(e|ec|en|enc|enco|encod|encode|encoded|encodedc|encodedco|encodedcom|encodedcomm|encodedcomma|encodedcomman|encodedcommand)
+        +[A-Za-z0-9+/=]{30,}.*', case_insensitive: true}
+alert: []
+omega:
+  tier: T1
+  description: PowerShell started with a long base64 -EncodedCommand argument.
+  source: [process]
+  false_positives: Management tools (SCCM, Intune, RMM agents, Azure) use encoded commands all the time. Adds risk only;
+    exclude your tools by parent.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_powershell_base64_encoded_cmd.yml',
+    'https://attack.mitre.org/techniques/T1059/001/', 'https://attack.mitre.org/techniques/T1027/010/']

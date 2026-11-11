@@ -1,0 +1,79 @@
+name: omega-win-startup-folder-executable-or-script-dropped
+type: any
+index: logs-endpoint.events.file*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1547.001]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change]
+- bool:
+    should:
+    - wildcard:
+        file.path: {value: '*\\Start Menu\\Programs\\Startup\\*', case_insensitive: true}
+    - wildcard:
+        file.path: {value: '*\\Start Menu\\Programs\\StartUp\\*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        file.extension: {value: exe, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: dll, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: bat, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: cmd, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: vbs, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: vbe, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: js, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: jse, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: wsf, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: ps1, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: hta, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: lnk, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: scr, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: com, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: explorer.exe, case_insensitive: true}
+        - term:
+            process.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: setup.exe, case_insensitive: true}
+        - term:
+            process.name: {value: OneDrive.exe, case_insensitive: true}
+        - term:
+            process.name: {value: Teams.exe, case_insensitive: true}
+        - term:
+            process.name: {value: OneDriveSetup.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TiWorker.exe, case_insensitive: true}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: An executable, script, shortcut or HTA created in a Startup folder by something other than the shell or an
+    installer.
+  source: [file]
+  false_positives: Per-user installers that add a startup shortcut (excluded by name when they are Windows Installer). Adds
+    risk only.
+  references: ['https://attack.mitre.org/techniques/T1547/001/']

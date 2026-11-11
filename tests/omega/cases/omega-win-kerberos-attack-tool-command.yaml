@@ -1,0 +1,44 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: x.exe, executable: 'C:\Windows\System32\x.exe', command_line: 'x.exe kerberoast /outfile:h.txt'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: x.exe, executable: 'C:\Windows\System32\x.exe', command_line: 'x.exe asktgt /user:a /rc4:ab /ptt /ticket:aa'}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: powershell.exe, executable: 'C:\Windows\System32\powershell.exe', command_line: powershell Invoke-Kerberoast}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: klist.exe, executable: 'C:\Windows\System32\klist.exe', command_line: klist tgt}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: setspn.exe, executable: 'C:\Windows\System32\setspn.exe', command_line: setspn -L host}

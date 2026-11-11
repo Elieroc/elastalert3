@@ -1,0 +1,30 @@
+name: omega-win-wmi-event-subscription-created
+type: any
+index: winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1546.003]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- terms:
+    event.code: ['19', '20', '21']
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            winlog.event_data.Name: {value: SCM Event Log Filter, case_insensitive: true}
+        - wildcard:
+            winlog.event_data.Name: {value: BVTFilter, case_insensitive: true}
+        - wildcard:
+            winlog.event_data.Name: {value: SCM Event Log Consumer, case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: A WMI event consumer, filter or binding created (Sysmon events 19, 20, 21), the persistence mechanism that
+    survives reboots without files or Run keys.
+  source: [process]
+  false_positives: Some monitoring and hardware-management agents register WMI subscriptions (exclude their consumer names).
+  references: ['https://attack.mitre.org/techniques/T1546/003/']

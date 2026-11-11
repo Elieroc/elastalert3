@@ -1,0 +1,37 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: ntdsutil.exe, executable: 'C:\Windows\System32\ntdsutil.exe', command_line: 'ntdsutil "ac i ntds" "ifm"
+        "create full c:\temp" q q'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: esentutl.exe, executable: 'C:\Windows\System32\esentutl.exe', command_line: 'esentutl /y /vss C:\Windows\NTDS\ntds.dit
+        /d C:\x\ntds.dit'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: ntdsutil.exe, executable: 'C:\Windows\System32\ntdsutil.exe', command_line: ntdsutil "metadata cleanup"}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: notepad.exe, executable: 'C:\Windows\System32\notepad.exe', command_line: 'notepad C:\notes.txt'}

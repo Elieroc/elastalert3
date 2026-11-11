@@ -1,0 +1,90 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: whoami.exe, executable: 'C:\Windows\System32\whoami.exe', command_line: whoami.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: net.exe, executable: 'C:\Windows\System32\net.exe', command_line: net.exe}
+    '@timestamp': '2026-01-01T10:00:03Z'
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: nltest.exe, executable: 'C:\Windows\System32\nltest.exe', command_line: nltest.exe}
+    '@timestamp': '2026-01-01T10:00:06Z'
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: ipconfig.exe, executable: 'C:\Windows\System32\ipconfig.exe', command_line: ipconfig.exe}
+    '@timestamp': '2026-01-01T10:00:09Z'
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: systeminfo.exe, executable: 'C:\Windows\System32\systeminfo.exe', command_line: systeminfo.exe}
+    '@timestamp': '2026-01-01T10:00:12Z'
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: tasklist.exe, executable: 'C:\Windows\System32\tasklist.exe', command_line: tasklist.exe}
+    '@timestamp': '2026-01-01T10:00:15Z'
+- id: pos7
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: quser.exe, executable: 'C:\Windows\System32\quser.exe', command_line: quser.exe}
+    '@timestamp': '2026-01-01T10:00:18Z'
+- id: pos8
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: arp.exe, executable: 'C:\Windows\System32\arp.exe', command_line: arp.exe}
+    '@timestamp': '2026-01-01T10:00:21Z'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: notepad.exe, executable: 'C:\Windows\System32\notepad.exe', command_line: notepad.exe}
+matches: 1

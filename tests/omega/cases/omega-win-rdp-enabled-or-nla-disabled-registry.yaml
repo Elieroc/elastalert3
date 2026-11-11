@@ -1,0 +1,42 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server\fDenyTSConnections
+      data:
+        strings: ['0x00000000']
+      value: fDenyTSConnections
+    process: {name: reg.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp\UserAuthentication
+      data:
+        strings: ['0x00000000']
+      value: UserAuthentication
+    process: {name: reg.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server\fDenyTSConnections
+      data:
+        strings: ['0x00000001']
+      value: fDenyTSConnections
+    process: {name: reg.exe}

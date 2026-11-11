@@ -1,0 +1,43 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, code: '4104'}
+    powershell:
+      file: {script_block_text: '$m=[Kernel32]::VirtualAlloc(0,$b.Length,0x3000,0x40);[System.Runtime.InteropServices.Marshal]::Copy($b,0,$m,$b.Length);[Kernel32]::CreateThread(0,0,$m,0,0,0)'}
+    process: {name: powershell.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, code: '4104'}
+    powershell:
+      file: {script_block_text: '$a=[Reflection.Assembly]::Load([Convert]::FromBase64String($s))'}
+    process: {name: powershell.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, code: '4104'}
+    powershell:
+      file: {script_block_text: '[Convert]::FromBase64String($s)'}
+    process: {name: powershell.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, code: '4104'}
+    powershell:
+      file: {script_block_text: Get-Service}
+    process: {name: powershell.exe}

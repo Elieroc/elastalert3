@@ -1,0 +1,15 @@
+# Legitimate PowerShell script blocks (event 4104): no T0 rule of type `any` may hit them.
+# Merged on {host.os.type: windows, event.category: process, event.code: '4104'}.
+- {powershell.file.script_block_text: 'Get-ChildItem C:\Users | Sort-Object Length -Descending | Select-Object -First 10', process.name: powershell.exe}
+- {powershell.file.script_block_text: 'Get-Service | Where-Object {$_.Status -eq "Running"} | Format-Table Name, DisplayName', process.name: powershell.exe}
+- {powershell.file.script_block_text: 'Import-Module ActiveDirectory; Get-ADUser -Identity bob -Properties MemberOf', process.name: powershell.exe}
+- {powershell.file.script_block_text: 'Invoke-RestMethod -Uri https://api.github.com/repos/PowerShell/PowerShell/releases/latest', process.name: powershell.exe}
+- {powershell.file.script_block_text: 'Invoke-WebRequest -Uri https://example.org/file.zip -OutFile C:\Temp\file.zip', process.name: powershell.exe}
+- {powershell.file.script_block_text: 'Get-MpComputerStatus | Select-Object AMServiceEnabled, RealTimeProtectionEnabled', process.name: powershell.exe}
+- {powershell.file.script_block_text: 'Update-MpSignature', process.name: powershell.exe}
+- {powershell.file.script_block_text: 'Get-EventLog -LogName Security -Newest 50 | Where-Object EventID -eq 4624', process.name: powershell.exe}
+- {powershell.file.script_block_text: 'Get-WmiObject Win32_OperatingSystem | Select-Object Caption, Version', process.name: powershell.exe}
+- {powershell.file.script_block_text: '$cred = Get-Credential; New-PSSession -ComputerName srv01 -Credential $cred', process.name: powershell.exe}
+- {powershell.file.script_block_text: 'Compress-Archive -Path C:\Logs -DestinationPath C:\Backup\logs.zip', process.name: powershell.exe}
+- {powershell.file.script_block_text: '[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes("hello"))', process.name: powershell.exe}
+- {powershell.file.script_block_text: 'Get-VM | Where-Object State -eq Running', process.name: powershell.exe}

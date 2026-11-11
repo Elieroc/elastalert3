@@ -1,0 +1,443 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:40:00Z'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:41:00Z'
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:42:00Z'
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:43:00Z'
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:44:00Z'
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:45:00Z'
+- id: pos7
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:46:00Z'
+- id: pos8
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:47:00Z'
+- id: pos9
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:48:00Z'
+- id: pos10
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:49:00Z'
+- id: pos11
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:50:00Z'
+- id: pos12
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:51:00Z'
+- id: pos13
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:52:00Z'
+- id: pos14
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:53:00Z'
+- id: pos15
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:54:00Z'
+- id: pos16
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:55:00Z'
+- id: pos17
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:56:00Z'
+- id: pos18
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:57:00Z'
+- id: pos19
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:58:00Z'
+- id: pos20
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T09:59:00Z'
+- id: pos21
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 203.0.113.50, port: 443}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:00:00Z'
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:01:00Z'
+- id: neg3
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:02:00Z'
+- id: neg4
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:03:00Z'
+- id: neg5
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:04:00Z'
+- id: neg6
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:05:00Z'
+- id: neg7
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:06:00Z'
+- id: neg8
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:07:00Z'
+- id: neg9
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:08:00Z'
+- id: neg10
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:09:00Z'
+- id: neg11
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:10:00Z'
+- id: neg12
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:11:00Z'
+- id: neg13
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:12:00Z'
+- id: neg14
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:13:00Z'
+- id: neg15
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:14:00Z'
+- id: neg16
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:15:00Z'
+- id: neg17
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:16:00Z'
+- id: neg18
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:17:00Z'
+- id: neg19
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:18:00Z'
+- id: neg20
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:19:00Z'
+- id: neg21
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: svc.exe}
+    destination: {ip: 10.0.0.8, port: 443}
+    '@timestamp': '2026-01-01T09:20:00Z'
+matches: 1

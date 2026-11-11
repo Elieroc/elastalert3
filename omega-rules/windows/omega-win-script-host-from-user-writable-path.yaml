@@ -1,0 +1,58 @@
+name: omega-win-script-host-from-user-writable-path
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1059.005, T1059.007]
+risk_score: 20
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: wscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: cscript.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*\\appdata\\*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\temp\\*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\downloads\\*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\users\\public\\*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\programdata\\*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\perflogs\\*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*.js*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.vbs*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.vbe*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.wsf*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.jse*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*.hta*', case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: wscript or cscript running a .js, .jse, .vbs, .vbe or .wsf file from a download, temp, public or profile
+    folder.
+  source: [process]
+  false_positives: Logon scripts and software that ships VBScript installers. Adds risk only.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules-threat-hunting/windows/process_creation/proc_creation_win_wscript_cscript_script_exec.yml',
+    'https://attack.mitre.org/techniques/T1059/005/', 'https://attack.mitre.org/techniques/T1059/007/']

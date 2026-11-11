@@ -1,0 +1,41 @@
+name: omega-win-cmstp-inf-execution
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1218.003]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: cmstp.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '* /s*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '* /ni*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '* /au*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '* /ns*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*.inf*', case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: cmstp installing an INF with /s /ns (silent), the UAC bypass and proxy-execution trick.
+  source: [process]
+  false_positives: Almost none; cmstp is used by VPN profile installers with /s (exclude their INF path).
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_cmstp_execution_by_creation.yml',
+    'https://attack.mitre.org/techniques/T1218/003/']

@@ -1,0 +1,44 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: a.exe, executable: 'C:\Users\Public\a.exe', command_line: a.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: b.exe, executable: 'C:\Users\bob\Downloads\b.exe', command_line: b.exe}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: c.exe, executable: 'C:\$Recycle.Bin\c.exe', command_line: c.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: notepad.exe, executable: 'C:\Windows\System32\notepad.exe', command_line: notepad.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: chrome.exe, executable: 'C:\Program Files\Google\Chrome\Application\chrome.exe', command_line: chrome.exe}

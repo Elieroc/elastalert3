@@ -1,0 +1,55 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\evil\ImagePath
+      data:
+        strings: ['%COMSPEC% /c C:\Users\Public\a.exe']
+      value: ImagePath
+    process: {name: reg.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\x\ImagePath
+      data:
+        strings: ['C:\Windows\Temp\x.exe']
+      value: ImagePath
+    process: {name: reg.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\MyApp\ImagePath
+      data:
+        strings: ['"C:\Program Files\MyApp\app.exe"']
+      value: ImagePath
+    process: {name: reg.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\evil\ImagePath
+      data:
+        strings: [cmd /c x]
+      value: ImagePath
+    process: {name: msiexec.exe}

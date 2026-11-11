@@ -1,0 +1,57 @@
+name: omega-win-kerberos-attack-tool-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1558.003, T1558.001, T1550.003]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '* kerberoast*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '* asreproast*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '* asktgt /*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '* asktgs /*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '* tgtdeleg*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '* s4u /*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '* golden /*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '* silver /*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '* ptt /ticket*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*kerberos::golden*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*kerberos::ptt*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*kerberos::list /export*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '* harvest /interval*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*invoke-kerberoast*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*get-domainspnticket*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Kerberos abuse in a command line: Rubeus verbs (kerberoast, asktgt, asktgs, s4u, golden, silver, ptt, asreproast,
+    tgtdeleg), mimikatz kerberos:: and ticket export, ticket injection.'
+  source: [process]
+  false_positives: Red teams only.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_hktl_rubeus.yml',
+    'https://attack.mitre.org/techniques/T1558/003/', 'https://attack.mitre.org/techniques/T1558/001/', 'https://attack.mitre.org/techniques/T1550/003/']

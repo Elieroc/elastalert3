@@ -1,0 +1,71 @@
+name: omega-win-accessibility-or-uac-binary-spawns-shell
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1546.008, T1548.002]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.parent.name: {value: sethc.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: utilman.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: osk.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: narrator.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: magnify.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: displayswitch.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: atbroker.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: fodhelper.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: eventvwr.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: sdclt.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: computerdefaults.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: wsreset.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: slui.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - term:
+        process.name: {value: cmd.exe, case_insensitive: true}
+    - term:
+        process.name: {value: powershell.exe, case_insensitive: true}
+    - term:
+        process.name: {value: pwsh.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: cscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: mshta.exe, case_insensitive: true}
+    - term:
+        process.name: {value: rundll32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: regsvr32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: msbuild.exe, case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: sethc, utilman, osk, narrator, magnify, displayswitch or atbroker starting a shell (accessibility backdoor),
+    or fodhelper, eventvwr, sdclt, computerdefaults, wsreset or slui starting a shell or script (UAC bypass).
+  source: [process]
+  false_positives: None known.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_uac_bypass_fodhelper.yml',
+    'https://attack.mitre.org/techniques/T1546/008/', 'https://attack.mitre.org/techniques/T1548/002/']

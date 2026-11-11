@@ -1,0 +1,396 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f0.docx.lockbit', name: f0.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f1.docx.lockbit', name: f1.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f2.docx.lockbit', name: f2.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f3.docx.lockbit', name: f3.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f4.docx.lockbit', name: f4.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f5.docx.lockbit', name: f5.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos7
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f6.docx.lockbit', name: f6.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos8
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f7.docx.lockbit', name: f7.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos9
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f8.docx.lockbit', name: f8.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos10
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f9.docx.lockbit', name: f9.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos11
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f10.docx.lockbit', name: f10.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos12
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f11.docx.lockbit', name: f11.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos13
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f12.docx.lockbit', name: f12.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos14
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f13.docx.lockbit', name: f13.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos15
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f14.docx.lockbit', name: f14.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos16
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f15.docx.lockbit', name: f15.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos17
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f16.docx.lockbit', name: f16.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos18
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f17.docx.lockbit', name: f17.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos19
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f18.docx.lockbit', name: f18.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos20
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f19.docx.lockbit', name: f19.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos21
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f20.docx.lockbit', name: f20.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos22
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f21.docx.lockbit', name: f21.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos23
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f22.docx.lockbit', name: f22.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos24
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f23.docx.lockbit', name: f23.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos25
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f24.docx.lockbit', name: f24.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos26
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f25.docx.lockbit', name: f25.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos27
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f26.docx.lockbit', name: f26.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos28
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f27.docx.lockbit', name: f27.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos29
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f28.docx.lockbit', name: f28.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos30
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f29.docx.lockbit', name: f29.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos31
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f30.docx.lockbit', name: f30.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos32
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f31.docx.lockbit', name: f31.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos33
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f32.docx.lockbit', name: f32.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos34
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f33.docx.lockbit', name: f33.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos35
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f34.docx.lockbit', name: f34.docx.lockbit, extension: lockbit}
+    process: {name: x.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\f.docx', name: f.docx, extension: docx}
+    process: {name: word.exe}
+matches: 1

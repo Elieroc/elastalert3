@@ -1,0 +1,35 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: invoice.pdf.exe, executable: 'C:\Users\bob\Downloads\invoice.pdf.exe', command_line: invoice.pdf.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: photo.jpg.scr, executable: 'C:\Users\bob\Desktop\photo.jpg.scr', command_line: photo.jpg.scr}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: invoice.exe, executable: 'C:\Users\bob\Downloads\invoice.exe', command_line: invoice.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: notepad.exe, executable: 'C:\Windows\notepad.exe', command_line: notepad.exe}

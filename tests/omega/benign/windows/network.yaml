@@ -1,0 +1,13 @@
+# Legitimate Windows network connections: no T0 rule of type `any` may hit them.
+# Merged on {host.os.type: windows, event.category: network, event.action: connection_attempted}.
+- {process.name: chrome.exe, destination.ip: 142.250.74.46, destination.port: 443}
+- {process.name: msedge.exe, destination.ip: 13.107.42.14, destination.port: 443}
+- {process.name: svchost.exe, destination.ip: 20.190.151.9, destination.port: 443}
+- {process.name: OneDrive.exe, destination.ip: 13.107.6.171, destination.port: 443}
+- {process.name: Teams.exe, destination.ip: 52.113.194.132, destination.port: 443}
+- {process.name: System, destination.ip: 10.0.0.5, destination.port: 445}
+- {process.name: mstsc.exe, destination.ip: 10.0.0.50, destination.port: 3389}
+- {process.name: powershell.exe, destination.ip: 10.0.0.8, destination.port: 5985}
+- {process.name: certutil.exe, destination.ip: 10.0.0.9, destination.port: 80}
+- {process.name: rundll32.exe, destination.ip: 192.168.1.10, destination.port: 445}
+- {process.name: MsMpEng.exe, destination.ip: 13.89.179.8, destination.port: 443}

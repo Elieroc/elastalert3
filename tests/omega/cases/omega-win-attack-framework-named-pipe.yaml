@@ -1,0 +1,49 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start, code: '17'}
+    winlog:
+      event_data: {PipeName: \msagent_a1}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start, code: '18'}
+    winlog:
+      event_data: {PipeName: \MSSE-1234-server}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start, code: '17'}
+    winlog:
+      event_data: {PipeName: \postex_ssh_ab12}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start, code: '17'}
+    winlog:
+      event_data: {PipeName: \chrome.1234.mojo}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start, code: '17'}
+    winlog:
+      event_data: {PipeName: \PSHost.1.2}

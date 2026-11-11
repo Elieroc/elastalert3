@@ -1,0 +1,29 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host: {name: h1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '7045'}
+    winlog:
+      event_data: {ServiceName: Spooler}
+- id: pos2
+  match: true
+  doc:
+    host: {name: h1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '7045'}
+    winlog:
+      event_data: {ServiceName: EvilSvc}
+- id: neg1
+  doc:
+    host: {name: h1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '7036'}
+    winlog:
+      event_data: {ServiceName: Other}
+- id: hist1
+  doc:
+    host: {name: h1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '7045'}
+    winlog:
+      event_data: {ServiceName: Spooler}
+    '@timestamp': '2025-12-20T10:00:00Z'
+matches: 1

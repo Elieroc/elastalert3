@@ -1,0 +1,36 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: bcdedit.exe, executable: 'C:\Windows\System32\bcdedit.exe', command_line: 'bcdedit /set {default} safeboot
+        network'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: bcdedit.exe, executable: 'C:\Windows\System32\bcdedit.exe', command_line: bcdedit /set testsigning on}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: bcdedit.exe, executable: 'C:\Windows\System32\bcdedit.exe', command_line: bcdedit /enum}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: bcdedit.exe, executable: 'C:\Windows\System32\bcdedit.exe', command_line: bcdedit /timeout 5}

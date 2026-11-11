@@ -1,0 +1,99 @@
+name: omega-win-msbuild-installutil-regasm-proxy-execution
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1127.001, T1218.004, T1218.009]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: msbuild.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - term:
+                process.parent.name: {value: winword.exe, case_insensitive: true}
+            - term:
+                process.parent.name: {value: excel.exe, case_insensitive: true}
+            - term:
+                process.parent.name: {value: outlook.exe, case_insensitive: true}
+            - term:
+                process.parent.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.parent.name: {value: cmd.exe, case_insensitive: true}
+            - term:
+                process.parent.name: {value: wscript.exe, case_insensitive: true}
+            - term:
+                process.parent.name: {value: cscript.exe, case_insensitive: true}
+            - term:
+                process.parent.name: {value: mshta.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*\\appdata\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\temp\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\users\\public\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\downloads\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*.xml*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*.csproj*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: installutil.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*/logfile=*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/u *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/LogToConsole=false*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: regasm.exe, case_insensitive: true}
+            - term:
+                process.name: {value: regsvcs.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*\\appdata\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\temp\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\users\\public\\*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: MSBuild, InstallUtil, RegAsm, RegSvcs or MSTSC-style trusted binaries running code from a user path or started
+    by a script or Office parent.
+  source: [process]
+  false_positives: Developers building with MSBuild from their own folders (exclude by parent devenv.exe).
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_installutil_download.yml',
+    'https://attack.mitre.org/techniques/T1127/001/', 'https://attack.mitre.org/techniques/T1218/004/', 'https://attack.mitre.org/techniques/T1218/009/']

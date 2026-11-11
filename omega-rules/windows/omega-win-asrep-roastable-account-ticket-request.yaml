@@ -1,0 +1,29 @@
+name: omega-win-asrep-roastable-account-ticket-request
+type: any
+index: winlogbeat-*,logs-system.security-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1558.004]
+risk_score: 25
+risk_objects: {ip: source.ip, user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4768'}
+- term: {winlog.event_data.PreAuthType: '0'}
+- term: {winlog.event_data.TicketEncryptionType: '0x17'}
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            user.name: {value: '*$', case_insensitive: true}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'A Kerberos TGT issued without pre-authentication using RC4 (event 4768, PreAuthType 0, encryption 0x17):
+    the response an attacker cracks offline (AS-REP roasting).'
+  source: [auth]
+  false_positives: Accounts with "do not require Kerberos pre-authentication" set on purpose (old Unix integrations). Adds
+    risk only; fix the account setting.
+  references: ['https://attack.mitre.org/techniques/T1558/004/']

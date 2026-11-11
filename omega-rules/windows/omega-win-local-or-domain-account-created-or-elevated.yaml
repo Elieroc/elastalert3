@@ -1,0 +1,98 @@
+name: omega-win-local-or-domain-account-created-or-elevated
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1136.001, T1098]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: net.exe, case_insensitive: true}
+            - term:
+                process.name: {value: net1.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* user *', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* /add*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: net.exe, case_insensitive: true}
+            - term:
+                process.name: {value: net1.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* localgroup *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* group *', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* /add*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*administrators*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*admins*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*remote desktop users*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*domain admins*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*enterprise admins*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*new-localuser*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*add-localgroupmember*administrators*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*new-aduser*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*add-adgroupmember*admins*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: net user /add, net localgroup administrators /add, net group "domain admins" /add, or the PowerShell equivalents
+    (New-LocalUser, Add-LocalGroupMember, New-ADUser, Add-ADGroupMember).
+  source: [process]
+  false_positives: Account administration and onboarding scripts. Adds risk only; the authentication-log rules cover the
+    same events with the account that did it.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_net_user_add.yml',
+    'https://attack.mitre.org/techniques/T1136/001/', 'https://attack.mitre.org/techniques/T1098/']

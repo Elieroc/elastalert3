@@ -1,0 +1,36 @@
+name: omega-win-ps-amsi-bypass
+type: any
+index: winlogbeat-*,logs-windows.powershell_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1562.001]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.code: '4104'}
+- bool:
+    should:
+    - wildcard:
+        powershell.file.script_block_text: {value: '*amsiinitfailed*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*amsiutils*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*amsiscanbuffer*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*amsicontext*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*amsiopensession*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*[ref].assembly.gettype*amsi*', case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'PowerShell script block that tampers with AMSI: amsiInitFailed, AmsiUtils reflection, AmsiScanBuffer patching,
+    amsi.dll memory writes.'
+  source: [powershell]
+  false_positives: Security research and red-team scripts. Defender products log their own detection test strings here (exclude
+    the test hosts).
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/powershell/powershell_script/posh_ps_amsi_bypass_pattern_nov22.yml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/windows/powershell/powershell_script/posh_ps_amsi_null_bits_bypass.yml',
+    'https://attack.mitre.org/techniques/T1562/001/']

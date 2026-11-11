@@ -1,0 +1,45 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: reg.exe, executable: 'C:\Windows\System32\reg.exe', command_line: 'reg save HKLM\SAM C:\Temp\sam.save'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: reg.exe, executable: 'C:\Windows\System32\reg.exe', command_line: 'reg save hklm\system C:\Temp\sys.save'}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: cmd.exe, executable: 'C:\Windows\System32\cmd.exe', command_line: 'copy \\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\Windows\System32\config\SAM
+        C:\x'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: reg.exe, executable: 'C:\Windows\System32\reg.exe', command_line: reg query HKLM\Software\Microsoft}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: reg.exe, executable: 'C:\Windows\System32\reg.exe', command_line: reg save HKCU\Software\App app.reg}

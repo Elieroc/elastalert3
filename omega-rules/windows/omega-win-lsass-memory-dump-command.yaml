@@ -1,0 +1,83 @@
+name: omega-win-lsass-memory-dump-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1003.001]
+risk_score: 90
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*lsass*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -ma *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -mm *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* /ma *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*-accepteula*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -dump*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*procdump*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*out-minidump*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*sqldumper*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*createdump*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*nanodump*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*dumpert*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*ppldump*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: rundll32.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*comsvcs*minidump*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*comsvcs*#24*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*comsvcs*#-24*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*sekurlsa::*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*lsadump::*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*privilege::debug*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'LSASS memory dumped by command line: procdump/ProcDump64 -ma lsass, rundll32 comsvcs.dll MiniDump, sqldumper,
+    Out-Minidump, createdump, or a tool argument naming lsass with -accepteula/-dump.'
+  source: [process]
+  false_positives: Crash-dump collection by support staff (rare, and not of lsass).
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_access/proc_access_win_lsass_dump_comsvcs_dll.yml',
+    'https://attack.mitre.org/techniques/T1003/001/']

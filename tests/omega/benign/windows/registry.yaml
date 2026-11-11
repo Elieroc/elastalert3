@@ -1,0 +1,16 @@
+# Legitimate Windows registry changes: no T0 rule of type `any` may hit them.
+# Merged on {host.os.type: windows, event.category: registry, event.type: change}.
+- {registry.path: 'HKEY_USERS\S-1-5-21-1\Software\Microsoft\Windows\CurrentVersion\Run\OneDrive', registry.data.strings: ['"C:\Program Files\Microsoft OneDrive\OneDrive.exe" /background'], process.name: OneDrive.exe}
+- {registry.path: 'HKEY_USERS\S-1-5-21-1\Software\Microsoft\Windows\CurrentVersion\Run\Teams', registry.data.strings: ['C:\Users\alice\AppData\Local\Microsoft\Teams\Update.exe --processStart Teams.exe'], process.name: Teams.exe}
+- {registry.path: 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\Userinit', registry.data.strings: ['C:\Windows\system32\userinit.exe,'], process.name: svchost.exe}
+- {registry.path: 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\Shell', registry.data.strings: ['explorer.exe'], process.name: svchost.exe}
+- {registry.path: 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Security Packages', registry.data.strings: ['kerberos', 'msv1_0', 'schannel', 'wdigest', 'tspkg', 'pku2u'], process.name: lsass.exe}
+- {registry.path: 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\RunAsPPL', registry.data.strings: ['0x00000001'], process.name: svchost.exe}
+- {registry.path: 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest\UseLogonCredential', registry.data.strings: ['0x00000000'], process.name: svchost.exe}
+- {registry.path: 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA', registry.data.strings: ['0x00000001'], process.name: svchost.exe}
+- {registry.path: 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Spooler\ImagePath', registry.data.strings: ['C:\Windows\System32\spoolsv.exe'], process.name: TrustedInstaller.exe}
+- {registry.path: 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection\DisableRealtimeMonitoring', registry.data.strings: ['0x00000000'], process.name: MsMpEng.exe}
+- {registry.path: 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\app.exe\Debugger', registry.data.strings: ['"C:\Windows\system32\vsjitdebugger.exe" -p %ld -e %ld'], process.name: devenv.exe}
+- {registry.path: 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoDriveTypeAutoRun', registry.data.strings: ['0x000000ff'], process.name: svchost.exe}
+- {registry.path: 'HKEY_USERS\S-1-5-21-1\Control Panel\Desktop\Wallpaper', registry.data.strings: ['C:\Windows\Web\Wallpaper\img0.jpg'], process.name: explorer.exe}
+- {registry.path: 'HKEY_USERS\S-1-5-21-1\Software\Classes\.txt\shell\open\command', registry.data.strings: ['notepad.exe %1'], process.name: explorer.exe}

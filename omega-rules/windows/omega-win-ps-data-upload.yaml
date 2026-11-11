@@ -1,0 +1,38 @@
+name: omega-win-ps-data-upload
+type: any
+index: winlogbeat-*,logs-windows.powershell_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1041, T1567]
+risk_score: 20
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.code: '4104'}
+- bool:
+    should:
+    - wildcard:
+        powershell.file.script_block_text: {value: '*webclient*uploadfile*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*webclient*uploaddata*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*webclient*uploadstring*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*invoke-webrequest*-infile*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*invoke-restmethod*-infile*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*system.net.ftpwebrequest*uploadfile*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*[convert]::tobase64string([io.file]::readallbytes*invoke-restmethod*',
+          case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*[convert]::tobase64string(*readallbytes*invoke-webrequest*', case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'PowerShell script block uploading data: Invoke-WebRequest/Invoke-RestMethod with -Method Post/Put and -InFile
+    or -Body of file contents, WebClient UploadFile/UploadString/UploadData, FTP uploads.'
+  source: [powershell]
+  false_positives: Backup and reporting scripts posting to an API. Adds risk only.
+  references: ['https://attack.mitre.org/techniques/T1041/', 'https://attack.mitre.org/techniques/T1567/']

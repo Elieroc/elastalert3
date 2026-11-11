@@ -1,0 +1,97 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4625', outcome: failure}
+    source: {ip: 203.0.113.9}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos2
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4625', outcome: failure}
+    source: {ip: 203.0.113.9}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:00:01Z'
+- id: pos3
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4625', outcome: failure}
+    source: {ip: 203.0.113.9}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:00:02Z'
+- id: pos4
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4625', outcome: failure}
+    source: {ip: 203.0.113.9}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:00:03Z'
+- id: pos5
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4625', outcome: failure}
+    source: {ip: 203.0.113.9}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:00:04Z'
+- id: pos6
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4625', outcome: failure}
+    source: {ip: 203.0.113.9}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:00:05Z'
+- id: pos7
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4625', outcome: failure}
+    source: {ip: 203.0.113.9}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:00:06Z'
+- id: pos8
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4625', outcome: failure}
+    source: {ip: 203.0.113.9}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:00:07Z'
+- id: pos9
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4625', outcome: failure}
+    source: {ip: 203.0.113.9}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:00:08Z'
+- id: pos10
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4625', outcome: failure}
+    source: {ip: 203.0.113.9}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:00:09Z'
+- id: pos11
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624', outcome: success}
+    source: {ip: 203.0.113.9}
+    user: {name: admin}
+    winlog:
+      logon: {type: '10'}
+    '@timestamp': '2026-01-01T10:05:00Z'
+- id: neg1
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Other, code: '4624'}
+    source: {ip: 203.0.113.7}
+matches: 1

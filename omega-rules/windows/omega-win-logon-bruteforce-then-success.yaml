@@ -1,0 +1,33 @@
+name: omega-win-logon-bruteforce-then-success
+type: correlation
+index: winlogbeat-*,logs-system.security-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1110.001, T1078]
+risk_score: 90
+risk_objects: {ip: source.ip, user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- exists: {field: source.ip}
+query_key: source.ip
+timeframe: {minutes: 15}
+realert: {hours: 1}
+correlation_leaves:
+  fail:
+    num_events: 10
+    filter:
+    - term: {event.code: '4625'}
+  ok:
+    filter:
+    - term: {event.code: '4624'}
+    - terms:
+        winlog.logon.type: ['3', '10', '2', '7']
+correlation_query: fail THEN ok
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A source address fails ten Windows logons and then logs on successfully within 15 minutes: the guessed password
+    worked.'
+  source: [auth]
+  false_positives: A user who mistypes ten times from a shared NAT address. Raise num_events or exclude the NAT range.
+  references: ['https://attack.mitre.org/techniques/T1110/001/', 'https://attack.mitre.org/techniques/T1078/']

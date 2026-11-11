@@ -1,0 +1,87 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host: {name: srv0}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5140'}
+    user: {name: adm}
+    source: {ip: 10.0.0.9}
+    winlog:
+      event_data: {ShareName: \\*\ADMIN$}
+- id: pos2
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5140'}
+    user: {name: adm}
+    source: {ip: 10.0.0.9}
+    winlog:
+      event_data: {ShareName: \\*\ADMIN$}
+- id: pos3
+  match: true
+  doc:
+    host: {name: srv2}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5140'}
+    user: {name: adm}
+    source: {ip: 10.0.0.9}
+    winlog:
+      event_data: {ShareName: \\*\ADMIN$}
+- id: pos4
+  match: true
+  doc:
+    host: {name: srv3}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5140'}
+    user: {name: adm}
+    source: {ip: 10.0.0.9}
+    winlog:
+      event_data: {ShareName: \\*\ADMIN$}
+- id: pos5
+  match: true
+  doc:
+    host: {name: srv4}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5140'}
+    user: {name: adm}
+    source: {ip: 10.0.0.9}
+    winlog:
+      event_data: {ShareName: \\*\ADMIN$}
+- id: neg1
+  doc:
+    host: {name: srv0}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5140'}
+    user: {name: adm2}
+    source: {ip: 10.0.0.8}
+    winlog:
+      event_data: {ShareName: \\*\data}
+- id: neg2
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5140'}
+    user: {name: adm2}
+    source: {ip: 10.0.0.8}
+    winlog:
+      event_data: {ShareName: \\*\data}
+- id: neg3
+  doc:
+    host: {name: srv2}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5140'}
+    user: {name: adm2}
+    source: {ip: 10.0.0.8}
+    winlog:
+      event_data: {ShareName: \\*\data}
+- id: neg4
+  doc:
+    host: {name: srv3}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5140'}
+    user: {name: adm2}
+    source: {ip: 10.0.0.8}
+    winlog:
+      event_data: {ShareName: \\*\data}
+- id: neg5
+  doc:
+    host: {name: srv4}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5140'}
+    user: {name: adm2}
+    source: {ip: 10.0.0.8}
+    winlog:
+      event_data: {ShareName: \\*\data}
+matches: 1

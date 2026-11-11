@@ -1,0 +1,44 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, code: '4104'}
+    powershell:
+      file: {script_block_text: Clear-EventLog -LogName Security}
+    process: {name: powershell.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, code: '4104'}
+    powershell:
+      file: {script_block_text: 'Get-WmiObject Win32_ShadowCopy | ForEach-Object {$_.Delete()}; vssadmin delete shadows
+          /all'}
+    process: {name: powershell.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, code: '4104'}
+    powershell:
+      file: {script_block_text: Get-EventLog -LogName System -Newest 5}
+    process: {name: powershell.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, code: '4104'}
+    powershell:
+      file: {script_block_text: vssadmin list shadows}
+    process: {name: powershell.exe}

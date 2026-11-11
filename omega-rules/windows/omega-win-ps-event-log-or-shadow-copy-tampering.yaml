@@ -1,0 +1,40 @@
+name: omega-win-ps-event-log-or-shadow-copy-tampering
+type: any
+index: winlogbeat-*,logs-windows.powershell_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1070.001, T1490]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.code: '4104'}
+- bool:
+    should:
+    - wildcard:
+        powershell.file.script_block_text: {value: '*clear-eventlog*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*remove-eventlog*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*wevtutil*cl *', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*wevtutil.exe*cl *', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*win32_shadowcopy*delete*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*vssadmin*delete*shadows*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*[system.diagnostics.eventing.reader.eventlogsession]::globalsession.clearlog*',
+          case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*get-wmiobject*win32_shadowcopy*remove-wmiobject*', case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'PowerShell script block that clears event logs or deletes volume shadow copies: Clear-EventLog, wevtutil
+    cl, Remove-EventLog, Win32_ShadowCopy Delete, vssadmin delete.'
+  source: [powershell]
+  false_positives: Log-maintenance scripts (rare).
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/powershell/powershell_script/posh_ps_susp_clear_eventlog.yml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/windows/powershell/powershell_script/posh_ps_susp_win32_shadowcopy_deletion.yml',
+    'https://attack.mitre.org/techniques/T1070/001/', 'https://attack.mitre.org/techniques/T1490/']

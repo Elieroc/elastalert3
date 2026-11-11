@@ -1,0 +1,41 @@
+name: omega-win-admin-share-access-fanout
+type: cardinality
+index: winlogbeat-*,logs-system.security-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1021.002, T1570]
+risk_score: 70
+risk_objects: {user: user.name, ip: source.ip}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- terms:
+    event.code: ['5140', '5145']
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.ShareName: {value: '*\\ADMIN$', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.ShareName: {value: '*\\C$', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            user.name: {value: '*$', case_insensitive: true}
+        minimum_should_match: 1
+- exists: {field: source.ip}
+cardinality_field: host.name
+max_cardinality: 4
+timeframe: {minutes: 10}
+query_key: [user.name, source.ip]
+realert: {minutes: 30}
+alert: [debug]
+omega:
+  tier: T0
+  description: 'One account reaches the ADMIN$ or C$ share of 5 or more different hosts within 10 minutes (events 5140 and
+    5145): lateral movement over SMB.'
+  source: [auth]
+  false_positives: Deployment and inventory tools that touch administrative shares across the fleet (exclude their account
+    or source).
+  references: ['https://attack.mitre.org/techniques/T1021/002/', 'https://attack.mitre.org/techniques/T1570/']

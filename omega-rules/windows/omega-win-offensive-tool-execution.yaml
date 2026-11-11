@@ -1,0 +1,99 @@
+name: omega-win-offensive-tool-execution
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1588.002, T1003]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: mimikatz.exe, case_insensitive: true}
+    - term:
+        process.name: {value: mimilib.dll, case_insensitive: true}
+    - term:
+        process.name: {value: rubeus.exe, case_insensitive: true}
+    - term:
+        process.name: {value: sharphound.exe, case_insensitive: true}
+    - term:
+        process.name: {value: bloodhound.exe, case_insensitive: true}
+    - term:
+        process.name: {value: seatbelt.exe, case_insensitive: true}
+    - term:
+        process.name: {value: sharpup.exe, case_insensitive: true}
+    - term:
+        process.name: {value: lazagne.exe, case_insensitive: true}
+    - term:
+        process.name: {value: crackmapexec.exe, case_insensitive: true}
+    - term:
+        process.name: {value: cme.exe, case_insensitive: true}
+    - term:
+        process.name: {value: safetykatz.exe, case_insensitive: true}
+    - term:
+        process.name: {value: sharpdpapi.exe, case_insensitive: true}
+    - term:
+        process.name: {value: certify.exe, case_insensitive: true}
+    - term:
+        process.name: {value: certipy.exe, case_insensitive: true}
+    - term:
+        process.name: {value: kekeo.exe, case_insensitive: true}
+    - term:
+        process.name: {value: inveigh.exe, case_insensitive: true}
+    - term:
+        process.name: {value: responder.exe, case_insensitive: true}
+    - term:
+        process.name: {value: invoke-mimikatz.exe, case_insensitive: true}
+    - term:
+        process.name: {value: nanodump.exe, case_insensitive: true}
+    - term:
+        process.name: {value: sharpwmi.exe, case_insensitive: true}
+    - term:
+        process.name: {value: sharpkatz.exe, case_insensitive: true}
+    - term:
+        process.name: {value: covenant.exe, case_insensitive: true}
+    - term:
+        process.name: {value: sliver.exe, case_insensitive: true}
+    - term:
+        process.name: {value: brute ratel.exe, case_insensitive: true}
+    - term:
+        process.name: {value: badger.exe, case_insensitive: true}
+    - term:
+        process.name: {value: havoc.exe, case_insensitive: true}
+    - term:
+        process.name: {value: powersploit.exe, case_insensitive: true}
+    - term:
+        process.name: {value: winpeas.exe, case_insensitive: true}
+    - term:
+        process.name: {value: winpeasx64.exe, case_insensitive: true}
+    - term:
+        process.name: {value: adexplorer.exe, case_insensitive: true}
+    - term:
+        process.name: {value: sharpchrome.exe, case_insensitive: true}
+    - term:
+        process.name: {value: sharpsccm.exe, case_insensitive: true}
+    - term:
+        process.name: {value: koadic.exe, case_insensitive: true}
+    - term:
+        process.name: {value: pypykatz.exe, case_insensitive: true}
+    - term:
+        process.name: {value: dumpert.exe, case_insensitive: true}
+    - term:
+        process.name: {value: handlekatz.exe, case_insensitive: true}
+    - term:
+        process.name: {value: nimcrypt.exe, case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: A well-known offensive tool started by file name (Mimikatz, Rubeus, SharpHound, Seatbelt, LaZagne, CrackMapExec,
+    Certify, Inveigh, Responder, Sliver, Havoc, WinPEAS and similar).
+  source: [process]
+  false_positives: 'Red teams and penetration tests on your own systems, and security product test labs (exclude the host
+    or account). A renamed binary evades this rule: the behaviour rules cover that.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_hktl_rubeus.yml',
+    'https://attack.mitre.org/techniques/T1588/002/', 'https://attack.mitre.org/techniques/T1003/']

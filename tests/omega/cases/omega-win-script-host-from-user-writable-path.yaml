@@ -1,0 +1,36 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: wscript.exe, executable: 'C:\Windows\System32\wscript.exe', command_line: 'wscript C:\Users\bob\Downloads\invoice.js'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: cscript.exe, executable: 'C:\Windows\System32\cscript.exe', command_line: 'cscript //nologo C:\Windows\Temp\x.vbs'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: cscript.exe, executable: 'C:\Windows\System32\cscript.exe', command_line: 'cscript C:\Windows\System32\slmgr.vbs
+        /dli'}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: wscript.exe, executable: 'C:\Windows\System32\wscript.exe', command_line: 'wscript D:\logon.vbs'}

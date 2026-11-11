@@ -1,0 +1,93 @@
+name: omega-win-coin-miner-execution
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1496]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - term:
+            process.name: {value: xmrig.exe, case_insensitive: true}
+        - term:
+            process.name: {value: xmr-stak.exe, case_insensitive: true}
+        - term:
+            process.name: {value: nbminer.exe, case_insensitive: true}
+        - term:
+            process.name: {value: t-rex.exe, case_insensitive: true}
+        - term:
+            process.name: {value: lolminer.exe, case_insensitive: true}
+        - term:
+            process.name: {value: phoenixminer.exe, case_insensitive: true}
+        - term:
+            process.name: {value: nanominer.exe, case_insensitive: true}
+        - term:
+            process.name: {value: cpuminer.exe, case_insensitive: true}
+        - term:
+            process.name: {value: minerd.exe, case_insensitive: true}
+        - term:
+            process.name: {value: ethminer.exe, case_insensitive: true}
+        - term:
+            process.name: {value: gminer.exe, case_insensitive: true}
+        - term:
+            process.name: {value: teamredminer.exe, case_insensitive: true}
+        - term:
+            process.name: {value: bzminer.exe, case_insensitive: true}
+        - term:
+            process.name: {value: srbminer-multi.exe, case_insensitive: true}
+        - term:
+            process.name: {value: xmrig-notls.exe, case_insensitive: true}
+        - term:
+            process.name: {value: cgminer.exe, case_insensitive: true}
+        - term:
+            process.name: {value: bfgminer.exe, case_insensitive: true}
+        - term:
+            process.name: {value: nicehashminer.exe, case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*stratum+tcp://*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*stratum+ssl://*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*stratum2+tcp://*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*--donate-level*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '* --coin xmr*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '* -a randomx*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '* --algo=rx/0*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '* --algo rx/0*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '* -a cryptonight*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*pool.minexmr.com*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*xmrpool.eu*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*supportxmr.com*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*nanopool.org*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*2miners.com*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A cryptocurrency miner: known miner binaries (xmrig, nbminer, t-rex, lolMiner, PhoenixMiner, nanominer,
+    cpuminer, ethminer) or a command line with a stratum URL, --donate-level or a mining algorithm flag.'
+  source: [process]
+  false_positives: Authorised mining rigs.
+  references: ['https://attack.mitre.org/techniques/T1496/']

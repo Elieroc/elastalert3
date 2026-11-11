@@ -1,0 +1,55 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_USERS\S-1-5-21-1-2-3-1001\Software\Classes\ms-settings\shell\open\command
+      data:
+        strings: [cmd.exe /c start powershell]
+      value: command
+    process: {name: reg.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_USERS\S-1-5-21-1-2-3-1001\Software\Classes\mscfile\shell\open\command\(Default)
+      data:
+        strings: ['C:\Users\Public\a.exe']
+      value: (Default)
+    process: {name: reg.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SOFTWARE\Classes\ms-settings\shell\open\command
+      data:
+        strings: [x]
+      value: command
+    process: {name: reg.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_USERS\S-1-5-21-1-2-3-1001\Software\Classes\.txt\shell\open\command
+      data:
+        strings: [notepad.exe]
+      value: command
+    process: {name: reg.exe}

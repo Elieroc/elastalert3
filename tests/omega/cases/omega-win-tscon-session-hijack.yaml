@@ -1,0 +1,18 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: tscon.exe, executable: 'C:\Windows\System32\tscon.exe', command_line: 'tscon 2 /dest:rdp-tcp#5'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: tscon.exe, executable: 'C:\Windows\System32\tscon.exe', command_line: tscon 1 /v}

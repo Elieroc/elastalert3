@@ -1,0 +1,90 @@
+name: omega-win-office-app-drops-executable-or-script
+type: any
+index: logs-endpoint.events.file*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1204.002, T1566.001]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change]
+- bool:
+    should:
+    - term:
+        process.name: {value: winword.exe, case_insensitive: true}
+    - term:
+        process.name: {value: excel.exe, case_insensitive: true}
+    - term:
+        process.name: {value: powerpnt.exe, case_insensitive: true}
+    - term:
+        process.name: {value: outlook.exe, case_insensitive: true}
+    - term:
+        process.name: {value: msaccess.exe, case_insensitive: true}
+    - term:
+        process.name: {value: mspub.exe, case_insensitive: true}
+    - term:
+        process.name: {value: onenote.exe, case_insensitive: true}
+    - term:
+        process.name: {value: acrord32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: acrobat.exe, case_insensitive: true}
+    - term:
+        process.name: {value: foxitreader.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        file.extension: {value: exe, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: dll, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: scr, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: bat, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: cmd, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: vbs, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: vbe, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: js, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: jse, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: wsf, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: ps1, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: hta, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: sct, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: com, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: pif, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: jar, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            file.path: {value: '*\\Microsoft\\Office\\*\\*.dll', case_insensitive: true}
+        - wildcard:
+            file.path: {value: '*\\appdata\\local\\microsoft\\*\\*.dll', case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'An Office application, PDF reader or mail client writes an executable, DLL, script, HTA or shortcut to disk:
+    a macro or exploit dropping its payload.'
+  source: [file]
+  false_positives: Add-ins that update themselves and save-as of .lnk/.vbs files by developers using Office. Exclude by
+    path if so.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/file/file_event/file_event_win_office_susp_file_extension.yml',
+    'https://attack.mitre.org/techniques/T1204/002/', 'https://attack.mitre.org/techniques/T1566/001/']

@@ -1,0 +1,43 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: powershell.exe}
+    dns:
+      question: {name: api.telegram.org}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: mshta.exe}
+    dns:
+      question: {name: abc.ngrok-free.app}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {name: discord.com}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: powershell.exe}
+    dns:
+      question: {name: example.org}

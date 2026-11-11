@@ -1,0 +1,87 @@
+name: omega-win-service-created-from-command-line
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1543.003]
+risk_score: 20
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: sc.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* create *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* config *', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*binpath=*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*binpath= *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*new-service*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*sc.exe create*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*cmd*/c*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*cmd.exe*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*powershell*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*wscript*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*mshta*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*rundll32*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\appdata\\*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\temp\\*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\users\\public\\*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\programdata\\*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\\\*\\admin$*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*%comspec%*', case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: sc create/config or New-Service pointing at cmd, PowerShell, a script host or a user-writable path.
+  source: [process]
+  false_positives: Installers and RMM tools. Adds risk only; the service-installed event rule covers the actual install.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_sc_create_service.yml',
+    'https://attack.mitre.org/techniques/T1543/003/']

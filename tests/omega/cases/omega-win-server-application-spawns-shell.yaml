@@ -1,0 +1,64 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c whoami
+      parent: {name: w3wp.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell -c x
+      parent: {name: sqlservr.exe}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: certutil.exe
+      executable: C:\Windows\System32\certutil.exe
+      command_line: certutil.exe
+      parent: {name: UMWorkerProcess.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: conhost.exe
+      executable: C:\Windows\System32\conhost.exe
+      command_line: conhost.exe
+      parent: {name: w3wp.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd.exe
+      parent: {name: explorer.exe}

@@ -1,0 +1,45 @@
+name: omega-win-ntds-dit-extraction
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1003.003]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: ntdsutil.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*ifm*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*ac i ntds*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*activate instance ntds*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*ntds.dit*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Active Directory database copied: ntdsutil ifm / "ac i ntds", vssadmin or diskshadow plus ntds.dit, esentutl
+    on ntds.dit, or a copy of ntds.dit.'
+  source: [process]
+  false_positives: Domain controller backup and IFM media creation by AD admins (exclude the account).
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_susp_ntds.yml',
+    'https://attack.mitre.org/techniques/T1003/003/']

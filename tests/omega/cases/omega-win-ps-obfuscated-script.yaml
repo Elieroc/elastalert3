@@ -1,0 +1,43 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, code: '4104'}
+    powershell:
+      file: {script_block_text: I`E`X (N`e`w-O`b`j`e`c`t N`e`t.W`e`b`C`l`i`e`n`t)}
+    process: {name: powershell.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, code: '4104'}
+    powershell:
+      file: {script_block_text: '$x="{0}{1}{2}{3}{4}" -f "I","E","X","a","b"'}
+    process: {name: powershell.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, code: '4104'}
+    powershell:
+      file: {script_block_text: 'Get-ChildItem C:\Users'}
+    process: {name: powershell.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, code: '4104'}
+    powershell:
+      file: {script_block_text: Write-Host "hello world"}
+    process: {name: powershell.exe}

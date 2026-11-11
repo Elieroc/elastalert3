@@ -1,0 +1,99 @@
+name: omega-win-defender-disabled-or-excluded-cli
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1562.001]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*set-mppreference*-disable*$true*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*set-mppreference*-disable*1*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*add-mppreference*-exclusion*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*set-mppreference*-exclusion*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: sc.exe, case_insensitive: true}
+            - term:
+                process.name: {value: net.exe, case_insensitive: true}
+            - term:
+                process.name: {value: net1.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* stop windefend*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* stop sense*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*config windefend*disabled*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*config sense*disabled*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* stop wdnissvc*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*config wdfilter*disabled*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: netsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*advfirewall*set*state off*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*firewall*set*opmode*disable*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: mpcmdrun.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*-removedefinitions*-all*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Defender switched off or blinded from the command line: Set-MpPreference -Disable*, Add-MpPreference -Exclusion*,
+    sc stop/config WinDefend or Sense, netsh advfirewall off.'
+  source: [process]
+  false_positives: 'Hardening and lab scripts run by administrators. A permanent exclusion for a build folder is the usual
+    false positive: exclude that path.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_powershell_defender_disable_feature.yml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_powershell_defender_exclusion.yml',
+    'https://github.com/elastic/detection-rules/blob/main/rules/windows/defense_evasion_disabling_windows_defender_powershell.toml',
+    'https://attack.mitre.org/techniques/T1562/001/']

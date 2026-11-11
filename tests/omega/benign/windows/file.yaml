@@ -1,0 +1,16 @@
+# Legitimate Windows file activity: no T0 rule of type `any` may hit it.
+# Merged on {host.os.type: windows, event.category: file, event.type: creation}.
+- {file.path: 'C:\Users\alice\Documents\report.docx', file.name: report.docx, file.extension: docx, process.name: WINWORD.EXE}
+- {file.path: 'C:\Users\alice\AppData\Local\Temp\~WRD0001.tmp', file.name: ~WRD0001.tmp, file.extension: tmp, process.name: WINWORD.EXE}
+- {file.path: 'C:\Users\alice\Downloads\setup.exe', file.name: setup.exe, file.extension: exe, process.name: chrome.exe}
+- {file.path: 'C:\Windows\System32\Tasks\Microsoft\Windows\UpdateOrchestrator\Schedule Scan', file.name: Schedule Scan, process.name: svchost.exe}
+- {file.path: 'C:\inetpub\wwwroot\index.html', file.name: index.html, file.extension: html, process.name: w3wp.exe}
+- {file.path: 'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\root\a1\b2\App_Web_x.dll', file.name: App_Web_x.dll, file.extension: dll, process.name: w3wp.exe}
+- {file.path: 'C:\inetpub\logs\LogFiles\W3SVC1\u_ex260101.log', file.name: u_ex260101.log, file.extension: log, process.name: w3wp.exe}
+- {file.path: 'C:\Users\alice\Documents\README.md', file.name: README.md, file.extension: md, process.name: git.exe}
+- {file.path: 'C:\Users\alice\project\readme.txt', file.name: readme.txt, file.extension: txt, process.name: Code.exe}
+- {file.path: 'C:\Users\alice\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\OneDrive.lnk', file.name: OneDrive.lnk, file.extension: lnk, process.name: explorer.exe}
+- {file.path: 'C:\Windows\NTDS\ntds.dit', file.name: ntds.dit, file.extension: dit, process.name: lsass.exe}
+- {file.path: 'C:\Windows\System32\config\SAM', file.name: SAM, process.name: svchost.exe}
+- {file.path: 'C:\Backups\data.7z', file.name: data.7z, file.extension: 7z, process.name: 7z.exe}
+- {file.path: 'C:\Users\alice\AppData\Local\Microsoft\Windows\INetCache\x.js', file.name: x.js, file.extension: js, process.name: msedge.exe}

@@ -1,0 +1,36 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+    winlog:
+      logon: {type: '3'}
+      event_data: {AuthenticationPackageName: NTLM, KeyLength: '0'}
+    user: {name: admin}
+    source: {ip: 10.0.0.9}
+- id: pos2
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+    winlog:
+      logon: {type: '9'}
+      event_data: {LogonProcessName: seclogo}
+    user: {name: admin}
+- id: neg1
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+    winlog:
+      logon: {type: '3'}
+      event_data: {AuthenticationPackageName: NTLM, KeyLength: '128'}
+    user: {name: admin}
+- id: neg2
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+    winlog:
+      logon: {type: '3'}
+      event_data: {AuthenticationPackageName: NTLM, KeyLength: '0'}
+    user: {name: ANONYMOUS LOGON}

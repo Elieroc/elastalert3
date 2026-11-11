@@ -1,0 +1,75 @@
+name: omega-win-office-spawns-script-interpreter
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1566.001, T1204.002, T1059]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.parent.name: {value: winword.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: excel.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: powerpnt.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: outlook.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: onenote.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: mspub.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: msaccess.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: visio.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - term:
+        process.name: {value: cmd.exe, case_insensitive: true}
+    - term:
+        process.name: {value: powershell.exe, case_insensitive: true}
+    - term:
+        process.name: {value: pwsh.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: cscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: mshta.exe, case_insensitive: true}
+    - term:
+        process.name: {value: rundll32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: regsvr32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: certutil.exe, case_insensitive: true}
+    - term:
+        process.name: {value: bitsadmin.exe, case_insensitive: true}
+    - term:
+        process.name: {value: msbuild.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wmic.exe, case_insensitive: true}
+    - term:
+        process.name: {value: cmstp.exe, case_insensitive: true}
+    - term:
+        process.name: {value: installutil.exe, case_insensitive: true}
+    - term:
+        process.name: {value: curl.exe, case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'An Office application starts a command interpreter, script host or download LOLBin: the macro or exploit
+    of a phishing document.'
+  source: [process]
+  false_positives: Rare add-ins and legacy macros that call cmd or PowerShell. Exclude the document-automation account if
+    so.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/windows/initial_access_suspicious_ms_office_child_process.toml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_office_susp_child_processes.yml',
+    'https://attack.mitre.org/techniques/T1566/001/', 'https://attack.mitre.org/techniques/T1204/002/', 'https://attack.mitre.org/techniques/T1059/']

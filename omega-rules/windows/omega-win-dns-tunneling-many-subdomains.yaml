@@ -1,0 +1,43 @@
+name: omega-win-dns-tunneling-many-subdomains
+type: cardinality
+index: logs-endpoint.events.network*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1071.004, T1048.003]
+risk_score: 20
+risk_objects: {host: host.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.action: lookup_requested}
+- exists: {field: dns.question.registered_domain}
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: chrome.exe, case_insensitive: true}
+        - term:
+            process.name: {value: msedge.exe, case_insensitive: true}
+        - term:
+            process.name: {value: firefox.exe, case_insensitive: true}
+        - term:
+            process.name: {value: MsMpEng.exe, case_insensitive: true}
+        - term:
+            process.name: {value: svchost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: dns.exe, case_insensitive: true}
+        minimum_should_match: 1
+cardinality_field: dns.question.name
+max_cardinality: 99
+timeframe: {minutes: 5}
+query_key: [host.name, process.name, dns.question.registered_domain]
+realert: {minutes: 30}
+alert: []
+omega:
+  tier: T1
+  description: 'One process resolving 100 or more different subdomains of the same registered domain within 5 minutes: DNS
+    tunnelling or exfiltration.'
+  source: [dns]
+  false_positives: CDNs, security products doing reputation lookups, and some mail anti-spam tools (exclude by domain or
+    process). Adds risk only.
+  references: ['https://attack.mitre.org/techniques/T1071/004/', 'https://attack.mitre.org/techniques/T1048/003/']

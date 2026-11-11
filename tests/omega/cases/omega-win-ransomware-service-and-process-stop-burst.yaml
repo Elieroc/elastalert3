@@ -1,0 +1,71 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: net.exe, executable: 'C:\Windows\System32\net.exe', command_line: net stop svc0}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: net.exe, executable: 'C:\Windows\System32\net.exe', command_line: net stop svc1}
+    '@timestamp': '2026-01-01T10:00:01Z'
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: net.exe, executable: 'C:\Windows\System32\net.exe', command_line: net stop svc2}
+    '@timestamp': '2026-01-01T10:00:02Z'
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: net.exe, executable: 'C:\Windows\System32\net.exe', command_line: net stop svc3}
+    '@timestamp': '2026-01-01T10:00:03Z'
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: net.exe, executable: 'C:\Windows\System32\net.exe', command_line: net stop svc4}
+    '@timestamp': '2026-01-01T10:00:04Z'
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: net.exe, executable: 'C:\Windows\System32\net.exe', command_line: net stop svc5}
+    '@timestamp': '2026-01-01T10:00:05Z'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: net.exe, executable: 'C:\Windows\System32\net.exe', command_line: net start svc}
+    '@timestamp': '2026-01-01T10:00:30Z'
+matches: 1

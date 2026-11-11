@@ -1,0 +1,37 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start, code: '20'}
+    winlog:
+      event_data: {Name: EvilConsumer, Type: Command Line}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start, code: '19'}
+    winlog:
+      event_data: {Name: EvilFilter}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start, code: '19'}
+    winlog:
+      event_data: {Name: SCM Event Log Filter}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start, code: '1'}

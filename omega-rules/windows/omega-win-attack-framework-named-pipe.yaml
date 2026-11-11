@@ -1,0 +1,50 @@
+name: omega-win-attack-framework-named-pipe
+type: any
+index: winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1559, T1570]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- terms:
+    event.code: ['17', '18']
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.PipeName: {value: \\msagent_*, case_insensitive: true}
+    - wildcard:
+        winlog.event_data.PipeName: {value: \\MSSE-*-server, case_insensitive: true}
+    - wildcard:
+        winlog.event_data.PipeName: {value: \\postex_*, case_insensitive: true}
+    - wildcard:
+        winlog.event_data.PipeName: {value: \\postex_ssh_*, case_insensitive: true}
+    - wildcard:
+        winlog.event_data.PipeName: {value: \\status_*, case_insensitive: true}
+    - wildcard:
+        winlog.event_data.PipeName: {value: \\win_svc, case_insensitive: true}
+    - wildcard:
+        winlog.event_data.PipeName: {value: \\DserNamePipe, case_insensitive: true}
+    - wildcard:
+        winlog.event_data.PipeName: {value: \\SearchTextHarvester, case_insensitive: true}
+    - wildcard:
+        winlog.event_data.PipeName: {value: \\isapi_http, case_insensitive: true}
+    - wildcard:
+        winlog.event_data.PipeName: {value: \\isapi_dg, case_insensitive: true}
+    - wildcard:
+        winlog.event_data.PipeName: {value: \\sdlrpc, case_insensitive: true}
+    - wildcard:
+        winlog.event_data.PipeName: {value: \\ahexec, case_insensitive: true}
+    - wildcard:
+        winlog.event_data.PipeName: {value: \\demoagent_11, case_insensitive: true}
+    - wildcard:
+        winlog.event_data.PipeName: {value: \\demoagent_22, case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: A named pipe with a default name of a known attack framework (Cobalt Strike msagent_*, MSSE-*-server, postex_*,
+    status_*, Metasploit, PsExec-like tools) created or connected (Sysmon events 17 and 18).
+  source: [process]
+  false_positives: Pipes named status_* or similar by unrelated software are rare but possible; exclude by process image.
+  references: ['https://attack.mitre.org/techniques/T1559/', 'https://attack.mitre.org/techniques/T1570/']

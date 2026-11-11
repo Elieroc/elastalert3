@@ -46,10 +46,21 @@ def load(path, _seen=()):
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 BENIGN_BASE = {
-    'process': {'host.os.type': 'linux', 'host.name': 'srv9', 'event.category': 'process', 'event.type': 'start'},
-    'file': {'host.os.type': 'linux', 'host.name': 'srv9', 'event.category': 'file', 'event.type': 'creation'},
-    'network': {'host.os.type': 'linux', 'host.name': 'srv9', 'event.category': 'network', 'event.action': 'connection_attempted'},
-    'auth': {'host.name': 'srv9', 'event.category': 'authentication'},
+    'linux': {
+        'process': {'host.os.type': 'linux', 'host.name': 'srv9', 'event.category': 'process', 'event.type': 'start'},
+        'file': {'host.os.type': 'linux', 'host.name': 'srv9', 'event.category': 'file', 'event.type': 'creation'},
+        'network': {'host.os.type': 'linux', 'host.name': 'srv9', 'event.category': 'network', 'event.action': 'connection_attempted'},
+        'auth': {'host.name': 'srv9', 'event.category': 'authentication'},
+    },
+    'windows': {
+        'process': {'host.os.type': 'windows', 'host.name': 'win9', 'event.category': 'process', 'event.type': 'start'},
+        'file': {'host.os.type': 'windows', 'host.name': 'win9', 'event.category': 'file', 'event.type': 'creation'},
+        'registry': {'host.os.type': 'windows', 'host.name': 'win9', 'event.category': 'registry', 'event.type': 'change'},
+        'network': {'host.os.type': 'windows', 'host.name': 'win9', 'event.category': 'network', 'event.action': 'connection_attempted'},
+        'dns': {'host.os.type': 'windows', 'host.name': 'win9', 'event.category': 'network', 'event.action': 'lookup_requested'},
+        'auth': {'host.name': 'win9', 'event.category': 'authentication', 'event.provider': 'Microsoft-Windows-Security-Auditing'},
+        'powershell': {'host.os.type': 'windows', 'host.name': 'win9', 'event.category': 'process', 'event.code': '4104'},
+    },
 }
 
 

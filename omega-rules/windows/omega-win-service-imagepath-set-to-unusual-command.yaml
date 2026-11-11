@@ -1,0 +1,88 @@
+name: omega-win-service-imagepath-set-to-unusual-command
+type: any
+index: logs-endpoint.events.registry*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1543.003, T1574.011]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: registry}
+- terms:
+    event.type: [change, creation]
+- bool:
+    should:
+    - wildcard:
+        registry.path: {value: '*\\CurrentControlSet\\Services\\*\\ImagePath', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\ControlSet00*\\Services\\*\\ImagePath', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        registry.data.strings: {value: '*cmd*/c*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*cmd.exe*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*powershell*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*pwsh*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*mshta*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*wscript*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*cscript*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*\\users\\public\\*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*\\appdata\\*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*\\temp\\*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*\\perflogs\\*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*\\\\*\\*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*%comspec%*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TiWorker.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TrustedInstaller.exe, case_insensitive: true}
+        - term:
+            process.name: {value: setup.exe, case_insensitive: true}
+        - term:
+            process.name: {value: ccmexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: MsMpEng.exe, case_insensitive: true}
+        - term:
+            process.name: {value: svchost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: wuauclt.exe, case_insensitive: true}
+        - term:
+            process.name: {value: dism.exe, case_insensitive: true}
+        - term:
+            process.name: {value: dismhost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: OfficeClickToRun.exe, case_insensitive: true}
+        - term:
+            process.name: {value: Teams.exe, case_insensitive: true}
+        - term:
+            process.name: {value: OneDriveSetup.exe, case_insensitive: true}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'A service ImagePath written with a command interpreter, a script host, a user-writable path or a UNC path:
+    a service created or hijacked without sc.exe.'
+  source: [registry]
+  false_positives: Installers (excluded by name) and drivers loaded from ProgramData. Adds risk only.
+  references: ['https://attack.mitre.org/techniques/T1543/003/', 'https://attack.mitre.org/techniques/T1574/011/']

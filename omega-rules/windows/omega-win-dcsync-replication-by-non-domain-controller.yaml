@@ -1,0 +1,47 @@
+name: omega-win-dcsync-replication-by-non-domain-controller
+type: any
+index: winlogbeat-*,logs-system.security-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1003.006]
+risk_score: 90
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4662'}
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.Properties: {value: '*1131f6aa-9c07-11d1-f79f-00c04fc2dcd2*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.Properties: {value: '*1131f6ad-9c07-11d1-f79f-00c04fc2dcd2*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.Properties: {value: '*89e95b76-444d-4c62-991a-0facbeda640c*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            user.name: {value: '*$', case_insensitive: true}
+        minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            user.name: {value: MSOL_*, case_insensitive: true}
+        - wildcard:
+            user.name: {value: AAD_*, case_insensitive: true}
+        - wildcard:
+            user.name: {value: SYSTEM, case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Directory replication rights (DS-Replication-Get-Changes / -All, event 4662) used by an account that is
+    not a domain controller machine account: DCSync, a way to read every password hash.'
+  source: [auth]
+  false_positives: Azure AD Connect and other directory-sync accounts hold these rights on purpose (exclude them by name).
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/builtin/security/win_security_ad_replication_non_machine_account.yml',
+    'https://attack.mitre.org/techniques/T1003/006/']

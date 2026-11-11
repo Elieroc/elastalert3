@@ -1,0 +1,87 @@
+name: omega-win-ransom-note-dropped-in-many-folders
+type: cardinality
+index: logs-endpoint.events.file*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1486]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change]
+- bool:
+    should:
+    - wildcard:
+        file.name: {value: readme.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: readme.html, case_insensitive: true}
+    - wildcard:
+        file.name: {value: readme.hta, case_insensitive: true}
+    - wildcard:
+        file.name: {value: how_to_decrypt*, case_insensitive: true}
+    - wildcard:
+        file.name: {value: '*decrypt*instruction*', case_insensitive: true}
+    - wildcard:
+        file.name: {value: '*restore*files*', case_insensitive: true}
+    - wildcard:
+        file.name: {value: '*recover*files*', case_insensitive: true}
+    - wildcard:
+        file.name: {value: '*files*encrypted*', case_insensitive: true}
+    - wildcard:
+        file.name: {value: '!*read*me!*', case_insensitive: true}
+    - wildcard:
+        file.name: {value: '*_readme_*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: git.exe, case_insensitive: true}
+        - term:
+            process.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TiWorker.exe, case_insensitive: true}
+        - term:
+            process.name: {value: 7z.exe, case_insensitive: true}
+        - term:
+            process.name: {value: explorer.exe, case_insensitive: true}
+        - term:
+            process.name: {value: robocopy.exe, case_insensitive: true}
+        - term:
+            process.name: {value: xcopy.exe, case_insensitive: true}
+        - term:
+            process.name: {value: npm.exe, case_insensitive: true}
+        - term:
+            process.name: {value: node.exe, case_insensitive: true}
+        - term:
+            process.name: {value: pip.exe, case_insensitive: true}
+        - term:
+            process.name: {value: python.exe, case_insensitive: true}
+        - term:
+            process.name: {value: setup.exe, case_insensitive: true}
+        - term:
+            process.name: {value: Teams.exe, case_insensitive: true}
+        - term:
+            process.name: {value: MsMpEng.exe, case_insensitive: true}
+        - term:
+            process.name: {value: OneDrive.exe, case_insensitive: true}
+        - term:
+            process.name: {value: Code.exe, case_insensitive: true}
+        minimum_should_match: 1
+cardinality_field: file.path
+max_cardinality: 19
+timeframe: {minutes: 5}
+query_key: [host.name, file.name]
+realert: {minutes: 30}
+alert: [debug]
+omega:
+  tier: T0
+  description: 'The same ransom-note-style file name created in 20 or more different folders by one host within 5 minutes:
+    a ransomware walking the file system and leaving its note in each folder.'
+  source: [file]
+  false_positives: A backup or sync tool that restores a tree containing readme files (restore from backup). Exclude by
+    process.
+  references: ['https://attack.mitre.org/techniques/T1486/']

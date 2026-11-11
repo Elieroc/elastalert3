@@ -1,0 +1,48 @@
+name: omega-win-lsass-access-by-unusual-process
+type: any
+index: winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1003.001]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.code: '10'}
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.TargetImage: {value: '*\\lsass.exe', case_insensitive: true}
+    minimum_should_match: 1
+- terms:
+    winlog.event_data.GrantedAccess: ['0x1010', '0x1410', '0x1438', '0x143a', '0x1fffff', '0x1f3fff', '0x1f0fff', '0x1f1fff',
+      '0x40']
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            winlog.event_data.SourceImage: {value: 'C:\\Windows\\System32\\*', case_insensitive: true}
+        - wildcard:
+            winlog.event_data.SourceImage: {value: 'C:\\Windows\\SysWOW64\\*', case_insensitive: true}
+        - wildcard:
+            winlog.event_data.SourceImage: {value: 'C:\\Windows\\system32\\wbem\\*', case_insensitive: true}
+        - wildcard:
+            winlog.event_data.SourceImage: {value: 'C:\\Program Files\\Windows Defender\\*', case_insensitive: true}
+        - wildcard:
+            winlog.event_data.SourceImage: {value: 'C:\\ProgramData\\Microsoft\\Windows Defender\\*', case_insensitive: true}
+        - wildcard:
+            winlog.event_data.SourceImage: {value: 'C:\\Program Files (x86)\\Microsoft\\Edge\\*', case_insensitive: true}
+        - wildcard:
+            winlog.event_data.SourceImage: {value: 'C:\\Windows\\CCM\\*', case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: A process opens LSASS with the access rights credential dumpers need (0x1010, 0x1410, 0x1438, 0x143a, 0x1fffff,
+    0x1f3fff, PROCESS_VM_READ) and is not a Windows or security-product binary (Sysmon event 10).
+  source: [process]
+  false_positives: 'Security and backup agents that read LSASS: exclude their paths. Process Explorer and Task Manager (taskmgr.exe)
+    ask for lower rights.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_access/proc_access_win_lsass_memdump.yml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_access/proc_access_win_lsass_dump_comsvcs_dll.yml',
+    'https://attack.mitre.org/techniques/T1003/001/']

@@ -1,0 +1,66 @@
+name: omega-win-tunneling-or-proxy-tool-execution
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1572, T1090]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: ngrok.exe, case_insensitive: true}
+    - term:
+        process.name: {value: chisel.exe, case_insensitive: true}
+    - term:
+        process.name: {value: frpc.exe, case_insensitive: true}
+    - term:
+        process.name: {value: frps.exe, case_insensitive: true}
+    - term:
+        process.name: {value: ligolo-agent.exe, case_insensitive: true}
+    - term:
+        process.name: {value: ligolo.exe, case_insensitive: true}
+    - term:
+        process.name: {value: revsocks.exe, case_insensitive: true}
+    - term:
+        process.name: {value: gost.exe, case_insensitive: true}
+    - term:
+        process.name: {value: sshuttle.exe, case_insensitive: true}
+    - term:
+        process.name: {value: cloudflared.exe, case_insensitive: true}
+    - term:
+        process.name: {value: localtonet.exe, case_insensitive: true}
+    - term:
+        process.name: {value: pgrok.exe, case_insensitive: true}
+    - term:
+        process.name: {value: bore.exe, case_insensitive: true}
+    - term:
+        process.name: {value: rathole.exe, case_insensitive: true}
+    - term:
+        process.name: {value: stowaway.exe, case_insensitive: true}
+    - term:
+        process.name: {value: iox.exe, case_insensitive: true}
+    - term:
+        process.name: {value: nps.exe, case_insensitive: true}
+    - term:
+        process.name: {value: npc.exe, case_insensitive: true}
+    - term:
+        process.name: {value: dnscat2.exe, case_insensitive: true}
+    - term:
+        process.name: {value: iodine.exe, case_insensitive: true}
+    - term:
+        process.name: {value: proxychains.exe, case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'A tunnelling or proxy tool started: ngrok, chisel, frp, ligolo, revsocks, gost, cloudflared, dnscat2, iodine
+    and similar.'
+  source: [process]
+  false_positives: Developers exposing a local service (ngrok, cloudflared). Adds risk only.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_pua_ngrok.yml',
+    'https://attack.mitre.org/techniques/T1572/', 'https://attack.mitre.org/techniques/T1090/']

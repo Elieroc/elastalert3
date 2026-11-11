@@ -1,0 +1,45 @@
+name: omega-win-msi-install-from-url
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1218.007]
+risk_score: 20
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: msiexec.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*http://*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*https://*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\\\*.msi*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '* /i*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '* /package*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '* -i*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '* /q*', case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'msiexec installing a package from a URL, quietly or with a transform: a remote payload through the installer.'
+  source: [process]
+  false_positives: Software deployment with direct vendor URLs. Adds risk only.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_msiexec_web_install.yml',
+    'https://attack.mitre.org/techniques/T1218/007/']

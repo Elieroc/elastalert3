@@ -1,0 +1,77 @@
+name: omega-win-rundll32-script-or-user-path-dll
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1218.011]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: rundll32.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*javascript:*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*vbscript:*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*mshtml,runhtmlapplication*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*\\\\*.dll*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*http://*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*https://*', case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*\\users\\public\\*.dll*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\appdata\\*.dll*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\temp\\*.dll*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\programdata\\*.dll*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\perflogs\\*.dll*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*,#*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*, #*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*,dllregisterserver*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*,start*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*,entry*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*,main*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*.dll,0*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'rundll32 running javascript:, vbscript:, a DLL by ordinal from a user path, a DLL from a UNC or URL path,
+    or a DLL named like a document: a LOLBin loading attacker code.'
+  source: [process]
+  false_positives: Some installers run rundll32 on their own DLL in AppData\Local\Temp (setup bootstrappers). Exclude by
+    DLL name.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_rundll32_mshtml_runhtmlapplication.yml',
+    'https://attack.mitre.org/techniques/T1218/011/']

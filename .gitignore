@@ -2,3 +2,4 @@
 *.log
 *.jsonl
 /docs/build
+__pycache__/

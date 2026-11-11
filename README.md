@@ -67,7 +67,7 @@ See [Getting Started](https://elastalert3.neopipe.fr/running_elastalert.html).
 - [`ingest_timestamp_field`](https://elastalert3.neopipe.fr/ruletypes.html#ingest-timestamp-field): late documents found exactly once.
 - [Sigma rules](https://elastalert3.neopipe.fr/sigma.html) compiled natively into the rule filter (`sigma`, `sigma_folders`, correlation rules, `sigma-convert`).
 - [Match enhancements in Rust](https://elastalert3.neopipe.fr/enhancements.html) (`rust.add_field`, `rust.drop_if`, `rust.lookup`).
-- [`omega-rules/`](omega-rules/README.md): a detection pack shipped with the project (Linux first: 115 rules from blacklists and behaviours to thresholds, rarity, sequences, anomalies and risk), tested against positive and benign events.
+- [`omega-rules/`](omega-rules/README.md): a detection pack shipped with the project (Linux and Windows: 229 rules from blacklists and behaviours to thresholds, rarity, sequences, anomalies and risk), tested against positive and benign events.
 - About 11 times faster, with less than half the memory, on a 400,000-document frequency rule.
 
 Every built-in rule type and all 44 alerters of ElastAlert 2 are supported. Not supported: Python plugins (custom rule

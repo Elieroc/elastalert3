@@ -1,0 +1,68 @@
+name: omega-win-rclone-or-cloud-exfiltration-tool
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1567.002, T1048]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: rclone.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* copy *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* sync *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* move *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* copyto *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* lsd*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* ls *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*--config*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*mega:*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*--transfers*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        should:
+        - term:
+            process.name: {value: megacmd.exe, case_insensitive: true}
+        - term:
+            process.name: {value: mega-put.exe, case_insensitive: true}
+        - term:
+            process.name: {value: megasync.exe, case_insensitive: true}
+        - term:
+            process.name: {value: megaclient.exe, case_insensitive: true}
+        - term:
+            process.name: {value: megatools.exe, case_insensitive: true}
+        - term:
+            process.name: {value: megacopy.exe, case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'rclone, MEGAcmd, MEGAsync or a cloud sync tool run with a copy/sync/move command or a remote like mega:
+    or s3: : the tool of choice of ransomware crews for data theft.'
+  source: [process]
+  false_positives: IT teams that use rclone for approved backups (exclude their account or host). Adds risk when the remote
+    is a personal cloud.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_pua_rclone_execution.yml',
+    'https://attack.mitre.org/techniques/T1567/002/', 'https://attack.mitre.org/techniques/T1048/']

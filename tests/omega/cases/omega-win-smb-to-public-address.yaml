@@ -1,0 +1,39 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: System}
+    destination: {ip: 203.0.113.9, port: 445}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: powershell.exe}
+    destination: {ip: 198.51.100.4, port: 139}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: System}
+    destination: {ip: 10.0.0.5, port: 445}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: chrome.exe}
+    destination: {ip: 203.0.113.9, port: 443}

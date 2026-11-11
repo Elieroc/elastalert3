@@ -1,0 +1,232 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d0\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d1\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d2\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d3\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d4\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d5\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos7
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d6\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos8
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d7\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos9
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d8\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos10
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d9\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos11
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d10\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos12
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d11\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos13
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d12\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos14
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d13\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos15
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d14\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos16
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d15\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos17
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d16\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos18
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d17\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos19
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d18\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: pos20
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\d19\HOW_TO_DECRYPT.txt', name: HOW_TO_DECRYPT.txt}
+    process: {name: x.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\e0\readme.txt', name: readme.txt}
+    process: {name: git.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\e1\readme.txt', name: readme.txt}
+    process: {name: git.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: neg3
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\e2\readme.txt', name: readme.txt}
+    process: {name: git.exe}
+    '@timestamp': '2026-01-01T10:00:00Z'
+matches: 1

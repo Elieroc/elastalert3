@@ -1,0 +1,45 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: psexec.exe, executable: 'C:\Windows\System32\psexec.exe', command_line: psexec \\srv2 -s cmd}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: PSEXESVC.exe, executable: 'C:\Windows\System32\PSEXESVC.exe', command_line: PSEXESVC.exe}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: cmd.exe, executable: 'C:\Windows\System32\cmd.exe', command_line: cmd.exe /Q /c whoami 1> \\127.0.0.1\ADMIN$\__16001
+        2>&1}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: cmd.exe, executable: 'C:\Windows\System32\cmd.exe', command_line: cmd /c dir}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: net.exe, executable: 'C:\Windows\System32\net.exe', command_line: net use}

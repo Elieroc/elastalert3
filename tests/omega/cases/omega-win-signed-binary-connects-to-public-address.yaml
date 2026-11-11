@@ -1,0 +1,49 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: regsvr32.exe}
+    destination: {ip: 203.0.113.9, port: 443}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: mshta.exe}
+    destination: {ip: 198.51.100.4, port: 80}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: certutil.exe}
+    destination: {ip: 203.0.113.9, port: 443}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: regsvr32.exe}
+    destination: {ip: 10.0.0.5, port: 445}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: connection_attempted}
+    process: {name: chrome.exe}
+    destination: {ip: 203.0.113.9, port: 443}

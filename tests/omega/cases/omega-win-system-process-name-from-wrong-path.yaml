@@ -1,0 +1,35 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: svchost.exe, executable: 'C:\Users\Public\svchost.exe', command_line: svchost.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: lsass.exe, executable: 'C:\Windows\Temp\lsass.exe', command_line: lsass.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: svchost.exe, executable: 'C:\Windows\System32\svchost.exe', command_line: svchost.exe -k netsvcs}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: svchost.exe, executable: 'C:\Windows\SysWOW64\svchost.exe', command_line: svchost.exe}

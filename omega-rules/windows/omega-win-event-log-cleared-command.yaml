@@ -1,0 +1,75 @@
+name: omega-win-event-log-cleared-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1070.001]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: wevtutil.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* cl *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*clear-log*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* cl', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*clear-eventlog*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*remove-eventlog*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*wevtutil*cl*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*[system.diagnostics.eventing.reader.eventlogsession]::globalsession.clearlog*',
+                  case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: auditpol.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*/clear*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/remove*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Windows event logs cleared from the command line: wevtutil cl, Clear-EventLog, Remove-EventLog, auditpol
+    /clear or /remove.'
+  source: [process]
+  false_positives: Log maintenance scripts (rare, exclude by parent).
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_susp_eventlog_clear.yml',
+    'https://attack.mitre.org/techniques/T1070/001/']

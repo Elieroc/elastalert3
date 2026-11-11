@@ -1,0 +1,36 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: xmrig.exe, executable: 'C:\Windows\System32\xmrig.exe', command_line: xmrig.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: a.exe, executable: 'C:\Windows\System32\a.exe', command_line: 'a.exe -o stratum+tcp://pool.minexmr.com:4444
+        -u w -p x'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: notepad.exe, executable: 'C:\Windows\System32\notepad.exe', command_line: notepad.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: chrome.exe, executable: 'C:\Windows\System32\chrome.exe', command_line: chrome.exe --type=gpu-process}

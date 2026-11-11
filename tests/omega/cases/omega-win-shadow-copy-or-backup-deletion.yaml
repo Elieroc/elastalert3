@@ -1,0 +1,55 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: vssadmin.exe, executable: 'C:\Windows\System32\vssadmin.exe', command_line: vssadmin delete shadows
+        /all /quiet}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: wmic.exe, executable: 'C:\Windows\System32\wmic.exe', command_line: wmic shadowcopy delete}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: bcdedit.exe, executable: 'C:\Windows\System32\bcdedit.exe', command_line: 'bcdedit /set {default} recoveryenabled
+        no'}
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: wbadmin.exe, executable: 'C:\Windows\System32\wbadmin.exe', command_line: wbadmin delete catalog -quiet}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: vssadmin.exe, executable: 'C:\Windows\System32\vssadmin.exe', command_line: vssadmin list shadows}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: bcdedit.exe, executable: 'C:\Windows\System32\bcdedit.exe', command_line: bcdedit /enum}

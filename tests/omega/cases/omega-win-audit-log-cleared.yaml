@@ -1,0 +1,19 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '1102'}
+- id: pos2
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Eventlog, code: '104'}
+- id: neg1
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+- id: neg2
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Other, code: '104'}

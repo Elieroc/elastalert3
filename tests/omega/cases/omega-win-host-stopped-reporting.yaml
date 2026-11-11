@@ -1,0 +1,1139 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T10:00:00Z'
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T10:00:00Z'
+- id: neg3
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T11:00:00Z'
+- id: neg4
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T11:00:00Z'
+- id: neg5
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T12:00:00Z'
+- id: neg6
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T12:00:00Z'
+- id: neg7
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T13:00:00Z'
+- id: neg8
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T13:00:00Z'
+- id: neg9
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T14:00:00Z'
+- id: neg10
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T14:00:00Z'
+- id: neg11
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T15:00:00Z'
+- id: neg12
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T15:00:00Z'
+- id: neg13
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T16:00:00Z'
+- id: neg14
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T16:00:00Z'
+- id: neg15
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T17:00:00Z'
+- id: neg16
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T17:00:00Z'
+- id: neg17
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T18:00:00Z'
+- id: neg18
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T18:00:00Z'
+- id: neg19
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T19:00:00Z'
+- id: neg20
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T19:00:00Z'
+- id: neg21
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T20:00:00Z'
+- id: neg22
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T20:00:00Z'
+- id: neg23
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T21:00:00Z'
+- id: neg24
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T21:00:00Z'
+- id: neg25
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T22:00:00Z'
+- id: neg26
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T22:00:00Z'
+- id: neg27
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T23:00:00Z'
+- id: neg28
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-29T23:00:00Z'
+- id: neg29
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T00:00:00Z'
+- id: neg30
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T00:00:00Z'
+- id: neg31
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T01:00:00Z'
+- id: neg32
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T01:00:00Z'
+- id: neg33
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T02:00:00Z'
+- id: neg34
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T02:00:00Z'
+- id: neg35
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T03:00:00Z'
+- id: neg36
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T03:00:00Z'
+- id: neg37
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T04:00:00Z'
+- id: neg38
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T04:00:00Z'
+- id: neg39
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T05:00:00Z'
+- id: neg40
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T05:00:00Z'
+- id: neg41
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T06:00:00Z'
+- id: neg42
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T06:00:00Z'
+- id: neg43
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T07:00:00Z'
+- id: neg44
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T07:00:00Z'
+- id: neg45
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T08:00:00Z'
+- id: neg46
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T08:00:00Z'
+- id: neg47
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T09:00:00Z'
+- id: neg48
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T09:00:00Z'
+- id: neg49
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T10:00:00Z'
+- id: neg50
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T10:00:00Z'
+- id: neg51
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T11:00:00Z'
+- id: neg52
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T11:00:00Z'
+- id: neg53
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T12:00:00Z'
+- id: neg54
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T12:00:00Z'
+- id: neg55
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T13:00:00Z'
+- id: neg56
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T13:00:00Z'
+- id: neg57
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T14:00:00Z'
+- id: neg58
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T14:00:00Z'
+- id: neg59
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T15:00:00Z'
+- id: neg60
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T15:00:00Z'
+- id: neg61
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T16:00:00Z'
+- id: neg62
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T16:00:00Z'
+- id: neg63
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T17:00:00Z'
+- id: neg64
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T17:00:00Z'
+- id: neg65
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T18:00:00Z'
+- id: neg66
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T18:00:00Z'
+- id: neg67
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T19:00:00Z'
+- id: neg68
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T19:00:00Z'
+- id: neg69
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T20:00:00Z'
+- id: neg70
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T20:00:00Z'
+- id: neg71
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T21:00:00Z'
+- id: neg72
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T21:00:00Z'
+- id: neg73
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T22:00:00Z'
+- id: neg74
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T22:00:00Z'
+- id: neg75
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T23:00:00Z'
+- id: neg76
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-30T23:00:00Z'
+- id: neg77
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T00:00:00Z'
+- id: neg78
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T00:00:00Z'
+- id: neg79
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T01:00:00Z'
+- id: neg80
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T01:00:00Z'
+- id: neg81
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T02:00:00Z'
+- id: neg82
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T02:00:00Z'
+- id: neg83
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T03:00:00Z'
+- id: neg84
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T03:00:00Z'
+- id: neg85
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T04:00:00Z'
+- id: neg86
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T04:00:00Z'
+- id: neg87
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T05:00:00Z'
+- id: neg88
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T05:00:00Z'
+- id: neg89
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T06:00:00Z'
+- id: neg90
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T06:00:00Z'
+- id: neg91
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T07:00:00Z'
+- id: neg92
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T07:00:00Z'
+- id: neg93
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T08:00:00Z'
+- id: neg94
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T08:00:00Z'
+- id: neg95
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T09:00:00Z'
+- id: neg96
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T09:00:00Z'
+- id: neg97
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T10:00:00Z'
+- id: neg98
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T10:00:00Z'
+- id: neg99
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T11:00:00Z'
+- id: neg100
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T11:00:00Z'
+- id: neg101
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T12:00:00Z'
+- id: neg102
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T12:00:00Z'
+- id: neg103
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T13:00:00Z'
+- id: neg104
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T13:00:00Z'
+- id: neg105
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T14:00:00Z'
+- id: neg106
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T14:00:00Z'
+- id: neg107
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T15:00:00Z'
+- id: neg108
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T15:00:00Z'
+- id: neg109
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T16:00:00Z'
+- id: neg110
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T16:00:00Z'
+- id: neg111
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T17:00:00Z'
+- id: neg112
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T17:00:00Z'
+- id: neg113
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T18:00:00Z'
+- id: neg114
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T18:00:00Z'
+- id: neg115
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T19:00:00Z'
+- id: neg116
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T19:00:00Z'
+- id: neg117
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T20:00:00Z'
+- id: neg118
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T20:00:00Z'
+- id: neg119
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T21:00:00Z'
+- id: neg120
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T21:00:00Z'
+- id: neg121
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T22:00:00Z'
+- id: neg122
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T22:00:00Z'
+- id: neg123
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T23:00:00Z'
+- id: neg124
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2025-12-31T23:00:00Z'
+- id: neg125
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2026-01-01T00:00:00Z'
+- id: neg126
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2026-01-01T00:00:00Z'
+- id: neg127
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2026-01-01T01:00:00Z'
+- id: neg128
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2026-01-01T01:00:00Z'
+- id: neg129
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2026-01-01T02:00:00Z'
+- id: neg130
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2026-01-01T02:00:00Z'
+- id: neg131
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2026-01-01T03:00:00Z'
+- id: neg132
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2026-01-01T03:00:00Z'
+- id: neg133
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2026-01-01T04:00:00Z'
+- id: neg134
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2026-01-01T04:00:00Z'
+- id: neg135
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2026-01-01T05:00:00Z'
+- id: neg136
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2026-01-01T05:00:00Z'
+- id: neg137
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2026-01-01T06:00:00Z'
+- id: neg138
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2026-01-01T06:00:00Z'
+- id: neg139
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2026-01-01T07:00:00Z'
+- id: neg140
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2026-01-01T08:00:00Z'
+- id: neg141
+  doc:
+    host:
+      os: {type: windows}
+      name: win2
+    user: {name: alice}
+    event: {category: process, type: start}
+    '@timestamp': '2026-01-01T09:00:00Z'
+matches: 1

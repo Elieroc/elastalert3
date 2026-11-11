@@ -1,0 +1,39 @@
+name: omega-win-kerberoasting-ticket-burst
+type: cardinality
+index: winlogbeat-*,logs-system.security-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1558.003]
+risk_score: 75
+risk_objects: {user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4769'}
+- term: {winlog.event_data.TicketEncryptionType: '0x17'}
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            winlog.event_data.ServiceName: {value: '*$', case_insensitive: true}
+        - wildcard:
+            winlog.event_data.ServiceName: {value: krbtgt*, case_insensitive: true}
+        minimum_should_match: 1
+- bool:
+    must_not:
+    - term: {winlog.event_data.Status: '0x1b'}
+cardinality_field: winlog.event_data.ServiceName
+max_cardinality: 4
+timeframe: {minutes: 5}
+query_key: [user.name, source.ip]
+realert: {minutes: 30}
+alert: [debug]
+omega:
+  tier: T0
+  description: 'One account requests RC4-encrypted service tickets (event 4769, encryption type 0x17) for 5 or more different
+    services within 5 minutes: Kerberoasting.'
+  source: [auth]
+  false_positives: Old applications that still negotiate RC4 against many service accounts, and vulnerability scanners.
+    Exclude by account.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/builtin/security/win_security_kerberoasting_activity.yml',
+    'https://attack.mitre.org/techniques/T1558/003/']

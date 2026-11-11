@@ -1,0 +1,22 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, code: '4104'}
+    powershell:
+      file: {script_block_text: '[Ref].Assembly.GetType(''System.Management.Automation.AmsiUtils'').GetField(''amsiInitFailed'',''NonPublic,Static'').SetValue($null,$true)'}
+    process: {name: powershell.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, code: '4104'}
+    powershell:
+      file: {script_block_text: 'Get-ChildItem C:\'}
+    process: {name: powershell.exe}

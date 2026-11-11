@@ -1,0 +1,97 @@
+name: omega-win-uac-or-remote-token-restrictions-disabled
+type: any
+index: logs-endpoint.events.registry*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1112, T1550.002]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: registry}
+- terms:
+    event.type: [change, creation]
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard:
+                registry.path: {value: '*\\Policies\\System\\EnableLUA', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                registry.data.strings: {value: '0', case_insensitive: true}
+            - wildcard:
+                registry.data.strings: {value: '0x00000000', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard:
+                registry.path: {value: '*\\Policies\\System\\LocalAccountTokenFilterPolicy', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                registry.data.strings: {value: '1', case_insensitive: true}
+            - wildcard:
+                registry.data.strings: {value: '0x00000001', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard:
+                registry.path: {value: '*\\Policies\\System\\FilterAdministratorToken', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                registry.data.strings: {value: '0', case_insensitive: true}
+            - wildcard:
+                registry.data.strings: {value: '0x00000000', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TiWorker.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TrustedInstaller.exe, case_insensitive: true}
+        - term:
+            process.name: {value: setup.exe, case_insensitive: true}
+        - term:
+            process.name: {value: ccmexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: MsMpEng.exe, case_insensitive: true}
+        - term:
+            process.name: {value: svchost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: wuauclt.exe, case_insensitive: true}
+        - term:
+            process.name: {value: dism.exe, case_insensitive: true}
+        - term:
+            process.name: {value: dismhost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: OfficeClickToRun.exe, case_insensitive: true}
+        - term:
+            process.name: {value: Teams.exe, case_insensitive: true}
+        - term:
+            process.name: {value: OneDriveSetup.exe, case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'UAC turned off (EnableLUA = 0) or the remote admin token restriction removed (LocalAccountTokenFilterPolicy
+    = 1, FilterAdministratorToken = 0): local accounts become usable for remote administration and pass-the-hash.'
+  source: [registry]
+  false_positives: Lab images and some legacy deployment tools set LocalAccountTokenFilterPolicy. Exclude those hosts.
+  references: ['https://attack.mitre.org/techniques/T1112/', 'https://attack.mitre.org/techniques/T1550/002/']

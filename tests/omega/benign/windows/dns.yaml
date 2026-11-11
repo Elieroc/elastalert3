@@ -1,0 +1,9 @@
+# Legitimate Windows DNS lookups: no T0 rule of type `any` may hit them.
+# Merged on {host.os.type: windows, event.category: network, event.action: lookup_requested}.
+- {process.name: chrome.exe, dns.question.name: www.google.com}
+- {process.name: chrome.exe, dns.question.name: discord.com}
+- {process.name: Discord.exe, dns.question.name: discord.com}
+- {process.name: svchost.exe, dns.question.name: windowsupdate.microsoft.com}
+- {process.name: powershell.exe, dns.question.name: api.github.com}
+- {process.name: Teams.exe, dns.question.name: teams.microsoft.com}
+- {process.name: java.exe, dns.question.name: repo.maven.apache.org}

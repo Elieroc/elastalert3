@@ -1,0 +1,60 @@
+name: omega-win-psexec-or-remote-service-execution
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1021.002, T1569.002]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - term:
+            process.name: {value: psexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: psexec64.exe, case_insensitive: true}
+        - term:
+            process.name: {value: paexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: remcom.exe, case_insensitive: true}
+        - term:
+            process.name: {value: psexesvc.exe, case_insensitive: true}
+        - term:
+            process.name: {value: csexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: winexesvc.exe, case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: cmd.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*\\\\127.0.0.1\\admin$\\__*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\\\127.0.0.1\\c$\\__*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*\\\\*\\admin$\\*.exe*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'PsExec, PAExec, RemCom or a service started with a PSEXESVC-style name, or cmd writing output to an ADMIN$
+    share: remote execution over SMB.'
+  source: [process]
+  false_positives: Administrators and deployment tools that still use PsExec (exclude by source account). Adds risk only.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_sysinternals_psexec_execution.yml',
+    'https://attack.mitre.org/techniques/T1021/002/', 'https://attack.mitre.org/techniques/T1569/002/']

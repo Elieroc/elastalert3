@@ -1,0 +1,25 @@
+name: omega-win-rdp-logon-from-public-address
+type: any
+index: winlogbeat-*,logs-system.security-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1021.001, T1133]
+risk_score: 30
+risk_objects: {ip: source.ip, user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4624'}
+- term: {winlog.logon.type: '10'}
+- exists: {field: source.ip}
+- bool:
+    must_not:
+    - terms:
+        source.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16, '::1', 'fe80::/10', 'fc00::/7']
+alert: []
+omega:
+  tier: T1
+  description: A successful remote-interactive (RDP) logon from a public IP address.
+  source: [auth]
+  false_positives: Staff connecting through an exposed RDP gateway (an exposed RDP service is the finding itself). Adds
+    risk only.
+  references: ['https://attack.mitre.org/techniques/T1021/001/', 'https://attack.mitre.org/techniques/T1133/']

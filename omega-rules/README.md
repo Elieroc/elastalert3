@@ -35,7 +35,8 @@ Silent T1 rules still write their doc to the writeback index with `risk_objects`
 | Pack | Rules | Data sources (ECS) | State |
 |---|---|---|---|
 | `linux/` | 115: 48 T0, 63 T1, 4 T2 | Elastic Defend / Auditbeat (process, file, network, DNS lookups), system auth (sshd, sudo, su) | first version |
-| `windows/`, `web/`, `firewall/` | - | - | planned |
+| `windows/` | 114: 67 T0, 42 T1, 5 T2 | Elastic Defend / Winlogbeat / Sysmon (process, file, registry, network, DNS, named pipes, WMI), Security and System event logs (4624/4625/4662/4697/4698/4732/4768/4769/5140, 1102, 7045), PowerShell script block logging (4104) | first version |
+| `web/`, `firewall/` | - | - | planned |
 
 Linux covers, with one rule per behaviour and the type of rule that fits it: blacklists of tools and miners
 reverse shells, GTFOBins escapes, persistence (cron, systemd, profile, SSH keys, sudoers, PAM,
@@ -46,6 +47,21 @@ The T1 signals feed `omega-lnx-host-risk` and `omega-lnx-source-ip-risk`.
 
 Not in this version: `risk_ratio` (needs weeks of alert history to test), `baseline`, `outlier`, a per-user risk rule
 (shared accounts like `root` would add the whole fleet up), container/Kubernetes and auditd-only rules.
+
+Windows follows the same tiers and conventions. Fields expected (ECS, as written by Elastic Defend, Winlogbeat and the
+Elastic Windows integrations): `host.os.type: windows`, `event.category`, `event.type`, `event.action`, `process.*`
+(`name`, `executable`, `command_line`, `parent.name`, `parent.entity_id`), `file.path`/`file.name`/`file.extension`,
+`registry.path`/`registry.data.strings`, `destination.ip`/`destination.port`, `dns.question.name`, and for the event logs
+`event.code`, `event.provider`, `winlog.logon.type`, `winlog.event_data.*` (`TargetSid`, `ServiceFileName`, `TicketEncryptionType`,
+`ShareName`, `Properties`, `TaskContent`, `PipeName`, `GrantedAccess`...) and `powershell.file.script_block_text`.
+Process, file, registry, network and DNS rules read `logs-endpoint.events.*`, `winlogbeat-*` and `logs-windows.sysmon_operational-*`;
+the log-based rules read `winlogbeat-*` and the `logs-system.*` data streams. Windows names are case-insensitive, so the rules use
+case-insensitive `term` and `wildcard` queries (an extra cost on large indices: narrow `index` if needed). The script block field and
+`winlog.event_data.*` fields must be searchable as `keyword` (the `.keyword` sub-field or a `keyword` mapping).
+Behaviour of note: ransomware (`known-ransom-note-created`, `ransom-note-dropped-in-many-folders`, `ransomware-extension-file-burst`,
+`shadow-copy-or-backup-deletion`, `service-and-process-stop-burst`), credential theft (LSASS, SAM/NTDS, DCSync, Kerberoasting, WDigest,
+LSA packages), persistence in the registry and WMI, Office/server process trees, and PowerShell script block content.
+The T1 signals feed `omega-win-host-risk`, `omega-win-user-risk` and `omega-win-source-ip-risk`.
 
 ## Sources and licences
 

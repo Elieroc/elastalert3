@@ -1,0 +1,118 @@
+name: omega-win-run-key-pointing-to-unusual-command
+type: any
+index: logs-endpoint.events.registry*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1547.001]
+risk_score: 20
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: registry}
+- terms:
+    event.type: [change, creation]
+- bool:
+    should:
+    - wildcard:
+        registry.path: {value: '*\\Microsoft\\Windows\\CurrentVersion\\Run\\*', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\*', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Microsoft\\Windows\\CurrentVersion\\RunServices\\*', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\Load', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\Run', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        registry.data.strings: {value: '*\\users\\public\\*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*\\appdata\\*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*\\temp\\*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*\\programdata\\*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*\\perflogs\\*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*\\windows\\tasks\\*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*\\\\*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*cmd*/c*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*cmd.exe*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*powershell*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*pwsh*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*mshta*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*wscript*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*cscript*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*rundll32*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*regsvr32*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*http:*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*https:*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*.ps1*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*.vbs*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*.js', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*.hta*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*.bat*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TiWorker.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TrustedInstaller.exe, case_insensitive: true}
+        - term:
+            process.name: {value: setup.exe, case_insensitive: true}
+        - term:
+            process.name: {value: ccmexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: MsMpEng.exe, case_insensitive: true}
+        - term:
+            process.name: {value: svchost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: wuauclt.exe, case_insensitive: true}
+        - term:
+            process.name: {value: dism.exe, case_insensitive: true}
+        - term:
+            process.name: {value: dismhost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: OfficeClickToRun.exe, case_insensitive: true}
+        - term:
+            process.name: {value: Teams.exe, case_insensitive: true}
+        - term:
+            process.name: {value: OneDriveSetup.exe, case_insensitive: true}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: A Run, RunOnce or Explorer\Run autostart value set to a script host, a download, a user-writable path or
+    a command interpreter.
+  source: [registry]
+  false_positives: Software that registers a per-user updater under AppData (Teams, Zoom, Spotify) writes to Run keys; installers
+    are excluded by name. Adds risk only.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/registry/registry_set/registry_set_asep_reg_keys_modification_currentversion.yml',
+    'https://attack.mitre.org/techniques/T1547/001/']

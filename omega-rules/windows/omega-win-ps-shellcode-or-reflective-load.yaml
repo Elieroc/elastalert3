@@ -1,0 +1,71 @@
+name: omega-win-ps-shellcode-or-reflective-load
+type: any
+index: winlogbeat-*,logs-windows.powershell_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1620, T1055]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.code: '4104'}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard:
+                powershell.file.script_block_text: {value: '*virtualalloc*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                powershell.file.script_block_text: {value: '*createthread*', case_insensitive: true}
+            - wildcard:
+                powershell.file.script_block_text: {value: '*marshal]::copy*', case_insensitive: true}
+            - wildcard:
+                powershell.file.script_block_text: {value: '*[system.runtime.interopservices.marshal]::copy*', case_insensitive: true}
+            - wildcard:
+                powershell.file.script_block_text: {value: '*getdelegateforfunctionpointer*', case_insensitive: true}
+            - wildcard:
+                powershell.file.script_block_text: {value: '*virtualprotect*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard:
+                powershell.file.script_block_text: {value: '*writeprocessmemory*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                powershell.file.script_block_text: {value: '*createremotethread*', case_insensitive: true}
+            - wildcard:
+                powershell.file.script_block_text: {value: '*ntcreatethreadex*', case_insensitive: true}
+            - wildcard:
+                powershell.file.script_block_text: {value: '*queueuserapc*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard:
+                powershell.file.script_block_text: {value: '*[reflection.assembly]::load(*', case_insensitive: true}
+            - wildcard:
+                powershell.file.script_block_text: {value: '*assembly]::load(*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                powershell.file.script_block_text: {value: '*frombase64string*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'PowerShell script block that allocates executable memory and runs it: VirtualAlloc with CreateThread or
+    Marshal.Copy, Assembly.Load of a byte array from base64, DllImport of kernel32 injection functions.'
+  source: [powershell]
+  false_positives: Developers testing P/Invoke code. Rare in production.
+  references: ['https://attack.mitre.org/techniques/T1620/', 'https://attack.mitre.org/techniques/T1055/']

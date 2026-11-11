@@ -1,0 +1,42 @@
+name: omega-win-amsi-or-etw-tampering-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1562.001]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*amsiinitfailed*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*amsicontext*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*amsiscanbuffer*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*amsi.dll*patch*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*complus_etwenabled=0*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*set-etwtraceprovider*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*etweventwrite*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*[ref].assembly.gettype*amsi*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Command line that blinds AMSI or ETW: amsiInitFailed, AmsiScanBuffer patching, COMPlus_ETWEnabled=0, Set-EtwTraceProvider,
+    setx of the AMSI/ETW variables.'
+  source: [process]
+  false_positives: Red teams and security research on lab hosts.
+  references: ['https://attack.mitre.org/techniques/T1562/001/']

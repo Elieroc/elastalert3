@@ -1,0 +1,45 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: msbuild.exe
+      executable: C:\Windows\System32\msbuild.exe
+      command_line: msbuild.exe C:\Users\bob\AppData\Local\Temp\x.xml
+      parent: {name: powershell.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: installutil.exe, executable: 'C:\Windows\System32\installutil.exe', command_line: installutil.exe /logfile=
+        /LogToConsole=false /u a.dll}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: regasm.exe, executable: 'C:\Windows\System32\regasm.exe', command_line: 'regasm.exe C:\Users\bob\AppData\Roaming\x.dll'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: msbuild.exe
+      executable: C:\Windows\System32\msbuild.exe
+      command_line: msbuild.exe app.sln
+      parent: {name: devenv.exe}

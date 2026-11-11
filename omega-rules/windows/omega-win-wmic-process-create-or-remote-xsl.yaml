@@ -1,0 +1,43 @@
+name: omega-win-wmic-process-create-or-remote-xsl
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1047, T1220]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: wmic.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*process call create*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*process*call*create*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*/node:*process*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*/format:*http*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*/format:*.xsl*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: wmic creating a process (process call create), running on another node with a command, or loading a remote
+    XSL stylesheet.
+  source: [process]
+  false_positives: Old admin scripts that start processes through wmic. Exclude by parent.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_wmic_process_creation.yml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_wmic_xsl_script_processing.yml',
+    'https://attack.mitre.org/techniques/T1047/', 'https://attack.mitre.org/techniques/T1220/']

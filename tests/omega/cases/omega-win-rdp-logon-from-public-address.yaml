@@ -1,0 +1,24 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+    winlog:
+      logon: {type: '10'}
+    source: {ip: 203.0.113.9}
+    user: {name: admin}
+- id: neg1
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+    winlog:
+      logon: {type: '10'}
+    source: {ip: 10.0.0.9}
+- id: neg2
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+    winlog:
+      logon: {type: '2'}
+    source: {ip: 203.0.113.9}

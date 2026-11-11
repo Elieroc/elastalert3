@@ -1,0 +1,57 @@
+name: omega-win-system-process-name-from-wrong-path
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1036.005]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: svchost.exe, case_insensitive: true}
+    - term:
+        process.name: {value: lsass.exe, case_insensitive: true}
+    - term:
+        process.name: {value: csrss.exe, case_insensitive: true}
+    - term:
+        process.name: {value: smss.exe, case_insensitive: true}
+    - term:
+        process.name: {value: services.exe, case_insensitive: true}
+    - term:
+        process.name: {value: winlogon.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wininit.exe, case_insensitive: true}
+    - term:
+        process.name: {value: spoolsv.exe, case_insensitive: true}
+    - term:
+        process.name: {value: taskhost.exe, case_insensitive: true}
+    - term:
+        process.name: {value: taskhostw.exe, case_insensitive: true}
+    - term:
+        process.name: {value: lsm.exe, case_insensitive: true}
+    - term:
+        process.name: {value: dllhost.exe, case_insensitive: true}
+    minimum_should_match: 1
+- exists: {field: process.executable}
+- bool:
+    must_not:
+    - regexp:
+        process.executable: {value: 'c:\\windows\\(system32|syswow64|winsxs)\\.*', case_insensitive: true}
+- bool:
+    must_not:
+    - regexp:
+        process.executable: {value: '\\device\\harddiskvolume[0-9]+\\windows\\(system32|syswow64|winsxs)\\.*', case_insensitive: true}
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A process named like a core Windows binary (svchost, lsass, csrss, smss, services, winlogon, wininit, spoolsv,
+    taskhost) running from outside System32/SysWOW64: masquerading.'
+  source: [process]
+  false_positives: None known. Wine-style compatibility layers and some packagers copy the name; exclude them by path.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_susp_system_exe_anomaly.yml',
+    'https://attack.mitre.org/techniques/T1036/005/']

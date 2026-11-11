@@ -1,0 +1,61 @@
+name: omega-win-registry-hive-save-sam-security
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1003.002, T1003.004]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: reg.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* save *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* export *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* copy *', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*hklm\\sam*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*hklm\\security*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*hklm\\system*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*hkey_local_machine\\sam*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*hkey_local_machine\\security*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*\\system32\\config\\sam*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*\\repair\\sam*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*\\config\\regback\\sam*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: reg save/export of the SAM, SYSTEM or SECURITY hives, or copying them from a shadow copy or the repair folder.
+  source: [process]
+  false_positives: Backup tools and forensic collection. Rare in daily use.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_reg_dumping_sensitive_hives.yml',
+    'https://attack.mitre.org/techniques/T1003/002/', 'https://attack.mitre.org/techniques/T1003/004/']

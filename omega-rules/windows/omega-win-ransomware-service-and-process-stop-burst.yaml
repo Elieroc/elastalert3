@@ -1,0 +1,83 @@
+name: omega-win-ransomware-service-and-process-stop-burst
+type: frequency
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1489]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: net.exe, case_insensitive: true}
+            - term:
+                process.name: {value: net1.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* stop *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: sc.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* stop *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* config *disabled*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: taskkill.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* /f*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*stop-service*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*stop-process*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+num_events: 6
+timeframe: {minutes: 1}
+query_key: [host.name]
+realert: {minutes: 30}
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Six or more service-stop or process-kill commands (net stop, sc stop, taskkill, Stop-Service) on one host
+    within one minute: ransomware freeing locked files and backup agents.'
+  source: [process]
+  false_positives: Patch and maintenance scripts that stop several services at once. Raise num_events or exclude the parent.
+  references: ['https://attack.mitre.org/techniques/T1489/']

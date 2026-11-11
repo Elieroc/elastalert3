@@ -2,7 +2,7 @@
 # Each pack is its own folder; every rule is self-contained.
 rules_folder:
 - omega-rules/linux
-# - omega-rules/windows
+- omega-rules/windows
 # - omega-rules/web
 # - omega-rules/firewall
 scan_subdirectories: true

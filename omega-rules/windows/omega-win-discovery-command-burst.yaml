@@ -1,0 +1,64 @@
+name: omega-win-discovery-command-burst
+type: frequency
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1082, T1033, T1016, T1087]
+risk_score: 20
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: whoami.exe, case_insensitive: true}
+    - term:
+        process.name: {value: net.exe, case_insensitive: true}
+    - term:
+        process.name: {value: net1.exe, case_insensitive: true}
+    - term:
+        process.name: {value: nltest.exe, case_insensitive: true}
+    - term:
+        process.name: {value: ipconfig.exe, case_insensitive: true}
+    - term:
+        process.name: {value: systeminfo.exe, case_insensitive: true}
+    - term:
+        process.name: {value: tasklist.exe, case_insensitive: true}
+    - term:
+        process.name: {value: quser.exe, case_insensitive: true}
+    - term:
+        process.name: {value: qwinsta.exe, case_insensitive: true}
+    - term:
+        process.name: {value: arp.exe, case_insensitive: true}
+    - term:
+        process.name: {value: netstat.exe, case_insensitive: true}
+    - term:
+        process.name: {value: nslookup.exe, case_insensitive: true}
+    - term:
+        process.name: {value: hostname.exe, case_insensitive: true}
+    - term:
+        process.name: {value: cmdkey.exe, case_insensitive: true}
+    - term:
+        process.name: {value: route.exe, case_insensitive: true}
+    - term:
+        process.name: {value: nbtstat.exe, case_insensitive: true}
+    - term:
+        process.name: {value: dsquery.exe, case_insensitive: true}
+    - term:
+        process.name: {value: setspn.exe, case_insensitive: true}
+    minimum_should_match: 1
+num_events: 8
+timeframe: {minutes: 2}
+query_key: [host.name, user.name]
+realert: {minutes: 30}
+alert: []
+omega:
+  tier: T1
+  description: Eight or more reconnaissance commands (whoami, net, nltest, ipconfig, systeminfo, tasklist, quser, arp, netstat,
+    nslookup, hostname, cmdkey) by one user on one host within two minutes.
+  source: [process]
+  false_positives: Administrators troubleshooting, helpdesk tools collecting information, some installers. Adds risk only.
+  references: ['https://attack.mitre.org/techniques/T1082/', 'https://attack.mitre.org/techniques/T1033/', 'https://attack.mitre.org/techniques/T1016/',
+    'https://attack.mitre.org/techniques/T1087/']

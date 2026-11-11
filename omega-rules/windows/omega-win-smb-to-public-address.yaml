@@ -1,0 +1,28 @@
+name: omega-win-smb-to-public-address
+type: any
+index: logs-endpoint.events.network*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1187, T1048]
+risk_score: 70
+risk_objects: {host: host.name, ip: destination.ip}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: network}
+- term: {event.action: connection_attempted}
+- terms:
+    destination.port: [445, 139]
+- exists: {field: destination.ip}
+- bool:
+    must_not:
+    - terms:
+        destination.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16, '::1', 'fe80::/10', 'fc00::/7']
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A connection to TCP 445 or 139 of a public address: SMB to the Internet (NTLM hash theft through a forced
+    authentication, or data exfiltration over SMB).'
+  source: [network]
+  false_positives: 'None in a normal network: SMB to the Internet should be blocked at the firewall. Azure Files over SMB
+    445 is the exception (exclude those destinations).'
+  references: ['https://attack.mitre.org/techniques/T1187/', 'https://attack.mitre.org/techniques/T1048/']

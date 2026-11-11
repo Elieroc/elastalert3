@@ -1,0 +1,47 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: procdump64.exe, executable: 'C:\Windows\System32\procdump64.exe', command_line: procdump64.exe -accepteula
+        -ma lsass.exe l.dmp}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: rundll32.exe, executable: 'C:\Windows\System32\rundll32.exe', command_line: 'rundll32 C:\Windows\System32\comsvcs.dll,
+        MiniDump 612 C:\a.dmp full'}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: cmd.exe, executable: 'C:\Windows\System32\cmd.exe', command_line: 'mimikatz.exe "privilege::debug" "sekurlsa::logonpasswords"'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: procdump.exe, executable: 'C:\Windows\System32\procdump.exe', command_line: procdump -ma w3wp.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: tasklist.exe, executable: 'C:\Windows\System32\tasklist.exe', command_line: tasklist /fi "imagename
+        eq lsass.exe"}

@@ -1,0 +1,81 @@
+name: omega-win-screensaver-or-logon-script-persistence
+type: any
+index: logs-endpoint.events.registry*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1546.002, T1037.001]
+risk_score: 20
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: registry}
+- terms:
+    event.type: [change, creation]
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard:
+                registry.path: {value: '*\\Control Panel\\Desktop\\SCRNSAVE.EXE', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                registry.data.strings: {value: '*\\users\\*', case_insensitive: true}
+            - wildcard:
+                registry.data.strings: {value: '*\\appdata\\*', case_insensitive: true}
+            - wildcard:
+                registry.data.strings: {value: '*\\temp\\*', case_insensitive: true}
+            - wildcard:
+                registry.data.strings: {value: '*\\programdata\\*', case_insensitive: true}
+            - wildcard:
+                registry.data.strings: {value: '*\\perflogs\\*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            registry.path: {value: '*\\Environment\\UserInitMprLogonScript', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TiWorker.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TrustedInstaller.exe, case_insensitive: true}
+        - term:
+            process.name: {value: setup.exe, case_insensitive: true}
+        - term:
+            process.name: {value: ccmexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: MsMpEng.exe, case_insensitive: true}
+        - term:
+            process.name: {value: svchost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: wuauclt.exe, case_insensitive: true}
+        - term:
+            process.name: {value: dism.exe, case_insensitive: true}
+        - term:
+            process.name: {value: dismhost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: OfficeClickToRun.exe, case_insensitive: true}
+        - term:
+            process.name: {value: Teams.exe, case_insensitive: true}
+        - term:
+            process.name: {value: OneDriveSetup.exe, case_insensitive: true}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'A screensaver set to a user-writable executable, or a per-user logon script (UserInitMprLogonScript) added:
+    autostart paths outside the Run keys.'
+  source: [registry]
+  false_positives: Corporate logon scripts set by group policy (not through this key) and a custom screensaver. Adds risk
+    only.
+  references: ['https://attack.mitre.org/techniques/T1546/002/', 'https://attack.mitre.org/techniques/T1037/001/']

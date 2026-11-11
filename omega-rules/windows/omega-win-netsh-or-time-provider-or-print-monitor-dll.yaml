@@ -1,0 +1,75 @@
+name: omega-win-netsh-or-time-provider-or-print-monitor-dll
+type: any
+index: logs-endpoint.events.registry*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1546.007, T1547.003, T1547.010]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: registry}
+- terms:
+    event.type: [change, creation]
+- bool:
+    should:
+    - wildcard:
+        registry.path: {value: '*\\Microsoft\\NetSh\\*', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Services\\W32Time\\TimeProviders\\*\\DllName', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Control\\Print\\Monitors\\*\\Driver', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Control\\Print\\Environments\\*\\Print Processors\\*\\Driver', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TiWorker.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TrustedInstaller.exe, case_insensitive: true}
+        - term:
+            process.name: {value: setup.exe, case_insensitive: true}
+        - term:
+            process.name: {value: ccmexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: MsMpEng.exe, case_insensitive: true}
+        - term:
+            process.name: {value: svchost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: wuauclt.exe, case_insensitive: true}
+        - term:
+            process.name: {value: dism.exe, case_insensitive: true}
+        - term:
+            process.name: {value: dismhost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: OfficeClickToRun.exe, case_insensitive: true}
+        - term:
+            process.name: {value: Teams.exe, case_insensitive: true}
+        - term:
+            process.name: {value: OneDriveSetup.exe, case_insensitive: true}
+        minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: spoolsv.exe, case_insensitive: true}
+        - term:
+            process.name: {value: DrvInst.exe, case_insensitive: true}
+        - term:
+            process.name: {value: printui.exe, case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A helper DLL registered for netsh, a Windows Time provider or a print monitor: DLLs loaded by trusted system
+    components for persistence.'
+  source: [registry]
+  false_positives: Print drivers and monitors from printer vendors write the print keys (exclude the installer). The other
+    two are almost never legitimate.
+  references: ['https://attack.mitre.org/techniques/T1546/007/', 'https://attack.mitre.org/techniques/T1547/003/', 'https://attack.mitre.org/techniques/T1547/010/']

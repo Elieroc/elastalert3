@@ -1,0 +1,45 @@
+name: omega-win-certutil-download-or-decode
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1105, T1140]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: certutil.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*urlcache*http*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*urlcache*-f*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*-verifyctl*http*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*verifyctl*-split*http*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*-decode *', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*-decodehex *', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: certutil used to download a file (-urlcache, -verifyctl with a URL) or to decode a payload (-decode, -decodehex).
+  source: [process]
+  false_positives: Administrators decoding a certificate file with -decode (exclude by file extension .cer/.crt/.pem if
+    frequent).
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_certutil_download.yml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_certutil_decode.yml',
+    'https://attack.mitre.org/techniques/T1105/', 'https://attack.mitre.org/techniques/T1140/']

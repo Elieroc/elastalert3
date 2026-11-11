@@ -1,0 +1,36 @@
+name: omega-win-ps-wmi-persistence-or-remote-exec
+type: any
+index: winlogbeat-*,logs-windows.powershell_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1546.003, T1047]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.code: '4104'}
+- bool:
+    should:
+    - wildcard:
+        powershell.file.script_block_text: {value: '*__eventfilter*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*commandlineeventconsumer*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*activescripteventconsumer*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*__filtertoconsumerbinding*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*register-wmievent*-action*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*win32_process*create*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*invoke-wmimethod*win32_process*create*', case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: PowerShell script block that builds a WMI event subscription (__EventFilter, CommandLineEventConsumer, ActiveScriptEventConsumer,
+    __FilterToConsumerBinding) or starts a process through Win32_Process Create.
+  source: [powershell]
+  false_positives: Monitoring agents that register WMI subscriptions; management scripts using Win32_Process.Create. Exclude
+    by script name.
+  references: ['https://attack.mitre.org/techniques/T1546/003/', 'https://attack.mitre.org/techniques/T1047/']

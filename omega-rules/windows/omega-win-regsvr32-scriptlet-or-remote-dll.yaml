@@ -1,0 +1,55 @@
+name: omega-win-regsvr32-scriptlet-or-remote-dll
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1218.010]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: regsvr32.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*scrobj.dll*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*/i:http*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*/i:\\\\*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*.sct*', case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* /s*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* /u*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*http://*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*https://*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'regsvr32 loading a scriptlet (scrobj.dll, /i: with a URL or .sct) or a DLL from a URL: the Squiblydoo bypass.'
+  source: [process]
+  false_positives: None known in normal operations.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_regsvr32_flags_anomaly.yml',
+    'https://attack.mitre.org/techniques/T1218/010/']

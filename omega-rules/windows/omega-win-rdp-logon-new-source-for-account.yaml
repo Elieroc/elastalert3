@@ -1,0 +1,26 @@
+name: omega-win-rdp-logon-new-source-for-account
+type: new_term
+index: winlogbeat-*,logs-system.security-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1078, T1021.001]
+risk_score: 15
+risk_objects: {user: user.name, ip: source.ip, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4624'}
+- term: {winlog.logon.type: '10'}
+- exists: {field: source.ip}
+fields:
+- [user.name, source.ip]
+terms_window_size: {days: 30}
+use_keyword_postfix: false
+realert: {minutes: 1}
+alert: []
+omega:
+  tier: T1
+  description: A successful remote-interactive (RDP) logon for an account from a source address it has not used in the last
+    30 days.
+  source: [auth]
+  false_positives: Mobile users, DHCP changes, new jump hosts. Adds a small risk; combined with other signals it matters.
+  references: ['https://attack.mitre.org/techniques/T1078/', 'https://attack.mitre.org/techniques/T1021/001/']

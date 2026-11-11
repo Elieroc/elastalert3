@@ -1,0 +1,38 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: sc.exe, executable: 'C:\Windows\System32\sc.exe', command_line: 'sc create evil binPath= "cmd.exe /c
+        C:\Users\Public\a.exe"'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: sc.exe, executable: 'C:\Windows\System32\sc.exe', command_line: sc \\srv2 create x binpath= "%COMSPEC%
+        /c calc"}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: sc.exe, executable: 'C:\Windows\System32\sc.exe', command_line: sc query}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: sc.exe, executable: 'C:\Windows\System32\sc.exe', command_line: 'sc create MyApp binPath= "C:\Program
+        Files\MyApp\app.exe"'}

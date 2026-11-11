@@ -1,0 +1,56 @@
+name: omega-win-bitsadmin-or-bits-transfer-download
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1197, T1105]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: bitsadmin.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*/transfer*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/addfile*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/setnotifycmdline*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*start-bitstransfer*http*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*bitstransfer*-source http*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: bitsadmin /transfer or /addfile with a URL, or PowerShell Start-BitsTransfer / Import-Module BitsTransfer
+    pulling a remote file.
+  source: [process]
+  false_positives: Software distribution that uses BITS on purpose (exclude by parent or URL).
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_bitsadmin_download.yml',
+    'https://attack.mitre.org/techniques/T1197/', 'https://attack.mitre.org/techniques/T1105/']

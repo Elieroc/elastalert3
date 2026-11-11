@@ -1,0 +1,48 @@
+name: omega-win-uac-bypass-registry-hijack
+type: any
+index: logs-endpoint.events.registry*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1548.002]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: registry}
+- terms:
+    event.type: [change, creation]
+- bool:
+    should:
+    - wildcard:
+        registry.path: {value: '*\\Software\\Classes\\ms-settings\\shell\\open\\command*', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Software\\Classes\\mscfile\\shell\\open\\command*', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Software\\Classes\\exefile\\shell\\open\\command*', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Software\\Classes\\Folder\\shell\\open\\command*', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Software\\Classes\\AppX82a6gwre4fdg3bt635tn5ctqjf8msdd2\\Shell\\open\\command*', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Software\\Classes\\.pwn\\Shell\\Open\\command*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        registry.path: {value: HKEY_USERS\\*, case_insensitive: true}
+    - wildcard:
+        registry.path: {value: HKU\\*, case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\HKCU\\*', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: HKEY_CURRENT_USER\\*, case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A shell-open command registered in a per-user class key that auto-elevating Windows binaries read (ms-settings,
+    mscfile, exefile, Folder, AppX82a6gwre4fdg3bt635tn5ctqjf8msdd2): the fodhelper / eventvwr / sdclt UAC bypass.'
+  source: [registry]
+  false_positives: None known.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/registry/registry_set/registry_set_bypass_uac_using_eventviewer.yml',
+    'https://attack.mitre.org/techniques/T1548/002/']

@@ -1,0 +1,43 @@
+name: omega-win-appinit-dlls-or-appcert-dlls-set
+type: any
+index: logs-endpoint.events.registry*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1546.010, T1546.009]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: registry}
+- terms:
+    event.type: [change, creation]
+- bool:
+    should:
+    - wildcard:
+        registry.path: {value: '*\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\AppInit_DLLs', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\LoadAppInit_DLLs', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Control\\Session Manager\\AppCertDlls\\*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            registry.data.strings: {value: '0x00000000', case_insensitive: true}
+        - wildcard:
+            registry.data.strings: {value: '0', case_insensitive: true}
+        - wildcard:
+            registry.data.strings: {value: '', case_insensitive: true}
+        - wildcard:
+            registry.data.strings: {value: (empty), case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'AppInit_DLLs, AppCertDlls or LoadAppInit_DLLs changed: a DLL loaded into every process that uses user32
+    or CreateProcess.'
+  source: [registry]
+  false_positives: Old accessibility and screen-reader products. Rare on modern systems.
+  references: ['https://attack.mitre.org/techniques/T1546/010/', 'https://attack.mitre.org/techniques/T1546/009/']

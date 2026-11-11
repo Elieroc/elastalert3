@@ -1,0 +1,82 @@
+name: omega-win-defender-disabled-or-excluded-registry
+type: any
+index: logs-endpoint.events.registry*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1562.001]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: registry}
+- terms:
+    event.type: [change, creation]
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard:
+                registry.path: {value: '*\\Windows Defender\\DisableAntiSpyware', case_insensitive: true}
+            - wildcard:
+                registry.path: {value: '*\\Windows Defender\\Real-Time Protection\\DisableRealtimeMonitoring', case_insensitive: true}
+            - wildcard:
+                registry.path: {value: '*\\Windows Defender\\Real-Time Protection\\DisableBehaviorMonitoring', case_insensitive: true}
+            - wildcard:
+                registry.path: {value: '*\\Windows Defender\\Real-Time Protection\\DisableIOAVProtection', case_insensitive: true}
+            - wildcard:
+                registry.path: {value: '*\\Windows Defender\\Real-Time Protection\\DisableOnAccessProtection', case_insensitive: true}
+            - wildcard:
+                registry.path: {value: '*\\Windows Defender\\Real-Time Protection\\DisableScanOnRealtimeEnable', case_insensitive: true}
+            - wildcard:
+                registry.path: {value: '*\\Windows Defender\\DisableAntiVirus', case_insensitive: true}
+            - wildcard:
+                registry.path: {value: '*\\Windows Defender\\Spynet\\SpynetReporting', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                registry.data.strings: {value: '1', case_insensitive: true}
+            - wildcard:
+                registry.data.strings: {value: '0x00000001', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            registry.path: {value: '*\\Windows Defender\\Exclusions\\Paths\\*', case_insensitive: true}
+        - wildcard:
+            registry.path: {value: '*\\Windows Defender\\Exclusions\\Processes\\*', case_insensitive: true}
+        - wildcard:
+            registry.path: {value: '*\\Windows Defender\\Exclusions\\Extensions\\*', case_insensitive: true}
+        - wildcard:
+            registry.path: {value: '*\\Windows Defender\\Exclusions\\IpAddresses\\*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: MsMpEng.exe, case_insensitive: true}
+        - term:
+            process.name: {value: svchost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: gpsvc.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TiWorker.exe, case_insensitive: true}
+        - term:
+            process.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: OfficeClickToRun.exe, case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'Microsoft Defender turned off or given an exclusion in the registry: DisableAntiSpyware, DisableRealtimeMonitoring,
+    DisableBehaviorMonitoring, DisableIOAVProtection, or a new Exclusions\Paths/Processes/Extensions value.'
+  source: [registry]
+  false_positives: 'Group policy changes made by administrators (the writer is then svchost/gpsvc: exclude it) and a build-folder
+    exclusion.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/registry/registry_set/registry_set_windows_defender_tamper.yml',
+    'https://attack.mitre.org/techniques/T1562/001/']

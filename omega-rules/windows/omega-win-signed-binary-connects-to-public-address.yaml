@@ -1,0 +1,60 @@
+name: omega-win-signed-binary-connects-to-public-address
+type: any
+index: logs-endpoint.events.network*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1218, T1105]
+risk_score: 70
+risk_objects: {host: host.name, ip: destination.ip}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: network}
+- term: {event.action: connection_attempted}
+- bool:
+    should:
+    - term:
+        process.name: {value: regsvr32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: mshta.exe, case_insensitive: true}
+    - term:
+        process.name: {value: certutil.exe, case_insensitive: true}
+    - term:
+        process.name: {value: msbuild.exe, case_insensitive: true}
+    - term:
+        process.name: {value: installutil.exe, case_insensitive: true}
+    - term:
+        process.name: {value: regasm.exe, case_insensitive: true}
+    - term:
+        process.name: {value: regsvcs.exe, case_insensitive: true}
+    - term:
+        process.name: {value: cscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: odbcconf.exe, case_insensitive: true}
+    - term:
+        process.name: {value: cmstp.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wmic.exe, case_insensitive: true}
+    - term:
+        process.name: {value: hh.exe, case_insensitive: true}
+    - term:
+        process.name: {value: forfiles.exe, case_insensitive: true}
+    - term:
+        process.name: {value: ieexec.exe, case_insensitive: true}
+    - term:
+        process.name: {value: dnscmd.exe, case_insensitive: true}
+    minimum_should_match: 1
+- exists: {field: destination.ip}
+- bool:
+    must_not:
+    - terms:
+        destination.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16, '::1', 'fe80::/10', 'fc00::/7']
+alert: [debug]
+omega:
+  tier: T0
+  description: A Windows binary that is not supposed to talk to the Internet (regsvr32, mshta, certutil, msbuild, installutil,
+    regasm, cscript, wscript, odbcconf, cmstp, rundll32, wmic, hh, forfiles) opens a connection to a public address.
+  source: [network]
+  false_positives: 'Rare: certutil fetching CRLs when -verify is used, and rundll32 for URL handlers. Exclude by destination.'
+  references: ['https://attack.mitre.org/techniques/T1218/', 'https://attack.mitre.org/techniques/T1105/']

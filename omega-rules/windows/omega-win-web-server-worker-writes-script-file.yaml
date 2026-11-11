@@ -1,0 +1,82 @@
+name: omega-win-web-server-worker-writes-script-file
+type: any
+index: logs-endpoint.events.file*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1505.003]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change]
+- bool:
+    should:
+    - term:
+        process.name: {value: w3wp.exe, case_insensitive: true}
+    - term:
+        process.name: {value: httpd.exe, case_insensitive: true}
+    - term:
+        process.name: {value: nginx.exe, case_insensitive: true}
+    - term:
+        process.name: {value: tomcat9.exe, case_insensitive: true}
+    - term:
+        process.name: {value: tomcat8.exe, case_insensitive: true}
+    - term:
+        process.name: {value: tomcat7.exe, case_insensitive: true}
+    - term:
+        process.name: {value: php-cgi.exe, case_insensitive: true}
+    - term:
+        process.name: {value: php.exe, case_insensitive: true}
+    - term:
+        process.name: {value: UMWorkerProcess.exe, case_insensitive: true}
+    - term:
+        process.name: {value: umservice.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        file.extension: {value: aspx, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: ashx, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: asmx, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: asp, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: php, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: jsp, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: jspx, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: cfm, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: cer, case_insensitive: true}
+    - wildcard:
+        file.extension: {value: asa, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            file.path: {value: '*\\Temporary ASP.NET Files\\*', case_insensitive: true}
+        - wildcard:
+            file.path: {value: '*\\inetpub\\temp\\*', case_insensitive: true}
+        - wildcard:
+            file.path: {value: '*\\Windows\\Microsoft.NET\\*', case_insensitive: true}
+        - wildcard:
+            file.path: {value: '*\\cache\\*', case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A web-server worker (IIS w3wp, httpd, nginx, tomcat, php-cgi) writes an ASPX, ASHX, ASMX, ASP, PHP, JSP
+    or CFM file: a webshell uploaded or created through the application.'
+  source: [file]
+  false_positives: CMS and deployment tools that write pages through the web process (WordPress updates, SharePoint, Exchange
+    OWA configuration). Exclude by path.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/file/file_event/file_event_win_webshell_creation_detect.yml',
+    'https://attack.mitre.org/techniques/T1505/003/']

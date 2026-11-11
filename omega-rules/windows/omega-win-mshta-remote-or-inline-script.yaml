@@ -1,0 +1,47 @@
+name: omega-win-mshta-remote-or-inline-script
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1218.005]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: mshta.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*http://*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*https://*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*vbscript:*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*javascript:*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*\\appdata\\*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*\\temp\\*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*\\downloads\\*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*\\users\\public\\*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'mshta running a URL, a vbscript:/javascript: string, or an HTA from a temp or download folder.'
+  source: [process]
+  false_positives: Very rare in legitimate use. Old intranet portals can launch HTA files from a share (not matched).
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_mshta_http.yml',
+    'https://attack.mitre.org/techniques/T1218/005/']

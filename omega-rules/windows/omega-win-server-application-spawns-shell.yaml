@@ -1,0 +1,97 @@
+name: omega-win-server-application-spawns-shell
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1505.003, T1190, T1059]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.parent.name: {value: w3wp.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: sqlservr.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: UMWorkerProcess.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: MSExchangeMailboxAssistants.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: MSExchangeTransport.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: MSExchangeHMWorker.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: httpd.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: nginx.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: tomcat9.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: tomcat8.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: php-cgi.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: umservice.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: OWSTIMER.EXE, case_insensitive: true}
+    - term:
+        process.parent.name: {value: SPUCWorkerProcess.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - term:
+        process.name: {value: cmd.exe, case_insensitive: true}
+    - term:
+        process.name: {value: powershell.exe, case_insensitive: true}
+    - term:
+        process.name: {value: pwsh.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: cscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: mshta.exe, case_insensitive: true}
+    - term:
+        process.name: {value: rundll32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: regsvr32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: certutil.exe, case_insensitive: true}
+    - term:
+        process.name: {value: bitsadmin.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wmic.exe, case_insensitive: true}
+    - term:
+        process.name: {value: whoami.exe, case_insensitive: true}
+    - term:
+        process.name: {value: net.exe, case_insensitive: true}
+    - term:
+        process.name: {value: net1.exe, case_insensitive: true}
+    - term:
+        process.name: {value: curl.exe, case_insensitive: true}
+    - term:
+        process.name: {value: msbuild.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*\\Microsoft\\Exchange Server\\*\\Scripts\\*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*schtasks* /query*', case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A database, web, mail or application-server process starts a shell or LOLBin: SQL xp_cmdshell, a webshell
+    behind IIS, an Exchange or SharePoint exploit.'
+  source: [process]
+  false_positives: 'SQL Server agent jobs with CmdExec steps start cmd.exe from SQLAGENT, not sqlservr.exe (not matched).
+    Backup agents sometimes start cmd from sqlservr: exclude by command line.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_remote_access_tools_screenconnect_webshell.yml',
+    'https://attack.mitre.org/techniques/T1505/003/', 'https://attack.mitre.org/techniques/T1190/', 'https://attack.mitre.org/techniques/T1059/']

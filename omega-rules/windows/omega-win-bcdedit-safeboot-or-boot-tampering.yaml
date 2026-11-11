@@ -1,0 +1,39 @@
+name: omega-win-bcdedit-safeboot-or-boot-tampering
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1562.009, T1490]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: bcdedit.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*safeboot*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*nointegritychecks*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*testsigning on*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*loadoptions*ddisable_integrity_checks*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '* /delete *', case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'bcdedit forcing safe mode (safeboot), disabling driver signature checks or test signing, or deleting boot
+    entries: ransomware reboots into safe mode to evade EDR.'
+  source: [process]
+  false_positives: Support staff repairing a boot problem; developers enabling test signing for drivers (exclude by user).
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_bcdedit_boot_conf_tamper.yml',
+    'https://attack.mitre.org/techniques/T1562/009/', 'https://attack.mitre.org/techniques/T1490/']

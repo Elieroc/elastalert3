@@ -1,0 +1,62 @@
+name: omega-win-powershell-hidden-bypass-profile-skipped
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1059.001, T1685]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: powershell.exe, case_insensitive: true}
+    - term:
+        process.name: {value: pwsh.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*-w hidden*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*-windowstyle hidden*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*-win hidden*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*-w 1 *', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*-ep bypass*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*-executionpolicy bypass*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*-exec bypass*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*-ex bypass*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*-nop*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*-noprofile*', case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: PowerShell launched hidden with the execution policy bypassed and no profile, the usual shape of a dropper
+    launching its stage.
+  source: [process]
+  false_positives: Deployment tools and some installers. Adds risk only.
+  references: ['https://attack.mitre.org/techniques/T1059/001/', 'https://attack.mitre.org/techniques/T1685/']

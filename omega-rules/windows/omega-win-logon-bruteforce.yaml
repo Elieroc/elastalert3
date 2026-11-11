@@ -1,0 +1,29 @@
+name: omega-win-logon-bruteforce
+type: frequency
+index: winlogbeat-*,logs-system.security-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1110.001, T1110]
+risk_score: 70
+risk_objects: {ip: source.ip, user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4625'}
+- exists: {field: source.ip}
+- bool:
+    must_not:
+    - terms:
+        source.ip: [127.0.0.1, '::1']
+num_events: 20
+timeframe: {minutes: 5}
+query_key: [source.ip, host.name]
+realert: {minutes: 30}
+alert: [debug]
+omega:
+  tier: T0
+  description: 'One source address fails 20 or more Windows logons (event 4625) within 5 minutes: password guessing against
+    RDP, SMB or a service.'
+  source: [auth]
+  false_positives: 'Misconfigured scheduled tasks or services with an expired password retry from one host (the source is
+    then a local address: exclude it). Vulnerability scanners.'
+  references: ['https://attack.mitre.org/techniques/T1110/001/', 'https://attack.mitre.org/techniques/T1110/']

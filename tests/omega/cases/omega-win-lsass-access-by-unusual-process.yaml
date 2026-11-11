@@ -1,0 +1,48 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start, code: '10'}
+    winlog:
+      event_data: {TargetImage: 'C:\Windows\System32\lsass.exe', GrantedAccess: '0x1410', SourceImage: 'C:\Users\Public\x.exe'}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start, code: '10'}
+    winlog:
+      event_data: {TargetImage: 'C:\Windows\System32\lsass.exe', GrantedAccess: '0x1fffff', SourceImage: 'C:\Temp\procdump64.exe'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start, code: '10'}
+    winlog:
+      event_data: {TargetImage: 'C:\Windows\System32\lsass.exe', GrantedAccess: '0x1410', SourceImage: 'C:\Windows\System32\wbem\WmiPrvSE.exe'}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start, code: '10'}
+    winlog:
+      event_data: {TargetImage: 'C:\Windows\System32\notepad.exe', GrantedAccess: '0x1410', SourceImage: 'C:\Users\Public\x.exe'}
+- id: neg3
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start, code: '10'}
+    winlog:
+      event_data: {TargetImage: 'C:\Windows\System32\lsass.exe', GrantedAccess: '0x1000', SourceImage: 'C:\Users\Public\x.exe'}

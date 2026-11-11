@@ -1,0 +1,35 @@
+name: omega-win-ps-keylogger-or-screen-capture
+type: any
+index: winlogbeat-*,logs-windows.powershell_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1056.001, T1113, T1123]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.code: '4104'}
+- bool:
+    should:
+    - wildcard:
+        powershell.file.script_block_text: {value: '*getasynckeystate*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*setwindowshookex*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*copyfromscreen*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*mcisendstring*record*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*get-keystrokes*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*[console]::readkey*-intercept*', case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'PowerShell script block that logs keys or captures the screen or microphone: GetAsyncKeyState, SetWindowsHookEx,
+    CopyFromScreen, mciSendString record.'
+  source: [powershell]
+  false_positives: Accessibility tools and screen-capture utilities written in PowerShell. Adds risk only.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/powershell/powershell_script/posh_ps_keylogging.yml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/windows/powershell/powershell_script/posh_ps_susp_keylogger_activity.yml',
+    'https://attack.mitre.org/techniques/T1056/001/', 'https://attack.mitre.org/techniques/T1113/', 'https://attack.mitre.org/techniques/T1123/']

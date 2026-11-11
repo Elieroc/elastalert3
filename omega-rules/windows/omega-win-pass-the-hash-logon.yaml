@@ -1,0 +1,44 @@
+name: omega-win-pass-the-hash-logon
+type: any
+index: winlogbeat-*,logs-system.security-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1550.002]
+risk_score: 20
+risk_objects: {ip: source.ip, user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4624'}
+- bool:
+    should:
+    - bool:
+        must:
+        - term: {winlog.logon.type: '3'}
+        - term: {winlog.event_data.AuthenticationPackageName: NTLM}
+        - term: {winlog.event_data.KeyLength: '0'}
+        - bool:
+            must_not:
+            - terms:
+                user.name: [ANONYMOUS LOGON]
+        - bool:
+            must_not:
+            - bool:
+                should:
+                - wildcard:
+                    user.name: {value: '*$', case_insensitive: true}
+                minimum_should_match: 1
+    - bool:
+        must:
+        - term: {winlog.logon.type: '9'}
+        - term: {winlog.event_data.LogonProcessName: seclogo}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'A network or new-credentials logon that looks like pass-the-hash: NTLM logon type 3 with an empty session
+    key length of 0 for a non-anonymous account, or logon type 9 (NewCredentials) through seclogo.'
+  source: [auth]
+  false_positives: Some older clients and tools use NTLM with no session key; runas /netonly produces type 9 legitimately.
+    Adds risk only.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/builtin/security/account_management/win_security_pass_the_hash_2.yml',
+    'https://attack.mitre.org/techniques/T1550/002/']

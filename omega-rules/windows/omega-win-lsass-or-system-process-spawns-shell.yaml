@@ -1,0 +1,58 @@
+name: omega-win-lsass-or-system-process-spawns-shell
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1055, T1068]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.parent.name: {value: lsass.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: winlogon.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: smss.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: csrss.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: wininit.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: spoolsv.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - term:
+        process.name: {value: cmd.exe, case_insensitive: true}
+    - term:
+        process.name: {value: powershell.exe, case_insensitive: true}
+    - term:
+        process.name: {value: pwsh.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: cscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: mshta.exe, case_insensitive: true}
+    - term:
+        process.name: {value: rundll32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: regsvr32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: certutil.exe, case_insensitive: true}
+    - term:
+        process.name: {value: bitsadmin.exe, case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'lsass, winlogon, services, smss, csrss or spoolsv starting cmd, PowerShell or a script host: injected code
+    or an exploit in a system process.'
+  source: [process]
+  false_positives: None known.
+  references: ['https://attack.mitre.org/techniques/T1055/', 'https://attack.mitre.org/techniques/T1068/']

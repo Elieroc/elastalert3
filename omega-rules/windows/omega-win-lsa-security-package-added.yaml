@@ -1,0 +1,66 @@
+name: omega-win-lsa-security-package-added
+type: any
+index: logs-endpoint.events.registry*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1547.002, T1547.005, T1556.002]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: registry}
+- terms:
+    event.type: [change, creation]
+- bool:
+    should:
+    - wildcard:
+        registry.path: {value: '*\\Control\\Lsa\\Security Packages', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Control\\Lsa\\Authentication Packages', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Control\\Lsa\\Notification Packages', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Control\\Lsa\\RunAsPPL', case_insensitive: true}
+    minimum_should_match: 1
+- regexp:
+    registry.data.strings: {value: ~(kerberos|msv1_0|schannel|wdigest|tspkg|pku2u|cloudap|negoexts|negoextender|scecli|rassfm|0x00000001|1),
+      case_insensitive: true}
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TiWorker.exe, case_insensitive: true}
+        - term:
+            process.name: {value: TrustedInstaller.exe, case_insensitive: true}
+        - term:
+            process.name: {value: setup.exe, case_insensitive: true}
+        - term:
+            process.name: {value: ccmexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: MsMpEng.exe, case_insensitive: true}
+        - term:
+            process.name: {value: svchost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: wuauclt.exe, case_insensitive: true}
+        - term:
+            process.name: {value: dism.exe, case_insensitive: true}
+        - term:
+            process.name: {value: dismhost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: OfficeClickToRun.exe, case_insensitive: true}
+        - term:
+            process.name: {value: Teams.exe, case_insensitive: true}
+        - term:
+            process.name: {value: OneDriveSetup.exe, case_insensitive: true}
+        minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A DLL added to the LSA Security Packages, Authentication Packages or Notification Packages lists (or LSA
+    protection turned off): code loaded into lsass at boot, the way password-capturing SSPs persist.'
+  source: [registry]
+  false_positives: Third-party smart-card and password-sync products. Exclude their package names.
+  references: ['https://attack.mitre.org/techniques/T1547/002/', 'https://attack.mitre.org/techniques/T1547/005/', 'https://attack.mitre.org/techniques/T1556/002/']

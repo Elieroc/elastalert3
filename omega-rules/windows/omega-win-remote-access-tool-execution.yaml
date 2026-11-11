@@ -1,0 +1,95 @@
+name: omega-win-remote-access-tool-execution
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1219]
+risk_score: 25
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard:
+        process.name: {value: anydesk.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: teamviewer.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: teamviewer_service.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: rustdesk.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: screenconnect.clientservice.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: screenconnect.windowsclient.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: connectwisecontrol.client.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: meshagent.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: ateraagent.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: splashtop*.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: srservice.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: netsupport*.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: client32.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: nomachine*.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: nxservice.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: supremo.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: ultraviewer*.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: dwservice.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: remoteutilities*.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: rutserv.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: rfusclient.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: tightvnc*.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: winvnc.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: tvnserver.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: ammyy*.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: aa_v3.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: zohoassist.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: level.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: pulseway*.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: kaseya*.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: agentmon.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: syncro*.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: simple-help*.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: simplehelp*.exe, case_insensitive: true}
+    - wildcard:
+        process.name: {value: ltsvc.exe, case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'A remote administration or remote desktop tool started: AnyDesk, TeamViewer, RustDesk, ScreenConnect, MeshAgent,
+    Atera, Splashtop, NetSupport, NoMachine, VNC, Kaseya and similar.'
+  source: [process]
+  false_positives: The support tool your organisation uses (exclude it). Attackers install the same tools for access that
+    survives malware removal.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_remote_access_tools_anydesk.yml',
+    'https://attack.mitre.org/techniques/T1219/']

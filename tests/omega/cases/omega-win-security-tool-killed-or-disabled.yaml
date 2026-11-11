@@ -1,0 +1,54 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: taskkill.exe, executable: 'C:\Windows\System32\taskkill.exe', command_line: taskkill /f /im MsMpEng.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: sc.exe, executable: 'C:\Windows\System32\sc.exe', command_line: sc config SentinelAgent start= disabled}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: net.exe, executable: 'C:\Windows\System32\net.exe', command_line: net stop "Sophos Agent"}
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: powershell.exe, executable: 'C:\Windows\System32\powershell.exe', command_line: powershell Stop-Service
+        -Name CSFalconService -Force}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: sc.exe, executable: 'C:\Windows\System32\sc.exe', command_line: sc query windefend}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: taskkill.exe, executable: 'C:\Windows\System32\taskkill.exe', command_line: taskkill /f /im notepad.exe}

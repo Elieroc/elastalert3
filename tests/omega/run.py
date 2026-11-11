@@ -71,10 +71,11 @@ with tempfile.TemporaryDirectory() as tmp:
         # Legitimate activity of the rule's source: a T0 or T2 event rule must not hit any of it.
         benign = []
         src = (rule.get('omega') or {}).get('source', [''])[0]
-        bpath = os.path.join(lib.HERE, 'benign', src + '.yaml')
+        pack = next(k for k, v in lib.PREFIX.items() if os.path.dirname(rules[name]).split(os.sep)[-1] == k)
+        bpath = os.path.join(lib.HERE, 'benign', pack, src + '.yaml')
         if rule['type'] == 'any' and os.path.exists(bpath):
             for i, b in enumerate(yaml.safe_load(open(bpath))):
-                doc = lib.nest(lib.BENIGN_BASE[src])
+                doc = lib.nest(lib.BENIGN_BASE[pack][src])
                 doc = lib.deep_merge(doc, lib.nest(b))
                 doc['@timestamp'] = iso(BASE + datetime.timedelta(minutes=30, seconds=i))
                 benign.append((f'benign{i+1}', doc))

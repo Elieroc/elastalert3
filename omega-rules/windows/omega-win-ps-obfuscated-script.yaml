@@ -1,0 +1,30 @@
+name: omega-win-ps-obfuscated-script
+type: any
+index: winlogbeat-*,logs-windows.powershell_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1027, T1059.001]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.code: '4104'}
+- bool:
+    should:
+    - regexp:
+        powershell.file.script_block_text: {value: '.*([a-z]`[a-z].*){6,}.*', case_insensitive: true}
+    - regexp:
+        powershell.file.script_block_text: {value: '.*(\[char\] *[0-9a-fx]+ *[-+] *[0-9a-fx]+.*){3,}.*', case_insensitive: true}
+    - regexp:
+        powershell.file.script_block_text: {value: '.*(-join *\(.*-replace.*){2,}.*', case_insensitive: true}
+    - regexp:
+        powershell.file.script_block_text: {value: '.*(\{[0-9]+\}.*){4,}-f *.*', case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'PowerShell script block that looks obfuscated: many backticks inside words, [char] arithmetic, -join/-replace
+    chains on strings, format-string rebuilding.'
+  source: [powershell]
+  false_positives: Minified scripts from some installers and modules. Adds risk only.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/powershell/powershell_script/posh_ps_invoke_obfuscation_obfuscated_iex.yml',
+    'https://attack.mitre.org/techniques/T1027/', 'https://attack.mitre.org/techniques/T1059/001/']

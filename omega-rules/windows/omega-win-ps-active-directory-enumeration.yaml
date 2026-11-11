@@ -1,0 +1,39 @@
+name: omega-win-ps-active-directory-enumeration
+type: any
+index: winlogbeat-*,logs-windows.powershell_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1087.002, T1069.002, T1482]
+risk_score: 8
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.code: '4104'}
+- bool:
+    should:
+    - wildcard:
+        powershell.file.script_block_text: {value: '*get-aduser*-filter *', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*get-adcomputer*-filter *', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*get-adgroup*-filter *', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*[adsisearcher]*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*system.directoryservices.directorysearcher*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*get-adgroupmember*admins*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*get-adtrust*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*get-domaintrust*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*get-addomaincontroller*-filter*', case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: 'PowerShell script block that enumerates Active Directory: Get-ADUser/-Computer/-Group -Filter *, DirectorySearcher,
+    ADSISearcher with large filters, Get-ADGroupMember on privileged groups, Get-DomainTrust.'
+  source: [powershell]
+  false_positives: Administrators and reporting scripts. Adds risk only.
+  references: ['https://attack.mitre.org/techniques/T1087/002/', 'https://attack.mitre.org/techniques/T1069/002/', 'https://attack.mitre.org/techniques/T1482/']

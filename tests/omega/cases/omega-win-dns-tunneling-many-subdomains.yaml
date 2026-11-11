@@ -1,0 +1,2302 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 0.evil.com}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 1.evil.com}
+- id: pos3
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 2.evil.com}
+- id: pos4
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 3.evil.com}
+- id: pos5
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 4.evil.com}
+- id: pos6
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 5.evil.com}
+- id: pos7
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 6.evil.com}
+- id: pos8
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 7.evil.com}
+- id: pos9
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 8.evil.com}
+- id: pos10
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 9.evil.com}
+- id: pos11
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 10.evil.com}
+- id: pos12
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 11.evil.com}
+- id: pos13
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 12.evil.com}
+- id: pos14
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 13.evil.com}
+- id: pos15
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 14.evil.com}
+- id: pos16
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 15.evil.com}
+- id: pos17
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 16.evil.com}
+- id: pos18
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 17.evil.com}
+- id: pos19
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 18.evil.com}
+- id: pos20
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 19.evil.com}
+- id: pos21
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 20.evil.com}
+- id: pos22
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 21.evil.com}
+- id: pos23
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 22.evil.com}
+- id: pos24
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 23.evil.com}
+- id: pos25
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 24.evil.com}
+- id: pos26
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 25.evil.com}
+- id: pos27
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 26.evil.com}
+- id: pos28
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 27.evil.com}
+- id: pos29
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 28.evil.com}
+- id: pos30
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 29.evil.com}
+- id: pos31
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 30.evil.com}
+- id: pos32
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 31.evil.com}
+- id: pos33
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 32.evil.com}
+- id: pos34
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 33.evil.com}
+- id: pos35
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 34.evil.com}
+- id: pos36
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 35.evil.com}
+- id: pos37
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 36.evil.com}
+- id: pos38
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 37.evil.com}
+- id: pos39
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 38.evil.com}
+- id: pos40
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 39.evil.com}
+- id: pos41
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 40.evil.com}
+- id: pos42
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 41.evil.com}
+- id: pos43
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 42.evil.com}
+- id: pos44
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 43.evil.com}
+- id: pos45
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 44.evil.com}
+- id: pos46
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 45.evil.com}
+- id: pos47
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 46.evil.com}
+- id: pos48
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 47.evil.com}
+- id: pos49
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 48.evil.com}
+- id: pos50
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 49.evil.com}
+- id: pos51
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 50.evil.com}
+- id: pos52
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 51.evil.com}
+- id: pos53
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 52.evil.com}
+- id: pos54
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 53.evil.com}
+- id: pos55
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 54.evil.com}
+- id: pos56
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 55.evil.com}
+- id: pos57
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 56.evil.com}
+- id: pos58
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 57.evil.com}
+- id: pos59
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 58.evil.com}
+- id: pos60
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 59.evil.com}
+- id: pos61
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 60.evil.com}
+- id: pos62
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 61.evil.com}
+- id: pos63
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 62.evil.com}
+- id: pos64
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 63.evil.com}
+- id: pos65
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 64.evil.com}
+- id: pos66
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 65.evil.com}
+- id: pos67
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 66.evil.com}
+- id: pos68
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 67.evil.com}
+- id: pos69
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 68.evil.com}
+- id: pos70
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 69.evil.com}
+- id: pos71
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 70.evil.com}
+- id: pos72
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 71.evil.com}
+- id: pos73
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 72.evil.com}
+- id: pos74
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 73.evil.com}
+- id: pos75
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 74.evil.com}
+- id: pos76
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 75.evil.com}
+- id: pos77
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 76.evil.com}
+- id: pos78
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 77.evil.com}
+- id: pos79
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 78.evil.com}
+- id: pos80
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 79.evil.com}
+- id: pos81
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 80.evil.com}
+- id: pos82
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 81.evil.com}
+- id: pos83
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 82.evil.com}
+- id: pos84
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 83.evil.com}
+- id: pos85
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 84.evil.com}
+- id: pos86
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 85.evil.com}
+- id: pos87
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 86.evil.com}
+- id: pos88
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 87.evil.com}
+- id: pos89
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 88.evil.com}
+- id: pos90
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 89.evil.com}
+- id: pos91
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 90.evil.com}
+- id: pos92
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 91.evil.com}
+- id: pos93
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 92.evil.com}
+- id: pos94
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 93.evil.com}
+- id: pos95
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 94.evil.com}
+- id: pos96
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 95.evil.com}
+- id: pos97
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 96.evil.com}
+- id: pos98
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 97.evil.com}
+- id: pos99
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 98.evil.com}
+- id: pos100
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: a.exe}
+    dns:
+      question: {registered_domain: evil.com, name: 99.evil.com}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 0.cdn.com}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 1.cdn.com}
+- id: neg3
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 2.cdn.com}
+- id: neg4
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 3.cdn.com}
+- id: neg5
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 4.cdn.com}
+- id: neg6
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 5.cdn.com}
+- id: neg7
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 6.cdn.com}
+- id: neg8
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 7.cdn.com}
+- id: neg9
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 8.cdn.com}
+- id: neg10
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 9.cdn.com}
+- id: neg11
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 10.cdn.com}
+- id: neg12
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 11.cdn.com}
+- id: neg13
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 12.cdn.com}
+- id: neg14
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 13.cdn.com}
+- id: neg15
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 14.cdn.com}
+- id: neg16
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 15.cdn.com}
+- id: neg17
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 16.cdn.com}
+- id: neg18
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 17.cdn.com}
+- id: neg19
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 18.cdn.com}
+- id: neg20
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 19.cdn.com}
+- id: neg21
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 20.cdn.com}
+- id: neg22
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 21.cdn.com}
+- id: neg23
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 22.cdn.com}
+- id: neg24
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 23.cdn.com}
+- id: neg25
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 24.cdn.com}
+- id: neg26
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 25.cdn.com}
+- id: neg27
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 26.cdn.com}
+- id: neg28
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 27.cdn.com}
+- id: neg29
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 28.cdn.com}
+- id: neg30
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 29.cdn.com}
+- id: neg31
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 30.cdn.com}
+- id: neg32
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 31.cdn.com}
+- id: neg33
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 32.cdn.com}
+- id: neg34
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 33.cdn.com}
+- id: neg35
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 34.cdn.com}
+- id: neg36
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 35.cdn.com}
+- id: neg37
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 36.cdn.com}
+- id: neg38
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 37.cdn.com}
+- id: neg39
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 38.cdn.com}
+- id: neg40
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 39.cdn.com}
+- id: neg41
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 40.cdn.com}
+- id: neg42
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 41.cdn.com}
+- id: neg43
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 42.cdn.com}
+- id: neg44
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 43.cdn.com}
+- id: neg45
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 44.cdn.com}
+- id: neg46
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 45.cdn.com}
+- id: neg47
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 46.cdn.com}
+- id: neg48
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 47.cdn.com}
+- id: neg49
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 48.cdn.com}
+- id: neg50
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 49.cdn.com}
+- id: neg51
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 50.cdn.com}
+- id: neg52
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 51.cdn.com}
+- id: neg53
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 52.cdn.com}
+- id: neg54
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 53.cdn.com}
+- id: neg55
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 54.cdn.com}
+- id: neg56
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 55.cdn.com}
+- id: neg57
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 56.cdn.com}
+- id: neg58
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 57.cdn.com}
+- id: neg59
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 58.cdn.com}
+- id: neg60
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 59.cdn.com}
+- id: neg61
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 60.cdn.com}
+- id: neg62
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 61.cdn.com}
+- id: neg63
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 62.cdn.com}
+- id: neg64
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 63.cdn.com}
+- id: neg65
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 64.cdn.com}
+- id: neg66
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 65.cdn.com}
+- id: neg67
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 66.cdn.com}
+- id: neg68
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 67.cdn.com}
+- id: neg69
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 68.cdn.com}
+- id: neg70
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 69.cdn.com}
+- id: neg71
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 70.cdn.com}
+- id: neg72
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 71.cdn.com}
+- id: neg73
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 72.cdn.com}
+- id: neg74
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 73.cdn.com}
+- id: neg75
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 74.cdn.com}
+- id: neg76
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 75.cdn.com}
+- id: neg77
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 76.cdn.com}
+- id: neg78
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 77.cdn.com}
+- id: neg79
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 78.cdn.com}
+- id: neg80
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 79.cdn.com}
+- id: neg81
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 80.cdn.com}
+- id: neg82
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 81.cdn.com}
+- id: neg83
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 82.cdn.com}
+- id: neg84
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 83.cdn.com}
+- id: neg85
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 84.cdn.com}
+- id: neg86
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 85.cdn.com}
+- id: neg87
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 86.cdn.com}
+- id: neg88
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 87.cdn.com}
+- id: neg89
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 88.cdn.com}
+- id: neg90
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 89.cdn.com}
+- id: neg91
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 90.cdn.com}
+- id: neg92
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 91.cdn.com}
+- id: neg93
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 92.cdn.com}
+- id: neg94
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 93.cdn.com}
+- id: neg95
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 94.cdn.com}
+- id: neg96
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 95.cdn.com}
+- id: neg97
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 96.cdn.com}
+- id: neg98
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 97.cdn.com}
+- id: neg99
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 98.cdn.com}
+- id: neg100
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 99.cdn.com}
+- id: neg101
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 100.cdn.com}
+- id: neg102
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 101.cdn.com}
+- id: neg103
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 102.cdn.com}
+- id: neg104
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 103.cdn.com}
+- id: neg105
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 104.cdn.com}
+- id: neg106
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 105.cdn.com}
+- id: neg107
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 106.cdn.com}
+- id: neg108
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 107.cdn.com}
+- id: neg109
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 108.cdn.com}
+- id: neg110
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 109.cdn.com}
+- id: neg111
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 110.cdn.com}
+- id: neg112
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 111.cdn.com}
+- id: neg113
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 112.cdn.com}
+- id: neg114
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 113.cdn.com}
+- id: neg115
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 114.cdn.com}
+- id: neg116
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 115.cdn.com}
+- id: neg117
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 116.cdn.com}
+- id: neg118
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 117.cdn.com}
+- id: neg119
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 118.cdn.com}
+- id: neg120
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: network, action: lookup_requested}
+    process: {name: chrome.exe}
+    dns:
+      question: {registered_domain: cdn.com, name: 119.cdn.com}
+matches: 1

@@ -1,0 +1,39 @@
+name: omega-win-ps-download-and-execute
+type: any
+index: winlogbeat-*,logs-windows.powershell_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1059.001, T1105]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.code: '4104'}
+- bool:
+    should:
+    - wildcard:
+        powershell.file.script_block_text: {value: '*iex*downloadstring*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*invoke-expression*downloadstring*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*iex*(new-object*net.webclient*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*iex*invoke-webrequest*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*iex*(iwr*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*iex*invoke-restmethod*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*iex*(irm*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*iex*xmlhttp*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*downloadstring(*http*|*iex*', case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'PowerShell script block that downloads text and executes it in memory: IEX / Invoke-Expression around DownloadString,
+    Net.WebClient, Invoke-WebRequest, Invoke-RestMethod or an XMLHTTP object.'
+  source: [powershell]
+  false_positives: Vendor install one-liners (chocolatey, scoop, some agents). Exclude the exact installer.
+  references: ['https://attack.mitre.org/techniques/T1059/001/', 'https://attack.mitre.org/techniques/T1105/']

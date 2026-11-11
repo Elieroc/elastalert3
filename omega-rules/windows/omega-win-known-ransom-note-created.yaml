@@ -1,0 +1,130 @@
+name: omega-win-known-ransom-note-created
+type: any
+index: logs-endpoint.events.file*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1486]
+risk_score: 90
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change]
+- bool:
+    should:
+    - wildcard:
+        file.name: {value: Restore-My-Files.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: How To Restore Your Files.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: HOW_TO_DECRYPT.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: HOW_TO_DECRYPT_FILES.html, case_insensitive: true}
+    - wildcard:
+        file.name: {value: HOW_TO_RECOVER_FILES*.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: HOW_TO_RESTORE_FILES*.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: HOW_TO_BACK_FILES.html, case_insensitive: true}
+    - wildcard:
+        file.name: {value: RyukReadMe.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: RyukReadMe.html, case_insensitive: true}
+    - wildcard:
+        file.name: {value: RyukReadMe.hta, case_insensitive: true}
+    - wildcard:
+        file.name: {value: '@Please_Read_Me@.txt', case_insensitive: true}
+    - wildcard:
+        file.name: {value: '@WanaDecryptor@.exe', case_insensitive: true}
+    - wildcard:
+        file.name: {value: '@WanaDecryptor@.bmp', case_insensitive: true}
+    - wildcard:
+        file.name: {value: '@WanaDecryptor@.exe.lnk', case_insensitive: true}
+    - wildcard:
+        file.name: {value: '!!!READ_ME_MEDUSA!!!.txt', case_insensitive: true}
+    - wildcard:
+        file.name: {value: '!README!.txt', case_insensitive: true}
+    - wildcard:
+        file.name: {value: '!!FAQ for Decryption!!.txt', case_insensitive: true}
+    - wildcard:
+        file.name: {value: '!_README_!*.txt', case_insensitive: true}
+    - wildcard:
+        file.name: {value: '*-readme.txt', case_insensitive: true}
+    - wildcard:
+        file.name: {value: akira_readme.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: ClopReadMe.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: read_me_lkd.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: DECRYPT-FILES.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: DECRYPT-FILES.html, case_insensitive: true}
+    - wildcard:
+        file.name: {value: DECRYPT_INSTRUCTION*.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: DECRYPT_FILES.html, case_insensitive: true}
+    - wildcard:
+        file.name: {value: _DECRYPT_FILE.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: RESTORE_FILES_INFO.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: README_TO_RESTORE*, case_insensitive: true}
+    - wildcard:
+        file.name: {value: README_FOR_DECRYPT.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: CONTI_README.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: BlackByte_restoremyfiles.hta, case_insensitive: true}
+    - wildcard:
+        file.name: {value: Contact Us.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: CriticalBreachDetected.pdf, case_insensitive: true}
+    - wildcard:
+        file.name: {value: README-RECOVER-*.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: RECOVER-*-FILES.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: RECOVERY INFORMATION.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: ransom.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: ransom.html, case_insensitive: true}
+    - wildcard:
+        file.name: {value: how_to_decrypt.html, case_insensitive: true}
+    - wildcard:
+        file.name: {value: _readme.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: HELP_DECRYPT*, case_insensitive: true}
+    - wildcard:
+        file.name: {value: HELP_YOUR_FILES*, case_insensitive: true}
+    - wildcard:
+        file.name: {value: YOUR_FILES_ARE_ENCRYPTED*, case_insensitive: true}
+    - wildcard:
+        file.name: {value: Your_Files_Are_Encrypted*, case_insensitive: true}
+    - wildcard:
+        file.name: {value: ALL_YOUR_FILES_ARE_ENCRYPTED*, case_insensitive: true}
+    - wildcard:
+        file.name: {value: FILES_ENCRYPTED.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: READ_ME_NOW.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: Readme_to_decrypt*.txt, case_insensitive: true}
+    - wildcard:
+        file.name: {value: HOW-TO-DECRYPT-FILES*, case_insensitive: true}
+    - wildcard:
+        file.name: {value: ReadMeToDecrypt*, case_insensitive: true}
+    - wildcard:
+        file.name: {value: LockBit-Ransomware.hta, case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A file with the name of a known ransom note is created: LockBit, Ryuk, WannaCry, Conti, Medusa, Akira, Clop,
+    Hive, Babuk, REvil, BlackByte, Rhysida, Cuba and other Windows ransomware families. Generic names (readme.txt, README.md)
+    are left out on purpose.'
+  source: [file]
+  false_positives: 'Almost none: the names are specific. A security-training share or a malware-analysis sandbox that stores
+    these files can match; exclude those hosts.'
+  references: ['https://attack.mitre.org/techniques/T1486/']

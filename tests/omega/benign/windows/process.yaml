@@ -1,0 +1,36 @@
+# Legitimate Windows activity: no T0 rule of type `any` may hit it (T1 signals may, they only add a little risk).
+# Documents are merged on {host.os.type: windows, event.category: process, event.type: start}.
+- {process.name: explorer.exe, process.executable: 'C:\Windows\explorer.exe', process.command_line: 'C:\Windows\Explorer.EXE', process.parent.name: userinit.exe, user.name: alice}
+- {process.name: svchost.exe, process.executable: 'C:\Windows\System32\svchost.exe', process.command_line: 'C:\Windows\system32\svchost.exe -k netsvcs -p', process.parent.name: services.exe, user.name: SYSTEM}
+- {process.name: cmd.exe, process.executable: 'C:\Windows\System32\cmd.exe', process.command_line: 'cmd.exe /c dir C:\', process.parent.name: explorer.exe, user.name: alice}
+- {process.name: powershell.exe, process.executable: 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe', process.command_line: 'powershell.exe -NoProfile -File C:\scripts\inventory.ps1', process.parent.name: taskeng.exe, user.name: svc-inv}
+- {process.name: powershell.exe, process.executable: 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe', process.command_line: 'powershell.exe Get-Service | Where-Object Status -eq Running', process.parent.name: explorer.exe, user.name: alice}
+- {process.name: powershell.exe, process.executable: 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe', process.command_line: 'powershell -ExecutionPolicy Bypass -File C:\ProgramData\Company\update.ps1', process.parent.name: ccmexec.exe, user.name: SYSTEM}
+- {process.name: winword.exe, process.executable: 'C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE', process.command_line: 'WINWORD.EXE /n report.docx', process.parent.name: explorer.exe, user.name: alice}
+- {process.name: splwow64.exe, process.executable: 'C:\Windows\splwow64.exe', process.command_line: 'splwow64.exe 8192', process.parent.name: winword.exe, user.name: alice}
+- {process.name: excel.exe, process.executable: 'C:\Program Files\Microsoft Office\root\Office16\EXCEL.EXE', process.command_line: 'EXCEL.EXE budget.xlsx', process.parent.name: outlook.exe, user.name: alice}
+- {process.name: chrome.exe, process.executable: 'C:\Program Files\Google\Chrome\Application\chrome.exe', process.command_line: 'chrome.exe --type=renderer', process.parent.name: chrome.exe, user.name: alice}
+- {process.name: msedge.exe, process.executable: 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe', process.command_line: 'msedge.exe https://intranet.corp.local', process.parent.name: explorer.exe, user.name: alice}
+- {process.name: msiexec.exe, process.executable: 'C:\Windows\System32\msiexec.exe', process.command_line: 'msiexec.exe /i C:\Windows\Installer\abc.msi /qn', process.parent.name: ccmexec.exe, user.name: SYSTEM}
+- {process.name: wuauclt.exe, process.executable: 'C:\Windows\System32\wuauclt.exe', process.command_line: 'wuauclt.exe /detectnow', process.parent.name: svchost.exe, user.name: SYSTEM}
+- {process.name: TiWorker.exe, process.executable: 'C:\Windows\WinSxS\amd64_microsoft-windows-servicingstack\TiWorker.exe', process.command_line: 'TiWorker.exe -Embedding', process.parent.name: svchost.exe, user.name: SYSTEM}
+- {process.name: schtasks.exe, process.executable: 'C:\Windows\System32\schtasks.exe', process.command_line: 'schtasks /query /fo LIST', process.parent.name: cmd.exe, user.name: admin}
+- {process.name: sc.exe, process.executable: 'C:\Windows\System32\sc.exe', process.command_line: 'sc query wuauserv', process.parent.name: cmd.exe, user.name: admin}
+- {process.name: net.exe, process.executable: 'C:\Windows\System32\net.exe', process.command_line: 'net use Z: \\fileserver\share', process.parent.name: cmd.exe, user.name: alice}
+- {process.name: whoami.exe, process.executable: 'C:\Windows\System32\whoami.exe', process.command_line: 'whoami', process.parent.name: cmd.exe, user.name: alice}
+- {process.name: ipconfig.exe, process.executable: 'C:\Windows\System32\ipconfig.exe', process.command_line: 'ipconfig /all', process.parent.name: cmd.exe, user.name: alice}
+- {process.name: wmic.exe, process.executable: 'C:\Windows\System32\wbem\WMIC.exe', process.command_line: 'wmic os get caption,version', process.parent.name: cmd.exe, user.name: admin}
+- {process.name: reg.exe, process.executable: 'C:\Windows\System32\reg.exe', process.command_line: 'reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall', process.parent.name: cmd.exe, user.name: admin}
+- {process.name: certutil.exe, process.executable: 'C:\Windows\System32\certutil.exe', process.command_line: 'certutil -store my', process.parent.name: cmd.exe, user.name: admin}
+- {process.name: vssadmin.exe, process.executable: 'C:\Windows\System32\vssadmin.exe', process.command_line: 'vssadmin list shadows', process.parent.name: cmd.exe, user.name: admin}
+- {process.name: wevtutil.exe, process.executable: 'C:\Windows\System32\wevtutil.exe', process.command_line: 'wevtutil qe System /c:20 /f:text', process.parent.name: cmd.exe, user.name: admin}
+- {process.name: rundll32.exe, process.executable: 'C:\Windows\System32\rundll32.exe', process.command_line: 'rundll32.exe printui.dll,PrintUIEntry /ia', process.parent.name: explorer.exe, user.name: alice}
+- {process.name: regsvr32.exe, process.executable: 'C:\Windows\System32\regsvr32.exe', process.command_line: 'regsvr32.exe /s C:\Windows\System32\vbscript.dll', process.parent.name: msiexec.exe, user.name: SYSTEM}
+- {process.name: cscript.exe, process.executable: 'C:\Windows\System32\cscript.exe', process.command_line: 'cscript //nologo C:\Windows\System32\slmgr.vbs /dli', process.parent.name: cmd.exe, user.name: admin}
+- {process.name: msbuild.exe, process.executable: 'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe', process.command_line: 'msbuild.exe App.sln /p:Configuration=Release', process.parent.name: devenv.exe, user.name: dev}
+- {process.name: git.exe, process.executable: 'C:\Program Files\Git\cmd\git.exe', process.command_line: 'git pull origin main', process.parent.name: Code.exe, user.name: dev}
+- {process.name: python.exe, process.executable: 'C:\Python312\python.exe', process.command_line: 'python manage.py runserver', process.parent.name: cmd.exe, user.name: dev}
+- {process.name: OneDrive.exe, process.executable: 'C:\Users\alice\AppData\Local\Microsoft\OneDrive\OneDrive.exe', process.command_line: 'OneDrive.exe /background', process.parent.name: explorer.exe, user.name: alice}
+- {process.name: Teams.exe, process.executable: 'C:\Users\alice\AppData\Local\Microsoft\Teams\current\Teams.exe', process.command_line: 'Teams.exe', process.parent.name: explorer.exe, user.name: alice}
+- {process.name: MpCmdRun.exe, process.executable: 'C:\ProgramData\Microsoft\Windows Defender\Platform\4.18\MpCmdRun.exe', process.command_line: 'MpCmdRun.exe -SignatureUpdate', process.parent.name: svchost.exe, user.name: SYSTEM}
+- {process.name: bcdedit.exe, process.executable: 'C:\Windows\System32\bcdedit.exe', process.command_line: 'bcdedit /enum', process.parent.name: cmd.exe, user.name: admin}

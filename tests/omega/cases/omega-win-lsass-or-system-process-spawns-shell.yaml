@@ -1,0 +1,51 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c whoami
+      parent: {name: spoolsv.exe}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell.exe
+      parent: {name: lsass.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd.exe
+      parent: {name: explorer.exe}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: conhost.exe
+      executable: C:\Windows\System32\conhost.exe
+      command_line: conhost.exe
+      parent: {name: csrss.exe}

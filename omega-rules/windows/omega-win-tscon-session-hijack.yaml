@@ -1,0 +1,32 @@
+name: omega-win-tscon-session-hijack
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1563.002]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: tscon.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*/dest:*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '* /dest *', case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: tscon redirecting another user's RDP session to the current one (/dest:), the way a SYSTEM shell takes over
+    a session without credentials.
+  source: [process]
+  false_positives: Support staff shadowing sessions on terminal servers (rare).
+  references: ['https://attack.mitre.org/techniques/T1563/002/']

@@ -1,0 +1,39 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\AppData\Local\Temp\a.exe', name: a.exe, extension: exe}
+    process: {name: WINWORD.EXE}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Downloads\x.hta', name: x.hta, extension: hta}
+    process: {name: outlook.exe}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\Documents\r.docx', name: r.docx, extension: docx}
+    process: {name: WINWORD.EXE}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\bob\AppData\Local\Temp\a.exe', name: a.exe, extension: exe}
+    process: {name: chrome.exe}

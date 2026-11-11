@@ -1,0 +1,50 @@
+name: omega-win-out-of-band-callback-domain-lookup
+type: any
+index: logs-endpoint.events.network*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1190, T1071.004]
+risk_score: 80
+risk_objects: {host: host.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.action: lookup_requested}
+- bool:
+    should:
+    - wildcard:
+        dns.question.name: {value: '*.oast.fun', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.oast.pro', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.oast.live', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.oast.site', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.oast.online', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.oast.me', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.interact.sh', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.interactsh.com', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.burpcollaborator.net', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.oastify.com', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.dnslog.cn', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.ceye.io', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.canarytokens.com', case_insensitive: true}
+    - wildcard:
+        dns.question.name: {value: '*.requestbin.net', case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A host resolves an out-of-band interaction domain (interact.sh, oast.*, Burp Collaborator, dnslog.cn, ceye.io,
+    canarytokens): the callback of a remote code execution or SSRF being tested against this host.'
+  source: [dns]
+  false_positives: Penetration tests and bug-bounty scans of your own systems (exclude them while they run).
+  references: ['https://attack.mitre.org/techniques/T1190/', 'https://attack.mitre.org/techniques/T1071/004/']

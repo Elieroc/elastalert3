@@ -1,0 +1,38 @@
+name: omega-win-ps-defender-tampering
+type: any
+index: winlogbeat-*,logs-windows.powershell_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1562.001]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.code: '4104'}
+- bool:
+    should:
+    - wildcard:
+        powershell.file.script_block_text: {value: '*set-mppreference*-disable*$true*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*set-mppreference*-disable*1*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*add-mppreference*-exclusion*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*set-mppreference*-exclusion*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*remove-mppreference*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*uninstall-windowsfeature*windows-defender*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*disable-windowsoptionalfeature*windows-defender*', case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'PowerShell script block that disables Defender, adds exclusions or removes definitions: Set-MpPreference
+    -Disable*, Add-MpPreference -Exclusion*, Remove-MpPreference, Uninstall-WindowsFeature Windows-Defender.'
+  source: [powershell]
+  false_positives: Hardening scripts and build servers that add a folder exclusion (exclude that path).
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/powershell/powershell_script/posh_ps_tamper_windows_defender_set_mp.yml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/windows/powershell/powershell_script/posh_ps_win_defender_exclusions_added.yml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/windows/powershell/powershell_script/posh_ps_tamper_windows_defender_rem_mp.yml',
+    'https://attack.mitre.org/techniques/T1562/001/']

@@ -1,0 +1,21 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4698'}
+    winlog:
+      event_data: {TaskContent: <Exec><Command>powershell.exe</Command><Arguments>-w hidden -c x</Arguments></Exec>}
+- id: pos2
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4698'}
+    winlog:
+      event_data: {TaskContent: '<Exec><Command>C:\Users\Public\a.exe</Command></Exec>'}
+- id: neg1
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4698'}
+    winlog:
+      event_data: {TaskContent: '<Exec><Command>C:\Program Files\Vendor\task.exe</Command></Exec>'}

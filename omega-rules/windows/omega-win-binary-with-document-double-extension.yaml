@@ -1,0 +1,24 @@
+name: omega-win-binary-with-document-double-extension
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1036.007]
+risk_score: 80
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- regexp:
+    process.executable: {value: .*\.(pdf|doc|docx|xls|xlsx|ppt|pptx|txt|jpg|jpeg|png|gif|zip|rtf)\.(exe|scr|com|bat|cmd|pif),
+      case_insensitive: true}
+alert: [debug]
+omega:
+  tier: T0
+  description: An executable launched whose file name ends in a document or picture extension followed by .exe, .scr, .com,
+    .bat or .cmd (invoice.pdf.exe).
+  source: [process]
+  false_positives: None known.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_susp_double_extension.yml',
+    'https://attack.mitre.org/techniques/T1036/007/']

@@ -1,0 +1,23 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4768'}
+    user: {name: bob}
+    winlog:
+      event_data: {PreAuthType: '0', TicketEncryptionType: '0x17'}
+- id: neg1
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4768'}
+    user: {name: bob}
+    winlog:
+      event_data: {PreAuthType: '2', TicketEncryptionType: '0x12'}
+- id: neg2
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4768'}
+    user: {name: PC1$}
+    winlog:
+      event_data: {PreAuthType: '0', TicketEncryptionType: '0x17'}

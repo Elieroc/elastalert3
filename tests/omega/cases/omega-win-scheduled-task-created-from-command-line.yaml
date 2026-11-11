@@ -1,0 +1,38 @@
+docs:
+- id: pos1
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: schtasks.exe, executable: 'C:\Windows\System32\schtasks.exe', command_line: schtasks /create /tn upd
+        /tr "powershell -w hidden -c x" /sc minute /mo 5}
+- id: pos2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: schtasks.exe, executable: 'C:\Windows\System32\schtasks.exe', command_line: 'schtasks /create /tn x
+        /tr C:\Users\Public\a.exe /sc onlogon /ru system'}
+- id: neg1
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: schtasks.exe, executable: 'C:\Windows\System32\schtasks.exe', command_line: schtasks /query}
+- id: neg2
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process: {name: schtasks.exe, executable: 'C:\Windows\System32\schtasks.exe', command_line: 'schtasks /create /tn backup
+        /tr D:\backup.bat /sc daily'}

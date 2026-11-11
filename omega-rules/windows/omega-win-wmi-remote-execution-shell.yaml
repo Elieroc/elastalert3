@@ -1,0 +1,47 @@
+name: omega-win-wmi-remote-execution-shell
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1047, T1021.006]
+risk_score: 70
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.parent.name: {value: wmiprvse.exe, case_insensitive: true}
+    - term:
+        process.parent.name: {value: wsmprovhost.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - term:
+        process.name: {value: cmd.exe, case_insensitive: true}
+    - term:
+        process.name: {value: powershell.exe, case_insensitive: true}
+    - term:
+        process.name: {value: pwsh.exe, case_insensitive: true}
+    - term:
+        process.name: {value: mshta.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: cscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: rundll32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: regsvr32.exe, case_insensitive: true}
+    minimum_should_match: 1
+alert: [debug]
+omega:
+  tier: T0
+  description: 'wmiprvse.exe or wsmprovhost.exe (remote WMI / WinRM) starting cmd or PowerShell with output redirected to
+    an ADMIN$ file or a hidden window: the shape of wmiexec and WinRM tooling.'
+  source: [process]
+  false_positives: Management software that runs scripts over WMI through cmd. Exclude by command line if you have one.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_wmiprvse_spawning_process.yml',
+    'https://attack.mitre.org/techniques/T1047/', 'https://attack.mitre.org/techniques/T1021/006/']

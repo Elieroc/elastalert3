@@ -1,0 +1,45 @@
+name: omega-win-executable-from-unusual-writable-path
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1036, T1204.002]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- regexp:
+    process.executable: {value: '(c:|\\device\\harddiskvolume[0-9]+)\\(users\\public|perflogs|\$recycle\.bin|windows\\temp|windows\\tasks|windows\\debug|programdata\\[^\\]+\.exe|users\\[^\\]+\\(appdata\\local\\temp|downloads)\\.*)(\\.*)?.*\.(exe|scr|com|pif)',
+      case_insensitive: true}
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: setup.exe, case_insensitive: true}
+        - term:
+            process.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: dismhost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: dism.exe, case_insensitive: true}
+        - term:
+            process.name: {value: tiworker.exe, case_insensitive: true}
+        - term:
+            process.name: {value: mpcmdrun.exe, case_insensitive: true}
+        - term:
+            process.name: {value: mpsigstub.exe, case_insensitive: true}
+        - term:
+            process.name: {value: vc_redist.x64.exe, case_insensitive: true}
+        minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: A program started from Users\Public, PerfLogs, the Recycle Bin, Windows\Temp, Windows\Tasks, a user Temp
+    or Downloads folder, or the ProgramData root.
+  source: [process]
+  false_positives: Portable tools, installers just downloaded, game launchers. Small risk; the combination with other signals
+    matters.
+  references: ['https://attack.mitre.org/techniques/T1036/', 'https://attack.mitre.org/techniques/T1204/002/']

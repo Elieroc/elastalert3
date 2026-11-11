@@ -1,0 +1,48 @@
+name: omega-win-scheduled-task-created-event-with-unusual-action
+type: any
+index: winlogbeat-*,logs-system.security-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1053.005]
+risk_score: 20
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4698'}
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.TaskContent: {value: '*<Command>cmd*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.TaskContent: {value: '*<Command>powershell*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.TaskContent: {value: '*<Command>pwsh*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.TaskContent: {value: '*<Command>wscript*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.TaskContent: {value: '*<Command>cscript*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.TaskContent: {value: '*<Command>mshta*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.TaskContent: {value: '*<Command>rundll32*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.TaskContent: {value: '*<Command>regsvr32*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.TaskContent: {value: '*\\users\\public\\*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.TaskContent: {value: '*\\appdata\\*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.TaskContent: {value: '*\\windows\\temp\\*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.TaskContent: {value: '*<Arguments>*-enc*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.TaskContent: {value: '*<Arguments>*-w hidden*', case_insensitive: true}
+    minimum_should_match: 1
+alert: []
+omega:
+  tier: T1
+  description: A scheduled task created (event 4698) whose definition runs a command interpreter, script host, encoded PowerShell
+    or a user-writable path.
+  source: [auth]
+  false_positives: Software installers and management agents creating tasks. Adds risk only.
+  references: ['https://attack.mitre.org/techniques/T1053/005/']
