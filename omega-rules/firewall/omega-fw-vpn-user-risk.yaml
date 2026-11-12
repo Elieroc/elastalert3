@@ -1,0 +1,25 @@
+name: omega-fw-vpn-user-risk
+type: risk
+priority: 2
+mitre_attack: []
+risk_threshold: 80
+timeframe: {hours: 12}
+risk_object_type: user
+min_distinct_rules: 2
+realert: {hours: 12}
+usual_hours:
+  timezone: UTC
+  windows:
+  - days: [mon, tue, wed, thu, fri]
+    from: 07:00
+    to: '19:00'
+off_hours_bonus: 15
+alert: [debug]
+omega:
+  tier: T2
+  description: A VPN account whose alerts add up to 80 risk points within 12 hours, from at least two different rules (impossible
+    travel, new country, many addresses, password spray). Alerts outside usual hours weigh 15 more.
+  source: [risk]
+  false_positives: 'Travelling staff and people who work at night. The off-hours bonus follows the usual_hours windows below:
+    set them to your site, and the time zone.'
+  references: ['https://elastalert3.neopipe.fr/ruletypes.html#risk']

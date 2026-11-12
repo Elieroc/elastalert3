@@ -1,0 +1,44 @@
+name: omega-fw-vpn-login-off-hours
+type: any
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1078, T1133]
+risk_score: 10
+risk_objects: {user: user.name, ip: source.ip}
+filter:
+- term: {event.category: authentication}
+- term: {event.outcome: success}
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard:
+            event.dataset: {value: '*vpn*', case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            event.action: {value: '*vpn*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+- exists: {field: user.name}
+active_hours:
+  timezone: UTC
+  windows:
+  - days: [mon, tue, wed, thu, fri, sat, sun]
+    from: '19:00'
+    to: 07:00
+  - days: [sat, sun]
+    from: 07:00
+    to: '19:00'
+realert: {minutes: 30}
+query_key: [user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A successful VPN login outside working hours (nights and weekends, UTC by default: set the windows to your site).'
+  source: [vpn]
+  false_positives: 'On-call staff, people in other time zones. Silent: it adds risk, and the account and address risk rules add
+    up the rest.'
+  references: ['https://attack.mitre.org/techniques/T1133/', 'https://attack.mitre.org/techniques/T1078/']

@@ -1,0 +1,24 @@
+name: omega-fw-admin-login-bruteforce
+type: frequency
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1110.001, T1110.004, T1078]
+risk_score: 20
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- term: {event.category: authentication}
+- term: {observer.type: firewall}
+- term: {event.outcome: failure}
+num_events: 5
+timeframe: {minutes: 10}
+query_key: source.ip
+realert: {minutes: 30}
+alert: []
+omega:
+  tier: T1
+  description: One address fails 5 or more administrator logins on the firewall within 10 minutes.
+  source: [firewall]
+  false_positives: 'An administrator who forgets the password (exclude the address). Silent: it adds risk, the correlation rule
+    alerts when a guess works.'
+  references: ['https://attack.mitre.org/techniques/T1110/001/']

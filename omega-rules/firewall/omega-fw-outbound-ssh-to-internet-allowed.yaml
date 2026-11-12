@@ -1,0 +1,32 @@
+name: omega-fw-outbound-ssh-to-internet-allowed
+type: any
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1572, T1048]
+risk_score: 8
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- term: {event.type: allowed}
+- terms:
+    source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- bool:
+    must:
+    - exists: {field: destination.ip}
+    must_not:
+    - terms:
+        destination.ip: *id001
+- terms:
+    destination.port: [22, 2222]
+realert: {minutes: 30}
+query_key: [source.ip, destination.ip]
+alert: []
+omega:
+  tier: T1
+  description: 'An internal host is allowed to open an SSH connection to a public address: a tunnel out, a reverse shell on port
+    22 or an exfiltration channel.'
+  source: [firewall]
+  false_positives: 'Administrators and developers who use git over SSH, cloud shells and remote servers. Silent: it adds a small
+    risk.'
+  references: ['https://attack.mitre.org/techniques/T1572/', 'https://attack.mitre.org/techniques/T1048/']

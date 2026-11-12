@@ -1,0 +1,18 @@
+name: omega-fw-source-ip-risk
+type: risk
+priority: 2
+mitre_attack: []
+risk_threshold: 100
+timeframe: {hours: 6}
+risk_object_type: ip
+min_distinct_rules: 3
+realert: {hours: 12}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'A public address whose firewall, IPS and VPN alerts add up to 100 risk points within 6 hours, from at least three
+    different rules (scan, brute force, exploit, allowed admin port...): one attacker working through the perimeter.'
+  source: [risk]
+  false_positives: Shared NAT or proxy addresses of a partner that many people go through (exclude them on the rules that feed
+    the score).
+  references: ['https://elastalert3.neopipe.fr/ruletypes.html#risk']

@@ -1,0 +1,40 @@
+name: omega-fw-vpn-session-country-change
+type: change
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1550.004, T1078]
+risk_score: 20
+risk_objects: {user: user.name, ip: source.ip}
+filter:
+- term: {event.category: authentication}
+- term: {event.outcome: success}
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard:
+            event.dataset: {value: '*vpn*', case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            event.action: {value: '*vpn*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+- exists: {field: user.name}
+- exists: {field: source.geo.country_iso_code}
+compare_key: [source.geo.country_iso_code]
+ignore_null: true
+query_key: user.name
+timeframe: {minutes: 30}
+realert: {hours: 1}
+alert: []
+omega:
+  tier: T1
+  description: 'The same VPN account logs in from two different countries within 30 minutes: shared credentials, or a stolen session
+    replayed from another network.'
+  source: [vpn]
+  false_positives: 'VPN and proxy exits that change country, mobile users who roam. Needs GeoIP in the VPN logs. Silent: it adds
+    risk.'
+  references: ['https://attack.mitre.org/techniques/T1078/']

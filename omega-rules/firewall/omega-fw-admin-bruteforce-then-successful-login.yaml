@@ -1,0 +1,31 @@
+name: omega-fw-admin-bruteforce-then-successful-login
+type: correlation
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1110.001, T1110.004, T1078]
+risk_score: 95
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- term: {event.category: authentication}
+- term: {observer.type: firewall}
+query_key: source.ip
+timeframe: {minutes: 15}
+realert: {hours: 1}
+correlation_leaves:
+  admin_fail:
+    num_events: 5
+    filter:
+    - term: {event.outcome: failure}
+  admin_success:
+    filter:
+    - term: {event.outcome: success}
+correlation_query: admin_fail THEN admin_success
+alert: [debug]
+omega:
+  tier: T0
+  description: 'One address fails 5 administrator logins on the firewall and then logs in successfully within 15 minutes: the
+    administrator password was guessed.'
+  source: [firewall]
+  false_positives: An administrator who forgets the password and then remembers it (exclude the address, or raise num_events).
+  references: ['https://attack.mitre.org/techniques/T1110/001/', 'https://attack.mitre.org/techniques/T1078/']

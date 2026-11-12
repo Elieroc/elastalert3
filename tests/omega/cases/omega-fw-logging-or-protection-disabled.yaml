@@ -1,0 +1,50 @@
+docs:
+- id: forti
+  match: true
+  doc:
+    event: {category: configuration, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.20, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    message: cfgpath="firewall.policy" cfgattr="logtraffic[all->disable]" user="admin"
+- id: asa
+  match: true
+  doc:
+    event: {category: configuration, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.20, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    message: no logging enable
+- id: profile
+  match: true
+  doc:
+    event: {category: configuration, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.20, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    message: unset av-profile
+- id: change
+  match: false
+  doc:
+    event: {category: configuration, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.20, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    message: set status enable
+- id: conn
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.20, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}

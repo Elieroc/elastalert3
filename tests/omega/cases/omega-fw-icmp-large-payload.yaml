@@ -1,0 +1,46 @@
+docs:
+- id: big
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: icmp, bytes: 1400}
+    source: {ip: 10.1.0.20, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 0, bytes: 3000}
+    rule: {name: allow-web}
+- id: big-in
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: icmp, bytes: 1400}
+    source: {ip: 203.0.113.9, port: 51000, bytes: 1000}
+    destination: {ip: 10.1.0.20, port: 0, bytes: 3000}
+    rule: {name: allow-web}
+- id: ping
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: icmp, bytes: 84}
+    source: {ip: 10.1.0.20, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 0, bytes: 3000}
+    rule: {name: allow-web}
+- id: tcp-big
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 90000}
+    source: {ip: 10.1.0.20, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+- id: icmp-internal
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: icmp, bytes: 1400}
+    source: {ip: 10.1.0.20, port: 51000, bytes: 1000}
+    destination: {ip: 10.1.0.5, port: 443, bytes: 3000}
+    rule: {name: allow-web}

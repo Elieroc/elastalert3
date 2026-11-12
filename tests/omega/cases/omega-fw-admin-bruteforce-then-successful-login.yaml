@@ -1,0 +1,189 @@
+docs:
+- id: fail-1
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.201, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:00:01Z'
+- id: fail-2
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.201, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:00:31Z'
+- id: fail-3
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.201, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:01:01Z'
+- id: fail-4
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.201, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:01:31Z'
+- id: fail-5
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.201, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:02:01Z'
+- id: ok-1
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: success}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.201, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:05:00Z'
+- id: fail-b-1
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.202, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:00:01Z'
+- id: fail-b-2
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.202, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:00:31Z'
+- id: fail-b-3
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.202, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:01:01Z'
+- id: fail-b-4
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.202, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:01:31Z'
+- id: ok-b-1
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: success}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.202, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:05:00Z'
+- id: ok-c-1
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: success}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.203, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:00:01Z'
+- id: fail-c-1
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.203, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:00:10Z'
+- id: fail-c-2
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.203, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:00:40Z'
+- id: fail-c-3
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.203, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:01:10Z'
+- id: fail-c-4
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.203, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:01:40Z'
+- id: fail-c-5
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.203, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: admin}
+    '@timestamp': '2026-01-01T10:02:10Z'
+matches: 1

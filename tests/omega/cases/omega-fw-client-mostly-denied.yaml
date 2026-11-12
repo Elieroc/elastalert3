@@ -1,0 +1,2652 @@
+docs:
+- id: denied-1
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:01Z'
+- id: denied-2
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:03Z'
+- id: denied-3
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:05Z'
+- id: denied-4
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:07Z'
+- id: denied-5
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:09Z'
+- id: denied-6
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:11Z'
+- id: denied-7
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:13Z'
+- id: denied-8
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:15Z'
+- id: denied-9
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:17Z'
+- id: denied-10
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:19Z'
+- id: denied-11
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:21Z'
+- id: denied-12
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:23Z'
+- id: denied-13
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:25Z'
+- id: denied-14
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:27Z'
+- id: denied-15
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:29Z'
+- id: denied-16
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:31Z'
+- id: denied-17
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:33Z'
+- id: denied-18
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:35Z'
+- id: denied-19
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:37Z'
+- id: denied-20
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:39Z'
+- id: denied-21
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:41Z'
+- id: denied-22
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:43Z'
+- id: denied-23
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:45Z'
+- id: denied-24
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:47Z'
+- id: denied-25
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:49Z'
+- id: denied-26
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:51Z'
+- id: denied-27
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:53Z'
+- id: denied-28
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:55Z'
+- id: denied-29
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:57Z'
+- id: denied-30
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:59Z'
+- id: denied-31
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:01Z'
+- id: denied-32
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:03Z'
+- id: denied-33
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:05Z'
+- id: denied-34
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:07Z'
+- id: denied-35
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:09Z'
+- id: denied-36
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:11Z'
+- id: denied-37
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:13Z'
+- id: denied-38
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:15Z'
+- id: denied-39
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:17Z'
+- id: denied-40
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:19Z'
+- id: denied-41
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:21Z'
+- id: denied-42
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:23Z'
+- id: denied-43
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:25Z'
+- id: denied-44
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:27Z'
+- id: denied-45
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:29Z'
+- id: denied-46
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:31Z'
+- id: denied-47
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:33Z'
+- id: denied-48
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:35Z'
+- id: denied-49
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:37Z'
+- id: denied-50
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:39Z'
+- id: denied-51
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:41Z'
+- id: denied-52
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:43Z'
+- id: denied-53
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:45Z'
+- id: denied-54
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:47Z'
+- id: denied-55
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:49Z'
+- id: denied-56
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:51Z'
+- id: denied-57
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:53Z'
+- id: denied-58
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:55Z'
+- id: denied-59
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:57Z'
+- id: denied-60
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:59Z'
+- id: denied-61
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:01Z'
+- id: denied-62
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:03Z'
+- id: denied-63
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:05Z'
+- id: denied-64
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:07Z'
+- id: denied-65
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:09Z'
+- id: denied-66
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:11Z'
+- id: denied-67
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:13Z'
+- id: denied-68
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:15Z'
+- id: denied-69
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:17Z'
+- id: denied-70
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:19Z'
+- id: denied-71
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:21Z'
+- id: denied-72
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:23Z'
+- id: denied-73
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:25Z'
+- id: denied-74
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:27Z'
+- id: denied-75
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:29Z'
+- id: denied-76
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:31Z'
+- id: denied-77
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:33Z'
+- id: denied-78
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:35Z'
+- id: denied-79
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:37Z'
+- id: denied-80
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:39Z'
+- id: denied-81
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:41Z'
+- id: denied-82
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:43Z'
+- id: denied-83
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:45Z'
+- id: denied-84
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:47Z'
+- id: denied-85
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:49Z'
+- id: denied-86
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:51Z'
+- id: denied-87
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:53Z'
+- id: denied-88
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:55Z'
+- id: denied-89
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:57Z'
+- id: denied-90
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:02:59Z'
+- id: denied-91
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:01Z'
+- id: denied-92
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:03Z'
+- id: denied-93
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:05Z'
+- id: denied-94
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:07Z'
+- id: denied-95
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:09Z'
+- id: denied-96
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:11Z'
+- id: denied-97
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:13Z'
+- id: denied-98
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:15Z'
+- id: denied-99
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:17Z'
+- id: denied-100
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:19Z'
+- id: denied-101
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:21Z'
+- id: denied-102
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:23Z'
+- id: denied-103
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:25Z'
+- id: denied-104
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:27Z'
+- id: denied-105
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:29Z'
+- id: denied-106
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:31Z'
+- id: denied-107
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:33Z'
+- id: denied-108
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:35Z'
+- id: denied-109
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:37Z'
+- id: denied-110
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:39Z'
+- id: ok-1
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:01Z'
+- id: ok-2
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:03Z'
+- id: ok-3
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:05Z'
+- id: ok-4
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:07Z'
+- id: ok-5
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:09Z'
+- id: half-d-1
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:01Z'
+- id: half-d-2
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:03Z'
+- id: half-d-3
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:05Z'
+- id: half-d-4
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:07Z'
+- id: half-d-5
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:09Z'
+- id: half-d-6
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:11Z'
+- id: half-d-7
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:13Z'
+- id: half-d-8
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:15Z'
+- id: half-d-9
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:17Z'
+- id: half-d-10
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:19Z'
+- id: half-d-11
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:21Z'
+- id: half-d-12
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:23Z'
+- id: half-d-13
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:25Z'
+- id: half-d-14
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:27Z'
+- id: half-d-15
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:29Z'
+- id: half-d-16
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:31Z'
+- id: half-d-17
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:33Z'
+- id: half-d-18
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:35Z'
+- id: half-d-19
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:37Z'
+- id: half-d-20
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:39Z'
+- id: half-d-21
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:41Z'
+- id: half-d-22
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:43Z'
+- id: half-d-23
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:45Z'
+- id: half-d-24
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:47Z'
+- id: half-d-25
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:49Z'
+- id: half-d-26
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:51Z'
+- id: half-d-27
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:53Z'
+- id: half-d-28
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:55Z'
+- id: half-d-29
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:57Z'
+- id: half-d-30
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:59Z'
+- id: half-d-31
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:01Z'
+- id: half-d-32
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:03Z'
+- id: half-d-33
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:05Z'
+- id: half-d-34
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:07Z'
+- id: half-d-35
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:09Z'
+- id: half-d-36
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:11Z'
+- id: half-d-37
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:13Z'
+- id: half-d-38
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:15Z'
+- id: half-d-39
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:17Z'
+- id: half-d-40
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:19Z'
+- id: half-d-41
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:21Z'
+- id: half-d-42
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:23Z'
+- id: half-d-43
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:25Z'
+- id: half-d-44
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:27Z'
+- id: half-d-45
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:29Z'
+- id: half-d-46
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:31Z'
+- id: half-d-47
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:33Z'
+- id: half-d-48
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:35Z'
+- id: half-d-49
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:37Z'
+- id: half-d-50
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:39Z'
+- id: half-a-1
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:01Z'
+- id: half-a-2
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:03Z'
+- id: half-a-3
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:05Z'
+- id: half-a-4
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:07Z'
+- id: half-a-5
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:09Z'
+- id: half-a-6
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:11Z'
+- id: half-a-7
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:13Z'
+- id: half-a-8
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:15Z'
+- id: half-a-9
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:17Z'
+- id: half-a-10
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:19Z'
+- id: half-a-11
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:21Z'
+- id: half-a-12
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:23Z'
+- id: half-a-13
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:25Z'
+- id: half-a-14
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:27Z'
+- id: half-a-15
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:29Z'
+- id: half-a-16
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:31Z'
+- id: half-a-17
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:33Z'
+- id: half-a-18
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:35Z'
+- id: half-a-19
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:37Z'
+- id: half-a-20
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:39Z'
+- id: half-a-21
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:41Z'
+- id: half-a-22
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:43Z'
+- id: half-a-23
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:45Z'
+- id: half-a-24
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:47Z'
+- id: half-a-25
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:49Z'
+- id: half-a-26
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:51Z'
+- id: half-a-27
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:53Z'
+- id: half-a-28
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:55Z'
+- id: half-a-29
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:57Z'
+- id: half-a-30
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:59Z'
+- id: half-a-31
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:01Z'
+- id: half-a-32
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:03Z'
+- id: half-a-33
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:05Z'
+- id: half-a-34
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:07Z'
+- id: half-a-35
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:09Z'
+- id: half-a-36
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:11Z'
+- id: half-a-37
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:13Z'
+- id: half-a-38
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:15Z'
+- id: half-a-39
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:17Z'
+- id: half-a-40
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:19Z'
+- id: half-a-41
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:21Z'
+- id: half-a-42
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:23Z'
+- id: half-a-43
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:25Z'
+- id: half-a-44
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:27Z'
+- id: half-a-45
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:29Z'
+- id: half-a-46
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:31Z'
+- id: half-a-47
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:33Z'
+- id: half-a-48
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:35Z'
+- id: half-a-49
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:37Z'
+- id: half-a-50
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:39Z'
+- id: short-1
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:01Z'
+- id: short-2
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:03Z'
+- id: short-3
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:05Z'
+- id: short-4
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:07Z'
+- id: short-5
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:09Z'
+- id: short-6
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:11Z'
+- id: short-7
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:13Z'
+- id: short-8
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:15Z'
+- id: short-9
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:17Z'
+- id: short-10
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:19Z'
+- id: short-11
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:21Z'
+- id: short-12
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:23Z'
+- id: short-13
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:25Z'
+- id: short-14
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:27Z'
+- id: short-15
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:29Z'
+- id: short-16
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:31Z'
+- id: short-17
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:33Z'
+- id: short-18
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:35Z'
+- id: short-19
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:37Z'
+- id: short-20
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:39Z'
+- id: short-21
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:41Z'
+- id: short-22
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:43Z'
+- id: short-23
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:45Z'
+- id: short-24
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:47Z'
+- id: short-25
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:49Z'
+- id: short-26
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:51Z'
+- id: short-27
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:53Z'
+- id: short-28
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:55Z'
+- id: short-29
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:57Z'
+- id: short-30
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:00:59Z'
+- id: short-31
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:01Z'
+- id: short-32
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:03Z'
+- id: short-33
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:05Z'
+- id: short-34
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:07Z'
+- id: short-35
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:09Z'
+- id: short-36
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:11Z'
+- id: short-37
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:13Z'
+- id: short-38
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:15Z'
+- id: short-39
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:17Z'
+- id: short-40
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:19Z'
+- id: short-41
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:21Z'
+- id: short-42
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:23Z'
+- id: short-43
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:25Z'
+- id: short-44
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:27Z'
+- id: short-45
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:29Z'
+- id: short-46
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:31Z'
+- id: short-47
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:33Z'
+- id: short-48
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:35Z'
+- id: short-49
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:37Z'
+- id: short-50
+  match: true
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:01:39Z'
+matches: 1

@@ -1,0 +1,38 @@
+docs:
+- id: own-resolver
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.20, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.99, port: 53, bytes: 3000}
+    rule: {name: allow-web}
+- id: google
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.20, port: 51000, bytes: 1000}
+    destination: {ip: 8.8.8.8, port: 53, bytes: 3000}
+    rule: {name: allow-web}
+- id: internal
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.20, port: 51000, bytes: 1000}
+    destination: {ip: 10.0.0.53, port: 53, bytes: 3000}
+    rule: {name: allow-web}
+- id: web
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.20, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+matches: 1

@@ -1,0 +1,45 @@
+name: omega-fw-vpn-bruteforce-then-successful-login
+type: correlation
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1110.001, T1110.004, T1133]
+risk_score: 90
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- term: {event.category: authentication}
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard:
+            event.dataset: {value: '*vpn*', case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            event.action: {value: '*vpn*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+query_key: source.ip
+timeframe: {minutes: 15}
+realert: {hours: 1}
+correlation_leaves:
+  vpn_fail:
+    num_events: 8
+    filter:
+    - term: {event.outcome: failure}
+  vpn_success:
+    filter:
+    - term: {event.outcome: success}
+correlation_query: vpn_fail THEN vpn_success
+alert: [debug]
+omega:
+  tier: T0
+  description: 'One address fails 8 VPN logins and then logs in successfully within 15 minutes: a guessed password gave access
+    to the internal network.'
+  source: [vpn]
+  false_positives: A user who mistypes a password 8 times and then succeeds (exclude the address, or raise num_events). Clients
+    that retry with a stored old password.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/credential_access_potential_successful_linux_ssh_bruteforce.toml',
+    'https://attack.mitre.org/techniques/T1110/001/', 'https://attack.mitre.org/techniques/T1133/']

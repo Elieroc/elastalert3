@@ -1,0 +1,36 @@
+name: omega-fw-exposed-database-or-admin-port-allowed-from-internet
+type: any
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1190, T1133, T1021]
+risk_score: 85
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- term: {event.type: allowed}
+- bool:
+    must:
+    - exists: {field: source.ip}
+    must_not:
+    - terms:
+        source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- terms:
+    destination.ip: *id001
+- terms:
+    destination.port: [23, 135, 139, 445, 1433, 1434, 1521, 2049, 2375, 2376, 3306, 3389, 5432, 5900, 5984, 6379, 9200, 9300,
+      11211, 27017, 873, 111]
+realert: {minutes: 30}
+query_key: [source.ip, destination.ip, destination.port]
+alert: [debug]
+omega:
+  tier: T0
+  description: The firewall lets a public address open a connection to a database, file-sharing, remote-desktop, Docker API or
+    other management port of an internal host (SMB, RDP, MSSQL, MySQL, PostgreSQL, Redis, Elasticsearch, MongoDB, VNC, Telnet,
+    NFS, Docker...).
+  source: [firewall]
+  false_positives: A deliberately published RDP gateway or database for a partner (exclude the destination address). Everything
+    else is an exposure to fix, and is probed within hours.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/network/initial_access_rdp_remote_desktop_protocol_from_the_internet.toml',
+    'https://github.com/elastic/detection-rules/blob/main/rules/network/initial_access_smb_windows_file_sharing_activity_to_the_internet.toml',
+    'https://attack.mitre.org/techniques/T1190/', 'https://attack.mitre.org/techniques/T1133/']

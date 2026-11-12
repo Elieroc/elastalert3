@@ -1,0 +1,38 @@
+name: omega-fw-outbound-beaconing
+type: beacon
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1071.001, T1573, T1029]
+risk_score: 50
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- term: {event.type: allowed}
+- terms:
+    source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- bool:
+    must:
+    - exists: {field: destination.ip}
+    must_not:
+    - terms:
+        destination.ip: *id001
+- bool:
+    must_not:
+    - terms:
+        destination.port: [53, 67, 68, 123, 137, 138, 161, 162, 514, 5353]
+query_key: [source.ip, destination.ip, destination.port]
+timeframe: {hours: 6}
+min_events: 20
+max_jitter: 0.15
+min_interval: {seconds: 30}
+realert: {hours: 6}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'An internal host connects to the same public address and port at near-constant intervals (20 or more connections
+    in 6 hours, jitter under 15 %, at least 30 s apart): command-and-control beaconing.'
+  source: [firewall]
+  false_positives: Update checks, telemetry, mail and chat clients, monitoring agents and time synchronisation (exclude the destination
+    or the port). Hence a risk of 50 and not a score of its own.
+  references: ['https://attack.mitre.org/techniques/T1071/001/', 'https://attack.mitre.org/techniques/T1029/']

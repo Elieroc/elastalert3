@@ -65,6 +65,9 @@ BENIGN_BASE = {
         'web': {'host.name': 'web9', 'event.category': 'web'},
         'proxy': {'host.name': 'proxy9', 'event.category': 'web'},
     },
+    'firewall': {
+        'firewall': {'observer.name': 'fw9', 'observer.type': 'firewall', 'event.category': 'network', 'event.type': 'allowed', 'network.transport': 'tcp'},
+    },
 }
 
 

@@ -1,0 +1,72 @@
+docs:
+- id: bob-paris
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 198.51.100.20
+      port: 51000
+      bytes: 1000
+      geo:
+        location: {lat: 48.85, lon: 2.35}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: bob-sydney
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 198.51.100.77
+      port: 51000
+      bytes: 1000
+      geo:
+        location: {lat: -33.87, lon: 151.21}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:30:00Z'
+- id: al-paris
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 198.51.100.21
+      port: 51000
+      bytes: 1000
+      geo:
+        location: {lat: 48.85, lon: 2.35}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: alice}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: al-brussels
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 198.51.100.22
+      port: 51000
+      bytes: 1000
+      geo:
+        location: {lat: 50.85, lon: 4.35}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: alice}
+    '@timestamp': '2026-01-01T10:30:00Z'
+matches: 1
+mappings:
+  source:
+    properties:
+      geo:
+        properties:
+          location: {type: geo_point}

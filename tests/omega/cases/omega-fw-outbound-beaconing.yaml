@@ -1,0 +1,722 @@
+docs:
+- id: beat-1
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:30:00Z'
+- id: beat-2
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:31:04Z'
+- id: beat-3
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:31:52Z'
+- id: beat-4
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:33:00Z'
+- id: beat-5
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:33:56Z'
+- id: beat-6
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:35:08Z'
+- id: beat-7
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:36:00Z'
+- id: beat-8
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:37:04Z'
+- id: beat-9
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:37:52Z'
+- id: beat-10
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:39:00Z'
+- id: beat-11
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:39:56Z'
+- id: beat-12
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:41:08Z'
+- id: beat-13
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:42:00Z'
+- id: beat-14
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:43:04Z'
+- id: beat-15
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:43:52Z'
+- id: beat-16
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:45:00Z'
+- id: beat-17
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:45:56Z'
+- id: beat-18
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:47:08Z'
+- id: beat-19
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:48:00Z'
+- id: beat-20
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:49:04Z'
+- id: beat-21
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:49:52Z'
+- id: beat-22
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:51:00Z'
+- id: beat-23
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:51:56Z'
+- id: beat-24
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:53:08Z'
+- id: beat-25
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.60, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:54:00Z'
+- id: human-1
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:30:00Z'
+- id: human-2
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:30:20Z'
+- id: human-3
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:30:25Z'
+- id: human-4
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:36:40Z'
+- id: human-5
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:36:50Z'
+- id: human-6
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:45:00Z'
+- id: human-7
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:45:05Z'
+- id: human-8
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:55:00Z'
+- id: human-9
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:55:20Z'
+- id: human-10
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:20Z'
+- id: human-11
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:03:23Z'
+- id: human-12
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:05:00Z'
+- id: human-13
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:11:40Z'
+- id: human-14
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:12:10Z'
+- id: human-15
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:13:20Z'
+- id: human-16
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:20:00Z'
+- id: human-17
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:20:10Z'
+- id: human-18
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:25:00Z'
+- id: human-19
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:25:05Z'
+- id: human-20
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:28:20Z'
+- id: human-21
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:30:00Z'
+- id: human-22
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.61, port: 51000, bytes: 1000}
+    destination: {ip: 198.51.100.9, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T10:31:40Z'
+- id: ntp-1
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:30:00Z'
+- id: ntp-2
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:31:00Z'
+- id: ntp-3
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:32:00Z'
+- id: ntp-4
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:33:00Z'
+- id: ntp-5
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:34:00Z'
+- id: ntp-6
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:35:00Z'
+- id: ntp-7
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:36:00Z'
+- id: ntp-8
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:37:00Z'
+- id: ntp-9
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:38:00Z'
+- id: ntp-10
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:39:00Z'
+- id: ntp-11
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:40:00Z'
+- id: ntp-12
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:41:00Z'
+- id: ntp-13
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:42:00Z'
+- id: ntp-14
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:43:00Z'
+- id: ntp-15
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:44:00Z'
+- id: ntp-16
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:45:00Z'
+- id: ntp-17
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:46:00Z'
+- id: ntp-18
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:47:00Z'
+- id: ntp-19
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:48:00Z'
+- id: ntp-20
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:49:00Z'
+- id: ntp-21
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:50:00Z'
+- id: ntp-22
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:51:00Z'
+- id: ntp-23
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:52:00Z'
+- id: ntp-24
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:53:00Z'
+- id: ntp-25
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: udp, bytes: 4000}
+    source: {ip: 10.1.0.62, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.123, port: 123, bytes: 3000}
+    rule: {name: allow-web}
+    '@timestamp': '2026-01-01T09:54:00Z'
+matches: 1

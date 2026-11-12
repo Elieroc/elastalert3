@@ -1,0 +1,60 @@
+docs:
+- id: o1
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: user, value: bob, score: 30}
+- id: o2
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:05:00Z'
+    rule_name: omega-fw-b
+    alert_sent: true
+    risk_objects:
+    - {type: user, value: bob, score: 30}
+- id: n1
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T22:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: user, value: carol, score: 35}
+- id: n2
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T22:05:00Z'
+    rule_name: omega-fw-b
+    alert_sent: true
+    risk_objects:
+    - {type: user, value: carol, score: 35}
+- id: w1
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T08:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: user, value: dave, score: 50}
+- id: w2
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T08:05:00Z'
+    rule_name: omega-fw-b
+    alert_sent: true
+    risk_objects:
+    - {type: user, value: dave, score: 40}
+- id: s1
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T08:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: user, value: erin, score: 100}
+matches: 2
+start: '2026-01-01T00:00:00Z'
+end: '2026-01-02T00:00:00Z'

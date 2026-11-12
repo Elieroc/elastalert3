@@ -1,0 +1,25 @@
+name: omega-fw-traffic-volume-spike
+type: spike
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1498, T1499, T1595]
+filter:
+- term: {event.category: network}
+spike_height: 5
+spike_type: up
+timeframe: {minutes: 5}
+threshold_cur: 2000
+threshold_ref: 100
+query_key: observer.name
+alert_on_new_data: false
+realert: {minutes: 30}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'The number of connections logged by a firewall in 5 minutes is 5 times what it was in the previous 5 minutes,
+    with at least 2000 connections now: a flood, a scan wave or a worm.'
+  source: [firewall]
+  false_positives: 'Backups starting, batch jobs and monitoring bursts (the thresholds follow the device size: raise them on a
+    large site).'
+  references: ['https://attack.mitre.org/techniques/T1498/', 'https://attack.mitre.org/techniques/T1499/']

@@ -1,0 +1,45 @@
+name: omega-fw-logging-or-protection-disabled
+type: any
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1685]
+risk_score: 85
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: configuration}
+- term: {observer.type: firewall}
+- bool:
+    should:
+    - wildcard:
+        message: {value: '*logtraffic*disable*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*set logtraffic disable*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*logging disable*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*no logging*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*clear logging*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*clear log*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*unset av-profile*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*unset ips-sensor*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*unset webfilter-profile*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*unset application-list*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [observer.name, user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A firewall configuration change that turns off traffic logging, clears the logs, or removes an antivirus, IPS
+    or web-filter profile from a policy: an attacker blinds the device before moving on.'
+  source: [firewall]
+  false_positives: Planned maintenance on a policy (match it with the change ticket). Exclude the administrator for a time window.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/network/defense_evasion_firewall_logging_disabled.toml',
+    'https://attack.mitre.org/techniques/T1685/']

@@ -1,0 +1,260 @@
+docs:
+- id: busy-1-1
+  match: true
+  doc:
+    '@timestamp': '2025-12-31T03:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-1-2
+  match: true
+  doc:
+    '@timestamp': '2025-12-31T03:05:00Z'
+    rule_name: omega-fw-b
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-2-1
+  match: true
+  doc:
+    '@timestamp': '2025-12-30T03:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-2-2
+  match: true
+  doc:
+    '@timestamp': '2025-12-30T03:05:00Z'
+    rule_name: omega-fw-b
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-3-1
+  match: true
+  doc:
+    '@timestamp': '2025-12-29T03:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-3-2
+  match: true
+  doc:
+    '@timestamp': '2025-12-29T03:05:00Z'
+    rule_name: omega-fw-b
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-4-1
+  match: true
+  doc:
+    '@timestamp': '2025-12-28T03:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-4-2
+  match: true
+  doc:
+    '@timestamp': '2025-12-28T03:05:00Z'
+    rule_name: omega-fw-b
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-5-1
+  match: true
+  doc:
+    '@timestamp': '2025-12-27T03:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-5-2
+  match: true
+  doc:
+    '@timestamp': '2025-12-27T03:05:00Z'
+    rule_name: omega-fw-b
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-6-1
+  match: true
+  doc:
+    '@timestamp': '2025-12-26T03:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-6-2
+  match: true
+  doc:
+    '@timestamp': '2025-12-26T03:05:00Z'
+    rule_name: omega-fw-b
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-7-1
+  match: true
+  doc:
+    '@timestamp': '2025-12-25T03:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-7-2
+  match: true
+  doc:
+    '@timestamp': '2025-12-25T03:05:00Z'
+    rule_name: omega-fw-b
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-8-1
+  match: true
+  doc:
+    '@timestamp': '2025-12-24T03:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-8-2
+  match: true
+  doc:
+    '@timestamp': '2025-12-24T03:05:00Z'
+    rule_name: omega-fw-b
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-9-1
+  match: true
+  doc:
+    '@timestamp': '2025-12-23T03:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-9-2
+  match: true
+  doc:
+    '@timestamp': '2025-12-23T03:05:00Z'
+    rule_name: omega-fw-b
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-10-1
+  match: true
+  doc:
+    '@timestamp': '2025-12-22T03:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-10-2
+  match: true
+  doc:
+    '@timestamp': '2025-12-22T03:05:00Z'
+    rule_name: omega-fw-b
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-11-1
+  match: true
+  doc:
+    '@timestamp': '2025-12-21T03:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-11-2
+  match: true
+  doc:
+    '@timestamp': '2025-12-21T03:05:00Z'
+    rule_name: omega-fw-b
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-12-1
+  match: true
+  doc:
+    '@timestamp': '2025-12-20T03:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-12-2
+  match: true
+  doc:
+    '@timestamp': '2025-12-20T03:05:00Z'
+    rule_name: omega-fw-b
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-13-1
+  match: true
+  doc:
+    '@timestamp': '2025-12-19T03:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: busy-13-2
+  match: true
+  doc:
+    '@timestamp': '2025-12-19T03:05:00Z'
+    rule_name: omega-fw-b
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 70}
+- id: quiet-h1
+  match: true
+  doc:
+    '@timestamp': '2025-12-20T03:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.60, score: 10}
+- id: q1
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.60, score: 100}
+- id: q2
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:05:00Z'
+    rule_name: omega-fw-b
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.60, score: 100}
+- id: n1
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 90}
+- id: n2
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:05:00Z'
+    rule_name: omega-fw-b
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.50, score: 90}
+- id: s1
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:00:00Z'
+    rule_name: omega-fw-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 10.1.0.70, score: 200}
+matches: 1
+start: '2025-12-18T00:00:00Z'
+end: '2026-01-01T12:00:00Z'

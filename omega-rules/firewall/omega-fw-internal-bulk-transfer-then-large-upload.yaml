@@ -1,0 +1,46 @@
+name: omega-fw-internal-bulk-transfer-then-large-upload
+type: correlation
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1074, T1048, T1567]
+risk_score: 75
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+query_key: source.ip
+timeframe: {hours: 2}
+realert: {hours: 6}
+correlation_leaves:
+  staging:
+    filter:
+    - terms:
+        source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+    - terms:
+        destination.ip: *id001
+    - terms:
+        destination.port: [445, 2049, 873, 22, 21]
+    - range:
+        network.bytes: {gte: 524288000}
+  upload:
+    filter:
+    - term: {event.type: allowed}
+    - terms:
+        source.ip: *id001
+    - bool:
+        must:
+        - exists: {field: destination.ip}
+        must_not:
+        - terms:
+            destination.ip: *id001
+    - range:
+        source.bytes: {gte: 104857600}
+correlation_query: staging THEN upload
+alert: [debug]
+omega:
+  tier: T0
+  description: 'One internal host moves 500 MB or more over a file-sharing or transfer protocol inside the network (SMB, NFS,
+    rsync, SSH, FTP), and within 2 hours sends 100 MB or more to a public address: data staged, then taken out.'
+  source: [firewall]
+  false_positives: Backup and synchronisation jobs, build servers that fetch artifacts and publish releases (exclude the host).
+  references: ['https://attack.mitre.org/techniques/T1074/', 'https://attack.mitre.org/techniques/T1048/', 'https://attack.mitre.org/techniques/T1567/']

@@ -1,0 +1,30 @@
+name: omega-fw-denied-burst-from-internet
+type: frequency
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1595, T1110]
+risk_score: 5
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- term: {event.type: denied}
+- bool:
+    must:
+    - exists: {field: source.ip}
+    must_not:
+    - terms:
+        source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- terms:
+    destination.ip: *id001
+num_events: 200
+timeframe: {minutes: 5}
+query_key: source.ip
+realert: {minutes: 30}
+alert: []
+omega:
+  tier: T1
+  description: One public address collects 200 or more denied connections to internal hosts within 5 minutes.
+  source: [firewall]
+  false_positives: 'Internet noise and misconfigured clients that retry. Silent: it adds a small risk.'
+  references: ['https://attack.mitre.org/techniques/T1595/']

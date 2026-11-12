@@ -1,0 +1,35 @@
+name: omega-fw-destination-fanout-outlier
+type: outlier
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1046, T1018]
+risk_score: 15
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- terms:
+    source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- bool:
+    must:
+    - exists: {field: destination.ip}
+    must_not:
+    - terms:
+        destination.ip: *id001
+query_key: source.ip
+metric_agg_key: destination.ip
+metric_agg_type: cardinality
+timeframe: {hours: 1}
+outlier_factor: 30
+min_population: 10
+outlier_reference: median
+realert: {hours: 6}
+alert: []
+omega:
+  tier: T1
+  description: 'In the last hour, one internal host contacted at least 30 times more different public addresses than the median
+    host (at least 10 hosts compared): a scan, a worm, a crawler or a peer-to-peer client.'
+  source: [firewall]
+  false_positives: 'Proxies, mail gateways, DNS resolvers and update servers talk to many addresses (exclude them). Silent: it
+    adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1046/']

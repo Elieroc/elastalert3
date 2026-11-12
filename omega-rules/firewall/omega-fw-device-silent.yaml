@@ -1,0 +1,22 @@
+name: omega-fw-device-silent
+type: flatline
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1499, T1070]
+filter:
+- term: {event.category: network}
+threshold: 1
+timeframe: {minutes: 10}
+query_key: observer.name
+forget_keys: true
+realert: {hours: 1}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'A firewall that was logging connections logged fewer than 1 in 10 minutes: an outage, a stopped log forwarder
+    or a device that dropped off the network.'
+  source: [firewall]
+  false_positives: Quiet sites and maintenance windows (raise the timeframe, or use the seasonal log_loss rule). Alerts once per
+    silence.
+  references: ['https://attack.mitre.org/techniques/T1499/']

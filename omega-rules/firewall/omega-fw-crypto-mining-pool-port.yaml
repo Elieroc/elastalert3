@@ -1,0 +1,31 @@
+name: omega-fw-crypto-mining-pool-port
+type: any
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1496, T1571]
+risk_score: 15
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- term: {event.type: allowed}
+- terms:
+    source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- bool:
+    must:
+    - exists: {field: destination.ip}
+    must_not:
+    - terms:
+        destination.ip: *id001
+- terms:
+    destination.port: [3333, 14433, 14444, 45560, 45700]
+realert: {minutes: 30}
+query_key: [source.ip, destination.ip]
+alert: []
+omega:
+  tier: T1
+  description: 'An internal host connects to a public address on a mining pool (Stratum) port: 3333, 14433, 14444, 45560, 45700.'
+  source: [firewall]
+  false_positives: 'Services that use those ports for another purpose. Silent: it adds risk, and host rules for miners alert on
+    the process.'
+  references: ['https://attack.mitre.org/techniques/T1496/']

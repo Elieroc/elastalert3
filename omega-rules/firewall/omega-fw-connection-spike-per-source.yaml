@@ -1,0 +1,34 @@
+name: omega-fw-connection-spike-per-source
+type: spike
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1498, T1595, T1110]
+risk_score: 8
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- bool:
+    must:
+    - exists: {field: source.ip}
+    must_not:
+    - terms:
+        source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- terms:
+    destination.ip: *id001
+spike_height: 10
+spike_type: up
+timeframe: {minutes: 5}
+threshold_cur: 300
+threshold_ref: 5
+query_key: source.ip
+alert_on_new_data: false
+realert: {minutes: 30}
+alert: []
+omega:
+  tier: T1
+  description: The connections of one public address are 10 times what they were in the previous 5 minutes, with at least 300
+    connections now.
+  source: [firewall]
+  false_positives: 'Internet scanners that start and stop, monitoring probes. Silent: it adds a small risk.'
+  references: ['https://attack.mitre.org/techniques/T1498/', 'https://attack.mitre.org/techniques/T1595/']

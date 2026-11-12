@@ -1,0 +1,34 @@
+name: omega-fw-remote-access-or-tunnel-application-allowed
+type: blacklist
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1219, T1572, T1090.003]
+risk_score: 10
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- term: {event.type: allowed}
+- terms:
+    source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- bool:
+    must:
+    - exists: {field: destination.ip}
+    must_not:
+    - terms:
+        destination.ip: *id001
+compare_key: network.application
+blacklist: [teamviewer, teamviewer-base, anydesk, ngrok, tor, ultrasurf, psiphon, radmin, logmein, rustdesk, zerotier, hamachi,
+  bittorrent, utorrent]
+realert: {minutes: 30}
+query_key: [source.ip, network.application]
+alert: []
+omega:
+  tier: T1
+  description: The firewall identifies and allows an outbound session of a remote access, tunnelling, anonymising or peer-to-peer
+    application (TeamViewer, AnyDesk, Ngrok, Tor, Psiphon, RustDesk, ZeroTier, BitTorrent...).
+  source: [firewall]
+  false_positives: 'Remote support tools that the company uses (exclude the application for the support team addresses). Needs
+    application identification in the logs (network.application). Silent: it adds risk.'
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/network/command_and_control_remote_file_copy_to_a_hidden_share.toml',
+    'https://attack.mitre.org/techniques/T1219/', 'https://attack.mitre.org/techniques/T1572/']

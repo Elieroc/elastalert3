@@ -1,0 +1,42 @@
+name: omega-fw-config-erased-or-factory-reset
+type: any
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1485, T1561, T1529]
+risk_score: 90
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: configuration}
+- term: {observer.type: firewall}
+- bool:
+    should:
+    - wildcard:
+        message: {value: '*factoryreset*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*factory-reset*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*factory reset*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*write erase*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*erase startup-config*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*erase flash*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*format disk*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*clear configure all*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*clear config all*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [observer.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A firewall command that erases the configuration or resets the device to factory defaults (factoryreset, write
+    erase, erase startup-config, clear configure all): sabotage, or a destructive attack on the perimeter.'
+  source: [firewall]
+  false_positives: Decommissioning or re-imaging a device (match it with the change ticket).
+  references: ['https://attack.mitre.org/techniques/T1485/', 'https://attack.mitre.org/techniques/T1561/']

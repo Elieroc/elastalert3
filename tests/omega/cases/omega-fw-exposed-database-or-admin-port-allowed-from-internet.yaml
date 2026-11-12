@@ -1,0 +1,64 @@
+docs:
+- id: smb
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 198.51.100.9, port: 51000, bytes: 1000}
+    destination: {ip: 10.2.0.5, port: 445, bytes: 3000}
+    rule: {name: allow-web}
+- id: rdp
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 198.51.100.9, port: 51000, bytes: 1000}
+    destination: {ip: 10.2.0.6, port: 3389, bytes: 3000}
+    rule: {name: allow-web}
+- id: redis
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.200, port: 51000, bytes: 1000}
+    destination: {ip: 10.2.0.7, port: 6379, bytes: 3000}
+    rule: {name: allow-web}
+- id: https
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 198.51.100.9, port: 51000, bytes: 1000}
+    destination: {ip: 10.2.0.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+- id: denied
+  match: false
+  doc:
+    event: {category: network, type: denied}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 198.51.100.9, port: 51000, bytes: 1000}
+    destination: {ip: 10.2.0.5, port: 445, bytes: 3000}
+    rule: {name: allow-web}
+- id: internal
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.20, port: 51000, bytes: 1000}
+    destination: {ip: 10.2.0.5, port: 445, bytes: 3000}
+    rule: {name: allow-web}
+- id: ssh
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 198.51.100.9, port: 51000, bytes: 1000}
+    destination: {ip: 10.2.0.5, port: 22, bytes: 3000}
+    rule: {name: allow-web}

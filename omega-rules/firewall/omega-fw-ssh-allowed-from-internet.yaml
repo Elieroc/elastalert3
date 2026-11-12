@@ -1,0 +1,31 @@
+name: omega-fw-ssh-allowed-from-internet
+type: any
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1133, T1021.004]
+risk_score: 10
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- term: {event.type: allowed}
+- bool:
+    must:
+    - exists: {field: source.ip}
+    must_not:
+    - terms:
+        source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- terms:
+    destination.ip: *id001
+- terms:
+    destination.port: [22, 2222]
+realert: {minutes: 30}
+query_key: [source.ip, destination.ip]
+alert: []
+omega:
+  tier: T1
+  description: The firewall lets a public address open an SSH connection to an internal host.
+  source: [firewall]
+  false_positives: 'Published bastions and git servers (exclude the destination). Silent: it adds risk, and network-level brute
+    force rules count the attempts.'
+  references: ['https://attack.mitre.org/techniques/T1133/', 'https://attack.mitre.org/techniques/T1021/004/']

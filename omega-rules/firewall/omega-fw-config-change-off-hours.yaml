@@ -1,0 +1,30 @@
+name: omega-fw-config-change-off-hours
+type: any
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1686, T1098]
+risk_score: 10
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: configuration}
+- term: {observer.type: firewall}
+active_hours:
+  timezone: UTC
+  windows:
+  - days: [mon, tue, wed, thu, fri, sat, sun]
+    from: '19:00'
+    to: 07:00
+  - days: [sat, sun]
+    from: 07:00
+    to: '19:00'
+realert: {minutes: 30}
+query_key: [observer.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A firewall configuration change outside working hours (nights and weekends, UTC by default: set the windows to
+    your site).'
+  source: [firewall]
+  false_positives: 'Maintenance windows and automation (exclude the administrator or the device). Silent: it adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1686/']

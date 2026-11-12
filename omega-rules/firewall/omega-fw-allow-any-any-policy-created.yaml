@@ -1,0 +1,33 @@
+name: omega-fw-allow-any-any-policy-created
+type: any
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1686, T1098]
+risk_score: 75
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: configuration}
+- term: {observer.type: firewall}
+- bool:
+    should:
+    - wildcard:
+        message: {value: '*srcaddr*all*dstaddr*all*accept*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*permit ip any any*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*permit ip any4 any4*', case_insensitive: true}
+    - wildcard:
+        message: {value: '*source*any*destination*any*service*any*allow*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [observer.name, user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A firewall policy that allows any source to any destination was added or changed (set srcaddr all, dstaddr all,
+    action accept; permit ip any any): the perimeter is opened, a step that ransomware operators take before spreading.'
+  source: [firewall]
+  false_positives: Lab firewalls and migrations that start from a permissive policy (exclude the device or the administrator).
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/network/defense_evasion_firewall_rule_allow_any.toml',
+    'https://attack.mitre.org/techniques/T1686/']

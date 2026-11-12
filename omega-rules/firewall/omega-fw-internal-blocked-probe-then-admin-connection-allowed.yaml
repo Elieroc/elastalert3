@@ -1,0 +1,36 @@
+name: omega-fw-internal-blocked-probe-then-admin-connection-allowed
+type: correlation
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1021, T1046, T1570]
+risk_score: 75
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- terms:
+    source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- terms:
+    destination.ip: *id001
+- terms:
+    destination.port: [22, 135, 139, 445, 3389, 5985, 5986, 1433, 3306]
+query_key: source.ip
+timeframe: {minutes: 30}
+realert: {hours: 1}
+correlation_leaves:
+  blocked_probe:
+    num_events: 10
+    filter:
+    - term: {event.type: denied}
+  admin_allowed:
+    filter:
+    - term: {event.type: allowed}
+correlation_query: blocked_probe THEN admin_allowed
+alert: [debug]
+omega:
+  tier: T0
+  description: 'One internal host collects 10 denied connections to internal admin ports (segmentation blocks it), and within
+    30 minutes the firewall lets it open an admin connection to an internal host: the host finds the path that the policy forgot.'
+  source: [firewall]
+  false_positives: Administrators who try several jump hosts, vulnerability scanners and inventory tools (exclude their addresses).
+  references: ['https://attack.mitre.org/techniques/T1021/', 'https://attack.mitre.org/techniques/T1046/']

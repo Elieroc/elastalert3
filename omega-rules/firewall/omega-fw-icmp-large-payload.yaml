@@ -1,0 +1,46 @@
+name: omega-fw-icmp-large-payload
+type: any
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1095, T1048.003]
+risk_score: 10
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- term: {network.transport: icmp}
+- range:
+    network.bytes: {gte: 1000}
+- bool:
+    should:
+    - bool:
+        must:
+        - terms:
+            source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+        - bool:
+            must:
+            - exists: {field: destination.ip}
+            must_not:
+            - terms:
+                destination.ip: *id001
+    - bool:
+        must:
+        - bool:
+            must:
+            - exists: {field: source.ip}
+            must_not:
+            - terms:
+                source.ip: *id001
+        - terms:
+            destination.ip: *id001
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [source.ip, destination.ip]
+alert: []
+omega:
+  tier: T1
+  description: 'An ICMP packet of 1000 bytes or more between an internal host and a public address: ICMP tunnelling (ptunnel,
+    icmpsh) carries data in echo requests that normally hold 84 bytes.'
+  source: [firewall]
+  false_positives: 'Path MTU discovery tests, network monitoring probes with a large payload. Silent: it adds a small risk.'
+  references: ['https://attack.mitre.org/techniques/T1095/']

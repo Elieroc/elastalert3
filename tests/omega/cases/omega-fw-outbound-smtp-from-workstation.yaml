@@ -1,0 +1,28 @@
+docs:
+- id: smtp
+  match: true
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.20, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 25, bytes: 3000}
+    rule: {name: allow-web}
+- id: submission
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 10.1.0.20, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 587, bytes: 3000}
+    rule: {name: allow-web}
+- id: inbound
+  match: false
+  doc:
+    event: {category: network, type: allowed}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.7, port: 51000, bytes: 1000}
+    destination: {ip: 10.2.0.25, port: 25, bytes: 3000}
+    rule: {name: allow-web}

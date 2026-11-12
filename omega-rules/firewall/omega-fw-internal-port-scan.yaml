@@ -1,0 +1,29 @@
+name: omega-fw-internal-port-scan
+type: cardinality
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1046, T1018]
+risk_score: 75
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- terms:
+    source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- terms:
+    destination.ip: *id001
+cardinality_field: destination.port
+max_cardinality: 24
+timeframe: {minutes: 1}
+query_key: [source.ip, destination.ip]
+realert: {minutes: 30}
+alert: [debug]
+omega:
+  tier: T0
+  description: 'One internal host tries 25 or more different ports on the same internal host within a minute: a port scan from
+    a machine that should only talk to a few services.'
+  source: [firewall]
+  false_positives: Vulnerability scanners, inventory and monitoring tools (exclude their addresses, with an expiry date). Anything
+    else is reconnaissance by an intruder or a tool run by an administrator.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/network/discovery_potential_port_scan_detected.toml',
+    'https://attack.mitre.org/techniques/T1046/']

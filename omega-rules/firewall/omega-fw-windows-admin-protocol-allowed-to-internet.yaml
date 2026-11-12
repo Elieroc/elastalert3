@@ -1,0 +1,33 @@
+name: omega-fw-windows-admin-protocol-allowed-to-internet
+type: any
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1048, T1021, T1187]
+risk_score: 75
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- term: {event.type: allowed}
+- terms:
+    source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- bool:
+    must:
+    - exists: {field: destination.ip}
+    must_not:
+    - terms:
+        destination.ip: *id001
+- terms:
+    destination.port: [23, 69, 135, 139, 445, 1433, 3389, 5985, 5986]
+realert: {minutes: 30}
+query_key: [source.ip, destination.ip, destination.port]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'An internal host is allowed to open SMB, RPC, RDP, WinRM, SQL, Telnet or TFTP connections to a public address:
+    stolen NTLM hashes, a remote tool, or data leaving through a file-sharing protocol.'
+  source: [firewall]
+  false_positives: SMB to Azure Files or other cloud storage that is meant to be used (exclude the destination), and VPN-less
+    access to a hosted RDP server.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/network/exfiltration_smb_outbound.toml', 'https://attack.mitre.org/techniques/T1048/',
+    'https://attack.mitre.org/techniques/T1187/']

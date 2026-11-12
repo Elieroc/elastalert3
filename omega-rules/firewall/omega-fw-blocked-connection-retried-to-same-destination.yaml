@@ -1,0 +1,31 @@
+name: omega-fw-blocked-connection-retried-to-same-destination
+type: frequency
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1071, T1573]
+risk_score: 15
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- term: {event.type: denied}
+- terms:
+    source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- bool:
+    must:
+    - exists: {field: destination.ip}
+    must_not:
+    - terms:
+        destination.ip: *id001
+num_events: 30
+timeframe: {minutes: 10}
+query_key: [source.ip, destination.ip, destination.port]
+realert: {hours: 1}
+alert: []
+omega:
+  tier: T1
+  description: 'One internal host retries a denied connection to the same public address and port 30 or more times within 10 minutes:
+    an implant that keeps calling a command server that is blocked.'
+  source: [firewall]
+  false_positives: Software that retries a blocked update or telemetry address (exclude the destination).
+  references: ['https://attack.mitre.org/techniques/T1071/']

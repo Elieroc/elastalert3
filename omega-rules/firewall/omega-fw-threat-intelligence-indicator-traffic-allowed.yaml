@@ -1,0 +1,25 @@
+name: omega-fw-threat-intelligence-indicator-traffic-allowed
+type: any
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1071, T1568]
+risk_score: 80
+risk_objects: {ip: source.ip}
+filter:
+- exists: {field: threat.indicator.type}
+- term: {event.type: allowed}
+- terms:
+    threat.indicator.confidence: [High, Medium]
+realert: {minutes: 30}
+query_key: [source.ip, destination.ip]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'The firewall lets through traffic that its threat intelligence feed matched with medium or high confidence (a
+    malicious address or domain: command and control, malware distribution, phishing).'
+  source: [firewall]
+  false_positives: Stale or low-quality indicators in the feed, shared hosting. Low-confidence matches are left out. Tune the
+    feed, not the rule.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/network/command_and_control_threat_intel_indicator_match.toml',
+    'https://attack.mitre.org/techniques/T1071/']

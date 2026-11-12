@@ -1,0 +1,255 @@
+docs:
+- id: guess-1
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.201, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:00:01Z'
+- id: guess-2
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.201, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:00:31Z'
+- id: guess-3
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.201, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:01:01Z'
+- id: guess-4
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.201, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:01:31Z'
+- id: guess-5
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.201, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:02:01Z'
+- id: guess-6
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.201, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:02:31Z'
+- id: guess-7
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.201, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:03:01Z'
+- id: guess-8
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.201, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:03:31Z'
+- id: few-1
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.202, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:00:01Z'
+- id: few-2
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.202, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:00:31Z'
+- id: few-3
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.202, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:01:01Z'
+- id: few-4
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.202, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:01:31Z'
+- id: few-5
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: failure, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.202, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:02:01Z'
+- id: ok-1
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.203, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:00:01Z'
+- id: ok-2
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.203, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:00:31Z'
+- id: ok-3
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.203, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:01:01Z'
+- id: ok-4
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.203, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:01:31Z'
+- id: ok-5
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.203, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:02:01Z'
+- id: ok-6
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.203, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:02:31Z'
+- id: ok-7
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.203, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:03:01Z'
+- id: ok-8
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.203, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:03:31Z'
+- id: ok-9
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.203, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:04:01Z'
+- id: ok-10
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source: {ip: 203.0.113.203, port: 51000, bytes: 1000}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:04:31Z'
+matches: 1

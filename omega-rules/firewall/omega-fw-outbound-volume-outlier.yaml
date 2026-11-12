@@ -1,0 +1,36 @@
+name: omega-fw-outbound-volume-outlier
+type: outlier
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1048, T1567]
+risk_score: 20
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- term: {event.type: allowed}
+- terms:
+    source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- bool:
+    must:
+    - exists: {field: destination.ip}
+    must_not:
+    - terms:
+        destination.ip: *id001
+query_key: source.ip
+metric_agg_key: source.bytes
+metric_agg_type: sum
+timeframe: {hours: 1}
+outlier_factor: 50
+min_population: 10
+outlier_reference: median
+realert: {hours: 6}
+alert: []
+omega:
+  tier: T1
+  description: In the last hour, one internal host sent at least 50 times the median volume of all the hosts to public addresses
+    (at least 10 hosts compared).
+  source: [firewall]
+  false_positives: 'Servers that publish or back up data compared with workstations (exclude them, or run it on one subnet). Silent:
+    it adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1048/', 'https://attack.mitre.org/techniques/T1567/']

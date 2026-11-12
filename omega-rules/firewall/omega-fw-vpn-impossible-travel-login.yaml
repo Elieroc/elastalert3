@@ -1,0 +1,41 @@
+name: omega-fw-vpn-impossible-travel-login
+type: geo_velocity
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1078, T1550.004, T1133]
+risk_score: 80
+risk_objects: {user: user.name, ip: source.ip}
+filter:
+- term: {event.category: authentication}
+- term: {event.outcome: success}
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard:
+            event.dataset: {value: '*vpn*', case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            event.action: {value: '*vpn*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+- exists: {field: user.name}
+- exists: {field: source.geo.location}
+query_key: user.name
+geo_field: source.geo.location
+timeframe: {hours: 24}
+max_speed_kmh: 900
+min_distance_km: 300
+geo_include: [source.ip, source.geo.city_name]
+realert: {hours: 1}
+alert: [debug]
+omega:
+  tier: T0
+  description: The same VPN account is seen in two places too far apart for the time between the logins (faster than 900 km/h,
+    over 300 km).
+  source: [vpn]
+  false_positives: VPN or proxy exits that change country between logins, shared accounts. The GeoIP enrichment must fill source.geo.location.
+  references: ['https://attack.mitre.org/techniques/T1078/']

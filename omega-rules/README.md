@@ -37,7 +37,7 @@ Silent T1 rules still write their doc to the writeback index with `risk_objects`
 | `linux/` | 122: 52 T0, 66 T1, 4 T2 | Elastic Defend / Auditbeat (process, file, network, DNS lookups), system auth (sshd, sudo, su) | first version |
 | `windows/` | 150: 87 T0, 58 T1, 5 T2 | Elastic Defend / Winlogbeat / Sysmon (process, file, registry, network, DNS, named pipes, WMI), Security and System event logs (4624/4625/4662/4697/4698/4732/4768/4769/5140, 1102, 7045), PowerShell script block logging (4104) | first version |
 | `web/` | 90: 17 T0, 62 T1, 11 T2 | Web access logs (nginx, Apache, Tomcat, IIS, Traefik; ECS `event.category: web`, `url.original`/`url.path`/`url.domain`, `http.request.method`, `http.response.status_code`, `http.request.bytes`, `http.response.body.bytes`, `user_agent.original`, `source.ip`, optional GeoIP `source.geo.*` / `source.as.number` and `user.name`) and forward proxy logs (Squid, Zscaler; source `proxy`) | first version |
-| `firewall/` | - | - | planned |
+| `firewall/` | 61: 16 T0, 35 T1, 10 T2 | Firewall and IPS logs (Fortinet, Palo Alto, Cisco ASA, Check Point, Sophos, Juniper, pfSense; ECS `event.category` network / intrusion_detection / authentication / configuration, `event.type` allowed or denied, `source.ip`, `destination.ip`, `destination.port`, `network.transport`, `network.bytes`, `source.bytes`, `network.application`, `rule.category`, `observer.name`, `observer.type: firewall`, `user.name`, GeoIP `source.geo.*`) | first version |
 
 Linux covers, with one rule per behaviour and the type of rule that fits it: blacklists of tools and miners
 reverse shells, GTFOBins escapes, persistence (cron, systemd, profile, SSH keys, sudoers, PAM,
@@ -139,3 +139,19 @@ others are benign and must not be hit) and optionally `matches: N`, what the rul
   `-admin-access-from-new-network`, `-user-new-browser-or-system`) stay silent when the field is missing.
 - Proxy rules (`omega-web-proxy-*`) read `logs-squid.log-*` and `logs-zscaler_zia.web-*`.
 - Time windows (`active_hours`, `usual_hours`) default to UTC and Monday to Friday 07:00-19:00: set them to your site.
+
+## Firewall pack notes
+
+- Tiers: a probe, a blocked attack or an odd protocol is T1 (silent, adds risk); an exposed management port, a Windows admin protocol going to the Internet,
+  an IPS command-and-control signature that was allowed, tampering with the firewall itself, and the chains (`correlation`: scan then open door,
+  brute force then login, staging then upload) are T0. T2 holds baselines, silence detection, beaconing and the three risk rules
+  (`omega-fw-source-ip-risk`, `-internal-host-risk` with `risk_ratio`, `-vpn-user-risk` with `usual_hours`).
+- Rule types used: any, whitelist, blacklist, frequency, cardinality, percentage_match, metric_aggregation, spike, flatline, change, new_term (composite fields),
+  correlation, geo_velocity, beacon, baseline, log_loss, outlier, risk, plus `active_hours`.
+- Direction is computed from the address ranges (RFC 1918, loopback, link-local are internal), not from `network.direction`, because vendors fill the latter differently.
+  Replace the ranges in the rules if you use public addresses internally.
+- `blacklist` and `whitelist` compare string values only: port rules are `any` rules on `destination.port`.
+- Rules that need a field the log may lack stay silent: GeoIP (`source.geo.*`), `network.application`, `threat.indicator.*`, `rule.category` on IPS events, and
+  `message` on configuration events (the wording of the config-tampering rules covers FortiGate and Cisco commands: extend it for other vendors).
+- `omega-fw-dns-to-unlisted-external-resolver` lists public resolvers: put yours in the whitelist. Time windows (`active_hours`, `usual_hours`) default to UTC.
+- The host and risk rules of the three packs can be combined: set the same `risk_object_type` (ip) to add up firewall, web and endpoint alerts on one address.

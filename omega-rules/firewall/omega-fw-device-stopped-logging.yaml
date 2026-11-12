@@ -1,0 +1,28 @@
+name: omega-fw-device-stopped-logging
+type: log_loss
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1685, T1070]
+risk_score: 40
+risk_objects: {host: observer.name}
+filter:
+- term: {event.category: network}
+query_key: observer.name
+history: {days: 3}
+resolution: {minutes: 10}
+seasonality: hour_of_day
+factor: 1.5
+min_threshold: {minutes: 30}
+max_threshold: {hours: 6}
+learn_every: {hours: 6}
+realert: {hours: 4}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'A firewall that normally logs every few minutes has been silent for longer than it ever is at that hour: the log
+    forwarding stopped, the logs were wiped, or the device is down.'
+  source: [firewall]
+  false_positives: 'Devices switched off on purpose and quiet branch firewalls: the rule learns each device pattern over 3 days
+    and never alerts before 30 minutes of silence. Use the flatline rule for short silences on busy devices.'
+  references: ['https://attack.mitre.org/techniques/T1070/']

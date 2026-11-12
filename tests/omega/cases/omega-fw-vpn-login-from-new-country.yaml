@@ -1,0 +1,224 @@
+docs:
+- id: hist-1
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 10.1.0.20
+      port: 51000
+      bytes: 1000
+      geo: {country_iso_code: FR}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2025-12-20T09:00:00Z'
+- id: hist-2
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 10.1.0.20
+      port: 51000
+      bytes: 1000
+      geo: {country_iso_code: FR}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2025-12-21T09:01:00Z'
+- id: hist-3
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 10.1.0.20
+      port: 51000
+      bytes: 1000
+      geo: {country_iso_code: FR}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2025-12-22T09:02:00Z'
+- id: hist-4
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 10.1.0.20
+      port: 51000
+      bytes: 1000
+      geo: {country_iso_code: FR}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2025-12-23T09:03:00Z'
+- id: hist-5
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 10.1.0.20
+      port: 51000
+      bytes: 1000
+      geo: {country_iso_code: FR}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2025-12-24T09:04:00Z'
+- id: hist-6
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 10.1.0.20
+      port: 51000
+      bytes: 1000
+      geo: {country_iso_code: FR}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+    '@timestamp': '2025-12-25T09:05:00Z'
+- id: histc-1
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 10.1.0.20
+      port: 51000
+      bytes: 1000
+      geo: {country_iso_code: DE}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: carol}
+    '@timestamp': '2025-12-20T09:00:00Z'
+- id: histc-2
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 10.1.0.20
+      port: 51000
+      bytes: 1000
+      geo: {country_iso_code: DE}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: carol}
+    '@timestamp': '2025-12-21T09:01:00Z'
+- id: histc-3
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 10.1.0.20
+      port: 51000
+      bytes: 1000
+      geo: {country_iso_code: DE}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: carol}
+    '@timestamp': '2025-12-22T09:02:00Z'
+- id: histc-4
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 10.1.0.20
+      port: 51000
+      bytes: 1000
+      geo: {country_iso_code: DE}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: carol}
+    '@timestamp': '2025-12-23T09:03:00Z'
+- id: histc-5
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 10.1.0.20
+      port: 51000
+      bytes: 1000
+      geo: {country_iso_code: DE}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: carol}
+    '@timestamp': '2025-12-24T09:04:00Z'
+- id: histc-6
+  match: false
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 10.1.0.20
+      port: 51000
+      bytes: 1000
+      geo: {country_iso_code: DE}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: carol}
+    '@timestamp': '2025-12-25T09:05:00Z'
+- id: known
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 10.1.0.20
+      port: 51000
+      bytes: 1000
+      geo: {country_iso_code: FR}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+- id: new
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 10.1.0.20
+      port: 51000
+      bytes: 1000
+      geo: {country_iso_code: RU}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: bob}
+- id: other
+  match: true
+  doc:
+    event: {category: authentication, type: allowed, outcome: success, dataset: fortinet_fortigate.vpn}
+    observer: {name: fw1, type: firewall}
+    network: {transport: tcp, bytes: 4000}
+    source:
+      ip: 10.1.0.20
+      port: 51000
+      bytes: 1000
+      geo: {country_iso_code: DE}
+    destination: {ip: 203.0.113.10, port: 443, bytes: 3000}
+    rule: {name: allow-web}
+    user: {name: carol}
+matches: 1

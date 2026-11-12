@@ -1,0 +1,17 @@
+# Legitimate perimeter traffic. Documents are merged on {event.category: network, event.type: allowed, observer.name: fw9, observer.type: firewall, network.transport: tcp}.
+# A T0 or T2 rule must not hit any of it; a T1 signal may (it adds a little risk).
+- {source.ip: 10.1.0.20, source.port: 51022, destination.ip: 203.0.113.10, destination.port: 443, network.bytes: 48210, source.bytes: 3100, destination.bytes: 45110}
+- {source.ip: 10.1.0.21, source.port: 51023, destination.ip: 198.51.100.44, destination.port: 80, network.bytes: 9020, source.bytes: 800, destination.bytes: 8220}
+- {source.ip: 10.1.0.20, source.port: 40001, destination.ip: 10.0.0.53, destination.port: 53, network.transport: udp, network.bytes: 180, source.bytes: 70, destination.bytes: 110}
+- {source.ip: 10.1.0.22, source.port: 123, destination.ip: 203.0.113.123, destination.port: 123, network.transport: udp, network.bytes: 152, source.bytes: 76, destination.bytes: 76}
+- {source.ip: 10.1.0.20, source.port: 49300, destination.ip: 10.1.0.5, destination.port: 445, network.bytes: 912000, source.bytes: 12000, destination.bytes: 900000}
+- {source.ip: 10.1.0.20, source.port: 49301, destination.ip: 10.1.0.5, destination.port: 3389, network.bytes: 5200000, source.bytes: 400000, destination.bytes: 4800000}
+- {source.ip: 10.1.0.20, source.port: 49302, destination.ip: 10.1.0.6, destination.port: 22, network.bytes: 22000, source.bytes: 6000, destination.bytes: 16000}
+- {source.ip: 203.0.113.80, source.port: 55100, destination.ip: 10.2.0.10, destination.port: 443, network.bytes: 61000, source.bytes: 5000, destination.bytes: 56000, rule.name: publish-web}
+- {source.ip: 198.51.100.77, source.port: 41233, destination.ip: 10.2.0.25, destination.port: 25, network.bytes: 14000, source.bytes: 13000, destination.bytes: 1000, rule.name: publish-mail}
+- {source.ip: 10.1.0.30, source.port: 51500, destination.ip: 198.51.100.25, destination.port: 587, network.bytes: 30000, source.bytes: 29000, destination.bytes: 1000}
+- {source.ip: 10.1.0.31, source.port: 51501, destination.ip: 198.51.100.26, destination.port: 993, network.bytes: 120000, source.bytes: 10000, destination.bytes: 110000}
+- {source.ip: 10.1.0.20, destination.ip: 203.0.113.10, network.transport: icmp, network.bytes: 84, source.bytes: 42, destination.bytes: 42, destination.port: 0}
+- {source.ip: 10.1.0.20, source.port: 51600, destination.ip: 203.0.113.77, destination.port: 443, network.bytes: 8200000, source.bytes: 200000, destination.bytes: 8000000}
+- {source.ip: 203.0.113.99, source.port: 33001, destination.ip: 10.2.0.10, destination.port: 22, event.type: denied, network.bytes: 0, rule.name: default-deny}
+- {source.ip: 10.1.0.32, source.port: 51700, destination.ip: 10.0.0.53, destination.port: 853, network.bytes: 3200, source.bytes: 1400, destination.bytes: 1800}

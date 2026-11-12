@@ -1,0 +1,30 @@
+name: omega-fw-admin-login-from-internet
+type: any
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1078, T1133, T1190]
+risk_score: 90
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- term: {event.category: authentication}
+- term: {observer.type: firewall}
+- term: {event.outcome: success}
+- exists: {field: user.name}
+- bool:
+    must:
+    - exists: {field: source.ip}
+    must_not:
+    - terms:
+        source.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+realert: {minutes: 30}
+query_key: [source.ip, user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A successful administrator login on the firewall itself from a public address: the management interface is exposed
+    and its credentials worked.'
+  source: [firewall]
+  false_positives: Remote administration on purpose (restrict it to a VPN, then it ends). Exclude the known administrator addresses.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/network/initial_access_perimeter_device_admin_login.toml',
+    'https://attack.mitre.org/techniques/T1078/', 'https://attack.mitre.org/techniques/T1133/']

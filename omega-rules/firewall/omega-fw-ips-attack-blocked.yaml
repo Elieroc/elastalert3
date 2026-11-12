@@ -1,0 +1,49 @@
+name: omega-fw-ips-attack-blocked
+type: any
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1190, T1595]
+risk_score: 5
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: intrusion_detection}
+- term: {event.type: denied}
+- bool:
+    should:
+    - wildcard:
+        rule.category: {value: '*exploit*', case_insensitive: true}
+    - wildcard:
+        rule.category: {value: '*shellcode*', case_insensitive: true}
+    - wildcard:
+        rule.category: {value: '*overflow*', case_insensitive: true}
+    - wildcard:
+        rule.category: {value: '*web-attack*', case_insensitive: true}
+    - wildcard:
+        rule.category: {value: '*webapps*', case_insensitive: true}
+    - wildcard:
+        rule.category: {value: '*command-and-control*', case_insensitive: true}
+    - wildcard:
+        rule.category: {value: '*botnet*', case_insensitive: true}
+    - wildcard:
+        rule.category: {value: '*trojan*', case_insensitive: true}
+    - wildcard:
+        rule.category: {value: '*backdoor*', case_insensitive: true}
+    - wildcard:
+        rule.category: {value: '*malware*', case_insensitive: true}
+    - wildcard:
+        rule.category: {value: '*ransomware*', case_insensitive: true}
+    - wildcard:
+        rule.category: {value: '*scan*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [source.ip, rule.name]
+alert: []
+omega:
+  tier: T1
+  description: An intrusion prevention signature for an exploit, malware, command and control or a scan fires and the firewall
+    blocks the traffic.
+  source: [ips]
+  false_positives: 'Internet noise: every public address gets these. Silent: it adds a very small risk and feeds the source address
+    risk rule.'
+  references: ['https://attack.mitre.org/techniques/T1190/', 'https://attack.mitre.org/techniques/T1595/']

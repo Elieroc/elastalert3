@@ -1,0 +1,22 @@
+name: omega-fw-internal-host-risk
+type: risk
+priority: 2
+mitre_attack: []
+risk_threshold: 150
+timeframe: {hours: 12}
+risk_object_type: ip
+min_distinct_rules: 2
+risk_history: {days: 14}
+risk_ratio: 3
+realert: {hours: 12}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'An internal address whose firewall alerts add up to 150 risk points within 12 hours, from at least two different
+    rules, and at least 3 times what is usual for this address over the last 14 days: a host that suddenly behaves like a compromised
+    one (blocked egress, sweeps, large uploads, beaconing).'
+  source: [risk]
+  false_positives: 'Servers that are always noisy are kept quiet by the ratio to their own history. A new host has no history:
+    wait a week before trusting it. The same address in the host rules of the linux and windows packs adds up when risk_object_type
+    is the same.'
+  references: ['https://elastalert3.neopipe.fr/ruletypes.html#risk']

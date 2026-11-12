@@ -1,0 +1,38 @@
+name: omega-fw-low-and-slow-beaconing
+type: beacon
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1071.001, T1029]
+risk_score: 40
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- term: {event.type: allowed}
+- terms:
+    source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- bool:
+    must:
+    - exists: {field: destination.ip}
+    must_not:
+    - terms:
+        destination.ip: *id001
+- bool:
+    must_not:
+    - terms:
+        destination.port: [53, 67, 68, 123, 137, 138, 161, 162, 514, 5353]
+query_key: [source.ip, destination.ip, destination.port]
+timeframe: {hours: 24}
+min_events: 12
+max_jitter: 0.1
+min_interval: {minutes: 10}
+realert: {hours: 12}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'An internal host connects to the same public address and port every 10 minutes or more at a near-constant period
+    (12 or more connections in 24 hours, jitter under 10 %): slow command-and-control beaconing that the 6-hour rule cannot see.'
+  source: [firewall]
+  false_positives: Hourly or half-hourly jobs, license checks, cloud agents (exclude the destination). Hence a risk of 40 and
+    not a score of its own.
+  references: ['https://attack.mitre.org/techniques/T1071/001/', 'https://attack.mitre.org/techniques/T1029/']

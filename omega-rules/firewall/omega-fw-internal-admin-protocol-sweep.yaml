@@ -1,0 +1,31 @@
+name: omega-fw-internal-admin-protocol-sweep
+type: cardinality
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1021, T1018, T1046]
+risk_score: 80
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- terms:
+    source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- terms:
+    destination.ip: *id001
+- terms:
+    destination.port: [22, 135, 139, 445, 3389, 5985, 5986, 1433, 3306]
+cardinality_field: destination.ip
+max_cardinality: 19
+timeframe: {minutes: 5}
+query_key: [source.ip, destination.port]
+realert: {minutes: 30}
+alert: [debug]
+omega:
+  tier: T0
+  description: 'One internal host opens SSH, SMB, RPC, RDP, WinRM or SQL connections to 20 or more different internal hosts within
+    5 minutes: lateral movement tools and worms spread this way.'
+  source: [firewall]
+  false_positives: Backup, patching, inventory and vulnerability tools, and jump hosts used by many administrators at once (exclude
+    their addresses).
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/network/lateral_movement_smb_scan.toml', 'https://attack.mitre.org/techniques/T1021/',
+    'https://attack.mitre.org/techniques/T1018/']

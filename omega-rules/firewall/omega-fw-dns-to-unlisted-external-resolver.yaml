@@ -1,0 +1,35 @@
+name: omega-fw-dns-to-unlisted-external-resolver
+type: whitelist
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1071.004, T1572, T1048.003]
+risk_score: 10
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- term: {event.type: allowed}
+- terms:
+    source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- bool:
+    must:
+    - exists: {field: destination.ip}
+    must_not:
+    - terms:
+        destination.ip: *id001
+- terms:
+    destination.port: [53]
+compare_key: destination.ip
+ignore_null: true
+whitelist: [8.8.8.8, 8.8.4.4, 1.1.1.1, 1.0.0.1, 9.9.9.9, 149.112.112.112, 208.67.222.222, 208.67.220.220]
+realert: {minutes: 30}
+query_key: [source.ip, destination.ip]
+alert: []
+omega:
+  tier: T1
+  description: 'An internal host sends DNS queries straight to a public address that is not in the list of expected resolvers
+    (the public resolvers below, replace them with yours): malware with its own resolver, DNS tunnelling, or a bypass of DNS filtering.'
+  source: [firewall]
+  false_positives: 'Clients with a hard-coded resolver of an ISP or a vendor, IoT devices, VPN clients. Fill the list with the
+    resolvers you allow. Silent: it adds a small risk.'
+  references: ['https://attack.mitre.org/techniques/T1071/004/', 'https://attack.mitre.org/techniques/T1572/']

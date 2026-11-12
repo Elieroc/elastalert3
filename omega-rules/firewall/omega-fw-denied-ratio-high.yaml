@@ -1,0 +1,24 @@
+name: omega-fw-denied-ratio-high
+type: percentage_match
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1595, T1498, T1686]
+filter:
+- term: {event.category: network}
+match_bucket_filter:
+  term: {event.type: denied}
+max_percentage: 70
+min_denominator: 500
+query_key: observer.name
+buffer_time: {minutes: 10}
+realert: {minutes: 30}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'More than 70 % of the connections seen by a firewall are denied over 10 minutes (at least 500 connections): an
+    attack that the firewall absorbs, or a policy change that blocks the normal traffic.'
+  source: [firewall]
+  false_positives: Scanning waves on a quiet perimeter; a firewall that only sees internet noise. Tune the share to what is usual
+    for each device.
+  references: ['https://attack.mitre.org/techniques/T1595/', 'https://attack.mitre.org/techniques/T1498/']

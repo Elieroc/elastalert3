@@ -1,0 +1,31 @@
+name: omega-fw-dns-over-tls-to-internet-allowed
+type: any
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1071.004, T1573]
+risk_score: 6
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- term: {event.type: allowed}
+- terms:
+    source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- bool:
+    must:
+    - exists: {field: destination.ip}
+    must_not:
+    - terms:
+        destination.ip: *id001
+- terms:
+    destination.port: [853]
+realert: {minutes: 30}
+query_key: [source.ip, destination.ip]
+alert: []
+omega:
+  tier: T1
+  description: 'An internal host is allowed to open DNS over TLS (port 853) to a public address: encrypted DNS that bypasses the
+    DNS monitoring and filtering of the company.'
+  source: [firewall]
+  false_positives: 'Android devices (Private DNS) and browsers or agents configured for DoT. Silent: it adds a small risk.'
+  references: ['https://attack.mitre.org/techniques/T1071/004/']
