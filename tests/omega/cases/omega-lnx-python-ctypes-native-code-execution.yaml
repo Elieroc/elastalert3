@@ -1,0 +1,66 @@
+docs:
+- id: mmap
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: python3
+      executable: /usr/bin/python3
+      command_line: python3 -c "import ctypes,mmap;m=mmap.mmap(-1,4096,prot=7);f=ctypes.CFUNCTYPE(None)"
+      parent: {name: bash}
+- id: memfd
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: python3
+      executable: /usr/bin/python3
+      command_line: python3 -c "import ctypes;ctypes.CDLL(None).memfd_create"
+      parent: {name: bash}
+- id: plain-ctypes
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: python3
+      executable: /usr/bin/python3
+      command_line: python3 -c "import ctypes; print(ctypes.sizeof(ctypes.c_int))"
+      parent: {name: bash}
+- id: script
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: python3
+      executable: /usr/bin/python3
+      command_line: python3 app.py
+      parent: {name: bash}
+- id: c
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: python3
+      executable: /usr/bin/python3
+      command_line: python3 -c "print(1)"
+      parent: {name: bash}

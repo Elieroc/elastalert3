@@ -1,0 +1,44 @@
+docs:
+- id: load
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: process, code: '4104'}
+    process: {name: powershell.exe}
+    powershell:
+      file: {script_block_text: 'Add-Type -MemberDefinition ''[DllImport("kernel32.dll")] public static extern IntPtr LoadLibrary(string
+          n);'' -Name K -Namespace W'}
+- id: inject
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: process, code: '4104'}
+    process: {name: powershell.exe}
+    powershell:
+      file: {script_block_text: '[DllImport("kernel32.dll")] static extern IntPtr OpenProcess(int a, bool b, int c); [DllImport("kernel32.dll")]
+          static extern bool WriteProcessMemory()'}
+- id: window
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: process, code: '4104'}
+    process: {name: powershell.exe}
+    powershell:
+      file: {script_block_text: 'Add-Type ''[DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);''
+          -Name U -Namespace W'}
+- id: plain
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: process, code: '4104'}
+    process: {name: powershell.exe}
+    powershell:
+      file: {script_block_text: 'Get-ChildItem C:\Users'}

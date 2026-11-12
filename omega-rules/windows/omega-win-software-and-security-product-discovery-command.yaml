@@ -1,0 +1,105 @@
+name: omega-win-software-and-security-product-discovery-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1518, T1518.001]
+risk_score: 4
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: wmic.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*product*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*securitycenter2*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*antivirusproduct*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*firewallproduct*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*antispywareproduct*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*win32_product*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*antivirusproduct*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*get-mpcomputerstatus*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*get-mppreference*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*get-package *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*securitycenter2*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: reg.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*\\currentversion\\uninstall*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        should:
+        - term:
+            process.name: {value: driverquery.exe, case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: sc.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* query windefend*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* query sense*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* query wdnissvc*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* query mpssvc*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 5}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A command that lists installed software or security products: wmic product, Win32_Product, SecurityCenter2 AntiVirusProduct,
+    Get-MpComputerStatus, reg query of Uninstall, driverquery, sc query of Defender.'
+  source: [process]
+  false_positives: 'Inventory agents, administrators checking Defender status. Tiny risk: it adds up with other discovery signals.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_wmic_recon_product_class.yml',
+    'https://attack.mitre.org/techniques/T1518/', 'https://attack.mitre.org/techniques/T1518/001/']

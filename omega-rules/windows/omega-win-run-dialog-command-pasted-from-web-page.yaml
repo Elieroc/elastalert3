@@ -1,0 +1,57 @@
+name: omega-win-run-dialog-command-pasted-from-web-page
+type: any
+index: logs-endpoint.events.registry*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1204.004, T1059.001]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: registry}
+- terms:
+    event.type: [change, creation]
+- bool:
+    should:
+    - wildcard:
+        registry.path: {value: '*\\Explorer\\RunMRU\\*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        registry.data.strings: {value: '*powershell*-w*hidden*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*powershell*iwr*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*powershell*iex*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*powershell*invoke-expression*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*powershell*downloadstring*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*powershell*-enc*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*mshta*http*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*curl*http*|*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*certutil*-urlcache*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*msiexec*http*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*cmd*/c*curl*', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '*bitsadmin*/transfer*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [host.name, user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'The Run dialog history (RunMRU) records a command that starts PowerShell, mshta, curl, certutil, msiexec with
+    a URL or a one-liner: the user pasted into Win+R a command copied from a fake captcha or fix page (ClickFix).'
+  source: [registry]
+  false_positives: Administrators who type commands in Run (exclude the account). A person does not type a download one-liner
+    into Run on their own.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/windows/execution_suspicious_powershell_via_run_dialog.toml',
+    'https://attack.mitre.org/techniques/T1204/004/']

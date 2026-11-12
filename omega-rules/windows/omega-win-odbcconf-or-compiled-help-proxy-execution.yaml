@@ -1,0 +1,81 @@
+name: omega-win-odbcconf-or-compiled-help-proxy-execution
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1218.008, T1218.001]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: odbcconf.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*{regsvr*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* /a *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -a *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*.rsp*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/f *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*-f *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: hh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*http://*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*https://*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\\\\\\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*ms-its:*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*mk:@*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*-decompile*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\users\\*.chm*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\temp\\*.chm*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\appdata\\*.chm*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\programdata\\*.chm*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [host.name, user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'odbcconf.exe is used to register a DLL ({REGSVR}, /a with a library path, or a response file), or hh.exe opens
+    a help file from a URL, a share or a user-writable path, or is started with the decompile switch: two signed binaries that
+    run attacker code.'
+  source: [process]
+  false_positives: Almost none for odbcconf. hh.exe opening a local .chm that an application ships is normal and is not matched
+    (only remote or user-path help files).
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_odbcconf_response_file.yml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_hh_html_help_susp_child_process.yml',
+    'https://attack.mitre.org/techniques/T1218/008/', 'https://attack.mitre.org/techniques/T1218/001/']

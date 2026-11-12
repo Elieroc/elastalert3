@@ -1,0 +1,50 @@
+name: omega-lnx-security-software-discovery-command
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1518.001, T1685]
+risk_score: 6
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*grep*falcon*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*grep*crowdstrike*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*grep*sentinel*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*grep*osquery*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*grep*ossec*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*grep*wazuh*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*grep*clamav*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*grep*auditd*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*grep*rkhunter*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*grep*chkrootkit*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*grep*carbonblack*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*grep*cylance*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 5}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A command that looks for security tools on the host by name: grep of falcon, crowdstrike, sentinel, osquery, ossec,
+    wazuh, clamav, auditd, rkhunter or chkrootkit in process, service or package lists.'
+  source: [process]
+  false_positives: 'Administrators who check that the agents run. Silent: it adds risk, malware and intruders look for security
+    tools before they disable them.'
+  references: ['https://attack.mitre.org/techniques/T1518/001/']

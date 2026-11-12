@@ -1,0 +1,60 @@
+name: omega-lnx-poisoning-or-mitm-tool-execution
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1557, T1557.001, T1557.002, T1040]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - term:
+            process.name: {value: arpspoof, case_insensitive: true}
+        - term:
+            process.name: {value: ettercap, case_insensitive: true}
+        - term:
+            process.name: {value: bettercap, case_insensitive: true}
+        - term:
+            process.name: {value: responder, case_insensitive: true}
+        - term:
+            process.name: {value: mitm6, case_insensitive: true}
+        - term:
+            process.name: {value: dsniff, case_insensitive: true}
+        - term:
+            process.name: {value: sslstrip, case_insensitive: true}
+        - term:
+            process.name: {value: macchanger, case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*responder.py*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*mitm6*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*bettercap*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*ettercap*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*arpspoof*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*sslstrip*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [host.name, user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A tool that poisons ARP, name resolution or DHCPv6, or that sits between hosts, is run: arpspoof, ettercap, bettercap,
+    Responder, mitm6, dsniff, sslstrip.'
+  source: [process]
+  false_positives: Authorised penetration tests (exclude the hosts, with an expiry date). Packet capture tools such as tcpdump
+    are not in the list.
+  references: ['https://attack.mitre.org/techniques/T1557/002/', 'https://attack.mitre.org/techniques/T1557/001/', 'https://attack.mitre.org/techniques/T1040/']

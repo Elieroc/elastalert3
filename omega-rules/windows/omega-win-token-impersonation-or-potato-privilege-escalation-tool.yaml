@@ -1,0 +1,71 @@
+name: omega-win-token-impersonation-or-potato-privilege-escalation-tool
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1134.001, T1134.002, T1134.003, T1068]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - term:
+            process.name: {value: juicypotato.exe, case_insensitive: true}
+        - term:
+            process.name: {value: roguepotato.exe, case_insensitive: true}
+        - term:
+            process.name: {value: sweetpotato.exe, case_insensitive: true}
+        - term:
+            process.name: {value: godpotato.exe, case_insensitive: true}
+        - term:
+            process.name: {value: printspoofer.exe, case_insensitive: true}
+        - term:
+            process.name: {value: printspoofer64.exe, case_insensitive: true}
+        - term:
+            process.name: {value: incognito.exe, case_insensitive: true}
+        - term:
+            process.name: {value: tokenvator.exe, case_insensitive: true}
+        - term:
+            process.name: {value: efspotato.exe, case_insensitive: true}
+        - term:
+            process.name: {value: localpotato.exe, case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*printspoofer*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*juicypotato*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*roguepotato*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*sweetpotato*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*godpotato*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*invoke-tokenmanipulation*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*invoke-impersonateuser*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*tokenvator*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*efspotato*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [host.name, user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A token theft or "potato" privilege escalation tool is run: JuicyPotato, RoguePotato, SweetPotato, GodPotato,
+    PrintSpoofer, Incognito, Tokenvator, Invoke-TokenManipulation: they turn a service account into SYSTEM.'
+  source: [process]
+  false_positives: Authorised penetration tests (exclude the hosts, with an expiry date). The names have no legitimate use.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_hktl_printspoofer.yml',
+    'https://github.com/elastic/detection-rules/blob/main/rules/windows/privilege_escalation_potential_privilege_escalation_via_printspoofer.toml',
+    'https://attack.mitre.org/techniques/T1134/001/', 'https://attack.mitre.org/techniques/T1134/002/']

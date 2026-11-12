@@ -1,0 +1,153 @@
+name: omega-win-event-logging-disabled
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1685.001, T1685]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: wevtutil.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* sl *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* set-log *', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*/e:false*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/enabled:false*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/e:0*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: auditpol.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* /clear*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* /remove*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/success:disable*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/failure:disable*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: sc.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*eventlog*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* stop *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* config *disabled*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: net.exe, case_insensitive: true}
+            - term:
+                process.name: {value: net1.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* stop eventlog*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* stop "windows event log"*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*stop-service*eventlog*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*set-service*eventlog*disabled*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: reg.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*winevt\\channels\\*enabled*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\eventlog\\*enabled*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*/d 0*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: logman.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* stop *eventlog*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* delete *eventlog*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [host.name, user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A command that turns Windows event logging off instead of clearing it: wevtutil sl /e:false, auditpol /clear or
+    /remove, the Event Log service stopped or disabled, an event channel disabled in the registry, or an ETW trace session stopped
+    (logman).'
+  source: [process]
+  false_positives: Almost none. Audit policy tools run by GPO do not use these command lines.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_wevtutil_disable_eventlog.yml',
+    'https://github.com/elastic/detection-rules/blob/main/rules/windows/defense_evasion_disable_windows_event_and_security_logs_using_built_in_tools.toml',
+    'https://attack.mitre.org/techniques/T1685/001/']

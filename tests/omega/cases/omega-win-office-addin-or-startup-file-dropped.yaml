@@ -1,0 +1,46 @@
+docs:
+- id: wll
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\alice\AppData\Roaming\Microsoft\Word\STARTUP\update.wll', name: update.wll, extension: wll}
+    process: {name: powershell.exe}
+- id: xll
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\alice\AppData\Roaming\Microsoft\AddIns\calc.xll', name: calc.xll, extension: xll}
+    process: {name: cmd.exe}
+- id: office
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\alice\AppData\Roaming\Microsoft\Templates\Normal.dotm', name: Normal.dotm, extension: dotm}
+    process: {name: WINWORD.EXE}
+- id: doc
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\alice\Documents\report.docx', name: report.docx, extension: docx}
+    process: {name: powershell.exe}
+- id: startup-txt
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: file, type: creation}
+    file: {path: 'C:\Users\alice\AppData\Roaming\Microsoft\Word\STARTUP\readme.txt', name: readme.txt, extension: txt}
+    process: {name: cmd.exe}

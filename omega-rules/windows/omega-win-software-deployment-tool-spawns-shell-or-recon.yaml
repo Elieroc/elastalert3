@@ -1,0 +1,69 @@
+name: omega-win-software-deployment-tool-spawns-shell-or-recon
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1072]
+risk_score: 6
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard:
+        process.parent.name: {value: pdqdeployrunner*, case_insensitive: true}
+    - wildcard:
+        process.parent.name: {value: pdqdeploy.exe, case_insensitive: true}
+    - wildcard:
+        process.parent.name: {value: paexec.exe, case_insensitive: true}
+    - wildcard:
+        process.parent.name: {value: tanium*.exe, case_insensitive: true}
+    - wildcard:
+        process.parent.name: {value: besclient.exe, case_insensitive: true}
+    - wildcard:
+        process.parent.name: {value: salt-minion.exe, case_insensitive: true}
+    - wildcard:
+        process.parent.name: {value: ansible*.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - term:
+        process.name: {value: cmd.exe, case_insensitive: true}
+    - term:
+        process.name: {value: powershell.exe, case_insensitive: true}
+    - term:
+        process.name: {value: pwsh.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: cscript.exe, case_insensitive: true}
+    - term:
+        process.name: {value: mshta.exe, case_insensitive: true}
+    - term:
+        process.name: {value: rundll32.exe, case_insensitive: true}
+    - term:
+        process.name: {value: certutil.exe, case_insensitive: true}
+    - term:
+        process.name: {value: whoami.exe, case_insensitive: true}
+    - term:
+        process.name: {value: net.exe, case_insensitive: true}
+    - term:
+        process.name: {value: net1.exe, case_insensitive: true}
+    - term:
+        process.name: {value: nltest.exe, case_insensitive: true}
+    - term:
+        process.name: {value: bitsadmin.exe, case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [host.name, process.parent.name]
+alert: []
+omega:
+  tier: T1
+  description: A software deployment agent (PDQ Deploy runner, PAExec service, Tanium, BigFix, Ansible, Salt minion) starts a
+    shell, a script host or a reconnaissance or download tool.
+  source: [process]
+  false_positives: 'Every deployment: these tools exist to run commands. Silent: it adds a small risk, and counts when a single
+    deployment account suddenly touches many hosts.'
+  references: ['https://attack.mitre.org/techniques/T1072/']

@@ -1,0 +1,38 @@
+name: omega-win-direct-volume-or-raw-disk-access-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1006]
+risk_score: 20
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*\\\\.\\physicaldrive*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\\\.\\?:*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\\\?\\globalroot\\device\\harddiskvolumeshadowcopy*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\\\.\\harddiskvolume*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*rawcopy*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*ntfscopy*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A command line that reads a disk or a volume directly (\\.\PhysicalDrive, \\.\C:, \\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy,
+    rawcopy, ntfscopy): a way to copy locked files (NTDS, SAM, hives) and to bypass file access controls.'
+  source: [process]
+  false_positives: 'Disk imaging, backup and forensic tools, and disk utilities. Silent: it adds risk.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_susp_copy_system_directories.yml',
+    'https://attack.mitre.org/techniques/T1006/']

@@ -1,0 +1,50 @@
+name: omega-lnx-python-ctypes-native-code-execution
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1106, T1059.006, T1620]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard:
+        process.name: {value: python*, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '* -c *', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*ctypes*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*mmap*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*mprotect*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*memfd_create*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*cfunctype*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*libc.system*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [host.name, user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A python one-liner that uses ctypes to allocate or change the protection of memory and run it (mmap, mprotect,
+    memfd_create, CFUNCTYPE): shellcode loaded from a script, often after a download.'
+  source: [process]
+  false_positives: Almost none on a server; developers who experiment with ctypes do not call mprotect or CFUNCTYPE in a one-liner.
+  references: ['https://attack.mitre.org/techniques/T1106/', 'https://attack.mitre.org/techniques/T1620/', 'https://attack.mitre.org/techniques/T1059/006/']

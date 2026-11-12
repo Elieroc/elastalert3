@@ -1,0 +1,36 @@
+name: omega-fw-periodic-large-upload-automated-exfiltration
+type: beacon
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1020, T1041, T1029]
+risk_score: 40
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- term: {event.type: allowed}
+- terms:
+    source.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- bool:
+    must:
+    - exists: {field: destination.ip}
+    must_not:
+    - terms:
+        destination.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- range:
+    source.bytes: {gte: 1000000}
+query_key: [source.ip, destination.ip]
+timeframe: {hours: 12}
+min_events: 8
+max_jitter: 0.2
+min_interval: {minutes: 5}
+realert: {hours: 12}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'An internal host sends 1 MB or more to the same public address at near-constant intervals (8 or more uploads in
+    12 hours, jitter under 20 %, at least 5 minutes apart): data taken out by a scheduled or automated channel.'
+  source: [firewall]
+  false_positives: Backups to a cloud provider, log shipping and synchronisation jobs (exclude the destination). Hence a risk
+    of 40 and not a score of its own.
+  references: ['https://attack.mitre.org/techniques/T1020/', 'https://attack.mitre.org/techniques/T1041/', 'https://attack.mitre.org/techniques/T1029/']

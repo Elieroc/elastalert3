@@ -1,0 +1,60 @@
+name: omega-win-registry-query-recon-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1012]
+risk_score: 3
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: reg.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '* query *', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '* /f *password*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '* /f password*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\simontatham*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\terminal server client*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\martin prikryl*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\snmp\\parameters*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\winlogon*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\control\\lsa*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\windows defender*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*currentversion\\run*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*\\policies\\system*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*vnc*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 5}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A reg query that searches the registry for passwords, or reads the keys that attackers read to learn about the
+    host: Run keys, RDP, PuTTY and WinSCP sessions, SNMP, Winlogon, LSA, Defender settings.'
+  source: [process]
+  false_positives: Administrators and installers. Tiny risk.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_reg_query_putty_sessions.yml',
+    'https://attack.mitre.org/techniques/T1012/']

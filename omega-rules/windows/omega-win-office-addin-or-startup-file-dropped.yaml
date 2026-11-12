@@ -1,0 +1,73 @@
+name: omega-win-office-addin-or-startup-file-dropped
+type: any
+index: logs-endpoint.events.file*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1137, T1137.006, T1137.001]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change]
+- bool:
+    should:
+    - wildcard:
+        file.path: {value: '*\\Microsoft\\Word\\STARTUP\\*', case_insensitive: true}
+    - wildcard:
+        file.path: {value: '*\\Microsoft\\Excel\\XLSTART\\*', case_insensitive: true}
+    - wildcard:
+        file.path: {value: '*\\Microsoft\\AddIns\\*', case_insensitive: true}
+    - wildcard:
+        file.path: {value: '*\\Microsoft\\Templates\\Normal.dotm', case_insensitive: true}
+    - wildcard:
+        file.path: {value: '*\\Microsoft\\Templates\\*.dotm', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - term:
+        file.extension: {value: wll, case_insensitive: true}
+    - term:
+        file.extension: {value: xll, case_insensitive: true}
+    - term:
+        file.extension: {value: xla, case_insensitive: true}
+    - term:
+        file.extension: {value: xlam, case_insensitive: true}
+    - term:
+        file.extension: {value: dotm, case_insensitive: true}
+    - term:
+        file.extension: {value: dll, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: winword.exe, case_insensitive: true}
+        - term:
+            process.name: {value: excel.exe, case_insensitive: true}
+        - term:
+            process.name: {value: powerpnt.exe, case_insensitive: true}
+        - term:
+            process.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: setup.exe, case_insensitive: true}
+        - term:
+            process.name: {value: officeclicktorun.exe, case_insensitive: true}
+        - term:
+            process.name: {value: onedrive.exe, case_insensitive: true}
+        - term:
+            process.name: {value: trustedinstaller.exe, case_insensitive: true}
+        minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [host.name, file.path]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A Word or Excel add-in (wll, xll, xla, xlam) or a template is written into an Office startup folder (STARTUP,
+    XLSTART, AddIns, Templates) by a program other than Office or an installer: Office loads it every time it starts.'
+  source: [file]
+  false_positives: Add-in deployment tools (exclude their process names). Everything else is Office persistence.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/file/file_event/file_event_win_office_addin_persistence.yml',
+    'https://attack.mitre.org/techniques/T1137/006/', 'https://attack.mitre.org/techniques/T1137/001/']

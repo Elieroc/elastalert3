@@ -1,0 +1,47 @@
+docs:
+- id: autorun
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: file, type: creation}
+    file: {path: 'E:\autorun.inf', name: autorun.inf, extension: inf}
+    process: {name: explorer.exe}
+- id: usb
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: setup.exe
+      executable: C:\Windows\System32\setup.exe
+      command_line: E:\setup.exe
+      parent: {name: explorer.exe}
+      Ext:
+        device: {bus_type: usb}
+- id: c-autorun
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: file, type: creation}
+    file: {path: 'C:\autorun.inf', name: autorun.inf, extension: inf}
+    process: {name: explorer.exe}
+- id: local
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: setup.exe
+      executable: C:\Windows\System32\setup.exe
+      command_line: C:\tmp\setup.exe
+      parent: {name: explorer.exe}

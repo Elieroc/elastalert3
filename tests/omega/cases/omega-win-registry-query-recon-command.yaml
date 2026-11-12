@@ -1,0 +1,66 @@
+docs:
+- id: pw
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: reg.exe
+      executable: C:\Windows\System32\reg.exe
+      command_line: reg query HKLM /f password /t REG_SZ /s
+      parent: {name: explorer.exe}
+- id: putty
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: reg.exe
+      executable: C:\Windows\System32\reg.exe
+      command_line: reg query HKCU\Software\SimonTatham\PuTTY\Sessions
+      parent: {name: explorer.exe}
+- id: run
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: reg.exe
+      executable: C:\Windows\System32\reg.exe
+      command_line: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Run
+      parent: {name: explorer.exe}
+- id: plain
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: reg.exe
+      executable: C:\Windows\System32\reg.exe
+      command_line: reg query HKCU\Software\Test
+      parent: {name: explorer.exe}
+- id: add
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: reg.exe
+      executable: C:\Windows\System32\reg.exe
+      command_line: reg add HKCU\Software\Test /v a /d b
+      parent: {name: explorer.exe}

@@ -1,0 +1,44 @@
+name: omega-lnx-root-certificate-installed-by-command
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1553.004]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - term:
+            process.name: {value: update-ca-certificates, case_insensitive: true}
+        - term:
+            process.name: {value: update-ca-trust, case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*cp *ca-certificates*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*cp *ca-trust/source/anchors*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*>*/usr/local/share/ca-certificates/*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*tee*ca-certificates*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A command that installs a certificate authority into the system trust store: update-ca-certificates, update-ca-trust,
+    or a copy into /usr/local/share/ca-certificates or /etc/pki/ca-trust/source/anchors.'
+  source: [process]
+  false_positives: 'Administrators, base images and proxy agents that deploy a company CA. Silent: it adds risk, an attacker installs
+    a CA to intercept traffic.'
+  references: ['https://attack.mitre.org/techniques/T1553/004/']

@@ -1,0 +1,53 @@
+docs:
+- id: phys
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: dd.exe
+      executable: C:\Windows\System32\dd.exe
+      command_line: dd.exe if=\\.\PhysicalDrive0 of=D:\disk.img
+      parent: {name: explorer.exe}
+- id: shadow
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c copy \\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\Windows\NTDS\ntds.dit C:\t
+      parent: {name: explorer.exe}
+- id: raw
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: RawCopy.exe
+      executable: C:\Windows\System32\RawCopy.exe
+      command_line: RawCopy.exe /FileNamePath:C:\Windows\System32\config\SAM /OutputPath:C:\t
+      parent: {name: explorer.exe}
+- id: copy
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c copy a b
+      parent: {name: explorer.exe}

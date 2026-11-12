@@ -1,0 +1,53 @@
+docs:
+- id: sharp
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: SharpGPOAbuse.exe
+      executable: C:\Windows\System32\SharpGPOAbuse.exe
+      command_line: SharpGPOAbuse.exe --AddComputerTask --TaskName x --GPOName "Default Domain Policy"
+      parent: {name: explorer.exe}
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell New-GPOImmediateTask -TaskName x
+      parent: {name: explorer.exe}
+- id: gpupdate
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: gpupdate.exe
+      executable: C:\Windows\System32\gpupdate.exe
+      command_line: gpupdate /force
+      parent: {name: explorer.exe}
+- id: gpmc
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: mmc.exe
+      executable: C:\Windows\System32\mmc.exe
+      command_line: mmc gpmc.msc
+      parent: {name: explorer.exe}

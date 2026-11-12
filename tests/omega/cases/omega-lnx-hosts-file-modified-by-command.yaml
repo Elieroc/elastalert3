@@ -1,0 +1,66 @@
+docs:
+- id: echo
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: bash
+      executable: /usr/bin/bash
+      command_line: bash -c 'echo 1.2.3.4 update.example.com >> /etc/hosts'
+      parent: {name: bash}
+- id: tee
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: tee
+      executable: /usr/bin/tee
+      command_line: tee -a /etc/hosts
+      parent: {name: bash}
+- id: sed
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: sed
+      executable: /usr/bin/sed
+      command_line: sed -i '/example/d' /etc/hosts
+      parent: {name: bash}
+- id: cat
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: cat
+      executable: /usr/bin/cat
+      command_line: cat /etc/hosts
+      parent: {name: bash}
+- id: ping
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: ping
+      executable: /usr/bin/ping
+      command_line: ping -c1 example.com
+      parent: {name: bash}

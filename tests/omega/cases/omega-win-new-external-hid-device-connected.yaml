@@ -1,0 +1,27 @@
+docs:
+- id: kbd
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '6416'}
+    winlog:
+      event_data: {ClassName: Keyboard, DeviceDescription: HID Keyboard Device}
+- id: hid
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '6416'}
+    winlog:
+      event_data: {ClassName: HIDClass, DeviceDescription: HID-compliant mouse}
+- id: disk
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '6416'}
+    winlog:
+      event_data: {ClassName: DiskDrive, DeviceDescription: USB Mass Storage}
+- id: other
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}

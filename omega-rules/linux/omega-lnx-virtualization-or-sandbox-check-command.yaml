@@ -1,0 +1,60 @@
+name: omega-lnx-virtualization-or-sandbox-check-command
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1497.001, T1497]
+risk_score: 8
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - term:
+            process.name: {value: systemd-detect-virt, case_insensitive: true}
+        - term:
+            process.name: {value: virt-what, case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*dmidecode*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*lscpu*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/sys/class/dmi*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*/proc/cpuinfo*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*vmware*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*virtualbox*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*qemu*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*kvm*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*hypervisor*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*xen*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A command that checks whether the host is a virtual machine or a sandbox: dmidecode or lscpu or /sys/class/dmi
+    read and compared with VMware, VirtualBox, QEMU, KVM or Hyper-V, or systemd-detect-virt.'
+  source: [process]
+  false_positives: 'Configuration management and inventory agents that read the virtualization type. Silent: it adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1497/001/']

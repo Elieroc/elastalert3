@@ -1,0 +1,79 @@
+docs:
+- id: aws
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: aws
+      executable: /usr/bin/aws
+      command_line: aws ec2 describe-instances --region eu-west-1
+      parent: {name: bash}
+- id: az
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: az
+      executable: /usr/bin/az
+      command_line: az role assignment list --all
+      parent: {name: bash}
+- id: ssm
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: aws
+      executable: /usr/bin/aws
+      command_line: aws ssm send-command --instance-ids i-0abc
+      parent: {name: bash}
+- id: whoami
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: aws
+      executable: /usr/bin/aws
+      command_line: aws sts get-caller-identity
+      parent: {name: bash}
+- id: version
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: aws
+      executable: /usr/bin/aws
+      command_line: aws --version
+      parent: {name: bash}
+- id: ls
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: ls
+      executable: /usr/bin/ls
+      command_line: ls -la
+      parent: {name: bash}

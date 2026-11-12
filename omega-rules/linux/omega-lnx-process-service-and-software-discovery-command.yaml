@@ -1,0 +1,135 @@
+name: omega-lnx-process-service-and-software-discovery-command
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1057, T1007, T1518]
+risk_score: 3
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - term:
+            process.name: {value: ps, case_insensitive: true}
+        - term:
+            process.name: {value: pgrep, case_insensitive: true}
+        - term:
+            process.name: {value: pstree, case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: systemctl, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* list-units*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* list-unit-files*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* list-timers*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: service, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* --status-all*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: dpkg, case_insensitive: true}
+            - term:
+                process.name: {value: dpkg-query, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -l', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -l *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* --list*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* -w *', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* --get-selections*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: rpm, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -qa*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: apt, case_insensitive: true}
+            - term:
+                process.name: {value: yum, case_insensitive: true}
+            - term:
+                process.name: {value: dnf, case_insensitive: true}
+            - term:
+                process.name: {value: snap, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* list --installed*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* list installed*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* list', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: pip, case_insensitive: true}
+            - term:
+                process.name: {value: pip3, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* list*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* freeze*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 5}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A command that lists running processes, services or installed software: ps, pgrep, pstree, systemctl list-units,
+    service --status-all, dpkg -l, rpm -qa, apt list --installed, pip list, snap list.'
+  source: [process]
+  false_positives: 'Administrators and inventory agents. Tiny risk: the discovery burst rule alerts on many at once.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/linux/process_creation/proc_creation_lnx_susp_process_reading_from_proc_tcp.yml',
+    'https://attack.mitre.org/techniques/T1057/', 'https://attack.mitre.org/techniques/T1007/', 'https://attack.mitre.org/techniques/T1518/']

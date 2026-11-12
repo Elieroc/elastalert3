@@ -3,7 +3,7 @@ type: any
 index: winlogbeat-*,logs-system.security-*
 timestamp_field: '@timestamp'
 priority: 3
-mitre_attack: [T1098, T1078.002]
+mitre_attack: [T1098, T1078.002, T1098.007]
 risk_score: 25
 risk_objects: {host: host.name, user: user.name}
 filter:

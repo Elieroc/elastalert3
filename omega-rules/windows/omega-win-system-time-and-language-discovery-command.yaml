@@ -1,0 +1,101 @@
+name: omega-win-system-time-and-language-discovery-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1124, T1614.001]
+risk_score: 3
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: net.exe, case_insensitive: true}
+            - term:
+                process.name: {value: net1.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* time*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: w32tm.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* /tz*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* /query*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: tzutil.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* /g*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: wmic.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*localdatetime*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*timezone*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*get-timezone*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*get-winsystemlocale*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*get-uiculture*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*get-winuilanguageoverride*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 5}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A command that reads the system time zone, the time of a remote host or the system language: net time, w32tm /tz,
+    tzutil /g, Get-TimeZone, Get-WinSystemLocale, wmic os get localdatetime, chcp. Malware uses them to decide whether to run
+    (language checks, sandbox timing).'
+  source: [process]
+  false_positives: Administrators and scripts that handle dates. Tiny risk.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_susp_sysinfo_discovery.yml',
+    'https://attack.mitre.org/techniques/T1124/', 'https://attack.mitre.org/techniques/T1614/001/']

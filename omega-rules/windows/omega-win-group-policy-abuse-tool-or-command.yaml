@@ -1,0 +1,52 @@
+name: omega-win-group-policy-abuse-tool-or-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1484.001, T1484]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - term:
+            process.name: {value: sharpgpoabuse.exe, case_insensitive: true}
+        - term:
+            process.name: {value: pygpoabuse.exe, case_insensitive: true}
+        - term:
+            process.name: {value: groupolicybackdoor.exe, case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*sharpgpoabuse*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*pygpoabuse*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*--addcomputertask*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*--addusertask*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*--addlocaladmin*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*new-gpoimmediatetask*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*groupolicybackdoor*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [host.name, user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A tool made to abuse Group Policy Objects: SharpGPOAbuse, pyGPOAbuse, GroupPolicyBackdoor, or New-GPOImmediateTask:
+    it pushes a scheduled task, an administrator or a startup script to every machine that applies the GPO.'
+  source: [process]
+  false_positives: 'Almost none: legitimate GPO changes go through the GPMC console and the GroupPolicy module cmdlets, not these
+    tools.'
+  references: ['https://attack.mitre.org/techniques/T1484/001/', 'https://attack.mitre.org/techniques/T1484/']

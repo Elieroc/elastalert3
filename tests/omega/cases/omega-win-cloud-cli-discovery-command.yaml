@@ -1,0 +1,79 @@
+docs:
+- id: aws
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: aws.exe
+      executable: C:\Windows\System32\aws.exe
+      command_line: aws ec2 describe-instances --region eu-west-1
+      parent: {name: explorer.exe}
+- id: az
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c az role assignment list --all
+      parent: {name: explorer.exe}
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell Get-AzResource
+      parent: {name: explorer.exe}
+- id: gcloud
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c gcloud projects list
+      parent: {name: explorer.exe}
+- id: aws-help
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: aws.exe
+      executable: C:\Windows\System32\aws.exe
+      command_line: aws --version
+      parent: {name: explorer.exe}
+- id: dir
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c dir
+      parent: {name: explorer.exe}

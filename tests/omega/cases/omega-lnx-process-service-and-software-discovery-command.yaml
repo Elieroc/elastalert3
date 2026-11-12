@@ -1,0 +1,118 @@
+docs:
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: ps
+      executable: /usr/bin/ps
+      command_line: ps aux
+      parent: {name: bash}
+- id: pgrep
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: pgrep
+      executable: /usr/bin/pgrep
+      command_line: pgrep -a sshd
+      parent: {name: bash}
+- id: units
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: systemctl
+      executable: /usr/bin/systemctl
+      command_line: systemctl list-units --type=service
+      parent: {name: bash}
+- id: dpkg
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: dpkg
+      executable: /usr/bin/dpkg
+      command_line: dpkg -l
+      parent: {name: bash}
+- id: rpm
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: rpm
+      executable: /usr/bin/rpm
+      command_line: rpm -qa
+      parent: {name: bash}
+- id: pip
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: pip3
+      executable: /usr/bin/pip3
+      command_line: pip3 list
+      parent: {name: bash}
+- id: restart
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: systemctl
+      executable: /usr/bin/systemctl
+      command_line: systemctl restart nginx
+      parent: {name: bash}
+- id: install
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: apt
+      executable: /usr/bin/apt
+      command_line: apt install -y curl
+      parent: {name: bash}
+- id: cfg
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: dpkg
+      executable: /usr/bin/dpkg
+      command_line: dpkg --configure -a
+      parent: {name: bash}

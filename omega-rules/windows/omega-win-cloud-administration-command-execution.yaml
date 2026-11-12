@@ -1,0 +1,42 @@
+name: omega-win-cloud-administration-command-execution
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1651, T1059.009]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*aws ssm send-command*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*aws ssm start-session*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*az vm run-command*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*invoke-azvmruncommand*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*az aks command invoke*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*aws ecs execute-command*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*az vm extension set*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*gcloud compute ssh*--command*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 5}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A cloud command line that runs commands on virtual machines or containers through the cloud control plane: aws
+    ssm send-command or start-session, az vm run-command invoke, Invoke-AzVMRunCommand, az aks command invoke, aws ecs execute-command.'
+  source: [process]
+  false_positives: 'Cloud administrators and automation. Silent: it adds risk, an attacker with a stolen key uses these to run
+    code without touching the network.'
+  references: ['https://attack.mitre.org/techniques/T1651/', 'https://attack.mitre.org/techniques/T1059/009/']

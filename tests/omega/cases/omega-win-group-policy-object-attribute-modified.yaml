@@ -1,0 +1,28 @@
+docs:
+- id: gpo
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5136'}
+    winlog:
+      event_data: {ObjectClass: groupPolicyContainer, AttributeLDAPDisplayName: gPCMachineExtensionNames, ObjectDN: 'CN={31B2F340},CN=Policies',
+        SubjectUserName: admin}
+- id: ver
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5136'}
+    winlog:
+      event_data: {ObjectClass: groupPolicyContainer, AttributeLDAPDisplayName: versionNumber, ObjectDN: 'CN={31B2F340},CN=Policies'}
+- id: user
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5136'}
+    winlog:
+      event_data: {ObjectClass: user, AttributeLDAPDisplayName: description}
+- id: other
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}

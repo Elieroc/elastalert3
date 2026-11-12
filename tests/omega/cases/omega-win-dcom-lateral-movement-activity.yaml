@@ -1,0 +1,66 @@
+docs:
+- id: mmc
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd.exe /c whoami
+      parent: {name: mmc.exe, command_line: mmc.exe -Embedding}
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: '[activator]::CreateInstance([type]::GetTypeFromProgID("MMC20.Application","10.0.0.9")).Document.ActiveView.ExecuteShellCommand("cmd")'
+      parent: {name: explorer.exe}
+- id: clsid
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell [type]::GetTypeFromCLSID("9BA05972-F6A8-11CF-A442-00A0C90A8F39","10.0.0.9")
+      parent: {name: explorer.exe}
+- id: mmc-normal
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c dir
+      parent: {name: mmc.exe, command_line: mmc.exe compmgmt.msc}
+- id: ps-plain
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell Get-Date
+      parent: {name: explorer.exe}

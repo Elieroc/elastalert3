@@ -1,0 +1,53 @@
+docs:
+- id: exe
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: invoice.exe
+      executable: C:\Windows\System32\invoice.exe
+      command_line: C:\Users\alice\AppData\Local\Microsoft\Windows\INetCache\Content.Outlook\AB12CD\invoice.exe
+      parent: {name: outlook.exe}
+- id: js
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: wscript.exe
+      executable: C:\Windows\System32\wscript.exe
+      command_line: wscript.exe C:\Users\alice\AppData\Local\Microsoft\Windows\INetCache\Content.Outlook\AB12CD\scan.js
+      parent: {name: outlook.exe}
+- id: docx
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: winword.exe
+      executable: C:\Windows\System32\winword.exe
+      command_line: WINWORD.EXE /n C:\Users\alice\AppData\Local\Microsoft\Windows\INetCache\Content.Outlook\AB12CD\report.docx
+      parent: {name: outlook.exe}
+- id: pdf
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: acrord32.exe
+      executable: C:\Windows\System32\acrord32.exe
+      command_line: AcroRd32.exe C:\Users\alice\AppData\Local\Microsoft\Windows\INetCache\Content.Outlook\AB12CD\invoice.pdf
+      parent: {name: outlook.exe}

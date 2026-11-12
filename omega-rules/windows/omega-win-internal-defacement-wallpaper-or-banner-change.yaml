@@ -1,0 +1,68 @@
+name: omega-win-internal-defacement-wallpaper-or-banner-change
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1491.001, T1491]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: reg.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* add *', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*control panel\\desktop*wallpaper*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*legalnoticetext*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*legalnoticecaption*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*nolockscreen*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*systemparametersinfo*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*set-itemproperty*legalnotice*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*control panel\\desktop*wallpaper*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A command that changes the desktop wallpaper or the logon banner text (reg add of Wallpaper, LegalNoticeText,
+    LegalNoticeCaption, NoLockScreen, or SystemParametersInfo): what ransomware and intruders do to show their message.'
+  source: [process]
+  false_positives: 'Administrators who set a company wallpaper or a legal banner with a script. Silent: it adds risk, and ransomware
+    rules count the encryption and shadow copy deletion.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_reg_desktop_background_changed.yml',
+    'https://attack.mitre.org/techniques/T1491/001/']

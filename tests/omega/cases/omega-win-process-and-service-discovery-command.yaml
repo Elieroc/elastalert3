@@ -1,0 +1,105 @@
+docs:
+- id: tasklist
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: tasklist.exe
+      executable: C:\Windows\System32\tasklist.exe
+      command_line: tasklist /v
+      parent: {name: explorer.exe}
+- id: sc
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: sc.exe
+      executable: C:\Windows\System32\sc.exe
+      command_line: sc query type= service
+      parent: {name: explorer.exe}
+- id: net
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: net.exe
+      executable: C:\Windows\System32\net.exe
+      command_line: net start
+      parent: {name: explorer.exe}
+- id: wmic
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: wmic.exe
+      executable: C:\Windows\System32\wmic.exe
+      command_line: wmic process list brief
+      parent: {name: explorer.exe}
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell Get-Process | Sort CPU
+      parent: {name: explorer.exe}
+- id: sc-cfg
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: sc.exe
+      executable: C:\Windows\System32\sc.exe
+      command_line: sc config spooler start= auto
+      parent: {name: explorer.exe}
+- id: net-use
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: net.exe
+      executable: C:\Windows\System32\net.exe
+      command_line: 'net use Z: \\srv\share'
+      parent: {name: explorer.exe}
+- id: wmic-cpu
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: wmic.exe
+      executable: C:\Windows\System32\wmic.exe
+      command_line: wmic cpu get name
+      parent: {name: explorer.exe}

@@ -1,0 +1,66 @@
+docs:
+- id: wmic
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c wmic computersystem get model | findstr /i "VMware VirtualBox"
+      parent: {name: explorer.exe}
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell (Get-WmiObject Win32_ComputerSystem).Model -match "VMware|VirtualBox"
+      parent: {name: explorer.exe}
+- id: sysinfo
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c systeminfo | findstr /i "vmware"
+      parent: {name: explorer.exe}
+- id: model
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: wmic.exe
+      executable: C:\Windows\System32\wmic.exe
+      command_line: wmic computersystem get model
+      parent: {name: explorer.exe}
+- id: vmware-tools
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: vmtoolsd.exe
+      executable: C:\Windows\System32\vmtoolsd.exe
+      command_line: vmtoolsd.exe -n vmusr
+      parent: {name: explorer.exe}

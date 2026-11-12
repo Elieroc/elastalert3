@@ -1,0 +1,19 @@
+docs:
+- id: b64
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    url: {domain: c2.example.net, original: 'http://c2.example.net/a?d=QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVoQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVoQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVoQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVoQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVoQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVo'}
+- id: short
+  match: false
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    url: {domain: www.example.com, original: 'https://www.example.com/a?q=hello'}
+- id: path
+  match: false
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    url: {domain: www.example.com, original: 'https://www.example.com/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'}

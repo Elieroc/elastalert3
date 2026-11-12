@@ -1,0 +1,27 @@
+name: omega-win-script-or-executable-run-from-mail-attachment-cache
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1566.001, T1204.002, T1204]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- regexp:
+    process.command_line: {value: '.*\\content\.outlook\\[^ "]*\.(exe|scr|js|jse|vbs|vbe|hta|wsf|lnk|iso|jar|bat|cmd|ps1|msi)([^a-zA-Z0-9].*)?',
+      case_insensitive: true}
+realert: {minutes: 30}
+query_key: [host.name, user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A script, a program or a shortcut starts from the Outlook attachment cache (Content.Outlook): the user ran an
+    attachment straight from the mail client instead of saving it first.'
+  source: [process]
+  false_positives: 'Rare: mail programs open documents and PDFs from this folder, not scripts or programs. Installers sent by
+    mail that users run directly (exclude by hash).'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_susp_script_exec_from_temp.yml',
+    'https://attack.mitre.org/techniques/T1566/001/', 'https://attack.mitre.org/techniques/T1204/002/']

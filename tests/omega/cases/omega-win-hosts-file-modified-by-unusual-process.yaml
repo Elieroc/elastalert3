@@ -1,0 +1,37 @@
+docs:
+- id: cmd
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: file, type: creation}
+    file: {path: 'C:\Windows\System32\drivers\etc\hosts', name: hosts, extension: ''}
+    process: {name: cmd.exe}
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: file, type: creation}
+    file: {path: 'C:\Windows\System32\drivers\etc\hosts', name: hosts, extension: ''}
+    process: {name: powershell.exe}
+- id: docker
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: file, type: creation}
+    file: {path: 'C:\Windows\System32\drivers\etc\hosts', name: hosts, extension: ''}
+    process: {name: com.docker.backend.exe}
+- id: other
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: file, type: creation}
+    file: {path: 'C:\Windows\System32\drivers\etc\services', name: services, extension: ''}
+    process: {name: cmd.exe}

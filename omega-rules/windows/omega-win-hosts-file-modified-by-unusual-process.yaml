@@ -1,0 +1,49 @@
+name: omega-win-hosts-file-modified-by-unusual-process
+type: any
+index: logs-endpoint.events.file*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1565.001, T1565]
+risk_score: 12
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: file}
+- terms:
+    event.type: [creation, change]
+- bool:
+    should:
+    - wildcard:
+        file.path: {value: '*\\drivers\\etc\\hosts', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: svchost.exe, case_insensitive: true}
+        - term:
+            process.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: trustedinstaller.exe, case_insensitive: true}
+        - term:
+            process.name: {value: com.docker.backend.exe, case_insensitive: true}
+        - term:
+            process.name: {value: docker desktop installer.exe, case_insensitive: true}
+        - term:
+            process.name: {value: vpnagent.exe, case_insensitive: true}
+        - term:
+            process.name: {value: wslhost.exe, case_insensitive: true}
+        minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [host.name]
+alert: []
+omega:
+  tier: T1
+  description: 'The Windows hosts file is written by a program other than the installers and system services: redirecting names
+    to block security updates or to send users to a fake site.'
+  source: [file]
+  false_positives: 'Developers and administrators who edit the hosts file by hand (with a text editor: exclude it), VPN and container
+    tools. Silent: it adds risk.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/file/file_event/file_event_win_susp_hosts_file_modification.yml',
+    'https://attack.mitre.org/techniques/T1565/001/']

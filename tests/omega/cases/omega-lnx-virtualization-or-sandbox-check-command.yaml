@@ -1,0 +1,66 @@
+docs:
+- id: detect
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: systemd-detect-virt
+      executable: /usr/bin/systemd-detect-virt
+      command_line: systemd-detect-virt
+      parent: {name: bash}
+- id: dmi
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: bash
+      executable: /usr/bin/bash
+      command_line: bash -c 'dmidecode -s system-product-name | grep -i vmware'
+      parent: {name: bash}
+- id: lscpu
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: bash
+      executable: /usr/bin/bash
+      command_line: bash -c 'lscpu | grep -i hypervisor'
+      parent: {name: bash}
+- id: lscpu-plain
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: lscpu
+      executable: /usr/bin/lscpu
+      command_line: lscpu
+      parent: {name: bash}
+- id: uname
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: uname
+      executable: /usr/bin/uname
+      command_line: uname -a
+      parent: {name: bash}

@@ -1,0 +1,53 @@
+docs:
+- id: debug
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: chrome.exe
+      executable: C:\Windows\System32\chrome.exe
+      command_line: chrome.exe --remote-debugging-port=9222 --user-data-dir="C:\Users\alice\AppData\Local\Google\Chrome\User Data"
+      parent: {name: explorer.exe}
+- id: headless
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: msedge.exe
+      executable: C:\Windows\System32\msedge.exe
+      command_line: msedge.exe --headless --remote-debugging-port=9222
+      parent: {name: explorer.exe}
+- id: plain
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: chrome.exe
+      executable: C:\Windows\System32\chrome.exe
+      command_line: chrome.exe --type=renderer
+      parent: {name: explorer.exe}
+- id: debug-only
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: chrome.exe
+      executable: C:\Windows\System32\chrome.exe
+      command_line: chrome.exe --remote-debugging-port=9222
+      parent: {name: explorer.exe}

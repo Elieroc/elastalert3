@@ -1,0 +1,39 @@
+name: omega-fw-fallback-channel-after-blocked-connections
+type: correlation
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1008, T1571]
+risk_score: 15
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- terms:
+    source.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- bool:
+    must:
+    - exists: {field: destination.ip}
+    must_not:
+    - terms:
+        destination.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+query_key: [source.ip, destination.ip]
+timeframe: {minutes: 15}
+realert: {hours: 1}
+correlation_leaves:
+  blocked:
+    num_events: 10
+    filter:
+    - term: {event.type: denied}
+  fallback:
+    filter:
+    - term: {event.type: allowed}
+correlation_query: blocked THEN fallback
+alert: []
+omega:
+  tier: T1
+  description: 'One internal host collects 10 denied connections to a public address, then within 15 minutes the firewall lets
+    it connect to the same address: malware that falls back to another port or protocol when its first channel is blocked.'
+  source: [firewall]
+  false_positives: 'Applications that try several ports (video conferencing, peer-to-peer, VPN clients: exclude the destination).
+    Silent: it adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1008/', 'https://attack.mitre.org/techniques/T1571/']

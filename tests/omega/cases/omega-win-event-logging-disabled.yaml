@@ -1,0 +1,93 @@
+docs:
+- id: wevtutil
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: wevtutil.exe
+      executable: C:\Windows\System32\wevtutil.exe
+      command_line: wevtutil sl Security /e:false
+      parent: {name: explorer.exe}
+- id: auditpol
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: auditpol.exe
+      executable: C:\Windows\System32\auditpol.exe
+      command_line: auditpol /clear /y
+      parent: {name: explorer.exe}
+- id: sc
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: sc.exe
+      executable: C:\Windows\System32\sc.exe
+      command_line: sc config eventlog start= disabled
+      parent: {name: explorer.exe}
+- id: net
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: net.exe
+      executable: C:\Windows\System32\net.exe
+      command_line: net stop eventlog
+      parent: {name: explorer.exe}
+- id: reg
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: reg.exe
+      executable: C:\Windows\System32\reg.exe
+      command_line: reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WINEVT\Channels\Microsoft-Windows-Sysmon/Operational
+        /v Enabled /t REG_DWORD /d 0
+      parent: {name: explorer.exe}
+- id: wevtutil-query
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: wevtutil.exe
+      executable: C:\Windows\System32\wevtutil.exe
+      command_line: wevtutil qe Security /c:5
+      parent: {name: explorer.exe}
+- id: auditpol-get
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: auditpol.exe
+      executable: C:\Windows\System32\auditpol.exe
+      command_line: auditpol /get /category:*
+      parent: {name: explorer.exe}

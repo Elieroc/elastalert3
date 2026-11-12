@@ -1,0 +1,146 @@
+name: omega-win-renamed-system-utility-execution
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1036.003, T1036]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- exists: {field: process.pe.original_file_name}
+- bool:
+    should:
+    - term:
+        process.pe.original_file_name: {value: cmd.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: powershell.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: pwsh.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: rundll32.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: regsvr32.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: mshta.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: certutil.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: wmic.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: msbuild.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: bitsadmin.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: cscript.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: wscript.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: schtasks.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: sc.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: reg.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: installutil.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: regasm.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: regsvcs.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: cmstp.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: msiexec.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: forfiles.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: wevtutil.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: vssadmin.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: netsh.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: nltest.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: whoami.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: psexec.exe, case_insensitive: true}
+    - term:
+        process.pe.original_file_name: {value: curl.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - term:
+            process.name: {value: cmd.exe, case_insensitive: true}
+        - term:
+            process.name: {value: powershell.exe, case_insensitive: true}
+        - term:
+            process.name: {value: pwsh.exe, case_insensitive: true}
+        - term:
+            process.name: {value: rundll32.exe, case_insensitive: true}
+        - term:
+            process.name: {value: regsvr32.exe, case_insensitive: true}
+        - term:
+            process.name: {value: mshta.exe, case_insensitive: true}
+        - term:
+            process.name: {value: certutil.exe, case_insensitive: true}
+        - term:
+            process.name: {value: wmic.exe, case_insensitive: true}
+        - term:
+            process.name: {value: msbuild.exe, case_insensitive: true}
+        - term:
+            process.name: {value: bitsadmin.exe, case_insensitive: true}
+        - term:
+            process.name: {value: cscript.exe, case_insensitive: true}
+        - term:
+            process.name: {value: wscript.exe, case_insensitive: true}
+        - term:
+            process.name: {value: schtasks.exe, case_insensitive: true}
+        - term:
+            process.name: {value: sc.exe, case_insensitive: true}
+        - term:
+            process.name: {value: reg.exe, case_insensitive: true}
+        - term:
+            process.name: {value: installutil.exe, case_insensitive: true}
+        - term:
+            process.name: {value: regasm.exe, case_insensitive: true}
+        - term:
+            process.name: {value: regsvcs.exe, case_insensitive: true}
+        - term:
+            process.name: {value: cmstp.exe, case_insensitive: true}
+        - term:
+            process.name: {value: msiexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: forfiles.exe, case_insensitive: true}
+        - term:
+            process.name: {value: wevtutil.exe, case_insensitive: true}
+        - term:
+            process.name: {value: vssadmin.exe, case_insensitive: true}
+        - term:
+            process.name: {value: netsh.exe, case_insensitive: true}
+        - term:
+            process.name: {value: nltest.exe, case_insensitive: true}
+        - term:
+            process.name: {value: whoami.exe, case_insensitive: true}
+        - term:
+            process.name: {value: psexec.exe, case_insensitive: true}
+        - term:
+            process.name: {value: curl.exe, case_insensitive: true}
+        minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [host.name, process.executable]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A program whose file name is not the name it was built with, for a system utility that attackers copy and rename
+    (cmd, PowerShell, rundll32, regsvr32, mshta, certutil, wmic, MSBuild, bitsadmin, schtasks, psexec...): the original file name
+    in the PE header gives it away.'
+  source: [process]
+  false_positives: Legitimate renamed copies (portable tools, software that bundles a renamed curl or 7-Zip stub; exclude the
+    executable path). Needs the PE original file name (Elastic Defend and Sysmon fill it).
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_renamed_binary.yml',
+    'https://github.com/elastic/detection-rules/blob/main/rules/windows/defense_evasion_masquerading_renamed_autoit.toml', 'https://attack.mitre.org/techniques/T1036/003/']

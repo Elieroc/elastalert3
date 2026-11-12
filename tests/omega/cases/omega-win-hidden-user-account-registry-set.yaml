@@ -1,0 +1,25 @@
+docs:
+- id: hide
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList\support
+      data:
+        strings: ['0x00000000']
+    process: {name: reg.exe}
+- id: winlogon
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\Userinit
+      data:
+        strings: ['C:\Windows\system32\userinit.exe,']
+    process: {name: svchost.exe}

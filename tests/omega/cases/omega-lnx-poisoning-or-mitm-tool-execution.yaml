@@ -1,0 +1,66 @@
+docs:
+- id: arp
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: arpspoof
+      executable: /usr/bin/arpspoof
+      command_line: arpspoof -i eth0 -t 10.0.0.5 10.0.0.1
+      parent: {name: bash}
+- id: responder
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: python3
+      executable: /usr/bin/python3
+      command_line: python3 Responder.py -I eth0
+      parent: {name: bash}
+- id: bettercap
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: bettercap
+      executable: /usr/bin/bettercap
+      command_line: bettercap -iface eth0
+      parent: {name: bash}
+- id: tcpdump
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: tcpdump
+      executable: /usr/bin/tcpdump
+      command_line: tcpdump -i eth0 port 53
+      parent: {name: bash}
+- id: ip
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: ip
+      executable: /usr/bin/ip
+      command_line: ip neigh show
+      parent: {name: bash}

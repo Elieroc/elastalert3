@@ -1,0 +1,31 @@
+name: omega-fw-file-share-read-volume-per-host
+type: metric_aggregation
+index: logs-fortinet_fortigate.log-*,logs-panw.panos-*,logs-cisco_asa.log-*,logs-checkpoint.firewall-*,logs-sophos.xg-*,logs-juniper_srx.log-*,logs-pfsense.log-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1039, T1119]
+risk_score: 15
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.category: network}
+- term: {event.type: allowed}
+- terms:
+    source.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- terms:
+    destination.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+- terms:
+    destination.port: [445, 2049]
+metric_agg_key: destination.bytes
+metric_agg_type: sum
+max_threshold: 2147483648
+query_key: source.ip
+buffer_time: {hours: 1}
+realert: {hours: 6}
+alert: []
+omega:
+  tier: T1
+  description: One internal host reads more than 2 GB from internal file shares (SMB, NFS) within an hour.
+  source: [firewall]
+  false_positives: 'Backups, antivirus and indexing servers, software distribution, users who copy large folders (exclude the
+    host). Silent: it adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1039/', 'https://attack.mitre.org/techniques/T1119/']

@@ -1,0 +1,42 @@
+name: omega-win-removable-media-autorun-or-execution
+type: any
+index: logs-endpoint.events.file*,winlogbeat-*,logs-windows.sysmon_operational-*,logs-endpoint.events.process*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1091]
+risk_score: 10
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- bool:
+    should:
+    - bool:
+        must:
+        - term: {host.os.type: windows}
+        - term: {event.category: file}
+        - terms:
+            event.type: [creation, change]
+        - bool:
+            should:
+            - term:
+                file.name: {value: autorun.inf, case_insensitive: true}
+            minimum_should_match: 1
+        - regexp:
+            file.path: {value: '[d-zD-Z]:\\autorun\.inf', case_insensitive: true}
+    - bool:
+        must:
+        - term: {host.os.type: windows}
+        - term: {event.category: process}
+        - term: {event.type: start}
+        - term: {process.Ext.device.bus_type: usb}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [host.name]
+alert: []
+omega:
+  tier: T1
+  description: An autorun.inf is written at the root of a drive other than C, or a program starts from a removable USB drive (Elastic
+    Defend device bus type).
+  source: [file]
+  false_positives: 'Old installers on CD or USB sticks, software that carries its own autorun. Silent: it adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1091/']

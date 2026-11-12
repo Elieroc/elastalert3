@@ -3,7 +3,7 @@ type: any
 index: logs-squid.log-*,logs-zscaler_zia.web-*
 timestamp_field: '@timestamp'
 priority: 4
-mitre_attack: [T1102, T1567, T1071.001]
+mitre_attack: [T1102, T1567, T1071.001, T1102.002]
 risk_score: 15
 risk_objects: {ip: source.ip, user: user.name}
 filter:

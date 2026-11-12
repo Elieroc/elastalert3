@@ -1,0 +1,100 @@
+name: omega-win-process-and-service-discovery-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1057, T1007]
+risk_score: 3
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - term:
+            process.name: {value: tasklist.exe, case_insensitive: true}
+        - term:
+            process.name: {value: qprocess.exe, case_insensitive: true}
+        - term:
+            process.name: {value: quser.exe, case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: sc.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* query*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* queryex*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: net.exe, case_insensitive: true}
+            - term:
+                process.name: {value: net1.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* start', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* start *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: wmic.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*process*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*service*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*get-process*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*get-service*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*win32_process*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*win32_service*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 5}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A command that lists running processes or services: tasklist, sc query, net start, wmic process or service, Get-Process,
+    Get-Service, qprocess.'
+  source: [process]
+  false_positives: 'Administrators, monitoring and inventory scripts. Tiny risk: it only counts next to other signals (the discovery
+    burst rule alerts on many at once).'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_susp_tasklist.yml',
+    'https://attack.mitre.org/techniques/T1057/', 'https://attack.mitre.org/techniques/T1007/']

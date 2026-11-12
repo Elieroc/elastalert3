@@ -1,0 +1,66 @@
+docs:
+- id: falcon
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: bash
+      executable: /usr/bin/bash
+      command_line: bash -c 'ps aux | grep -i falcon'
+      parent: {name: bash}
+- id: wazuh
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: sh
+      executable: /usr/bin/sh
+      command_line: sh -c "systemctl list-units | grep wazuh"
+      parent: {name: bash}
+- id: auditd
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: grep
+      executable: /usr/bin/grep
+      command_line: grep auditd /var/log/syslog
+      parent: {name: bash}
+- id: status
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: systemctl
+      executable: /usr/bin/systemctl
+      command_line: systemctl status auditd
+      parent: {name: bash}
+- id: grep
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: grep
+      executable: /usr/bin/grep
+      command_line: grep error /var/log/syslog
+      parent: {name: bash}

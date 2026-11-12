@@ -1,0 +1,66 @@
+docs:
+- id: aws
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: aws
+      executable: /usr/bin/aws
+      command_line: aws s3 sync /var/data s3://my-bucket
+      parent: {name: bash}
+- id: gsutil
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: gsutil
+      executable: /usr/bin/gsutil
+      command_line: gsutil cp -r /var/data gs://b
+      parent: {name: bash}
+- id: az
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: az
+      executable: /usr/bin/az
+      command_line: az storage blob upload -f a.zip -c c -n a.zip
+      parent: {name: bash}
+- id: ls
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: aws
+      executable: /usr/bin/aws
+      command_line: aws s3 ls
+      parent: {name: bash}
+- id: download
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: aws
+      executable: /usr/bin/aws
+      command_line: aws s3 cp s3://b/a.txt a.txt
+      parent: {name: bash}

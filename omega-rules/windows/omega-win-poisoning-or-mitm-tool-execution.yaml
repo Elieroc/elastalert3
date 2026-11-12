@@ -1,0 +1,56 @@
+name: omega-win-poisoning-or-mitm-tool-execution
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1557, T1557.001, T1557.002, T1040]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - term:
+            process.name: {value: responder.exe, case_insensitive: true}
+        - term:
+            process.name: {value: inveigh.exe, case_insensitive: true}
+        - term:
+            process.name: {value: mitm6.exe, case_insensitive: true}
+        - term:
+            process.name: {value: bettercap.exe, case_insensitive: true}
+        - term:
+            process.name: {value: ettercap.exe, case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*responder.py*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*invoke-inveigh*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*inveigh.ps1*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*mitm6*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*bettercap*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*ettercap*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [host.name, user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A tool that poisons name resolution or sits between hosts is run: Responder, Inveigh, mitm6, Bettercap, Ettercap,
+    Invoke-Inveigh.'
+  source: [process]
+  false_positives: Authorised penetration tests (exclude the hosts, with an expiry date). Network analysis tools such as Wireshark
+    are not in the list.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_hktl_inveigh.yml',
+    'https://github.com/elastic/detection-rules/blob/main/rules/windows/credential_access_llmnr_nbt_ns_poisoning.toml', 'https://attack.mitre.org/techniques/T1557/001/',
+    'https://attack.mitre.org/techniques/T1557/002/']

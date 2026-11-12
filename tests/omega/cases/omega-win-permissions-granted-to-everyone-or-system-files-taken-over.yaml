@@ -1,0 +1,66 @@
+docs:
+- id: everyone
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: icacls.exe
+      executable: C:\Windows\System32\icacls.exe
+      command_line: icacls C:\Windows\System32\x.dll /grant Everyone:F
+      parent: {name: explorer.exe}
+- id: takeown
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: takeown.exe
+      executable: C:\Windows\System32\takeown.exe
+      command_line: takeown /f C:\Windows\System32\utilman.exe
+      parent: {name: explorer.exe}
+- id: cacls
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cacls.exe
+      executable: C:\Windows\System32\cacls.exe
+      command_line: cacls C:\app /g Everyone:F
+      parent: {name: explorer.exe}
+- id: user
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: icacls.exe
+      executable: C:\Windows\System32\icacls.exe
+      command_line: icacls C:\data /grant alice:(R)
+      parent: {name: explorer.exe}
+- id: query
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: icacls.exe
+      executable: C:\Windows\System32\icacls.exe
+      command_line: icacls C:\data
+      parent: {name: explorer.exe}

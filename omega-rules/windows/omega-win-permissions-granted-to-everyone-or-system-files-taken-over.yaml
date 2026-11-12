@@ -1,0 +1,74 @@
+name: omega-win-permissions-granted-to-everyone-or-system-files-taken-over
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1222.001, T1222]
+risk_score: 12
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: icacls.exe, case_insensitive: true}
+            - term:
+                process.name: {value: cacls.exe, case_insensitive: true}
+            - term:
+                process.name: {value: xcacls.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*everyone:*f*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*everyone:(f)*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*users:(f)*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*authenticated users:(f)*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* /grant:r everyone*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* /g everyone:f*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*everyone:(oi)(ci)f*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: takeown.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*\\windows\\system32*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\windows\\syswow64*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\program files*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* /r *', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A command that gives Everyone, Users or Authenticated Users full control (icacls /grant Everyone:F, cacls /g),
+    or takes ownership of system files (takeown /f on System32, then icacls): a step before replacing a binary or a ransomware
+    preparation.'
+  source: [process]
+  false_positives: 'Installers and administrators who fix permissions on an application folder (exclude the path). Silent: it
+    adds risk.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_icacls_deny.yml',
+    'https://attack.mitre.org/techniques/T1222/001/']

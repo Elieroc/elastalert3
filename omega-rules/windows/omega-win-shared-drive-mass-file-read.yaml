@@ -1,0 +1,41 @@
+name: omega-win-shared-drive-mass-file-read
+type: frequency
+index: winlogbeat-*,logs-system.security-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1039, T1119]
+risk_score: 12
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '5145'}
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            winlog.event_data.ShareName: {value: '*\\IPC$', case_insensitive: true}
+        - wildcard:
+            winlog.event_data.ShareName: {value: '*\\SYSVOL', case_insensitive: true}
+        - wildcard:
+            winlog.event_data.ShareName: {value: '*\\NETLOGON', case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            user.name: {value: '*$', case_insensitive: true}
+        minimum_should_match: 1
+- exists: {field: source.ip}
+num_events: 300
+timeframe: {minutes: 5}
+query_key: [user.name, source.ip]
+realert: {minutes: 30}
+alert: []
+omega:
+  tier: T1
+  description: 'One account reads 300 or more files on network shares within 5 minutes (share access audit 5145 on shares other
+    than IPC$, SYSVOL and NETLOGON): data collection from file servers.'
+  source: [domain controller]
+  false_positives: 'Backup, antivirus and indexing services, file synchronisation clients, and users who open large folders (exclude
+    the service accounts). Silent: it adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1039/', 'https://attack.mitre.org/techniques/T1119/']

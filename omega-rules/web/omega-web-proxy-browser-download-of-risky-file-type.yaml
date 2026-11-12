@@ -1,0 +1,30 @@
+name: omega-web-proxy-browser-download-of-risky-file-type
+type: any
+index: logs-squid.log-*,logs-zscaler_zia.web-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1189, T1204.002, T1204]
+risk_score: 5
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- term: {event.category: web}
+- term: {http.request.method: GET}
+- terms:
+    http.response.status_code: [200, 206]
+- bool:
+    should:
+    - wildcard:
+        user_agent.original: {value: Mozilla/*, case_insensitive: true}
+    minimum_should_match: 1
+- regexp:
+    url.original: {value: '.*\.(iso|img|vhd|vhdx|js|jse|hta|wsf|lnk|scr|chm|msix|appx|appinstaller|one)([?#].*)?', case_insensitive: true}
+realert: {minutes: 30}
+query_key: [source.ip, url.domain]
+alert: []
+omega:
+  tier: T1
+  description: 'A browser downloads a disk image, script, shortcut, help file or app package (iso, img, vhd, js, jse, hta, wsf,
+    lnk, scr, chm, msix, appx, appinstaller, one) through the proxy: the file types used by drive-by and fake-update campaigns.'
+  source: [proxy]
+  false_positives: 'Software distribution (iso, msix) and developers (js files). Silent: it adds a small risk.'
+  references: ['https://attack.mitre.org/techniques/T1189/', 'https://attack.mitre.org/techniques/T1204/002/']

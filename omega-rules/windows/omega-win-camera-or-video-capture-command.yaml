@@ -1,0 +1,36 @@
+name: omega-win-camera-or-video-capture-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1125, T1113]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*ffmpeg*-f dshow*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*ffmpeg*-f gdigrab*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*ffmpeg*-i video=*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*ffmpeg*-f vfwcap*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*windows.media.capture*mediacapture*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A command that records video from a camera or the screen: ffmpeg with dshow, gdigrab or video= devices, or a PowerShell
+    camera capture.'
+  source: [process]
+  false_positives: 'Video conferencing helpers and screen recorders that run ffmpeg in the background (exclude the user). Silent:
+    it adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1125/', 'https://attack.mitre.org/techniques/T1113/']

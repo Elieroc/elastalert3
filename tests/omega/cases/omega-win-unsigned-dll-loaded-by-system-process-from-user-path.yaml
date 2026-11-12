@@ -1,0 +1,45 @@
+docs:
+- id: sideload
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: library}
+    process: {name: svchost.exe}
+    dll:
+      path: C:\ProgramData\evil\version.dll
+      code_signature: {trusted: false}
+- id: user
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: library}
+    process: {name: explorer.exe}
+    dll:
+      path: C:\Users\alice\AppData\Local\Temp\x.dll
+      code_signature: {trusted: false}
+- id: signed
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: library}
+    process: {name: svchost.exe}
+    dll:
+      path: C:\ProgramData\app\ok.dll
+      code_signature: {trusted: true}
+- id: other-proc
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: library}
+    process: {name: app.exe}
+    dll:
+      path: C:\Users\alice\x.dll
+      code_signature: {trusted: false}

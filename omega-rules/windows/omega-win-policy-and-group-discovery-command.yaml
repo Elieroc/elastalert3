@@ -1,0 +1,89 @@
+name: omega-win-policy-and-group-discovery-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1201, T1615, T1069.001, T1069]
+risk_score: 3
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: net.exe, case_insensitive: true}
+            - term:
+                process.name: {value: net1.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* accounts*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* localgroup*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* group*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: whoami.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* /groups*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* /all*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* /priv*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        should:
+        - term:
+            process.name: {value: gpresult.exe, case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*get-gpo*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*get-gpresultantsetofpolicy*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*get-localgroup*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*get-addefaultdomainpasswordpolicy*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*get-adfinegrainedpasswordpolicy*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*get-gpppassword*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 5}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A command that reads the password policy, the group policy result, or the local and domain groups: net accounts,
+    net localgroup, whoami /groups, gpresult, Get-GPO, Get-LocalGroupMember, Get-ADDefaultDomainPasswordPolicy.'
+  source: [process]
+  false_positives: 'Administrators and helpdesk. Tiny risk: it adds up with other discovery signals.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_net_groups_and_accounts_recon.yml',
+    'https://attack.mitre.org/techniques/T1201/', 'https://attack.mitre.org/techniques/T1615/', 'https://attack.mitre.org/techniques/T1069/001/']

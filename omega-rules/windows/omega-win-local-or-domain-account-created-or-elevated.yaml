@@ -3,7 +3,7 @@ type: any
 index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
 timestamp_field: '@timestamp'
 priority: 3
-mitre_attack: [T1136.001, T1098]
+mitre_attack: [T1136.001, T1098, T1136.002]
 risk_score: 25
 risk_objects: {host: host.name, user: user.name}
 filter:

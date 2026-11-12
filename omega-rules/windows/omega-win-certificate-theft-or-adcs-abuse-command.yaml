@@ -1,0 +1,90 @@
+name: omega-win-certificate-theft-or-adcs-abuse-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1649, T1552.004]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        should:
+        - term:
+            process.name: {value: certify.exe, case_insensitive: true}
+        - term:
+            process.name: {value: forgecert.exe, case_insensitive: true}
+        - term:
+            process.name: {value: certipy.exe, case_insensitive: true}
+        - term:
+            process.name: {value: sharpdpapi.exe, case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*certify.exe*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*invoke-certify*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*forgecert*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*certipy *', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*crypto::certificates*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*crypto::capi*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*crypto::cng*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*asktgt*/certificate:*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*/certificate:*/getcredentials*', case_insensitive: true}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: certutil.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -exportpfx*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* /exportpfx*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*export-pfxcertificate*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*export-certificate*cert:*localmachine*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [host.name, user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A tool or command that abuses Active Directory Certificate Services or steals certificates: Certify, Certipy,
+    ForgeCert, certutil -exportPFX, Export-PfxCertificate of a private key, mimikatz crypto::certificates, Rubeus asktgt with
+    /certificate.'
+  source: [process]
+  false_positives: PKI administrators who export certificates on purpose (exclude their accounts). The offensive tool names have
+    no legitimate use.
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/windows/credential_access_adcs_certificate_request.toml',
+    'https://attack.mitre.org/techniques/T1649/', 'https://attack.mitre.org/techniques/T1552/004/']

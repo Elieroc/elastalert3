@@ -1,0 +1,53 @@
+docs:
+- id: pdq
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c whoami
+      parent: {name: PDQDeployRunner-1.exe}
+- id: paexec
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell -c Get-Process
+      parent: {name: PAExec.exe}
+- id: pdq-msi
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: msiexec.exe
+      executable: C:\Windows\System32\msiexec.exe
+      command_line: msiexec /i a.msi /qn
+      parent: {name: PDQDeployRunner-1.exe}
+- id: explorer
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c dir
+      parent: {name: explorer.exe}

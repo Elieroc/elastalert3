@@ -1,0 +1,79 @@
+docs:
+- id: pnp
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: wmic.exe
+      executable: C:\Windows\System32\wmic.exe
+      command_line: wmic path Win32_PnPEntity get name
+      parent: {name: explorer.exe}
+- id: fsutil
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: fsutil.exe
+      executable: C:\Windows\System32\fsutil.exe
+      command_line: fsutil fsinfo drives
+      parent: {name: explorer.exe}
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell Get-PnpDevice
+      parent: {name: explorer.exe}
+- id: hist
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c copy "C:\Users\alice\AppData\Local\Google\Chrome\User Data\Default\History" C:\temp\h
+      parent: {name: explorer.exe}
+- id: wmic-cpu
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: wmic.exe
+      executable: C:\Windows\System32\wmic.exe
+      command_line: wmic cpu get name
+      parent: {name: explorer.exe}
+- id: copy
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c copy a.txt b.txt
+      parent: {name: explorer.exe}

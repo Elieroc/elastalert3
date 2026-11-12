@@ -1,0 +1,42 @@
+name: omega-win-native-api-or-dll-load-in-powershell-script
+type: any
+index: winlogbeat-*,logs-windows.powershell_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1106, T1129]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {event.code: '4104'}
+- bool:
+    should:
+    - wildcard:
+        powershell.file.script_block_text: {value: '*dllimport*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        powershell.file.script_block_text: {value: '*loadlibrary*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*getprocaddress*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*openprocess*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*writeprocessmemory*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*ntcreatethreadex*', case_insensitive: true}
+    - wildcard:
+        powershell.file.script_block_text: {value: '*queueuserapc*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A PowerShell script block declares a native library import (DllImport) and calls LoadLibrary, GetProcAddress,
+    OpenProcess, WriteProcessMemory or NtCreateThreadEx: the script calls the Windows API directly, as injectors and loaders do.'
+  source: [powershell]
+  false_positives: 'Administration scripts that use Add-Type with DllImport for window or session functions. Silent: it adds risk,
+    and the shellcode rule alerts on allocation plus thread creation.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/powershell/powershell_script/posh_ps_win_api_functions_access.yml',
+    'https://attack.mitre.org/techniques/T1106/', 'https://attack.mitre.org/techniques/T1129/']

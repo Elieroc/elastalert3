@@ -1,0 +1,35 @@
+name: omega-lnx-hosts-file-modified-by-command
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1565.001, T1565]
+risk_score: 10
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*>> /etc/hosts*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*> /etc/hosts*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*tee*/etc/hosts*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*sed -i*/etc/hosts*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*cp * /etc/hosts*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A command that appends to or edits /etc/hosts (redirect, tee, sed -i): redirecting names to block security updates
+    or to send users to a fake site.'
+  source: [process]
+  false_positives: 'Administrators, configuration management, cloud-init and container tools. Silent: it adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1565/001/']

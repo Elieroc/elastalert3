@@ -1,0 +1,66 @@
+docs:
+- id: responder
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: python.exe
+      executable: C:\Windows\System32\python.exe
+      command_line: python Responder.py -I eth0 -wd
+      parent: {name: explorer.exe}
+- id: inveigh
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell Invoke-Inveigh -ConsoleOutput Y
+      parent: {name: explorer.exe}
+- id: bettercap
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: bettercap.exe
+      executable: C:\Windows\System32\bettercap.exe
+      command_line: bettercap -iface eth0
+      parent: {name: explorer.exe}
+- id: wireshark
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: wireshark.exe
+      executable: C:\Windows\System32\wireshark.exe
+      command_line: wireshark.exe
+      parent: {name: explorer.exe}
+- id: python
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: python.exe
+      executable: C:\Windows\System32\python.exe
+      command_line: python app.py
+      parent: {name: explorer.exe}

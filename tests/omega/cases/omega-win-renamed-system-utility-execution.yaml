@@ -1,0 +1,84 @@
+docs:
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: svch0st.exe
+      executable: C:\Windows\System32\svch0st.exe
+      command_line: svch0st.exe -enc AAAA
+      parent: {name: explorer.exe}
+      pe: {original_file_name: PowerShell.EXE}
+- id: cmd
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: update.exe
+      executable: C:\Windows\System32\update.exe
+      command_line: update.exe /c whoami
+      parent: {name: explorer.exe}
+      pe: {original_file_name: Cmd.Exe}
+- id: rundll
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: a.exe
+      executable: C:\Windows\System32\a.exe
+      command_line: a.exe x.dll,Run
+      parent: {name: explorer.exe}
+      pe: {original_file_name: RUNDLL32.EXE}
+- id: same
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c dir
+      parent: {name: explorer.exe}
+      pe: {original_file_name: Cmd.Exe}
+- id: ise
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell_ise.exe
+      executable: C:\Windows\System32\powershell_ise.exe
+      command_line: powershell_ise.exe
+      parent: {name: explorer.exe}
+      pe: {original_file_name: PowerShell_ISE.EXE}
+- id: nofield
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: update.exe
+      executable: C:\Windows\System32\update.exe
+      command_line: update.exe
+      parent: {name: explorer.exe}

@@ -1,0 +1,79 @@
+docs:
+- id: view
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: net.exe
+      executable: C:\Windows\System32\net.exe
+      command_line: net view \\srv1
+      parent: {name: explorer.exe}
+- id: share
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: net.exe
+      executable: C:\Windows\System32\net.exe
+      command_line: net share
+      parent: {name: explorer.exe}
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell Get-SmbShare
+      parent: {name: explorer.exe}
+- id: finder
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell Invoke-ShareFinder -CheckShareAccess
+      parent: {name: explorer.exe}
+- id: use
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: net.exe
+      executable: C:\Windows\System32\net.exe
+      command_line: 'net use Z: \\srv\share'
+      parent: {name: explorer.exe}
+- id: user
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: net.exe
+      executable: C:\Windows\System32\net.exe
+      command_line: net user alice
+      parent: {name: explorer.exe}

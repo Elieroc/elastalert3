@@ -1,0 +1,40 @@
+docs:
+- id: dshow
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: ffmpeg.exe
+      executable: C:\Windows\System32\ffmpeg.exe
+      command_line: ffmpeg -f dshow -i video="Integrated Camera" out.mp4
+      parent: {name: explorer.exe}
+- id: gdi
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: ffmpeg.exe
+      executable: C:\Windows\System32\ffmpeg.exe
+      command_line: ffmpeg -f gdigrab -i desktop out.mp4
+      parent: {name: explorer.exe}
+- id: convert
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: ffmpeg.exe
+      executable: C:\Windows\System32\ffmpeg.exe
+      command_line: ffmpeg -i a.mp4 b.avi
+      parent: {name: explorer.exe}

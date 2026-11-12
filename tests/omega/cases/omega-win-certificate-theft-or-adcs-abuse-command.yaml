@@ -1,0 +1,79 @@
+docs:
+- id: certify
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: Certify.exe
+      executable: C:\Windows\System32\Certify.exe
+      command_line: Certify.exe find /vulnerable
+      parent: {name: explorer.exe}
+- id: pfx
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: certutil.exe
+      executable: C:\Windows\System32\certutil.exe
+      command_line: certutil -exportPFX -p pass my C:\temp\a.pfx
+      parent: {name: explorer.exe}
+- id: rubeus
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: Rubeus.exe
+      executable: C:\Windows\System32\Rubeus.exe
+      command_line: Rubeus.exe asktgt /user:bob /certificate:bob.pfx /ptt
+      parent: {name: explorer.exe}
+- id: mimi
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: mimikatz.exe
+      executable: C:\Windows\System32\mimikatz.exe
+      command_line: mimikatz crypto::capi
+      parent: {name: explorer.exe}
+- id: certutil-view
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: certutil.exe
+      executable: C:\Windows\System32\certutil.exe
+      command_line: certutil -store my
+      parent: {name: explorer.exe}
+- id: certreq
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: certreq.exe
+      executable: C:\Windows\System32\certreq.exe
+      command_line: certreq -submit req.req
+      parent: {name: explorer.exe}

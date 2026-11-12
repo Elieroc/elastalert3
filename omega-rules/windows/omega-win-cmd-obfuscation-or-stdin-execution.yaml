@@ -1,0 +1,45 @@
+name: omega-win-cmd-obfuscation-or-stdin-execution
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1059.003, T1027.010]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: cmd.exe, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*/v:on*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*/v:*!*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*^*^*^*^*^*^*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*| cmd*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*|cmd*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*%comspec%*/c*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*%*:~*,*%*:~*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A cmd.exe command line built to hide what it runs: delayed expansion with variables (/v:on), many carets, substring
+    expansion of variables (%x:~1,2%), a command echoed into another cmd, or %COMSPEC% used to start cmd.'
+  source: [process]
+  false_positives: 'Rare in normal use; some batch installers use delayed expansion. Silent: it adds risk.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_cmd_http_appdata.yml',
+    'https://attack.mitre.org/techniques/T1059/003/', 'https://attack.mitre.org/techniques/T1027/010/']

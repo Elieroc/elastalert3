@@ -1,0 +1,53 @@
+docs:
+- id: install
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: sdbinst.exe
+      executable: C:\Windows\System32\sdbinst.exe
+      command_line: sdbinst.exe -q C:\Users\alice\AppData\Local\Temp\fix.sdb
+      parent: {name: explorer.exe}
+- id: install2
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: sdbinst.exe
+      executable: C:\Windows\System32\sdbinst.exe
+      command_line: sdbinst.exe C:\windows\AppPatch\Custom\fix.sdb
+      parent: {name: explorer.exe}
+- id: uninstall
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: sdbinst.exe
+      executable: C:\Windows\System32\sdbinst.exe
+      command_line: sdbinst.exe -u C:\windows\AppPatch\Custom\fix.sdb
+      parent: {name: explorer.exe}
+- id: other
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c dir
+      parent: {name: explorer.exe}

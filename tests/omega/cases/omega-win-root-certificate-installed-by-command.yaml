@@ -1,0 +1,53 @@
+docs:
+- id: certutil
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: certutil.exe
+      executable: C:\Windows\System32\certutil.exe
+      command_line: certutil -addstore -f Root C:\temp\ca.crt
+      parent: {name: explorer.exe}
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell Import-Certificate -FilePath ca.crt -CertStoreLocation Cert:\LocalMachine\Root
+      parent: {name: explorer.exe}
+- id: personal
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: certutil.exe
+      executable: C:\Windows\System32\certutil.exe
+      command_line: certutil -addstore -f My C:\temp\user.crt
+      parent: {name: explorer.exe}
+- id: list
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: certutil.exe
+      executable: C:\Windows\System32\certutil.exe
+      command_line: certutil -store root
+      parent: {name: explorer.exe}

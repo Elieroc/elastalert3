@@ -1,0 +1,29 @@
+name: omega-win-hidden-user-account-registry-set
+type: any
+index: logs-endpoint.events.registry*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1564.002, T1136.001]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: registry}
+- terms:
+    event.type: [change, creation]
+- bool:
+    should:
+    - wildcard:
+        registry.path: {value: '*\\Winlogon\\SpecialAccounts\\UserList\\*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [host.name, registry.path]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'The Winlogon SpecialAccounts\UserList registry key is set: it hides an account from the logon screen, a way to
+    keep a backdoor account out of sight.'
+  source: [registry]
+  false_positives: 'Almost none: hiding service accounts from the logon screen is rare and should be planned.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/registry/registry_set/registry_set_hide_user_account.yml',
+    'https://attack.mitre.org/techniques/T1564/002/']

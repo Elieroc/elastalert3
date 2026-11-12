@@ -1,0 +1,23 @@
+name: omega-web-proxy-encoded-data-in-url-parameter
+type: any
+index: logs-squid.log-*,logs-zscaler_zia.web-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1132.001, T1048.003, T1071.001]
+risk_score: 6
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- term: {event.category: web}
+- regexp:
+    url.original: {value: '.*=[-a-zA-Z0-9+/_]{200,}={0,2}([&#].*)?', case_insensitive: true}
+realert: {minutes: 30}
+query_key: [source.ip, url.domain]
+alert: []
+omega:
+  tier: T1
+  description: 'A proxied request whose URL carries a base64-like value of 200 characters or more in a parameter: standard encoding
+    of stolen data or commands in a plain HTTP channel.'
+  source: [proxy]
+  false_positives: 'Single sign-on tokens, analytics and tracking URLs, signed download links (exclude the domain). Silent: it
+    adds a small risk.'
+  references: ['https://attack.mitre.org/techniques/T1132/001/', 'https://attack.mitre.org/techniques/T1048/003/']

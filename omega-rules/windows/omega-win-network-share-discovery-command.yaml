@@ -1,0 +1,81 @@
+name: omega-win-network-share-discovery-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1135]
+risk_score: 4
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: net.exe, case_insensitive: true}
+            - term:
+                process.name: {value: net1.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* view*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* share', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '* share *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: wmic.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* share*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*get-smbshare*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*win32_share*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*get-netshare*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*invoke-sharefinder*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*find-domainshare*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*invoke-filefinder*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*get-smbconnection*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 5}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A command that lists network shares: net view, net share, wmic share, Get-SmbShare, Win32_Share, or a share-hunting
+    tool function (Invoke-ShareFinder, Find-DomainShare, Invoke-FileFinder).'
+  source: [process]
+  false_positives: Administrators and logon scripts. Tiny risk.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_net_view.yml', 'https://attack.mitre.org/techniques/T1135/']

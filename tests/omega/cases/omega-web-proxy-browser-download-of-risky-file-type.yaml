@@ -1,0 +1,37 @@
+docs:
+- id: iso
+  match: true
+  doc:
+    event: {category: web}
+    http:
+      request: {method: GET}
+      response: {status_code: 200}
+    user_agent: {original: Mozilla/5.0 (Windows NT 10.0) Chrome/126.0}
+    url: {original: 'https://files.example.org/update.iso'}
+- id: hta
+  match: true
+  doc:
+    event: {category: web}
+    http:
+      request: {method: GET}
+      response: {status_code: 200}
+    user_agent: {original: Mozilla/5.0 (Windows NT 10.0) Chrome/126.0}
+    url: {original: 'https://files.example.org/a.hta?x=1'}
+- id: pdf
+  match: false
+  doc:
+    event: {category: web}
+    http:
+      request: {method: GET}
+      response: {status_code: 200}
+    user_agent: {original: Mozilla/5.0 (Windows NT 10.0) Chrome/126.0}
+    url: {original: 'https://files.example.org/a.pdf'}
+- id: curl
+  match: false
+  doc:
+    event: {category: web}
+    http:
+      request: {method: GET}
+      response: {status_code: 200}
+    user_agent: {original: curl/8.7.1}
+    url: {original: 'https://files.example.org/a.iso'}

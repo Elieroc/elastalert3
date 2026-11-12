@@ -1,0 +1,44 @@
+name: omega-lnx-mass-permission-change-on-system-paths
+type: any
+index: logs-endpoint.events.process*,auditbeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1222.002, T1222]
+risk_score: 12
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: linux}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - term:
+        process.name: {value: chmod, case_insensitive: true}
+    - term:
+        process.name: {value: chown, case_insensitive: true}
+    - term:
+        process.name: {value: chattr, case_insensitive: true}
+    - term:
+        process.name: {value: setfacl, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*-r*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*-R*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '* --recursive*', case_insensitive: true}
+    minimum_should_match: 1
+- regexp:
+    process.command_line: {value: '.* /((etc|usr|var|home|bin|sbin|root|boot|lib)([/ ].*)?)?', case_insensitive: true}
+realert: {minutes: 10}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A recursive chmod or chown on a system path (chmod -R 777 /, /etc, /var, /usr, /home; chown -R on /): a ransomware
+    preparation, a sabotage step, or a quick fix that opens the whole system.'
+  source: [process]
+  false_positives: 'Administrators who fix a broken permission with a recursive command. Silent: it adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1222/002/']

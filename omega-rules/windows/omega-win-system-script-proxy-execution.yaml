@@ -1,0 +1,62 @@
+name: omega-win-system-script-proxy-execution
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1216, T1216.001, T1216.002]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*pubprn.vbs*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*script:*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*syncappvpublishingserver*', case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*;*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*n *', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard:
+            process.command_line: {value: '*manage-bde.wsf*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*cl_invocation.ps1*', case_insensitive: true}
+        - wildcard:
+            process.command_line: {value: '*cl_mutexverifiers.ps1*', case_insensitive: true}
+        minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [host.name, user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A signed Windows script is used to run another command: pubprn.vbs with a script: moniker, SyncAppvPublishingServer,
+    manage-bde.wsf, CL_Invocation.ps1 or CL_Mutexverifiers.ps1 (diagnostic script proxies).'
+  source: [process]
+  false_positives: 'Almost none: these scripts are not meant to be run by hand with these arguments.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_lolbin_pubprn.yml',
+    'https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_lolbin_syncappvpublishingserver.yml',
+    'https://attack.mitre.org/techniques/T1216/', 'https://attack.mitre.org/techniques/T1216/001/']

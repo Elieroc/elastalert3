@@ -34,10 +34,10 @@ Silent T1 rules still write their doc to the writeback index with `risk_objects`
 
 | Pack | Rules | Data sources (ECS) | State |
 |---|---|---|---|
-| `linux/` | 122: 52 T0, 66 T1, 4 T2 | Elastic Defend / Auditbeat (process, file, network, DNS lookups), system auth (sshd, sudo, su) | first version |
-| `windows/` | 150: 87 T0, 58 T1, 5 T2 | Elastic Defend / Winlogbeat / Sysmon (process, file, registry, network, DNS, named pipes, WMI), Security and System event logs (4624/4625/4662/4697/4698/4732/4768/4769/5140, 1102, 7045), PowerShell script block logging (4104) | first version |
-| `web/` | 90: 17 T0, 62 T1, 11 T2 | Web access logs (nginx, Apache, Tomcat, IIS, Traefik; ECS `event.category: web`, `url.original`/`url.path`/`url.domain`, `http.request.method`, `http.response.status_code`, `http.request.bytes`, `http.response.body.bytes`, `user_agent.original`, `source.ip`, optional GeoIP `source.geo.*` / `source.as.number` and `user.name`) and forward proxy logs (Squid, Zscaler; source `proxy`) | first version |
-| `firewall/` | 61: 16 T0, 35 T1, 10 T2 | Firewall and IPS logs (Fortinet, Palo Alto, Cisco ASA, Check Point, Sophos, Juniper, pfSense; ECS `event.category` network / intrusion_detection / authentication / configuration, `event.type` allowed or denied, `source.ip`, `destination.ip`, `destination.port`, `network.transport`, `network.bytes`, `source.bytes`, `network.application`, `rule.category`, `observer.name`, `observer.type: firewall`, `user.name`, GeoIP `source.geo.*`) | first version |
+| `linux/` | 134: 54 T0, 76 T1, 4 T2 | Elastic Defend / Auditbeat (process, file, network, DNS lookups), system auth (sshd, sudo, su) | first version |
+| `windows/` | 197: 105 T0, 87 T1, 5 T2 | Elastic Defend / Winlogbeat / Sysmon (process, file, registry, network, DNS, named pipes, WMI), Security and System event logs (4624/4625/4662/4697/4698/4732/4768/4769/5140, 1102, 7045), PowerShell script block logging (4104) | first version |
+| `web/` | 92: 17 T0, 64 T1, 11 T2 | Web access logs (nginx, Apache, Tomcat, IIS, Traefik; ECS `event.category: web`, `url.original`/`url.path`/`url.domain`, `http.request.method`, `http.response.status_code`, `http.request.bytes`, `http.response.body.bytes`, `user_agent.original`, `source.ip`, optional GeoIP `source.geo.*` / `source.as.number` and `user.name`) and forward proxy logs (Squid, Zscaler; source `proxy`) | first version |
+| `firewall/` | 64: 16 T0, 37 T1, 11 T2 | Firewall and IPS logs (Fortinet, Palo Alto, Cisco ASA, Check Point, Sophos, Juniper, pfSense; ECS `event.category` network / intrusion_detection / authentication / configuration, `event.type` allowed or denied, `source.ip`, `destination.ip`, `destination.port`, `network.transport`, `network.bytes`, `source.bytes`, `network.application`, `rule.category`, `observer.name`, `observer.type: firewall`, `user.name`, GeoIP `source.geo.*`) | first version |
 
 Linux covers, with one rule per behaviour and the type of rule that fits it: blacklists of tools and miners
 reverse shells, GTFOBins escapes, persistence (cron, systemd, profile, SSH keys, sudoers, PAM,
@@ -155,3 +155,10 @@ others are benign and must not be hit) and optionally `matches: N`, what the rul
   `message` on configuration events (the wording of the config-tampering rules covers FortiGate and Cisco commands: extend it for other vendors).
 - `omega-fw-dns-to-unlisted-external-resolver` lists public resolvers: put yours in the whitelist. Time windows (`active_hours`, `usual_hours`) default to UTC.
 - The host and risk rules of the three packs can be combined: set the same `risk_object_type` (ip) to add up firewall, web and endpoint alerts on one address.
+
+## ATT&CK coverage
+
+Measured on the `mitre_attack` of every rule against ATT&CK Enterprise v20.0 (active techniques only, revoked and deprecated ones left out):
+152 of 227 techniques (67 %) and 309 of 706 techniques plus sub-techniques (44 %). `python3 tests/omega/coverage.py <pack>` lists, per pack, what the
+Sigma and Elastic sources detect and the pack does not. What stays out of reach with these logs: resource development, pre-compromise reconnaissance,
+firmware and hardware, and most cloud control plane techniques (they need a cloud audit log pack, not endpoint, web or firewall logs).

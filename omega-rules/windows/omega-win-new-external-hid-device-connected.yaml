@@ -1,0 +1,36 @@
+name: omega-win-new-external-hid-device-connected
+type: any
+index: winlogbeat-*,logs-system.security-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1200]
+risk_score: 3
+risk_objects: {host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '6416'}
+- bool:
+    should:
+    - term:
+        winlog.event_data.ClassName: {value: HIDClass, case_insensitive: true}
+    - term:
+        winlog.event_data.ClassName: {value: Keyboard, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.DeviceDescription: {value: '*keyboard*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.DeviceDescription: {value: '*hid*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [host.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A new USB keyboard or other human interface device is plugged in (plug and play audit 6416, class HIDClass or
+    Keyboard): a programmable USB stick that types commands by itself shows up this way.'
+  source: [domain controller]
+  false_positives: 'Every new keyboard, mouse, headset or dock. Silent and tiny: it counts only together with a command run seconds
+    later. Needs the audit of plug and play activity.'
+  references: ['https://attack.mitre.org/techniques/T1200/']

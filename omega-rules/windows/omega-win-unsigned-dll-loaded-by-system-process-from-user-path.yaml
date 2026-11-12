@@ -1,0 +1,58 @@
+name: omega-win-unsigned-dll-loaded-by-system-process-from-user-path
+type: any
+index: logs-endpoint.events.library*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1574.001, T1574, T1129]
+risk_score: 15
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: library}
+- term: {dll.code_signature.trusted: false}
+- bool:
+    should:
+    - wildcard:
+        dll.path: {value: '*\\users\\*', case_insensitive: true}
+    - wildcard:
+        dll.path: {value: '*\\programdata\\*', case_insensitive: true}
+    - wildcard:
+        dll.path: {value: '*\\windows\\temp\\*', case_insensitive: true}
+    - wildcard:
+        dll.path: {value: '*\\appdata\\*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - term:
+        process.name: {value: svchost.exe, case_insensitive: true}
+    - term:
+        process.name: {value: explorer.exe, case_insensitive: true}
+    - term:
+        process.name: {value: services.exe, case_insensitive: true}
+    - term:
+        process.name: {value: spoolsv.exe, case_insensitive: true}
+    - term:
+        process.name: {value: wmiprvse.exe, case_insensitive: true}
+    - term:
+        process.name: {value: lsass.exe, case_insensitive: true}
+    - term:
+        process.name: {value: winlogon.exe, case_insensitive: true}
+    - term:
+        process.name: {value: taskhostw.exe, case_insensitive: true}
+    - term:
+        process.name: {value: dllhost.exe, case_insensitive: true}
+    - term:
+        process.name: {value: searchindexer.exe, case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [host.name, dll.path]
+alert: []
+omega:
+  tier: T1
+  description: 'A system process (svchost, explorer, services, spoolsv, wmiprvse, lsass...) loads a DLL that is not signed from
+    a user-writable folder (Users, ProgramData, Temp): DLL search-order hijacking or side-loading.'
+  source: [library]
+  false_positives: 'Software that installs unsigned plug-ins under ProgramData or the user profile and loads them in shell extensions.
+    Needs library load events (Elastic Defend, Sysmon 7). Silent: it adds risk.'
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/windows/persistence_evasion_dll_sideloading.toml',
+    'https://attack.mitre.org/techniques/T1574/001/']

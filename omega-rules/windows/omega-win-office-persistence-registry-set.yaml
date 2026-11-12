@@ -1,0 +1,33 @@
+name: omega-win-office-persistence-registry-set
+type: any
+index: logs-endpoint.events.registry*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1137, T1137.002, T1137.004]
+risk_score: 75
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: registry}
+- terms:
+    event.type: [change, creation]
+- bool:
+    should:
+    - wildcard:
+        registry.path: {value: '*\\Office test\\Special\\Perf*', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Office\\*\\Word\\Options\\GlobalDotName', case_insensitive: true}
+    - wildcard:
+        registry.path: {value: '*\\Office\\*\\Outlook\\Today\\UserDefinedUrl', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [host.name, registry.path]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A registry change that makes Office load a DLL or a page at start: Office test\Special\Perf, the Word GlobalDotName
+    template, or the Outlook Today home page URL.'
+  source: [registry]
+  false_positives: 'Almost none: these keys are not set by normal installers.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/registry/registry_set/registry_set_office_test_regadd.yml',
+    'https://attack.mitre.org/techniques/T1137/002/', 'https://attack.mitre.org/techniques/T1137/004/']

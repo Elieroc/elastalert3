@@ -1,0 +1,79 @@
+docs:
+- id: netsh
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: netsh.exe
+      executable: C:\Windows\System32\netsh.exe
+      command_line: netsh advfirewall set allprofiles state off
+      parent: {name: explorer.exe}
+- id: old
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: netsh.exe
+      executable: C:\Windows\System32\netsh.exe
+      command_line: netsh firewall set opmode disable
+      parent: {name: explorer.exe}
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+      parent: {name: explorer.exe}
+- id: sc
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: sc.exe
+      executable: C:\Windows\System32\sc.exe
+      command_line: sc stop mpssvc
+      parent: {name: explorer.exe}
+- id: rule
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: netsh.exe
+      executable: C:\Windows\System32\netsh.exe
+      command_line: netsh advfirewall firewall add rule name=web dir=in action=allow protocol=TCP localport=443
+      parent: {name: explorer.exe}
+- id: show
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: netsh.exe
+      executable: C:\Windows\System32\netsh.exe
+      command_line: netsh advfirewall show allprofiles
+      parent: {name: explorer.exe}

@@ -3,7 +3,7 @@ type: any
 index: winlogbeat-*,logs-windows.powershell_operational-*
 timestamp_field: '@timestamp'
 priority: 1
-mitre_attack: [T1620, T1055]
+mitre_attack: [T1620, T1055, T1106]
 risk_score: 80
 risk_objects: {host: host.name, user: user.name}
 filter:

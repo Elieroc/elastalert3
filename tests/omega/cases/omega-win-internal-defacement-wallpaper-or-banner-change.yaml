@@ -1,0 +1,53 @@
+docs:
+- id: wall
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: reg.exe
+      executable: C:\Windows\System32\reg.exe
+      command_line: reg add "HKCU\Control Panel\Desktop" /v Wallpaper /t REG_SZ /d C:\ransom.bmp /f
+      parent: {name: explorer.exe}
+- id: banner
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: reg.exe
+      executable: C:\Windows\System32\reg.exe
+      command_line: reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v LegalNoticeText /d "pay now"
+      parent: {name: explorer.exe}
+- id: spi
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell [SystemParametersInfo]
+      parent: {name: explorer.exe}
+- id: other
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: reg.exe
+      executable: C:\Windows\System32\reg.exe
+      command_line: reg add HKCU\Software\Test /v a /d b
+      parent: {name: explorer.exe}

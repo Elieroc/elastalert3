@@ -1,0 +1,108 @@
+name: omega-win-peripheral-and-browser-data-discovery-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1120, T1217]
+risk_score: 3
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: wmic.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*win32_pnpentity*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*win32_usbhub*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*win32_diskdrive*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*win32_logicaldisk*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*win32_usbcontroller*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: fsutil.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '* fsinfo drives*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*get-pnpdevice*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*win32_usbhub*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*win32_pnpentity*', case_insensitive: true}
+            minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - term:
+                process.name: {value: cmd.exe, case_insensitive: true}
+            - term:
+                process.name: {value: powershell.exe, case_insensitive: true}
+            - term:
+                process.name: {value: pwsh.exe, case_insensitive: true}
+            - term:
+                process.name: {value: sqlite3.exe, case_insensitive: true}
+            - term:
+                process.name: {value: findstr.exe, case_insensitive: true}
+            - term:
+                process.name: {value: xcopy.exe, case_insensitive: true}
+            - term:
+                process.name: {value: copy.exe, case_insensitive: true}
+            - term:
+                process.name: {value: type.exe, case_insensitive: true}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard:
+                process.command_line: {value: '*\\chrome\\user data\\default\\history*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\edge\\user data\\default\\history*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*\\user data\\default\\bookmarks*', case_insensitive: true}
+            - wildcard:
+                process.command_line: {value: '*places.sqlite*', case_insensitive: true}
+            minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 5}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: A command that lists connected devices and disks (wmic PnP, USB hubs, disk drives, fsutil fsinfo drives, Get-PnpDevice),
+    or that reads browser history and bookmarks files from the command line.
+  source: [process]
+  false_positives: Hardware inventory tools and support staff. Tiny risk.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_wmic_recon_hotfix.yml',
+    'https://attack.mitre.org/techniques/T1120/', 'https://attack.mitre.org/techniques/T1217/']

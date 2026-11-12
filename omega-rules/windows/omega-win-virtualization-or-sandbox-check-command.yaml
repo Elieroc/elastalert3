@@ -1,0 +1,55 @@
+name: omega-win-virtualization-or-sandbox-check-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1497.001, T1497]
+risk_score: 12
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*vmware*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*virtualbox*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*vbox*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*qemu*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*hyper-v*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*xen*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*win32_computersystem*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*win32_bios*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*win32_baseboard*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*computersystem*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*systeminfo*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*bios*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A command that checks whether the host is a virtual machine or a sandbox: wmic or Get-CimInstance on Win32_ComputerSystem
+    model and manufacturer, BIOS or baseboard queries for VMware, VirtualBox, QEMU or Hyper-V strings, or systeminfo piped to
+    a findstr on them.'
+  source: [process]
+  false_positives: 'Inventory scripts that read the hardware model. A comparison against VM vendor names in the same command line
+    is the signal. Silent: it adds risk.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_susp_vm_check.yml',
+    'https://attack.mitre.org/techniques/T1497/001/']

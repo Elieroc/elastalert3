@@ -1,0 +1,66 @@
+docs:
+- id: chmod
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: chmod
+      executable: /usr/bin/chmod
+      command_line: chmod -R 777 /
+      parent: {name: bash}
+- id: chown
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: chown
+      executable: /usr/bin/chown
+      command_line: chown -R nobody /etc
+      parent: {name: bash}
+- id: chmod-var
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: chmod
+      executable: /usr/bin/chmod
+      command_line: chmod -R 777 /var/www
+      parent: {name: bash}
+- id: chmod-file
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: chmod
+      executable: /usr/bin/chmod
+      command_line: chmod 644 /etc/hosts
+      parent: {name: bash}
+- id: chmod-app
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: chmod
+      executable: /usr/bin/chmod
+      command_line: chmod -R 755 /opt/app
+      parent: {name: bash}

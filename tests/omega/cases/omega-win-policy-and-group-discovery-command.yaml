@@ -1,0 +1,92 @@
+docs:
+- id: accounts
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: net.exe
+      executable: C:\Windows\System32\net.exe
+      command_line: net accounts
+      parent: {name: explorer.exe}
+- id: lg
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: net.exe
+      executable: C:\Windows\System32\net.exe
+      command_line: net localgroup administrators
+      parent: {name: explorer.exe}
+- id: groups
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: whoami.exe
+      executable: C:\Windows\System32\whoami.exe
+      command_line: whoami /groups
+      parent: {name: explorer.exe}
+- id: gp
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: gpresult.exe
+      executable: C:\Windows\System32\gpresult.exe
+      command_line: gpresult /r
+      parent: {name: explorer.exe}
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell Get-ADDefaultDomainPasswordPolicy
+      parent: {name: explorer.exe}
+- id: user
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: net.exe
+      executable: C:\Windows\System32\net.exe
+      command_line: net user alice
+      parent: {name: explorer.exe}
+- id: who
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: whoami.exe
+      executable: C:\Windows\System32\whoami.exe
+      command_line: whoami
+      parent: {name: explorer.exe}

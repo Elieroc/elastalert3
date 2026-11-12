@@ -1,0 +1,79 @@
+docs:
+- id: nettime
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: net.exe
+      executable: C:\Windows\System32\net.exe
+      command_line: net time \\dc1
+      parent: {name: explorer.exe}
+- id: tz
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: tzutil.exe
+      executable: C:\Windows\System32\tzutil.exe
+      command_line: tzutil /g
+      parent: {name: explorer.exe}
+- id: w32tm
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: w32tm.exe
+      executable: C:\Windows\System32\w32tm.exe
+      command_line: w32tm /tz
+      parent: {name: explorer.exe}
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell Get-WinSystemLocale
+      parent: {name: explorer.exe}
+- id: user
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: net.exe
+      executable: C:\Windows\System32\net.exe
+      command_line: net user alice
+      parent: {name: explorer.exe}
+- id: w32tm-sync
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: w32tm.exe
+      executable: C:\Windows\System32\w32tm.exe
+      command_line: w32tm /resync
+      parent: {name: explorer.exe}

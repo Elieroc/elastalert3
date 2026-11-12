@@ -1,0 +1,49 @@
+docs:
+- id: perf
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_USERS\S-1-5-21-1\Software\Microsoft\Office test\Special\Perf\(Default)
+      data:
+        strings: ['C:\Users\alice\AppData\Local\Temp\a.dll']
+    process: {name: reg.exe}
+- id: dot
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_USERS\S-1-5-21-1\Software\Microsoft\Office\16.0\Word\Options\GlobalDotName
+      data:
+        strings: ['C:\Users\alice\evil.dotm']
+    process: {name: reg.exe}
+- id: today
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_USERS\S-1-5-21-1\Software\Microsoft\Office\16.0\Outlook\Today\UserDefinedUrl
+      data:
+        strings: ['http://evil.example/x.html']
+    process: {name: reg.exe}
+- id: other
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_USERS\S-1-5-21-1\Software\Microsoft\Office\16.0\Word\Options\AutoRecover
+      data:
+        strings: ['1']
+    process: {name: reg.exe}

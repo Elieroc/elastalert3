@@ -1,0 +1,71 @@
+name: omega-win-cloud-cli-discovery-command
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1580, T1526, T1087.004]
+risk_score: 5
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*aws ec2 describe-*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*aws iam list-*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*aws s3 ls*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*aws sts get-caller-identity*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*aws organizations list-*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*aws lambda list-*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*az vm list*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*az account list*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*az ad user list*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*az role assignment list*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*az resource list*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*az group list*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*gcloud compute instances list*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*gcloud projects list*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*gcloud iam service-accounts list*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*get-azvm*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*get-azresource*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*get-azsubscription*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*get-mguser*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*get-azureaduser*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*get-azroleassignment*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*aws iam get-account-authorization-details*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 5}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A cloud command line used to list resources, accounts and roles: aws ec2 describe, aws iam list, aws sts get-caller-identity,
+    az vm list, az role assignment list, gcloud projects list, Get-AzResource, Get-MgUser.'
+  source: [process]
+  false_positives: 'Cloud administrators and DevOps pipelines run these all day (exclude their accounts and hosts). Tiny risk:
+    on a host that never runs cloud tools it is an intruder using a stolen key.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/cloud/aws/cloudtrail/aws_cloudtrail_enum.yml', 'https://attack.mitre.org/techniques/T1580/',
+    'https://attack.mitre.org/techniques/T1526/', 'https://attack.mitre.org/techniques/T1087/004/']

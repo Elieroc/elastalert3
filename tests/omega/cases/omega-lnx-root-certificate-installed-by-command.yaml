@@ -1,0 +1,66 @@
+docs:
+- id: update
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: update-ca-certificates
+      executable: /usr/bin/update-ca-certificates
+      command_line: update-ca-certificates
+      parent: {name: bash}
+- id: trust
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: update-ca-trust
+      executable: /usr/bin/update-ca-trust
+      command_line: update-ca-trust extract
+      parent: {name: bash}
+- id: cp
+  match: true
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: cp
+      executable: /usr/bin/cp
+      command_line: cp evil.crt /usr/local/share/ca-certificates/evil.crt
+      parent: {name: bash}
+- id: ls
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: ls
+      executable: /usr/bin/ls
+      command_line: ls /etc/ssl/certs
+      parent: {name: bash}
+- id: openssl
+  match: false
+  doc:
+    host:
+      os: {type: linux}
+      name: srv1
+    user: {name: eve}
+    event: {category: process, type: start}
+    process:
+      name: openssl
+      executable: /usr/bin/openssl
+      command_line: openssl x509 -in a.crt -text
+      parent: {name: bash}

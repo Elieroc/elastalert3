@@ -1,0 +1,53 @@
+docs:
+- id: ssm
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: aws.exe
+      executable: C:\Windows\System32\aws.exe
+      command_line: aws ssm send-command --instance-ids i-0abc --document-name AWS-RunShellScript
+      parent: {name: explorer.exe}
+- id: az
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: cmd.exe
+      executable: C:\Windows\System32\cmd.exe
+      command_line: cmd /c az vm run-command invoke -g rg -n vm1 --command-id RunShellScript
+      parent: {name: explorer.exe}
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell Invoke-AzVMRunCommand -ResourceGroupName rg -VMName vm1
+      parent: {name: explorer.exe}
+- id: list
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: aws.exe
+      executable: C:\Windows\System32\aws.exe
+      command_line: aws ssm describe-instance-information
+      parent: {name: explorer.exe}
