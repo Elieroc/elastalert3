@@ -1,0 +1,131 @@
+docs:
+- id: hist-1
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /index.php, path: /index.php}
+    '@timestamp': '2025-12-20T09:00:00Z'
+- id: hist-2
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /index.php, path: /index.php}
+    '@timestamp': '2025-12-21T09:01:00Z'
+- id: hist-3
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /index.php, path: /index.php}
+    '@timestamp': '2025-12-22T09:02:00Z'
+- id: hist-4
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /index.php, path: /index.php}
+    '@timestamp': '2025-12-23T09:03:00Z'
+- id: hist-5
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /index.php, path: /index.php}
+    '@timestamp': '2025-12-24T09:04:00Z'
+- id: hist2-1
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /api/save.php, path: /api/save.php}
+    '@timestamp': '2025-12-20T09:00:00Z'
+- id: hist2-2
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /api/save.php, path: /api/save.php}
+    '@timestamp': '2025-12-21T09:01:00Z'
+- id: hist2-3
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /api/save.php, path: /api/save.php}
+    '@timestamp': '2025-12-22T09:02:00Z'
+- id: hist2-4
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /api/save.php, path: /api/save.php}
+    '@timestamp': '2025-12-23T09:03:00Z'
+- id: hist2-5
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /api/save.php, path: /api/save.php}
+    '@timestamp': '2025-12-24T09:04:00Z'
+- id: known
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /index.php, path: /index.php}
+- id: new
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /uploads/new.php, path: /uploads/new.php}
+- id: get
+  doc:
+    url: {path: /other.php, original: /}
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+matches: 1

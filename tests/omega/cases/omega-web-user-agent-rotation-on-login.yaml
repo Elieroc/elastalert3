@@ -1,0 +1,476 @@
+docs:
+- id: pos-1
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: 'Mozilla/5.0 (Windows NT 10.0; rv:100.0) Gecko/20100101 Firefox/100.0'}
+    url: {original: /login}
+- id: pos-2
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: 'Mozilla/5.0 (Windows NT 10.0; rv:101.0) Gecko/20100101 Firefox/101.0'}
+    url: {original: /login}
+- id: pos-3
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: 'Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101 Firefox/102.0'}
+    url: {original: /login}
+- id: pos-4
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: 'Mozilla/5.0 (Windows NT 10.0; rv:103.0) Gecko/20100101 Firefox/103.0'}
+    url: {original: /login}
+- id: pos-5
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: 'Mozilla/5.0 (Windows NT 10.0; rv:104.0) Gecko/20100101 Firefox/104.0'}
+    url: {original: /login}
+- id: pos-6
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: 'Mozilla/5.0 (Windows NT 10.0; rv:105.0) Gecko/20100101 Firefox/105.0'}
+    url: {original: /login}
+- id: pos-7
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: 'Mozilla/5.0 (Windows NT 10.0; rv:106.0) Gecko/20100101 Firefox/106.0'}
+    url: {original: /login}
+- id: pos-8
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: 'Mozilla/5.0 (Windows NT 10.0; rv:107.0) Gecko/20100101 Firefox/107.0'}
+    url: {original: /login}
+- id: pos-9
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: 'Mozilla/5.0 (Windows NT 10.0; rv:108.0) Gecko/20100101 Firefox/108.0'}
+    url: {original: /login}
+- id: pos-10
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: 'Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/109.0'}
+    url: {original: /login}
+- id: few-1
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent: {original: UA0}
+    url: {original: /login}
+- id: few-2
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent: {original: UA1}
+    url: {original: /login}
+- id: few-3
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent: {original: UA2}
+    url: {original: /login}
+- id: few-4
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent: {original: UA3}
+    url: {original: /login}
+- id: few-5
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent: {original: UA4}
+    url: {original: /login}
+- id: few-6
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent: {original: UA5}
+    url: {original: /login}
+- id: few-7
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent: {original: UA6}
+    url: {original: /login}
+- id: few-8
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent: {original: UA7}
+    url: {original: /login}
+- id: few-9
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent: {original: UA8}
+    url: {original: /login}
+- id: same-1
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-2
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-3
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-4
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-5
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-6
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-7
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-8
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-9
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-10
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-11
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-12
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-13
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-14
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-15
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-16
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-17
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-18
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-19
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-20
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-21
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-22
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-23
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-24
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-25
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-26
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-27
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-28
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-29
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+- id: same-30
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /login}
+matches: 1
+mappings:
+  source:
+    properties: {ip: {type: ip}}

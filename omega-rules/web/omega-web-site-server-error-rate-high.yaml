@@ -1,0 +1,26 @@
+name: omega-web-site-server-error-rate-high
+type: percentage_match
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1190, T1499.004]
+filter:
+- {term: {event.category: web}}
+match_bucket_filter:
+  range: {http.response.status_code: {gte: 500}}
+max_percentage: 20
+min_denominator: 200
+query_key: host.name
+buffer_time: {minutes: 10}
+realert: {minutes: 30}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'More than 20 % of the answers of a web server, out of at least 200 requests in 10 minutes, are 5xx: the application
+    is failing, under attack, or being crashed by an exploit.'
+  source: [web]
+  false_positives: 'A deployment that breaks a page or a dependency outage: the rule is also an availability signal. Tune the
+    percentage to the site.'
+  references:
+  - https://github.com/elastic/detection-rules/blob/main/rules/cross-platform/reconnaissance_web_server_unusual_spike_in_error_response_codes.toml
+  - https://attack.mitre.org/techniques/T1499/004/

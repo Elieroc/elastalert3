@@ -1,0 +1,59 @@
+docs:
+- id: pma
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /phpmyadmin/index.php}
+- id: es
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /_cat/indices}
+- id: docker
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /containers/json}
+- id: pma-403
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 403}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /phpmyadmin/}
+- id: pma-internal
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.0.0.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /phpmyadmin/}
+- id: home
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+matches: 3

@@ -1,0 +1,51 @@
+docs:
+- id: ps
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: files.example.org, original: 'http://files.example.org/tool.exe'}
+    user_agent: {original: Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.1.19041.4648}
+- id: bits
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: files.example.org, original: 'http://files.example.org/a.zip'}
+    user_agent: {original: Microsoft BITS/7.8}
+- id: curl-zip
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: x.example.org, original: 'https://x.example.org/a.7z'}
+    user_agent: {original: curl/8.7.1}
+- id: ps-gallery
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: www.powershellgallery.com, original: 'https://www.powershellgallery.com/api/v2/'}
+    user_agent: {original: Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.1.19041.4648}
+- id: browser-exe
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: dl.google.com, original: 'https://dl.google.com/chrome/install/ChromeSetup.exe'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+matches: 3

@@ -1,0 +1,88 @@
+name: omega-web-command-injection-payload-in-request
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1190, T1059]
+risk_score: 25
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - range: {http.response.status_code: {gte: 200, lt: 400}}
+    - range: {http.response.status_code: {gte: 500}}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*;id;*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*;id%20*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*|id|*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%3bwhoami*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*;whoami*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*|whoami*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%7cwhoami*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*`whoami`*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%60whoami%60*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*$(whoami)*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%24%28whoami%29*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*;cat%20/etc*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*;cat+/etc*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*|cat%20/etc*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%3bcat%20%2fetc*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*;wget%20http*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*;wget+http*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*;curl%20http*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*;curl+http*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*|wget%20http*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*|curl%20http*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%7cbash*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*|bash*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/bin/sh*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%2fbin%2fsh*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/bin/bash*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%2fbin%2fbash*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*cmd.exe*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*cmd%20/c*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*cmd+/c*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*powershell.exe*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*powershell%20-*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*powershell+-*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*nc%20-e*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*nc+-e*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/dev/tcp/*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%2fdev%2ftcp%2f*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*mkfifo*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*base64%20-d*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*base64+-d*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*${ifs}*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*$%7bifs%7d*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%24%7bifs%7d*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*;sleep%20*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%3bsleep%20*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*;sleep+*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*|sleep%20*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*ping%20-c%20*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*ping+-c+*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*certutil%20-urlcache*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*certutil+-urlcache*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*bitsadmin%20/transfer*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*python%20-c*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*python+-c*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*perl%20-e*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*perl+-e*', case_insensitive: true}}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: Operating system command syntax (;whoami, |bash, $(...), /bin/sh, cmd /c, /dev/tcp, ${IFS}, wget/curl pipes) in
+    the URL of a request that reached the application.
+  source: [web]
+  false_positives: Documentation or code-hosting pages whose URL contains a command line; scanners.
+  references:
+  - https://github.com/elastic/detection-rules/blob/main/rules/cross-platform/persistence_web_server_potential_command_injection.toml
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/webserver_generic/web_win_webshells_in_access_logs.yml
+  - https://attack.mitre.org/techniques/T1190/
+  - https://attack.mitre.org/techniques/T1059/

@@ -1,0 +1,25 @@
+name: omega-web-forbidden-or-unauthorized-burst
+type: frequency
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1595.002, T1083]
+risk_score: 15
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- {terms: {http.response.status_code: [401, 403]}}
+num_events: 60
+timeframe: {minutes: 5}
+query_key: source.ip
+realert: {minutes: 30}
+alert: []
+omega:
+  tier: T1
+  description: 'One source address collects 60 or more 401 or 403 answers within 5 minutes: it is probing for protected resources
+    or testing stolen credentials against an API.'
+  source: [web]
+  false_positives: Broken clients or expired tokens that retry in a loop (exclude the address, fix the client).
+  references:
+  - https://github.com/elastic/detection-rules/blob/main/rules/cross-platform/reconnaissance_web_server_discovery_or_fuzzing_activity.toml
+  - https://attack.mitre.org/techniques/T1595/002/

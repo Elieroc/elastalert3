@@ -1,0 +1,595 @@
+docs:
+- id: pos-1
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: site0.example.com}
+- id: pos-2
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: site1.example.com}
+- id: pos-3
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: site2.example.com}
+- id: pos-4
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: site3.example.com}
+- id: pos-5
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: site4.example.com}
+- id: pos-6
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: site5.example.com}
+- id: pos-7
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: site6.example.com}
+- id: pos-8
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: site7.example.com}
+- id: pos-9
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: site8.example.com}
+- id: pos-10
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: site9.example.com}
+- id: pos-11
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: site10.example.com}
+- id: pos-12
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: site11.example.com}
+- id: pos-13
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: site12.example.com}
+- id: pos-14
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: site13.example.com}
+- id: pos-15
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: site14.example.com}
+- id: few-1
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: h0.example.com}
+- id: few-2
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: h1.example.com}
+- id: few-3
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: h2.example.com}
+- id: few-4
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: h3.example.com}
+- id: few-5
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: h4.example.com}
+- id: few-6
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: h5.example.com}
+- id: few-7
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: h6.example.com}
+- id: few-8
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: h7.example.com}
+- id: few-9
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: h8.example.com}
+- id: few-10
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: h9.example.com}
+- id: few-11
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: h10.example.com}
+- id: few-12
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: h11.example.com}
+- id: few-13
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: h12.example.com}
+- id: few-14
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.4}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: h13.example.com}
+- id: same-1
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-2
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-3
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-4
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-5
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-6
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-7
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-8
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-9
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-10
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-11
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-12
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-13
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-14
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-15
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-16
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-17
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-18
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-19
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-20
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-21
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-22
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-23
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-24
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-25
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-26
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-27
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-28
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-29
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+- id: same-30
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 198.51.100.5}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /, domain: www.example.com}
+matches: 1
+mappings:
+  source:
+    properties: {ip: {type: ip}}

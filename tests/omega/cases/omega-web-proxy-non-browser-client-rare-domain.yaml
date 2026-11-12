@@ -1,0 +1,112 @@
+docs:
+- id: known-1
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: api.vendor.com, original: 'https://www.example.com/'}
+    user_agent: {original: vendor-agent/3.1}
+    '@timestamp': '2025-12-20T09:00:00Z'
+- id: known-2
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: api.vendor.com, original: 'https://www.example.com/'}
+    user_agent: {original: vendor-agent/3.1}
+    '@timestamp': '2025-12-21T09:01:00Z'
+- id: known-3
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: api.vendor.com, original: 'https://www.example.com/'}
+    user_agent: {original: vendor-agent/3.1}
+    '@timestamp': '2025-12-22T09:02:00Z'
+- id: known-4
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: api.vendor.com, original: 'https://www.example.com/'}
+    user_agent: {original: vendor-agent/3.1}
+    '@timestamp': '2025-12-23T09:03:00Z'
+- id: known-5
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: api.vendor.com, original: 'https://www.example.com/'}
+    user_agent: {original: vendor-agent/3.1}
+    '@timestamp': '2025-12-24T09:04:00Z'
+- id: known-6
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: api.vendor.com, original: 'https://www.example.com/'}
+    user_agent: {original: vendor-agent/3.1}
+    '@timestamp': '2025-12-25T09:05:00Z'
+- id: rare-1
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: one-off.example.net, original: 'https://www.example.com/'}
+    user_agent: {original: vendor-agent/3.1}
+    '@timestamp': '2025-12-20T09:00:00Z'
+- id: known
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: api.vendor.com, original: 'https://api.vendor.com/v1'}
+    user_agent: {original: vendor-agent/3.1}
+- id: rare
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: one-off.example.net, original: 'https://one-off.example.net/'}
+    user_agent: {original: vendor-agent/3.1}
+- id: new
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: never-seen.example.io, original: 'https://never-seen.example.io/'}
+    user_agent: {original: Go-http-client/1.1}
+- id: browser
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: brand-new-site.example.org, original: 'https://brand-new-site.example.org/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+matches: 2

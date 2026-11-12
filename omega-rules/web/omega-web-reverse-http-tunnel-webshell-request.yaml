@@ -1,0 +1,35 @@
+name: omega-web-reverse-http-tunnel-webshell-request
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1090, T1572, T1505.003]
+risk_score: 85
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- {term: {http.request.method: POST}}
+- bool:
+    must_not:
+    - {exists: {field: http.request.referrer}}
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*cmd=read*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*cmd=connect*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*cmd=disconnect*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*cmd=forward*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*connect&target*', case_insensitive: true}}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [source.ip]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A POST with the reGeorg/Neo-reGeorg tunnel parameters (cmd=connect, cmd=forward, cmd=read, cmd=disconnect, target
+    and port) and no referrer: a web shell used as a SOCKS tunnel into the network.'
+  source: [web]
+  false_positives: 'Almost none: the parameter set is the tool. Applications with their own cmd=read parameters (exclude the path).'
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/webserver_generic/web_webshell_regeorg.yml
+  - https://attack.mitre.org/techniques/T1090/
+  - https://attack.mitre.org/techniques/T1572/

@@ -1,0 +1,42 @@
+name: omega-web-login-success-off-hours
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1078, T1110]
+risk_score: 10
+risk_objects: {ip: source.ip, host: host.name, user: user.name}
+filter:
+- {term: {event.category: web}}
+- {term: {http.request.method: POST}}
+- {terms: {http.response.status_code: [302, 303]}}
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*/login*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/signin*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/sign-in*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/wp-login.php*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/user/login*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/account/login*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/auth/login*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/session*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/j_security_check*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/admin/login*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/oauth/token*', case_insensitive: true}}
+    minimum_should_match: 1
+active_hours:
+  timezone: UTC
+  windows:
+  - {days: [mon, tue, wed, thu, fri, sat, sun], from: '19:00', to: '07:00'}
+  - {days: [sat, sun], from: '07:00', to: '19:00'}
+realert: {minutes: 30}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: 'A successful login (POST to a login path answered 302 or 303) outside working hours (nights and weekends, UTC
+    by default: edit the time zone and windows to your site).'
+  source: [web]
+  false_positives: Customers and staff in other time zones; this only makes sense for staff portals and admin consoles (narrow
+    the path). Adds a small risk.
+  references: ['https://attack.mitre.org/techniques/T1078/']

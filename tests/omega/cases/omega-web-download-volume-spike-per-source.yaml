@@ -1,0 +1,112 @@
+docs:
+- id: start-1
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 1000}}
+    source: {ip: 198.51.100.9}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T09:10:01Z'
+- id: start2-1
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 1000}}
+    source: {ip: 198.51.100.10}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T09:10:01Z'
+- id: ref-1
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 5000000}}
+    source: {ip: 198.51.100.9}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T09:40:01Z'
+- id: cur-1
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 100000000}}
+    source: {ip: 198.51.100.9}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T10:10:01Z'
+- id: cur-2
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 100000000}}
+    source: {ip: 198.51.100.9}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T10:10:21Z'
+- id: cur-3
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 100000000}}
+    source: {ip: 198.51.100.9}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T10:10:41Z'
+- id: refB-1
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 200000000}}
+    source: {ip: 198.51.100.10}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T09:40:01Z'
+- id: curB-1
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 250000000}}
+    source: {ip: 198.51.100.10}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T10:10:01Z'
+mappings:
+  source:
+    properties: {ip: {type: ip}}
+matches: 1
+daemon: true
+start: '2026-01-01T09:00:00Z'
+end: '2026-01-01T10:30:00Z'

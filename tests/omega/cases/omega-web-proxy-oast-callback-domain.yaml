@@ -1,0 +1,44 @@
+docs:
+- id: oast
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: abc123.oast.pro, original: 'http://abc123.oast.pro/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+- id: bxss
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: x.burpcollaborator.net, original: 'http://x.burpcollaborator.net/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+- id: toast
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: toast.example.com, original: 'https://toast.example.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+- id: normal
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+matches: 2

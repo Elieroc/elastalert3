@@ -1,0 +1,28 @@
+name: omega-web-source-request-spike
+type: spike
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1498, T1595]
+risk_score: 10
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+spike_height: 20
+spike_type: up
+timeframe: {minutes: 1}
+threshold_cur: 300
+threshold_ref: 1
+query_key: source.ip
+use_terms_query: true
+terms_size: 50
+use_keyword_postfix: false
+realert: {minutes: 30}
+alert: []
+omega:
+  tier: T1
+  description: 'The requests of one source address in a minute are at least 20 times those of the minute before, and above 300:
+    a scan or flood that starts abruptly.'
+  source: [web]
+  false_positives: Crawlers that start a run and users of an application that polls (exclude them).
+  references: ['https://attack.mitre.org/techniques/T1595/']

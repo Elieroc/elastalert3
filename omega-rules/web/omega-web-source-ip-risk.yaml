@@ -1,0 +1,18 @@
+name: omega-web-source-ip-risk
+type: risk
+priority: 2
+mitre_attack: []
+risk_threshold: 100
+timeframe: {hours: 6}
+risk_object_type: ip
+min_distinct_rules: 3
+realert: {hours: 12}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'A source address whose web alerts add up to 100 risk points within 6 hours, from at least three different rules
+    (scan, payloads, brute force, exploit, web shell...): one attacker working through the whole web attack chain.'
+  source: [risk]
+  false_positives: Shared NAT, CDN or proxy addresses that many users go through (exclude them on the rules that feed the score).
+    The X-Forwarded-For header must be the client address, not the load balancer.
+  references: ['https://elastalert3.neopipe.fr/ruletypes.html#risk']

@@ -1,0 +1,25 @@
+name: omega-web-bulk-download-per-source
+type: metric_aggregation
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1567, T1213, T1119]
+risk_score: 20
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- range: {http.response.status_code: {gte: 200, lt: 300}}
+metric_agg_key: http.response.body.bytes
+metric_agg_type: sum
+max_threshold: 524288000
+query_key: source.ip
+buffer_time: {minutes: 15}
+realert: {hours: 1}
+alert: []
+omega:
+  tier: T1
+  description: 'One source address downloads more than 500 MB from the site within 15 minutes: scraping, a data dump through the
+    application or an exfiltration channel.'
+  source: [web]
+  false_positives: Software mirrors, CDN origins, backup jobs and large media sites (exclude them or raise the limit).
+  references: ['https://attack.mitre.org/techniques/T1567/', 'https://attack.mitre.org/techniques/T1119/']

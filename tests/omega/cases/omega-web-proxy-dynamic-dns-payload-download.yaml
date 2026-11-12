@@ -1,0 +1,54 @@
+docs:
+- id: exe
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: update.hopto.org, original: 'http://update.hopto.org/setup.exe'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+- id: zip
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: files.duckdns.org, original: 'http://files.duckdns.org/a/b.zip?x=1'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+- id: page
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: files.duckdns.org, original: 'http://files.duckdns.org/index.html'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+- id: normal-exe
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: dl.google.com, original: 'https://dl.google.com/chrome/install/ChromeSetup.exe'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+- id: blocked
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 403}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: update.hopto.org, original: 'http://update.hopto.org/setup.exe'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+matches: 2

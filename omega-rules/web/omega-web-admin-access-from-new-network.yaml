@@ -1,0 +1,50 @@
+name: omega-web-admin-access-from-new-network
+type: new_term
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1078, T1133]
+risk_score: 15
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - range: {http.response.status_code: {gte: 200, lt: 400}}
+    - range: {http.response.status_code: {gte: 500}}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - terms:
+        source.ip:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+        - 127.0.0.0/8
+        - 169.254.0.0/16
+        - ::1
+        - fe80::/10
+        - fc00::/7
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*/admin*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/administrator*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/wp-admin*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/manager/*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/backoffice*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/dashboard/settings*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/console*', case_insensitive: true}}
+    minimum_should_match: 1
+- {exists: {field: source.as.number}}
+fields: [source.as.number]
+terms_window_size: {days: 30}
+use_keyword_postfix: false
+realert: {minutes: 1}
+alert: []
+omega:
+  tier: T1
+  description: 'An administration area is reached from an autonomous system never seen on administration paths in 30 days: a new
+    provider, or an attacker with stolen credentials.'
+  source: [web]
+  false_positives: 'Staff who work from a new provider. Needs source.as.number from the GeoIP enrichment. Silent: adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1078/']

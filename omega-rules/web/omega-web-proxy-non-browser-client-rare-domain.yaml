@@ -1,0 +1,35 @@
+name: omega-web-proxy-non-browser-client-rare-domain
+type: new_term
+index: logs-squid.log-*,logs-zscaler_zia.web-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1071.001, T1568]
+risk_score: 10
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - range: {http.response.status_code: {gte: 200, lt: 400}}
+    - range: {http.response.status_code: {gte: 500}}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard: {user_agent.original: {value: Mozilla/*, case_insensitive: true}}
+        minimum_should_match: 1
+- {exists: {field: url.domain}}
+fields: [url.domain]
+terms_window_size: {days: 30}
+max_occurrences: 1
+use_keyword_postfix: false
+realert: {minutes: 1}
+alert: []
+omega:
+  tier: T1
+  description: 'A program that is not a browser contacts a domain that was seen at most once in 30 days across the whole company:
+    implants talk to infrastructure nobody else uses.'
+  source: [proxy]
+  false_positives: 'New SaaS tools and software updates in their first days. Silent: adds a small risk.'
+  references: ['https://attack.mitre.org/techniques/T1071/001/']

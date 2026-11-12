@@ -1,0 +1,59 @@
+docs:
+- id: site-backup
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 85000000}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /backup/site-backup-2026.zip}
+- id: dump
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 3000000}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /db.sql.gz}
+- id: small
+  doc:
+    url: {original: /backup.zip}
+    http:
+      response: {body: {bytes: 300}, status_code: 200}
+      request: {method: GET}
+    event: {category: web}
+    host: {name: web1}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+- id: release
+  doc:
+    url: {original: /download/release-1.2.3.zip}
+    http:
+      response: {body: {bytes: 52428800}, status_code: 200}
+      request: {method: GET}
+    event: {category: web}
+    host: {name: web1}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+- id: missing
+  doc:
+    url: {original: /backup.zip}
+    http:
+      response: {status_code: 404, body: {bytes: 500000}}
+      request: {method: GET}
+    event: {category: web}
+    host: {name: web1}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+matches: 2

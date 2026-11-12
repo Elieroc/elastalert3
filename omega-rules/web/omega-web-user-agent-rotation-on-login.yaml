@@ -1,0 +1,39 @@
+name: omega-web-user-agent-rotation-on-login
+type: cardinality
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1110.004, T1036]
+risk_score: 20
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- {term: {http.request.method: POST}}
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*/login*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/signin*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/sign-in*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/wp-login.php*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/user/login*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/account/login*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/auth/login*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/session*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/j_security_check*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/admin/login*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/oauth/token*', case_insensitive: true}}
+    minimum_should_match: 1
+cardinality_field: user_agent.original
+max_cardinality: 9
+timeframe: {minutes: 10}
+query_key: source.ip
+realert: {minutes: 30}
+alert: []
+omega:
+  tier: T1
+  description: 'One source address posts to login paths with 10 or more different user agents within 10 minutes: a credential-stuffing
+    tool that rotates its browser identity.'
+  source: [web]
+  false_positives: A corporate proxy or university network where many people log in at once (raise the threshold or exclude the
+    address).
+  references: ['https://attack.mitre.org/techniques/T1110/004/']

@@ -1,0 +1,54 @@
+name: omega-web-script-upload-request
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1505.003, T1190]
+risk_score: 25
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - range: {http.response.status_code: {gte: 200, lt: 400}}
+    - range: {http.response.status_code: {gte: 500}}
+    minimum_should_match: 1
+- bool:
+    should:
+    - bool:
+        must:
+        - {terms: {http.request.method: [POST, PUT]}}
+        - bool:
+            should:
+            - wildcard: {url.original: {value: '*filename=*.php*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*filename=*.phtml*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*filename=*.jsp*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*filename=*.aspx*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*filename=*.asp*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*filename%3d*.php*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*filename%3d*.jsp*', case_insensitive: true}}
+            minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard: {url.original: {value: '*.php%00*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*.php;.jpg*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*.php;.png*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*.asp;.jpg*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*.jsp;.jpg*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*.php.jpg.php*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*.phtml%00*', case_insensitive: true}}
+        minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: A POST or PUT that names a script file as the upload (filename=shell.php, jsp, aspx), or a double extension or
+    null byte trick (.php%00.jpg, .php;.jpg), and reached the application.
+  source: [web]
+  false_positives: 'Admin users who upload PHP themes or plugins through the CMS (exclude them by user or path). Silent: a chain
+    rule watches for the script being executed.'
+  references:
+  - https://github.com/elastic/detection-rules/blob/main/rules/cross-platform/initial_access_file_upload_followed_by_get_request.toml
+  - https://attack.mitre.org/techniques/T1505/003/

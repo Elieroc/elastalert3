@@ -1,0 +1,92 @@
+docs:
+- id: a1
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:00:00Z'
+    rule_name: omega-web-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 203.0.113.5, score: 40}
+- id: a2
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:05:00Z'
+    rule_name: omega-web-b
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 203.0.113.5, score: 30}
+- id: a3
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:10:00Z'
+    rule_name: omega-web-c
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 203.0.113.5, score: 30}
+- id: b1
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:00:00Z'
+    rule_name: omega-web-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 203.0.113.6, score: 80}
+- id: b2
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:05:00Z'
+    rule_name: omega-web-b
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 203.0.113.6, score: 80}
+- id: c1
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:00:00Z'
+    rule_name: omega-web-a
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 203.0.113.7, score: 20}
+- id: c2
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:05:00Z'
+    rule_name: omega-web-b
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 203.0.113.7, score: 20}
+- id: c3
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:10:00Z'
+    rule_name: omega-web-c
+    alert_sent: true
+    risk_objects:
+    - {type: ip, value: 203.0.113.7, score: 20}
+- id: d1
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:00:00Z'
+    rule_name: omega-web-a
+    alert_sent: true
+    risk_objects:
+    - {type: host, value: 203.0.113.8, score: 60}
+- id: d2
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:05:00Z'
+    rule_name: omega-web-b
+    alert_sent: true
+    risk_objects:
+    - {type: host, value: 203.0.113.8, score: 60}
+- id: d3
+  match: true
+  doc:
+    '@timestamp': '2026-01-01T10:10:00Z'
+    rule_name: omega-web-c
+    alert_sent: true
+    risk_objects:
+    - {type: host, value: 203.0.113.8, score: 60}
+matches: 1
+start: '2026-01-01T00:00:00Z'
+end: '2026-01-01T12:00:00Z'

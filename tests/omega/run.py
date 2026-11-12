@@ -1,5 +1,5 @@
 """Runs the omega-rules against test documents in a throwaway Elasticsearch (see omega-rules/README.md for the docker command).
-Usage: python3 run.py ES_URL [--bin PATH] [rule-name ...]
+Usage: python3 run.py ES_URL [--bin PATH] [rule-name ...]   (OMEGA_DEBUG=1 prints the engine log of each case, OMEGA_DEBUG=trace adds the Elasticsearch requests (--es_debug))
 
 tests/omega/cases/<rule-name>.yaml:
   docs:                          # @timestamp is filled in (one per second from 2026-01-01T10:00:00Z) when absent
@@ -7,6 +7,7 @@ tests/omega/cases/<rule-name>.yaml:
   - {id: benign, doc: {process: {name: ls}}}
   start: / end:                  # optional ISO range of the replay (default: 1 h around 2026-01-01T10:00:00Z)
   ignored: N                     # optional: matches that active_hours must drop (counted in the log)
+  daemon: true                   # optional: replay with `--debug --start --end` (segments of buffer_time, for spike_aggregation) instead of test-rule; only `matches` is checked
   matches: 1                     # optional: what the rule type produces (default for `any`/`blacklist`: the number of match: true docs)
 `mappings:` (optional) adds ES field mappings; strings are keyword and `*.ip` fields are ip by default.
 `match: true` docs must be returned by the rule's query and no other doc may be. `matches` is checked on the rule's matches."""
@@ -92,9 +93,25 @@ with tempfile.TemporaryDirectory() as tmp:
             print(f'FAIL {name}: indexing {json.dumps(r)[:300]}')
             failed += 1
             continue
-        out = subprocess.run([bin_, '--config', cfg, 'test-rule', rules[name], '--start', case.get('start', iso(BASE - datetime.timedelta(hours=1))),
-                              '--end', case.get('end', iso(BASE + datetime.timedelta(hours=1))), '--formatted-output'],
+        window = ['--start', case.get('start', iso(BASE - datetime.timedelta(hours=1))), '--end', case.get('end', iso(BASE + datetime.timedelta(hours=1)))]
+        if case.get('daemon'):
+            # The daemon replay (--debug --start --end) cuts the range in `buffer_time` segments: test-rule runs it as one query.
+            out = subprocess.run([bin_, '--config', cfg, '--debug', '--rule', rules[name]] + window, capture_output=True, text=True)
+            ran_lines = [l for l in out.stderr.splitlines() if l.startswith('INFO:elastalert:Ran ')]
+            if out.returncode or not ran_lines:
+                print(f'FAIL {name}: daemon replay: {(out.stderr or out.stdout).strip()[-400:]}')
+                failed += 1
+                continue
+            got = int(ran_lines[-1].split(' query hits')[1].split(', ')[1].split(' matches')[0])
+            bad = [] if got == case.get('matches') else [f'{got} match(es), expected {case.get("matches")}']
+            failed += bool(bad)
+            print(f'{"FAIL" if bad else "ok  "} {name} (daemon replay)' + ''.join(f'\n     {p}' for p in bad))
+            call('DELETE', f'/{index}')
+            continue
+        out = subprocess.run([bin_, '--config', cfg] + (['--es_debug', '--log-level', 'debug'] if os.environ.get('OMEGA_DEBUG') == 'trace' else []) + ['test-rule', rules[name]] + window + ['--formatted-output'],
                              capture_output=True, text=True)
+        if os.environ.get('OMEGA_DEBUG'):
+            print(f'--- {name} stderr:\n{out.stderr[-4000:]}')
         js = [l for l in out.stdout.splitlines() if l.startswith('{') and l.rstrip().endswith('}')]
         if out.returncode or not js:
             print(f'FAIL {name}: test-rule: {(out.stderr or out.stdout).strip()[-400:]}')

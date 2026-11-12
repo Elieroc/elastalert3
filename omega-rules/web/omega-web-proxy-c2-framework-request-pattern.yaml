@@ -1,0 +1,48 @@
+name: omega-web-proxy-c2-framework-request-pattern
+type: any
+index: logs-squid.log-*,logs-zscaler_zia.web-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1071.001, T1105]
+risk_score: 85
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard: {url.original: {value: '*/pwndrop/*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*momyshark\?key=*', case_insensitive: true}}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - term: {user_agent.original: 'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko'}
+        - {term: {http.request.method: POST}}
+        - bool:
+            should:
+            - wildcard: {url.original: {value: '*/admin/get.php', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*/news.php', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*/login/process.php', case_insensitive: true}}
+            minimum_should_match: 1
+    - bool:
+        should:
+        - wildcard: {user_agent.original: {value: '*metasploit rspec*', case_insensitive: true}}
+        - wildcard: {user_agent.original: {value: '*dotdotpwn*', case_insensitive: true}}
+        minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [source.ip]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A proxied request with the default pattern of a command-and-control or staging tool: Empire (its user agent with
+    /admin/get.php, /news.php, /login/process.php), Baby Shark (momyshark?key=), pwndrop (/pwndrop/), Metasploit RSPEC, DotDotPwn.'
+  source: [proxy]
+  false_positives: Almost none. Empire patterns on the default Internet Explorer 11 user agent need the POST method and one of
+    the three URIs.
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/proxy_generic/proxy_hktl_empire_ua_uri_patterns.yml
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/proxy_generic/proxy_hktl_baby_shark_default_agent_url.yml
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/proxy_generic/proxy_pwndrop.yml
+  - https://attack.mitre.org/techniques/T1071/001/

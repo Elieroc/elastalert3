@@ -1,0 +1,73 @@
+name: omega-web-proxy-dynamic-dns-payload-download
+type: any
+index: logs-squid.log-*,logs-zscaler_zia.web-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1105, T1568, T1204.002]
+risk_score: 75
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- {term: {event.category: web}}
+- {term: {http.request.method: GET}}
+- {terms: {http.response.status_code: [200, 206]}}
+- bool:
+    should:
+    - wildcard: {url.domain: {value: '*.hopto.org', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.no-ip.org', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.no-ip.info', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.no-ip.biz', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.no-ip.com', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.noip.com', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.ddns.net', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.ddns.name', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.myftp.org', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.myftp.biz', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.serveblog.net', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.servebeer.com', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.servemp3.com', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.serveftp.com', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.servequake.com', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.servehttp.com', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.servegame.com', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.servepics.com', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.myvnc.com', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.ignorelist.com', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.dlinkddns.com', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.ddns.info', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.mooo.com', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.dyndns.org', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.dyndns.info', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.dyndns.tv', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.dyndns-at-home.com', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.zapto.org', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.webhop.net', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.duckdns.org', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.freeddns.org', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.gotdns.ch', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.3utilities.com', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.bounceme.net', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.sytes.net', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.linkpc.net', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.redirectme.net', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.ddnsking.com', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.x64.me', case_insensitive: true}}
+    - wildcard: {url.domain: {value: '*.strangled.net', case_insensitive: true}}
+    minimum_should_match: 1
+- regexp:
+    url.original:
+      value: .*\.(exe|dll|ps1|bat|cmd|vbs|vbe|js|jse|wsf|hta|msi|jar|scr|lnk|iso|img|zip|rar|7z|docm|xlsm|pptm|rtf|sct)([?#].*)?
+      flags: NONE
+      case_insensitive: true
+realert: {minutes: 30}
+query_key: [source.ip, url.domain]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A proxied client downloads an executable, script, archive or Office macro file from a host under a free dynamic
+    DNS domain (no-ip, duckdns, ddns.net, hopto, zapto...): a payload staged on infrastructure that costs nothing and moves.'
+  source: [proxy]
+  false_positives: Home-lab and small-business sites on dynamic DNS that serve installers (exclude the domain).
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/proxy_generic/proxy_download_susp_dyndns.yml
+  - https://attack.mitre.org/techniques/T1105/
+  - https://attack.mitre.org/techniques/T1568/

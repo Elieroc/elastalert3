@@ -1,0 +1,53 @@
+name: omega-web-upload-then-script-execution
+type: correlation
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1505.003, T1190]
+risk_score: 90
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+query_key: source.ip
+timeframe: {minutes: 10}
+realert: {hours: 1}
+correlation_leaves:
+  upload:
+    filter:
+    - {terms: {http.request.method: [POST, PUT]}}
+    - &id001
+      range: {http.response.status_code: {gte: 200, lt: 300}}
+    - bool:
+        should:
+        - wildcard: {url.original: {value: '*upload*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/media*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/files*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*attachment*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*import*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*avatar*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*filemanager*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*connector*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*filename=*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/api/files*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/wp-admin/async-upload.php*', case_insensitive: true}}
+        minimum_should_match: 1
+  script_request:
+    filter:
+    - *id001
+    - regexp:
+        url.original:
+          value: .*/(uploads?|files?|images?|img|media|static|assets|tmp|cache|attachments?|userfiles|usercontent|user_uploads|storage|public|wp-content/uploads|sites/default/files)/.*\.(php[0-9]?|phtml|phar|jspx?|aspx?|ashx|asmx|cgi)(\?.*)?
+          flags: NONE
+          case_insensitive: true
+correlation_query: upload THEN script_request
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A source address uploads a file (POST or PUT to an upload endpoint, 2xx) and within 10 minutes requests a server-side
+    script from a static or upload directory that answers 2xx: the upload was a web shell.'
+  source: [web]
+  false_positives: A CMS administrator who uploads a plugin then loads a script that the plugin placed in a media directory (exclude
+    the user or path).
+  references:
+  - https://github.com/elastic/detection-rules/blob/main/rules/cross-platform/initial_access_file_upload_followed_by_get_request.toml
+  - https://attack.mitre.org/techniques/T1505/003/

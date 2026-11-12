@@ -1,0 +1,112 @@
+name: omega-web-scripting-client-on-sensitive-path
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 5
+mitre_attack: [T1190, T1592]
+risk_score: 5
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - range: {http.response.status_code: {gte: 200, lt: 400}}
+    - range: {http.response.status_code: {gte: 500}}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - terms:
+        source.ip:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+        - 127.0.0.0/8
+        - 169.254.0.0/16
+        - ::1
+        - fe80::/10
+        - fc00::/7
+- bool:
+    should:
+    - wildcard: {user_agent.original: {value: python-requests*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: python-urllib*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: python-httpx*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: aiohttp*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: curl/*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: wget/*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: go-http-client*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: java/*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: libwww-perl*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: okhttp*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: node-fetch*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: axios/*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: got (*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: ruby*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: php/*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: scrapy*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: httpclient*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: apache-httpclient*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: powershell*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*windowspowershell*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: winhttp*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: postmanruntime*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: insomnia*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: httpie*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: rest-client*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: guzzlehttp*, case_insensitive: true}}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*/admin*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/administrator*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/wp-admin*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/phpmyadmin*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/manager/html*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/actuator*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.env*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.git*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/config*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/backup*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/login*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/api/internal*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/console*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/jenkins*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/solr*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/server-status*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/debug*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/graphql*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/xmlrpc.php*', case_insensitive: true}}
+    minimum_should_match: 1
+exceptions:
+- name: monitoring-and-health-check-agents
+  reason: load balancers, uptime monitors and probes that request many paths with scripting clients
+  match:
+    user_agent.original|startswith:
+    - ELB-HealthChecker
+    - kube-probe
+    - GoogleHC
+    - Amazon-Route53-Health-Check-Service
+    - Pingdom
+    - UptimeRobot
+    - Zabbix
+    - check_http
+    - Nagios
+    - Datadog
+    - StatusCake
+    - Site24x7
+    - NewRelic
+    - Consul
+    - HAProxy
+    - Blackbox Exporter
+    - Prometheus
+    - Elastic-Heartbeat
+realert: {minutes: 30}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: A scripting client (python-requests, curl, wget, Go, Java, perl, PowerShell...) that reached an administration,
+    configuration, login or debug path from outside the private ranges.
+  source: [web]
+  false_positives: API clients and integrations that call admin or login URLs by script (exclude them by address or user agent).
+    Health checkers are already excluded.
+  references: ['https://attack.mitre.org/techniques/T1190/']

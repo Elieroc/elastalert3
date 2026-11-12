@@ -1,0 +1,55 @@
+docs:
+- id: ngrok
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: a1b2.ngrok-free.app, original: 'https://a1b2.ngrok-free.app/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+- id: try
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: quick-fox.trycloudflare.com, original: 'https://quick-fox.trycloudflare.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+- id: bore
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: bore.pub, original: 'http://bore.pub:2200/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+- id: normal
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+- id: similar
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: ngrok.com, original: 'https://ngrok.com/docs'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+matches: 3

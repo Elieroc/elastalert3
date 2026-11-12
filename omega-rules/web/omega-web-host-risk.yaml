@@ -1,0 +1,20 @@
+name: omega-web-host-risk
+type: risk
+priority: 2
+mitre_attack: []
+risk_threshold: 150
+timeframe: {hours: 12}
+risk_object_type: host
+min_distinct_rules: 2
+risk_history: {days: 14}
+risk_ratio: 3
+realert: {hours: 12}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'A web server whose alerts add up to 150 risk points within 12 hours, from at least two different rules, and at
+    least 3 times what is usual for this server over the last 14 days: the server is under a campaign it does not normally see.'
+  source: [risk]
+  false_positives: 'Internet-facing servers are always under noise: the ratio to its own history keeps them quiet. A newly deployed
+    server has no history; the ratio then judges it against zero, so wait a week before trusting it.'
+  references: ['https://elastalert3.neopipe.fr/ruletypes.html#risk']

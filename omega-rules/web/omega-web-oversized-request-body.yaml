@@ -1,0 +1,27 @@
+name: omega-web-oversized-request-body
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 5
+mitre_attack: [T1048, T1190]
+risk_score: 8
+risk_objects: {ip: source.ip, host: host.name, user: user.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - range: {http.response.status_code: {gte: 200, lt: 400}}
+    - range: {http.response.status_code: {gte: 500}}
+    minimum_should_match: 1
+- {terms: {http.request.method: [POST, PUT]}}
+- range: {http.request.body.bytes: {gte: 52428800}}
+realert: {minutes: 30}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: 'A POST or PUT with a body of 50 MB or more that reached the application: a bulk upload, an exfiltration through
+    the site or a resource exhaustion attempt.'
+  source: [web]
+  false_positives: Backup and media upload endpoints (exclude their paths).
+  references: ['https://attack.mitre.org/techniques/T1048/']

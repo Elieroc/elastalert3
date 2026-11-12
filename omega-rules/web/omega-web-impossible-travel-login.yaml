@@ -1,0 +1,28 @@
+name: omega-web-impossible-travel-login
+type: geo_velocity
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1078, T1550.004]
+risk_score: 75
+risk_objects: {user: user.name, ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- range: {http.response.status_code: {gte: 200, lt: 300}}
+- {exists: {field: user.name}}
+query_key: user.name
+geo_field: source.geo.location
+timeframe: {hours: 24}
+max_speed_kmh: 900
+min_distance_km: 300
+geo_include: [source.ip, source.geo.city_name]
+realert: {hours: 1}
+alert: [debug]
+omega:
+  tier: T0
+  description: The same authenticated account is seen in two places too far apart for the time between the requests (faster than
+    900 km/h, over 300 km).
+  source: [web]
+  false_positives: VPN or proxy exits that change country between requests, shared accounts. The GeoIP enrichment must fill source.geo.location
+    and the log must carry user.name.
+  references: ['https://attack.mitre.org/techniques/T1078/']

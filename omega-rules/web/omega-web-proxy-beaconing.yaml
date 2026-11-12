@@ -1,0 +1,25 @@
+name: omega-web-proxy-beaconing
+type: beacon
+index: logs-squid.log-*,logs-zscaler_zia.web-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1071.001, T1573, T1029]
+risk_score: 50
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- {term: {event.category: web}}
+query_key: [source.ip, url.domain]
+timeframe: {hours: 6}
+min_events: 20
+max_jitter: 0.15
+min_interval: {seconds: 30}
+realert: {hours: 6}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'An internal client calls the same site at near-constant intervals (20 or more requests in 6 hours, jitter under
+    15 %, at least 30 s apart): command-and-control beaconing through the proxy.'
+  source: [proxy]
+  false_positives: Update checks, telemetry, mail and chat clients and monitoring agents (exclude the domain or the client). Hence
+    a risk of 50 and not a score of its own.
+  references: ['https://attack.mitre.org/techniques/T1071/001/', 'https://attack.mitre.org/techniques/T1029/']

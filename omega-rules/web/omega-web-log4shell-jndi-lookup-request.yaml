@@ -1,0 +1,92 @@
+name: omega-web-log4shell-jndi-lookup-request
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1190, T1203]
+risk_score: 25
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - range: {http.response.status_code: {gte: 200, lt: 400}}
+    - range: {http.response.status_code: {gte: 500}}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*${jndi:*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*$%7bjndi:*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%24%7bjndi*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%2524%257bjndi*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*${${lower:j}*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*${${upper:j}*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*${::-j}*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*${${::-j}*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*${${env:*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*${base64:*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*${lower:*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*${upper:*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*${env:*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*${sys:*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*${java:*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%24%7benv:*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%24%7bsys:*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*jndi:ldap*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*jndi:rmi*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*jndi:dns*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*${jndi:*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*$%7bjndi:*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*%24%7bjndi*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*%2524%257bjndi*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*${${lower:j}*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*${${upper:j}*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*${::-j}*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*${${::-j}*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*${${env:*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*${base64:*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*${lower:*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*${upper:*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*${env:*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*${sys:*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*${java:*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*%24%7benv:*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*%24%7bsys:*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*jndi:ldap*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*jndi:rmi*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*jndi:dns*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*${jndi:*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*$%7bjndi:*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*%24%7bjndi*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*%2524%257bjndi*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*${${lower:j}*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*${${upper:j}*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*${::-j}*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*${${::-j}*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*${${env:*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*${base64:*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*${lower:*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*${upper:*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*${env:*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*${sys:*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*${java:*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*%24%7benv:*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*%24%7bsys:*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*jndi:ldap*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*jndi:rmi*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*jndi:dns*', case_insensitive: true}}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: A JNDI or other logging-library lookup (${jndi:ldap://..., obfuscated ${${lower:j}ndi...}) in the URL, user agent
+    or referrer of a request that reached the application.
+  source: [web]
+  false_positives: 'Vulnerability scanners and their own test strings. Reaching the application does not mean it is vulnerable:
+    check for an outbound connection from the server.'
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/webserver_generic/web_jndi_exploit.yml
+  - https://github.com/SigmaHQ/sigma/blob/master/rules-emerging-threats/2021/Exploits/CVE-2021-44228/web_cve_2021_44228_log4j.yml
+  - https://attack.mitre.org/techniques/T1190/

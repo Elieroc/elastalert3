@@ -1,0 +1,36 @@
+name: omega-web-unusual-http-method
+type: whitelist
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1190, T1595]
+risk_score: 8
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    must_not:
+    - terms:
+        source.ip:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+        - 127.0.0.0/8
+        - 169.254.0.0/16
+        - ::1
+        - fe80::/10
+        - fc00::/7
+compare_key: http.request.method
+ignore_null: true
+whitelist: [GET, POST, HEAD, OPTIONS, PUT, DELETE, PATCH]
+realert: {minutes: 30}
+query_key: source.ip
+alert: []
+omega:
+  tier: T1
+  description: An HTTP method other than GET, POST, HEAD, OPTIONS, PUT, DELETE or PATCH (TRACE, TRACK, CONNECT, PROPFIND, DEBUG,
+    random strings) from outside the private ranges.
+  source: [web]
+  false_positives: WebDAV and CalDAV services use PROPFIND, REPORT, MKCOL (exclude their paths). A TRACE or CONNECT probe is a
+    scanner.
+  references: ['https://attack.mitre.org/techniques/T1190/']

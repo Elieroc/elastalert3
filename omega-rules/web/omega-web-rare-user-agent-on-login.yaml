@@ -1,0 +1,39 @@
+name: omega-web-rare-user-agent-on-login
+type: new_term
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1110.004, T1036]
+risk_score: 10
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- {term: {http.request.method: POST}}
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*/login*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/signin*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/sign-in*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/wp-login.php*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/user/login*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/account/login*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/auth/login*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/session*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/j_security_check*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/admin/login*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/oauth/token*', case_insensitive: true}}
+    minimum_should_match: 1
+- {exists: {field: user_agent.original}}
+fields: [user_agent.original]
+terms_window_size: {days: 30}
+max_occurrences: 2
+use_keyword_postfix: false
+realert: {minutes: 1}
+alert: []
+omega:
+  tier: T1
+  description: 'A user agent that was seen at most twice in 30 days across the whole site appears on a login request: a custom
+    client or a credential-stuffing tool with its own identity.'
+  source: [web]
+  false_positives: 'A new browser release in the first hours, a new mobile app build. Silent: adds a small risk.'
+  references: ['https://attack.mitre.org/techniques/T1110/004/']

@@ -1,0 +1,28 @@
+name: omega-web-host-stopped-logging
+type: log_loss
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1685, T1070]
+risk_score: 40
+risk_objects: {host: host.name}
+filter:
+- {term: {event.category: web}}
+query_key: host.name
+history: {days: 3}
+resolution: {hours: 1}
+seasonality: hour_of_day
+factor: 1.5
+min_threshold: {hours: 1}
+max_threshold: {hours: 12}
+learn_every: {hours: 6}
+realert: {hours: 4}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'A web server that normally logs requests every hour has been silent for longer than it ever is at that hour: the
+    log shipper or the web server was stopped, the logs were wiped, or the host is down.'
+  source: [web]
+  false_positives: 'Hosts switched off on purpose and quiet sites at night: the rule learns each host pattern over 3 days and
+    never alerts before 1 h of silence. Use flatline for short silences on busy fronts.'
+  references: ['https://attack.mitre.org/techniques/T1070/']

@@ -1,0 +1,24 @@
+name: omega-web-proxy-upload-volume-per-user
+type: metric_aggregation
+index: logs-squid.log-*,logs-zscaler_zia.web-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1567, T1048]
+risk_score: 25
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- {term: {event.category: web}}
+- {terms: {http.request.method: [POST, PUT]}}
+metric_agg_key: http.request.bytes
+metric_agg_type: sum
+max_threshold: 1073741824
+query_key: user.name
+buffer_time: {hours: 1}
+realert: {hours: 6}
+alert: []
+omega:
+  tier: T1
+  description: One user sends more than 1 GB to the Internet through the proxy within an hour.
+  source: [proxy]
+  false_positives: 'Backups, video calls and software publishers (exclude them or raise the limit). Silent: adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1567/', 'https://attack.mitre.org/techniques/T1048/']

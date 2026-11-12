@@ -61,6 +61,10 @@ BENIGN_BASE = {
         'auth': {'host.name': 'win9', 'event.category': 'authentication', 'event.provider': 'Microsoft-Windows-Security-Auditing'},
         'powershell': {'host.os.type': 'windows', 'host.name': 'win9', 'event.category': 'process', 'event.code': '4104'},
     },
+    'web': {
+        'web': {'host.name': 'web9', 'event.category': 'web'},
+        'proxy': {'host.name': 'proxy9', 'event.category': 'web'},
+    },
 }
 
 

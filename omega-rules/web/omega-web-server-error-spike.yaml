@@ -1,0 +1,24 @@
+name: omega-web-server-error-spike
+type: spike
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1190, T1499.004]
+filter:
+- {term: {event.category: web}}
+- range: {http.response.status_code: {gte: 500}}
+spike_height: 5
+spike_type: up
+timeframe: {minutes: 10}
+threshold_cur: 100
+threshold_ref: 1
+query_key: host.name
+realert: {minutes: 30}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'The number of 5xx answers of a web server in 10 minutes is at least 5 times the previous 10 minutes, and above
+    100: something started to break the application (an exploit, a deployment, a dependency).'
+  source: [web]
+  false_positives: A release that breaks a route; confirm with the deployment calendar.
+  references: ['https://attack.mitre.org/techniques/T1499/004/']

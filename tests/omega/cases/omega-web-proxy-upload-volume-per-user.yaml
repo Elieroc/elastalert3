@@ -1,0 +1,170 @@
+docs:
+- id: big-1
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: POST, bytes: 200000000}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: bob}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    '@timestamp': '2026-01-01T10:01:01Z'
+- id: big-2
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: POST, bytes: 200000000}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: bob}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    '@timestamp': '2026-01-01T10:01:21Z'
+- id: big-3
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: POST, bytes: 200000000}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: bob}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    '@timestamp': '2026-01-01T10:01:41Z'
+- id: big-4
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: POST, bytes: 200000000}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: bob}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    '@timestamp': '2026-01-01T10:02:01Z'
+- id: big-5
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: POST, bytes: 200000000}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: bob}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    '@timestamp': '2026-01-01T10:02:21Z'
+- id: big-6
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: POST, bytes: 200000000}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: bob}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    '@timestamp': '2026-01-01T10:02:41Z'
+- id: under-1
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: PUT, bytes: 100000000}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: carol}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    '@timestamp': '2026-01-01T10:01:01Z'
+- id: under-2
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: PUT, bytes: 100000000}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: carol}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    '@timestamp': '2026-01-01T10:01:25Z'
+- id: under-3
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: PUT, bytes: 100000000}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: carol}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    '@timestamp': '2026-01-01T10:01:49Z'
+- id: under-4
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: PUT, bytes: 100000000}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: carol}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    '@timestamp': '2026-01-01T10:02:13Z'
+- id: under-5
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: PUT, bytes: 100000000}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: carol}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    '@timestamp': '2026-01-01T10:02:37Z'
+- id: get-1
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET, bytes: 900000000}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: dave}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    '@timestamp': '2026-01-01T10:01:01Z'
+- id: get-2
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET, bytes: 900000000}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: dave}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    '@timestamp': '2026-01-01T10:01:41Z'
+- id: get-3
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET, bytes: 900000000}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: dave}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    '@timestamp': '2026-01-01T10:02:21Z'
+matches: 1
+mappings:
+  source:
+    properties: {ip: {type: ip}}

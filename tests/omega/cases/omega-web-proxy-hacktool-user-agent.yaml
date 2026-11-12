@@ -1,0 +1,51 @@
+docs:
+- id: sqlmap
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent: {original: 'sqlmap/1.8.2#stable (https://sqlmap.org)'}
+- id: hydra
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent: {original: Mozilla/4.0 (Hydra)}
+- id: nuclei
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent: {original: Nuclei - Open-source project (github.com/projectdiscovery/nuclei)}
+- id: chrome
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent:
+      original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+- id: curl
+  doc:
+    event: {category: web}
+    host: {name: proxy1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.0.20}
+    user: {name: alice}
+    url: {domain: www.example.com, original: 'https://www.example.com/'}
+    user_agent: {original: curl/8.7.1}
+matches: 3

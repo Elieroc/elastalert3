@@ -1,0 +1,98 @@
+name: omega-web-proxy-hacktool-user-agent
+type: any
+index: logs-squid.log-*,logs-zscaler_zia.web-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1595.002, T1210, T1071.001]
+risk_score: 75
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - wildcard: {user_agent.original: {value: sqlmap*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: nikto*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*nikto/*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*nmap scripting engine*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*nmap*nse*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: wfuzz*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*wfuzz/*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: feroxbuster*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: gobuster*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*fuzz faster u fool*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: dirbuster*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*dirbuster*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: dirb*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: dirsearch*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*acunetix*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*nessus*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*openvas*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: wpscan*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*wpscan v*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: nuclei*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*nuclei - open-source*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: masscan*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*zgrab*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*havij*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: commix*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*commix/*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: hydra*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*(hydra)*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*arachni*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: w3af*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*w3af.org*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: skipfish*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*burp*suite*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*zaproxy*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*owasp zap*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*netsparker*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*appscan*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*webinspect*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*qualys*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*jaeles*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*cmsmap*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*joomscan*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*droopescan*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*whatweb*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*recon-ng*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*metasploit*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*sqlninja*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*pangolin*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*sqlmate*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*dotdotpwn*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*morfeus*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*grendel-scan*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*webshag*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*vega/*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*libredtail*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*l9explore*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*l9tcpid*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*wp2shell*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*antsword*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*project vision*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*httpx - fast*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*katana*projectdiscovery*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*projectdiscovery*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*gospider*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*xray/*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*kxss*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*dalfox*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*sqliv*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*nessus*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: mozilla/5.0 zgrab*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*bsqlbf*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*absinthe*', case_insensitive: true}}
+    minimum_should_match: 1
+realert: {hours: 1}
+query_key: [source.ip]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'An internal client goes through the proxy with the user agent of a vulnerability scanner or exploitation tool
+    (sqlmap, nikto, nmap scripting engine, hydra, wfuzz, nuclei, metasploit...): someone attacks an external or internal site
+    from inside.'
+  source: [proxy]
+  false_positives: Authorised penetration tests and security teams (exclude their addresses, with an expiry date).
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/proxy_generic/proxy_ua_hacktool.yml
+  - https://attack.mitre.org/techniques/T1595/002/

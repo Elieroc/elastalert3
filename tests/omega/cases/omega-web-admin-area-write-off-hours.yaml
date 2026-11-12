@@ -1,0 +1,58 @@
+docs:
+- id: night
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /admin/users/create}
+    '@timestamp': '2026-01-01T03:00:00Z'
+- id: weekend
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: DELETE}, response: {status_code: 302}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: '/wp-admin/post.php?action=delete'}
+    '@timestamp': '2026-01-04T12:00:00Z'
+- id: work-hours
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /admin/users/create}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: read
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /admin/users}
+    '@timestamp': '2026-01-01T03:00:00Z'
+- id: login
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 302}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /admin/login}
+    '@timestamp': '2026-01-01T03:00:00Z'
+matches: 3
+start: '2025-12-31T00:00:00Z'
+end: '2026-01-05T00:00:00Z'
+ignored: 1

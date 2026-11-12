@@ -1,0 +1,88 @@
+name: omega-web-out-of-band-callback-domain-in-request
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1190, T1071.001]
+risk_score: 25
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - range: {http.response.status_code: {gte: 200, lt: 400}}
+    - range: {http.response.status_code: {gte: 500}}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*oast.pro*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*oast.me*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*oast.fun*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*oast.live*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*oast.site*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*oast.online*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*interact.sh*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*interactsh*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*burpcollaborator.net*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*oastify.com*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*dnslog.cn*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*dnslog.link*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*ceye.io*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*requestbin.net*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*pipedream.net*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*webhook.site*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*canarytokens.com*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*bxss.me*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*xss.ht*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*oob.sh*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*oast.pro*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*oast.me*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*oast.fun*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*oast.live*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*oast.site*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*oast.online*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*interact.sh*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*interactsh*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*burpcollaborator.net*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*oastify.com*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*dnslog.cn*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*dnslog.link*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*ceye.io*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*requestbin.net*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*pipedream.net*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*webhook.site*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*canarytokens.com*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*bxss.me*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*xss.ht*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*oob.sh*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*oast.pro*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*oast.me*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*oast.fun*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*oast.live*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*oast.site*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*oast.online*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*interact.sh*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*interactsh*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*burpcollaborator.net*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*oastify.com*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*dnslog.cn*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*dnslog.link*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*ceye.io*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*requestbin.net*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*pipedream.net*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*webhook.site*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*canarytokens.com*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*bxss.me*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*xss.ht*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*oob.sh*', case_insensitive: true}}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: 'A callback domain of an out-of-band testing service (interact.sh, oast.*, burpcollaborator, dnslog, ceye, webhook.site,
+    pipedream) in the URL, user agent or referrer: blind injection or SSRF being tested.'
+  source: [web]
+  false_positives: Developers testing webhooks with webhook.site or pipedream URLs in their own parameters; exclude their addresses.
+  references: ['https://github.com/projectdiscovery/interactsh', 'https://attack.mitre.org/techniques/T1190/']

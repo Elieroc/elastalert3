@@ -1,0 +1,49 @@
+name: omega-web-proxy-base64-or-malformed-user-agent
+type: any
+index: logs-squid.log-*,logs-zscaler_zia.web-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1071.001, T1036]
+risk_score: 10
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - wildcard: {user_agent.original: {value: Q2hyb21l*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: QXBwbGVXZWJLaX*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: RGFsdmlr*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: TW96aWxsY*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*=', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: Mozilla *, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: Mozila/*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: ' Mozilla/*', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: user-agent*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: Mozilla/3.0 *, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: Mozilla/2.0 *, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: Mozilla/1.0 *, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '* (compatible;MSIE *', case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: '*.0;Windows NT *', case_insensitive: true}}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard: {url.domain: {value: '*.acrobat.com', case_insensitive: true}}
+        - wildcard: {url.domain: {value: '*.adobe.com', case_insensitive: true}}
+        - wildcard: {url.domain: {value: '*.adobe.io', case_insensitive: true}}
+        minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: 'A proxied request whose user agent is base64 text (Chrome, AppleWebKit, Dalvik, Mozilla encoded), ends with an
+    equal sign, or is a mistyped browser string (Mozilla with a space, Mozila, a leading space): hand-written malware.'
+  source: [proxy]
+  false_positives: 'Rare in-house applications that send encoded identifiers (exclude them). Adobe products are excluded. Silent:
+    adds a small risk.'
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/proxy_generic/proxy_ua_base64_encoded.yml
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/proxy_generic/proxy_ua_susp.yml
+  - https://attack.mitre.org/techniques/T1071/001/

@@ -1,0 +1,28 @@
+name: omega-web-proxy-upload-volume-outlier
+type: outlier
+index: logs-squid.log-*,logs-zscaler_zia.web-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1567, T1048]
+risk_score: 25
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- {term: {event.category: web}}
+- {terms: {http.request.method: [POST, PUT]}}
+query_key: user.name
+metric_agg_key: http.request.bytes
+metric_agg_type: sum
+timeframe: {hours: 24}
+outlier_factor: 20
+min_population: 10
+outlier_reference: median
+realert: {hours: 24}
+alert: []
+omega:
+  tier: T1
+  description: In 24 hours, one user sent at least 20 times the median volume of all the proxy users to the Internet (at least
+    10 users compared).
+  source: [proxy]
+  false_positives: 'Developers, video editors and backup operators send much more than the rest (use peer_field with a department
+    field if you have one, or exclude them). Silent: adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1567/', 'https://attack.mitre.org/techniques/T1048/']

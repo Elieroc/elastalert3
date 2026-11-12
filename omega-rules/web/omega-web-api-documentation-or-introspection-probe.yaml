@@ -1,0 +1,54 @@
+name: omega-web-api-documentation-or-introspection-probe
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 5
+mitre_attack: [T1595, T1590]
+risk_score: 3
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- range: {http.response.status_code: {gte: 200, lt: 300}}
+- bool:
+    must_not:
+    - terms:
+        source.ip:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+        - 127.0.0.0/8
+        - 169.254.0.0/16
+        - ::1
+        - fe80::/10
+        - fc00::/7
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*/swagger.json*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/swagger-ui*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/swagger/index.html*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/openapi.json*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/openapi.yaml*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/v2/api-docs*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/v3/api-docs*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/api-docs*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/redoc*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*__schema*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*introspectionquery*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/graphql\?query={__schema*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/graphiql*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/api/swagger*', case_insensitive: true}}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - wildcard: {user_agent.original: {value: '*Googlebot*'}}
+realert: {hours: 1}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: A request for the API description (swagger, openapi.json, api-docs, redoc) or a GraphQL introspection query that
+    answered 2xx from outside the private ranges.
+  source: [web]
+  false_positives: Developers and API consumers read these pages; public APIs publish them on purpose. A very small risk, useful
+    only together with other signals.
+  references: ['https://attack.mitre.org/techniques/T1595/']

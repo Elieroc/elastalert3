@@ -1,0 +1,58 @@
+name: omega-web-admin-area-write-off-hours
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1078, T1190]
+risk_score: 10
+risk_objects: {ip: source.ip, host: host.name, user: user.name}
+filter:
+- {term: {event.category: web}}
+- {terms: {http.request.method: [POST, PUT, DELETE, PATCH]}}
+- bool:
+    should:
+    - range: {http.response.status_code: {gte: 200, lt: 400}}
+    - range: {http.response.status_code: {gte: 500}}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*/admin*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/administrator*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/wp-admin*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/manager/*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/backoffice*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/dashboard/settings*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/console*', case_insensitive: true}}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard: {url.original: {value: '*/login*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/signin*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/sign-in*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/wp-login.php*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/user/login*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/account/login*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/auth/login*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/session*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/j_security_check*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/admin/login*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/oauth/token*', case_insensitive: true}}
+        minimum_should_match: 1
+active_hours:
+  timezone: UTC
+  windows:
+  - {days: [mon, tue, wed, thu, fri, sat, sun], from: '19:00', to: '07:00'}
+  - {days: [sat, sun], from: '07:00', to: '19:00'}
+realert: {minutes: 30}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: A state-changing request (POST, PUT, DELETE, PATCH) in an administration area that succeeded outside working hours
+    (nights and weekends, UTC by default).
+  source: [web]
+  false_positives: Maintenance windows, on-call administrators and automated jobs (exclude them by user or address). Adds a small
+    risk.
+  references: ['https://attack.mitre.org/techniques/T1078/']

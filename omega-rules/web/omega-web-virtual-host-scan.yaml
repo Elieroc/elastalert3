@@ -1,0 +1,46 @@
+name: omega-web-virtual-host-scan
+type: cardinality
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1595.001, T1590]
+risk_score: 15
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+cardinality_field: url.domain
+max_cardinality: 14
+timeframe: {minutes: 10}
+query_key: source.ip
+realert: {minutes: 30}
+exceptions:
+- name: monitoring-and-health-check-agents
+  reason: load balancers, uptime monitors and probes that request many paths with scripting clients
+  match:
+    user_agent.original|startswith:
+    - ELB-HealthChecker
+    - kube-probe
+    - GoogleHC
+    - Amazon-Route53-Health-Check-Service
+    - Pingdom
+    - UptimeRobot
+    - Zabbix
+    - check_http
+    - Nagios
+    - Datadog
+    - StatusCake
+    - Site24x7
+    - NewRelic
+    - Consul
+    - HAProxy
+    - Blackbox Exporter
+    - Prometheus
+    - Elastic-Heartbeat
+alert: []
+omega:
+  tier: T1
+  description: 'One source address sends requests for 15 or more different Host names (url.domain) within 10 minutes: virtual
+    host brute forcing or a scan of the address space that stumbles on the server.'
+  source: [web]
+  false_positives: CDN, WAF and monitoring services that reach many hosted sites from one address (exclude them).
+  references: ['https://attack.mitre.org/techniques/T1595/001/']

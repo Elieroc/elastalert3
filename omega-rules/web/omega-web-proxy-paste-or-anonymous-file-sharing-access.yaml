@@ -1,0 +1,50 @@
+name: omega-web-proxy-paste-or-anonymous-file-sharing-access
+type: blacklist
+index: logs-squid.log-*,logs-zscaler_zia.web-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1102, T1105, T1567]
+risk_score: 10
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- {term: {event.category: web}}
+compare_key: url.domain
+blacklist:
+- pastebin.com
+- paste.ee
+- hastebin.com
+- ghostbin.co
+- pastetext.net
+- pastebin.pl
+- transfer.sh
+- anonfiles.com
+- file.io
+- temp.sh
+- 0x0.st
+- catbox.moe
+- gofile.io
+- bashupload.com
+- ix.io
+- termbin.com
+- dpaste.com
+- controlc.com
+- rentry.co
+- privatebin.net
+- filebin.net
+- uguu.se
+- paste.rs
+- sprunge.us
+- pastes.io
+realert: {minutes: 30}
+query_key: [source.ip, url.domain]
+alert: []
+omega:
+  tier: T1
+  description: 'A proxied request reaches a paste site or an anonymous file drop (pastebin, paste.ee, transfer.sh, file.io, 0x0.st,
+    catbox, gofile...): used to stage payloads and to carry stolen data out.'
+  source: [proxy]
+  false_positives: 'Developers and support staff who share logs on pastebin. Silent: adds a small risk.'
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/proxy_generic/proxy_raw_paste_service_access.yml
+  - https://attack.mitre.org/techniques/T1102/
+  - https://attack.mitre.org/techniques/T1567/

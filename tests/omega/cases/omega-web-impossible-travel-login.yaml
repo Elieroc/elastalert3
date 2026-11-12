@@ -1,0 +1,75 @@
+docs:
+- id: bob-paris
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source:
+      ip: 203.0.113.7
+      geo: {location: {lat: 48.85, lon: 2.35}}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: bob-sydney
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source:
+      ip: 198.51.100.77
+      geo: {location: {lat: -33.87, lon: 151.21}}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    user: {name: bob}
+    '@timestamp': '2026-01-01T10:30:00Z'
+- id: al-paris
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source:
+      ip: 203.0.113.7
+      geo: {location: {lat: 48.85, lon: 2.35}}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    user: {name: alice}
+    '@timestamp': '2026-01-01T10:00:00Z'
+- id: al-brussels
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source:
+      ip: 203.0.113.7
+      geo: {location: {lat: 50.85, lon: 4.35}}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    user: {name: alice}
+    '@timestamp': '2026-01-01T10:30:00Z'
+- id: no-user
+  doc:
+    source:
+      geo: {location: {lat: 1.0, lon: 1.0}}
+      ip: 203.0.113.7
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+matches: 1
+mappings:
+  source:
+    properties:
+      ip: {type: ip}
+      geo:
+        properties: {location: {type: geo_point}}

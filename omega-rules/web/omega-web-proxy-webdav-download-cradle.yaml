@@ -1,0 +1,28 @@
+name: omega-web-proxy-webdav-download-cradle
+type: any
+index: logs-squid.log-*,logs-zscaler_zia.web-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1105, T1204.002]
+risk_score: 20
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- {term: {event.category: web}}
+- {term: {http.request.method: GET}}
+- bool:
+    should:
+    - wildcard: {user_agent.original: {value: Microsoft-WebDAV-MiniRedir/*, case_insensitive: true}}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [source.ip, url.domain]
+alert: []
+omega:
+  tier: T1
+  description: 'A proxied GET made by the Windows WebDAV mini-redirector (Microsoft-WebDAV-MiniRedir): a file fetched from a WebDAV
+    share on the Internet, the way Follina-style and shortcut payloads load tools.'
+  source: [proxy]
+  false_positives: 'Users who map a remote WebDAV drive on purpose (cloud storage, SharePoint through WebDAV): exclude the domain.
+    Silent: adds risk.'
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/proxy_generic/proxy_downloadcradle_webdav.yml
+  - https://attack.mitre.org/techniques/T1105/

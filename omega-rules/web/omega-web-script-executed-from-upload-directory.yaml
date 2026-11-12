@@ -1,0 +1,33 @@
+name: omega-web-script-executed-from-upload-directory
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1505.003, T1190]
+risk_score: 90
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- range: {http.response.status_code: {gte: 200, lt: 300}}
+- regexp:
+    url.original:
+      value: .*/(uploads?|attachments?|userfiles|usercontent|user_uploads|wp-content/uploads|sites/default/files|public/uploads)/.*\.(php[0-9]?|phtml|phar|jspx?|aspx?|ashx|asmx|cgi)(\?.*)?
+      flags: NONE
+      case_insensitive: true
+- bool:
+    must_not:
+    - regexp: {url.original: {value: '.*/index\.php(\?.*)?', flags: NONE, case_insensitive: true}}
+realert: {minutes: 30}
+query_key: [source.ip, url.original]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A server-side script (php, jsp, aspx, cgi...) inside a user upload directory answers a request with 2xx: an uploaded
+    web shell is being used.'
+  source: [web]
+  false_positives: Applications that serve generated thumbnails or downloads from a script placed in the upload directory. Exclude
+    the exact path.
+  references:
+  - https://github.com/elastic/detection-rules/blob/main/rules/cross-platform/initial_access_file_upload_followed_by_get_request.toml
+  - https://attack.mitre.org/techniques/T1505/003/
+  - https://attack.mitre.org/techniques/T1190/

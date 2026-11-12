@@ -1,0 +1,101 @@
+docs:
+- id: common-1
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: Mozilla/5.0 Common}
+    url: {original: /login}
+    '@timestamp': '2025-12-20T09:00:00Z'
+- id: common-2
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: Mozilla/5.0 Common}
+    url: {original: /login}
+    '@timestamp': '2025-12-21T09:01:00Z'
+- id: common-3
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: Mozilla/5.0 Common}
+    url: {original: /login}
+    '@timestamp': '2025-12-22T09:02:00Z'
+- id: common-4
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: Mozilla/5.0 Common}
+    url: {original: /login}
+    '@timestamp': '2025-12-23T09:03:00Z'
+- id: common-5
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: Mozilla/5.0 Common}
+    url: {original: /login}
+    '@timestamp': '2025-12-24T09:04:00Z'
+- id: common-6
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: Mozilla/5.0 Common}
+    url: {original: /login}
+    '@timestamp': '2025-12-25T09:05:00Z'
+- id: rare-1
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: RareClient/1.0}
+    url: {original: /login}
+    '@timestamp': '2025-12-20T09:00:00Z'
+- id: rare-2
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: RareClient/1.0}
+    url: {original: /login}
+    '@timestamp': '2025-12-21T09:01:00Z'
+- id: common
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: Mozilla/5.0 Common}
+    url: {original: /login}
+- id: rare
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: RareClient/1.0}
+    url: {original: /login}
+- id: new
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: POST}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: StuffingTool/9.9}
+    url: {original: /login}
+matches: 2

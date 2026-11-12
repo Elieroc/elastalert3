@@ -1,0 +1,54 @@
+name: omega-web-server-side-template-injection-payload
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1190, T1059]
+risk_score: 15
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - range: {http.response.status_code: {gte: 200, lt: 400}}
+    - range: {http.response.status_code: {gte: 500}}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*={{*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*=%7b%7b*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%7b%7b7*7%7d%7d*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*{{7*7}}*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*=${*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*=$%7b*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%24%7b7*7%7d*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*${7*7}*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*=<%=*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*=%3c%25=*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*#{7*7}*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%23%7b7*7%7d*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*{{config*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*{{request*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*__class__*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*__mro__*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*__subclasses__*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*__globals__*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*freemarker.template*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*t(java.lang.runtime)*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*.getclass().forname(*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*{php}*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*{{self.__init__*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*lipsum.__globals__*', case_insensitive: true}}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: Template injection syntax ({{7*7}}, ${7*7}, <%=, __class__, __globals__, freemarker) in the URL of a request that
+    reached the application.
+  source: [web]
+  false_positives: Front-end frameworks that put {{ }} in query strings (rare); scanners.
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/webserver_generic/web_ssti_in_access_logs.yml
+  - https://attack.mitre.org/techniques/T1190/

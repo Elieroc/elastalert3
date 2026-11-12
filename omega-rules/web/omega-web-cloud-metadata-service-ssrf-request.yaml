@@ -1,0 +1,78 @@
+name: omega-web-cloud-metadata-service-ssrf-request
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1552.005, T1190]
+risk_score: 30
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - range: {http.response.status_code: {gte: 200, lt: 400}}
+    - range: {http.response.status_code: {gte: 500}}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*169.254.169.254*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*169%2e254%2e169%2e254*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*0xa9fea9fe*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*0xa9.0xfe.0xa9.0xfe*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*2852039166*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*0251.0376.0251.0376*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*::ffff:169.254.169.254*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*::ffff:a9fe:a9fe*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*fd00:ec2::254*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*100.100.100.200*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*169.254.170.2*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*metadata.google.internal*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*metadata.goog*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*computemetadata/v1*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*meta-data/iam/security-credentials*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*meta-data%2fiam%2fsecurity-credentials*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*latest/meta-data*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*latest/api/token*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/metadata/instance\?api-version*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/metadata/identity/oauth2/token*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*localhost:2375*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*127.0.0.1:2375*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*kubernetes.default.svc*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*169.254.169.254*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*169%2e254%2e169%2e254*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*0xa9fea9fe*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*0xa9.0xfe.0xa9.0xfe*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*2852039166*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*0251.0376.0251.0376*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*::ffff:169.254.169.254*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*::ffff:a9fe:a9fe*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*fd00:ec2::254*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*100.100.100.200*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*169.254.170.2*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*metadata.google.internal*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*metadata.goog*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*computemetadata/v1*', case_insensitive: true}}
+    - wildcard:
+        http.request.referrer: {value: '*meta-data/iam/security-credentials*', case_insensitive: true}
+    - wildcard:
+        http.request.referrer: {value: '*meta-data%2fiam%2fsecurity-credentials*', case_insensitive: true}
+    - wildcard: {http.request.referrer: {value: '*latest/meta-data*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*latest/api/token*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*/metadata/instance\?api-version*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*/metadata/identity/oauth2/token*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*localhost:2375*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*127.0.0.1:2375*', case_insensitive: true}}
+    - wildcard: {http.request.referrer: {value: '*kubernetes.default.svc*', case_insensitive: true}}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: 'A request that carries the address of a cloud metadata service (169.254.169.254 in any notation, metadata.google.internal,
+    latest/meta-data, IAM credentials path) and reached the application: SSRF going after instance credentials.'
+  source: [web]
+  false_positives: Applications that legitimately proxy to the metadata service (none should); security scanners.
+  references:
+  - https://github.com/elastic/detection-rules/blob/main/rules/cross-platform/credential_access_web_server_cloud_imds_ssrf_request.toml
+  - https://attack.mitre.org/techniques/T1552/005/

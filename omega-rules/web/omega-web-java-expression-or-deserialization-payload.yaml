@@ -1,0 +1,51 @@
+name: omega-web-java-expression-or-deserialization-payload
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1190, T1203]
+risk_score: 25
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - range: {http.response.status_code: {gte: 200, lt: 400}}
+    - range: {http.response.status_code: {gte: 500}}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*%{(#*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%25%7b%28%23*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*${(#a=@*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*#_memberaccess*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%23_memberaccess*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*ognlutil*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*class.module.classloader*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*class%5bmodule%5d.classloader*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*class.classloader*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*java.lang.runtime*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*java.lang.processbuilder*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*getruntime().exec*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*getruntime%28%29.exec*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*processbuilder(*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*ysoserial*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*xwork.methodaccess*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*new+java.lang*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*new%20java.lang*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*scriptenginemanager*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*org.apache.commons.collections*', case_insensitive: true}}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: Struts OGNL, Spring4Shell classLoader, Runtime.exec or ysoserial syntax in the URL of a request that reached the
+    application.
+  source: [web]
+  false_positives: Scanners; Java documentation sites that carry class names in URLs.
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/webserver_generic/web_java_payload_in_access_logs.yml
+  - https://attack.mitre.org/techniques/T1190/
+  - https://attack.mitre.org/techniques/T1203/

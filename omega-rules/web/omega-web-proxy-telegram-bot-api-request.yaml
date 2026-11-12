@@ -1,0 +1,34 @@
+name: omega-web-proxy-telegram-bot-api-request
+type: any
+index: logs-squid.log-*,logs-zscaler_zia.web-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1102, T1567, T1071.001]
+risk_score: 15
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- {term: {event.category: web}}
+- {term: {url.domain: api.telegram.org}}
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*/bot*/*', case_insensitive: true}}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard: {user_agent.original: {value: '*telegram*', case_insensitive: true}}
+        - wildcard: {user_agent.original: {value: '*bot*', case_insensitive: true}}
+        minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: 'A proxied request to the Telegram bot API (api.telegram.org/bot<token>/...) from a client that is not a Telegram
+    application: malware uses bots as a command channel and to carry stolen data out.'
+  source: [proxy]
+  false_positives: 'Chat-ops scripts that post to Telegram (exclude the host). Silent: adds risk.'
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/proxy_generic/proxy_telegram_api.yml
+  - https://attack.mitre.org/techniques/T1102/

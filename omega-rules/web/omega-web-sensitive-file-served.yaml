@@ -1,0 +1,78 @@
+name: omega-web-sensitive-file-served
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1552.001, T1083, T1592]
+risk_score: 25
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- range: {http.response.status_code: {gte: 200, lt: 300}}
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*/.env', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.env\?*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.env.*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.git/config*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.git/head*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.git/index*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.git/logs/*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.svn/entries*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.svn/wc.db*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.hg/store*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.ds_store', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.aws/credentials*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.ssh/id_rsa*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/id_rsa', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/id_dsa', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.htpasswd', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.htaccess', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/wp-config.php.*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/wp-config.php~', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/wp-config.old', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/wp-config.bak', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/config.php.bak', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/config.php~', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/configuration.php~', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/web.config.bak', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.npmrc', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.dockercfg', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/docker-compose.yml', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.bash_history', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.mysql_history', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/phpinfo.php*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/info.php', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/server-status*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/server-info*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/actuator/env*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/actuator/heapdump*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/actuator/threaddump*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/actuator/httptrace*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/actuator/mappings*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/actuator/configprops*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/debug/pprof*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.vscode/sftp.json', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/sftp-config.json', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/credentials.json', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/secrets.yml', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/database.yml', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/jolokia/list*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/jolokia/exec/*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.gitlab-ci.yml', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.travis.yml', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.idea/workspace.xml', case_insensitive: true}}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: A request for a secret or internal file (.env, .git, .svn, wp-config backups, SSH keys, .htpasswd, phpinfo, Spring
+    actuator env or heapdump, server-status) answered 2xx.
+  source: [web]
+  false_positives: 'Single-page applications that answer 200 to every path (the body size tells: check it), documentation. Adds
+    risk, a chain rule watches for the follow-up.'
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/webserver_generic/web_source_code_enumeration.yml
+  - https://attack.mitre.org/techniques/T1552/001/

@@ -1,0 +1,35 @@
+name: omega-web-proxy-miner-or-exfiltration-tool-user-agent
+type: any
+index: logs-squid.log-*,logs-zscaler_zia.web-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1496, T1567.002]
+risk_score: 80
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - wildcard: {user_agent.original: {value: xmrig*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: ccminer*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: cpuminer*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: minerd*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: sgminer*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: cgminer*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: bfgminer*, case_insensitive: true}}
+    - wildcard: {user_agent.original: {value: rclone/v*, case_insensitive: true}}
+    minimum_should_match: 1
+realert: {hours: 1}
+query_key: [source.ip]
+alert: [debug]
+omega:
+  tier: T0
+  description: A proxied request carries the user agent of a crypto miner (xmrig, ccminer, cpuminer, minerd, sgminer, cgminer,
+    bfgminer) or of rclone, the tool that copies data to cloud storage.
+  source: [proxy]
+  false_positives: Sanctioned rclone backups to a cloud provider (exclude the host).
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/proxy_generic/proxy_ua_cryptominer.yml
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/proxy_generic/proxy_ua_rclone.yml
+  - https://attack.mitre.org/techniques/T1496/
+  - https://attack.mitre.org/techniques/T1567/002/

@@ -1,0 +1,70 @@
+name: omega-web-exposed-admin-or-management-interface
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1190, T1133, T1595.002]
+risk_score: 10
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- range: {http.response.status_code: {gte: 200, lt: 300}}
+- bool:
+    must_not:
+    - terms:
+        source.ip:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+        - 127.0.0.0/8
+        - 169.254.0.0/16
+        - ::1
+        - fe80::/10
+        - fc00::/7
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*/phpmyadmin*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/pma/*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/adminer.php*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/adminer/*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/manager/html*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/host-manager/html*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/jmx-console*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/web-console*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/invoker/jmxinvokerservlet*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/solr/admin*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/_cat/*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/_cluster/*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/_nodes*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/containers/json*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/api/v1/namespaces*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/api/v1/pods*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/console/login/loginform.jsp*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/jenkins/script*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/wp-admin/install.php*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/wp-admin/setup-config.php*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/installation/index.php*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/install/index.php*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/h2-console*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/phpinfo.php*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/cgi-bin/luci*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/system/console*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/ibm/console*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/zabbix/index.php*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/grafana/login*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/kibana/app*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/nifi/*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/airflow/home*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/rabbitmq/*', case_insensitive: true}}
+    minimum_should_match: 1
+realert: {hours: 1}
+query_key: [source.ip, url.original]
+alert: []
+omega:
+  tier: T1
+  description: A database, application-server, search, container or installer console (phpMyAdmin, Tomcat manager, JMX, Elasticsearch
+    _cat, Docker API, installers...) answers 2xx to an address outside the private ranges.
+  source: [web]
+  false_positives: 'Consoles published on purpose behind a VPN or an allow list (exclude the paths). Silent: it adds risk for
+    the address and the server.'
+  references: ['https://attack.mitre.org/techniques/T1133/']

@@ -1,0 +1,26 @@
+name: omega-web-request-volume-baseline
+type: baseline
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1498, T1499, T1190]
+filter:
+- {term: {event.category: web}}
+query_key: host.name
+bucket: {hours: 1}
+history: {weeks: 4}
+seasonality: hour_of_week
+method: mad
+threshold: 6
+min_baseline_count: 20
+realert: {hours: 2}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'The number of requests a web server received in the last complete hour is far from what is normal for the same
+    hour of the same weekday over the last 4 weeks (robust score above 6), up or down: a flood, a scan, a scraping run, or an
+    outage and a switched-off front end.'
+  source: [web]
+  false_positives: 'Campaigns, sales and releases; holidays move the weekly pattern. A low-traffic site has little history (min_baseline_count
+    20): tune bucket and threshold.'
+  references: ['https://attack.mitre.org/techniques/T1498/', 'https://attack.mitre.org/techniques/T1499/']

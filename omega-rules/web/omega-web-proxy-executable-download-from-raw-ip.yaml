@@ -1,0 +1,45 @@
+name: omega-web-proxy-executable-download-from-raw-ip
+type: any
+index: logs-squid.log-*,logs-zscaler_zia.web-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1105, T1204.002]
+risk_score: 70
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- {term: {event.category: web}}
+- {term: {http.request.method: GET}}
+- {terms: {http.response.status_code: [200, 206]}}
+- regexp:
+    url.domain: {value: '[0-9]{1,3}(\.[0-9]{1,3}){3}(:[0-9]+)?', flags: NONE, case_insensitive: true}
+- bool:
+    must_not:
+    - regexp:
+        url.domain: {value: '(10|127)(\.[0-9]{1,3}){3}(:[0-9]+)?', flags: NONE, case_insensitive: true}
+    - regexp:
+        url.domain: {value: '192\.168(\.[0-9]{1,3}){2}(:[0-9]+)?', flags: NONE, case_insensitive: true}
+    - regexp:
+        url.domain:
+          value: 172\.(1[6-9]|2[0-9]|3[01])(\.[0-9]{1,3}){2}(:[0-9]+)?
+          flags: NONE
+          case_insensitive: true
+    - regexp:
+        url.domain: {value: '169\.254(\.[0-9]{1,3}){2}(:[0-9]+)?', flags: NONE, case_insensitive: true}
+- regexp:
+    url.original:
+      value: .*\.(exe|dll|ps1|bat|cmd|vbs|vbe|js|jse|wsf|hta|msi|jar|scr|lnk|iso|img|zip|rar|7z|docm|xlsm|pptm|rtf|sct)([?#].*)?
+      flags: NONE
+      case_insensitive: true
+realert: {minutes: 30}
+query_key: [source.ip, url.domain]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A proxied client downloads an executable, script or archive from a URL whose host is a public IPv4 address, not
+    a name: staging servers are often reached by address.'
+  source: [proxy]
+  false_positives: Appliances and vendors that serve updates from a fixed address (exclude the address). Internal addresses are
+    ignored.
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/proxy_generic/proxy_ua_bitsadmin_susp_ip.yml
+  - https://attack.mitre.org/techniques/T1105/

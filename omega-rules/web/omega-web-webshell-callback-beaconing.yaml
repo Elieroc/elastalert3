@@ -1,0 +1,39 @@
+name: omega-web-webshell-callback-beaconing
+type: beacon
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1505.003, T1071.001, T1029]
+risk_score: 50
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- {term: {http.request.method: POST}}
+- range: {http.response.status_code: {gte: 200, lt: 300}}
+- bool:
+    should:
+    - wildcard: {url.path: {value: '*.php', case_insensitive: true}}
+    - wildcard: {url.path: {value: '*.asp', case_insensitive: true}}
+    - wildcard: {url.path: {value: '*.aspx', case_insensitive: true}}
+    - wildcard: {url.path: {value: '*.jsp', case_insensitive: true}}
+    - wildcard: {url.path: {value: '*.cgi', case_insensitive: true}}
+    - wildcard: {url.path: {value: '*.ashx', case_insensitive: true}}
+    minimum_should_match: 1
+query_key: [source.ip, url.path]
+timeframe: {hours: 3}
+min_events: 20
+max_jitter: 0.15
+min_interval: {seconds: 10}
+realert: {hours: 6}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'One source address posts to the same script at near-constant intervals (20 or more requests in 3 hours, jitter
+    under 15 %, at least 10 s apart): an implant or web shell client polling for commands, not a person.'
+  source: [web]
+  false_positives: Monitoring and synthetic checks, application polling (exclude the address or the path). Hence a risk of 50
+    and not a score of its own.
+  references:
+  - https://attack.mitre.org/techniques/T1505/003/
+  - https://attack.mitre.org/techniques/T1071/001/
+  - https://attack.mitre.org/techniques/T1029/

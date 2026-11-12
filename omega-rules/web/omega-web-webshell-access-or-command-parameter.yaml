@@ -1,0 +1,103 @@
+name: omega-web-webshell-access-or-command-parameter
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1505.003, T1059]
+risk_score: 90
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- range: {http.response.status_code: {gte: 200, lt: 300}}
+- bool:
+    should:
+    - bool:
+        should:
+        - wildcard: {url.original: {value: '*/c99.php*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/c100.php*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/r57.php*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/r57shell*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/b374k*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/wso.php*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/wso2.php*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/alfa.php*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/alfashell*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/indoxploit*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/filesman.php*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/webshell.php*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/cmd.php*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/cmd.jsp*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/cmd.aspx*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/cmdasp.aspx*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/jspspy.jsp*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/jspshell.jsp*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/aspxspy.aspx*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/shell.jsp*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/shell.aspx*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/antsword*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/china-chopper*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/caidao*', case_insensitive: true}}
+        minimum_should_match: 1
+    - bool:
+        must:
+        - bool:
+            should:
+            - wildcard: {url.original: {value: '*.php*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*.asp*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*.jsp*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*.cgi*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*.ashx*', case_insensitive: true}}
+            minimum_should_match: 1
+        - bool:
+            should:
+            - wildcard: {url.original: {value: '*cmd=whoami*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=id', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=id&*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=id%20*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=ls*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=uname*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=cat*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=pwd*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=ipconfig*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=ifconfig*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=dir*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=net+user*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=net%20user*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=wget*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=curl*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=powershell*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=certutil*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=ping*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=nslookup*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=systeminfo*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=tasklist*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=netstat*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=bash*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=sh+-c*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*cmd=sh%20-c*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*exec=whoami*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*exec=id', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*exec=id&*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*exec=uname*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*exec=ls*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*command=whoami*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*command=id', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*command=id&*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*command=uname*', case_insensitive: true}}
+            - wildcard: {url.original: {value: '*command=ls*', case_insensitive: true}}
+            minimum_should_match: 1
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [source.ip, url.original]
+alert: [debug]
+omega:
+  tier: T0
+  description: A request that succeeded (2xx) to a well-known web shell file name, or to a script with an operating system command
+    in a cmd, exec or command parameter.
+  source: [web]
+  false_positives: Wiki or CMS pages that are documented with these parameters; a vendor tool with a legitimate cmd.php. Exclude
+    the exact path.
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/webserver_generic/web_win_webshells_in_access_logs.yml
+  - https://github.com/elastic/detection-rules/blob/main/rules/cross-platform/persistence_web_server_potential_command_injection.toml
+  - https://attack.mitre.org/techniques/T1505/003/

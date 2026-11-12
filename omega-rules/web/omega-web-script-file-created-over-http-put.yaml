@@ -1,0 +1,29 @@
+name: omega-web-script-file-created-over-http-put
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1505.003, T1190]
+risk_score: 90
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- {terms: {http.request.method: [PUT, MOVE, COPY]}}
+- {terms: {http.response.status_code: [201, 204]}}
+- regexp:
+    url.original:
+      value: .*\.(php[0-9]?|phtml|phar|jspx?|aspx?|ashx|asmx|cgi)(/|;.*|\?.*)?
+      flags: NONE
+      case_insensitive: true
+realert: {minutes: 30}
+query_key: [source.ip]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A PUT (or MOVE/COPY) request created a server-side script file (php, jsp, aspx...) and the server answered 201
+    or 204: WebDAV or Tomcat PUT abuse that plants a web shell.'
+  source: [web]
+  false_positives: Deployment tools that publish pages over WebDAV (exclude their source address).
+  references:
+  - https://nvd.nist.gov/vuln/detail/CVE-2017-12615
+  - https://attack.mitre.org/techniques/T1505/003/

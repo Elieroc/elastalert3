@@ -1,0 +1,28 @@
+name: omega-web-user-new-browser-or-system
+type: new_term
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1539, T1078]
+risk_score: 12
+risk_objects: {user: user.name, ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- range: {http.response.status_code: {gte: 200, lt: 300}}
+- {exists: {field: user.name}}
+- {exists: {field: user_agent.name}}
+- {exists: {field: user_agent.os.name}}
+fields:
+- [user.name, user_agent.name, user_agent.os.name]
+terms_window_size: {days: 30}
+use_keyword_postfix: false
+realert: {minutes: 1}
+alert: []
+omega:
+  tier: T1
+  description: 'An account is seen with a browser and operating system pair it has not used in 30 days: a new device, or a session
+    replayed from another machine.'
+  source: [web]
+  false_positives: 'New devices and reinstalled systems. Needs user.name and the parsed user_agent.name and user_agent.os.name
+    fields. Silent: adds a small risk.'
+  references: ['https://attack.mitre.org/techniques/T1539/']

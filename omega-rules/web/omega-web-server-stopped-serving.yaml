@@ -1,0 +1,22 @@
+name: omega-web-server-stopped-serving
+type: flatline
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1499, T1070]
+filter:
+- {term: {event.category: web}}
+threshold: 1
+timeframe: {minutes: 15}
+query_key: host.name
+forget_keys: true
+realert: {hours: 1}
+alert: [debug]
+omega:
+  tier: T2
+  description: 'A web server that was logging requests received fewer than 1 request in 15 minutes: an outage, a defacement or
+    a stopped log shipper on a busy front end.'
+  source: [web]
+  false_positives: Quiet sites and maintenance windows (raise the timeframe, or use the seasonal log_loss rule). Alerts once per
+    silence.
+  references: ['https://attack.mitre.org/techniques/T1499/']

@@ -1,0 +1,69 @@
+name: omega-web-empty-user-agent-post-request
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 5
+mitre_attack: [T1190, T1592]
+risk_score: 5
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - range: {http.response.status_code: {gte: 200, lt: 400}}
+    - range: {http.response.status_code: {gte: 500}}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - terms:
+        source.ip:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+        - 127.0.0.0/8
+        - 169.254.0.0/16
+        - ::1
+        - fe80::/10
+        - fc00::/7
+- {term: {http.request.method: POST}}
+- bool:
+    should:
+    - bool:
+        must_not:
+        - {exists: {field: user_agent.original}}
+    - {term: {user_agent.original: '-'}}
+    minimum_should_match: 1
+exceptions:
+- name: monitoring-and-health-check-agents
+  reason: load balancers, uptime monitors and probes that request many paths with scripting clients
+  match:
+    user_agent.original|startswith:
+    - ELB-HealthChecker
+    - kube-probe
+    - GoogleHC
+    - Amazon-Route53-Health-Check-Service
+    - Pingdom
+    - UptimeRobot
+    - Zabbix
+    - check_http
+    - Nagios
+    - Datadog
+    - StatusCake
+    - Site24x7
+    - NewRelic
+    - Consul
+    - HAProxy
+    - Blackbox Exporter
+    - Prometheus
+    - Elastic-Heartbeat
+realert: {minutes: 30}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: 'A POST that reached the application with no user agent at all (or only a dash) from outside the private ranges:
+    a hand-made script or a bot.'
+  source: [web]
+  false_positives: Old devices, some webhooks and payment callbacks send no user agent (exclude their addresses). Adds a very
+    small risk.
+  references: ['https://attack.mitre.org/techniques/T1190/']

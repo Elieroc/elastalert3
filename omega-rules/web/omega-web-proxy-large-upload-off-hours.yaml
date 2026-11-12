@@ -1,0 +1,32 @@
+name: omega-web-proxy-large-upload-off-hours
+type: any
+index: logs-squid.log-*,logs-zscaler_zia.web-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1567, T1048]
+risk_score: 15
+risk_objects: {ip: source.ip, user: user.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - range: {http.response.status_code: {gte: 200, lt: 400}}
+    - range: {http.response.status_code: {gte: 500}}
+    minimum_should_match: 1
+- {terms: {http.request.method: [POST, PUT]}}
+- range: {http.request.bytes: {gte: 52428800}}
+active_hours:
+  timezone: UTC
+  windows:
+  - {days: [mon, tue, wed, thu, fri, sat, sun], from: '19:00', to: '07:00'}
+  - {days: [sat, sun], from: '07:00', to: '19:00'}
+realert: {minutes: 30}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: 'A POST or PUT of 50 MB or more through the proxy outside working hours (nights and weekends, UTC by default: edit
+    the time zone and windows to your site).'
+  source: [proxy]
+  false_positives: 'Backups and scheduled synchronisations at night (exclude the user or host). Silent: adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1567/']

@@ -1,0 +1,84 @@
+name: omega-web-sql-injection-payload-in-request
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1190]
+risk_score: 15
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - range: {http.response.status_code: {gte: 200, lt: 400}}
+    - range: {http.response.status_code: {gte: 500}}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*union*select*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*union%20select*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*union+select*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*union%20all%20select*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*union+all+select*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*union/**/select*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*information_schema.tables*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*information_schema.columns*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*information_schema%2etables*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*@@version*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*select%20version()*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*select+version()*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*select%20database()*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*select+database()*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*concat(0x*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*concat%280x*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*group_concat(*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*group_concat%28*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*extractvalue(*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*extractvalue%28*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*updatexml(*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*updatexml%28*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*sleep(*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*sleep%28*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*pg_sleep(*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*pg_sleep%28*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*waitfor%20delay*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*waitfor+delay*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*waitfor delay*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*benchmark(*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*benchmark%28*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*xp_cmdshell*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*load_file(*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*load_file%28*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*into%20outfile*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*into+outfile*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*into%20dumpfile*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*or%201=1*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*or+1=1*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*or 1=1*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*and%201=2*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*and+1=2*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*''%20or%20''1''=''1*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*''+or+''1''=''1*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%27%20or%20%271%27%3d%271*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%27+or+%271%27%3d%271*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*order%20by%2010--*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*order+by+10--*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%27--*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*''--+*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/*!50000*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*having%201=1*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*having+1=1*', case_insensitive: true}}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: SQL injection syntax (union select, sleep, information_schema, concat(0x, boolean tautologies...) in the URL of
+    a request that reached the application (not 4xx).
+  source: [web]
+  false_positives: 'Searches that quote SQL, security blogs, internal scanners. Not alerting: adds risk.'
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/webserver_generic/web_sql_injection_in_access_logs.yml
+  - https://github.com/elastic/detection-rules/blob/main/rules/cross-platform/persistence_web_server_potential_sql_injection.toml
+  - https://attack.mitre.org/techniques/T1190/

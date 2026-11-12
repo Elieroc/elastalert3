@@ -36,7 +36,8 @@ Silent T1 rules still write their doc to the writeback index with `risk_objects`
 |---|---|---|---|
 | `linux/` | 122: 52 T0, 66 T1, 4 T2 | Elastic Defend / Auditbeat (process, file, network, DNS lookups), system auth (sshd, sudo, su) | first version |
 | `windows/` | 150: 87 T0, 58 T1, 5 T2 | Elastic Defend / Winlogbeat / Sysmon (process, file, registry, network, DNS, named pipes, WMI), Security and System event logs (4624/4625/4662/4697/4698/4732/4768/4769/5140, 1102, 7045), PowerShell script block logging (4104) | first version |
-| `web/`, `firewall/` | - | - | planned |
+| `web/` | 90: 17 T0, 62 T1, 11 T2 | Web access logs (nginx, Apache, Tomcat, IIS, Traefik; ECS `event.category: web`, `url.original`/`url.path`/`url.domain`, `http.request.method`, `http.response.status_code`, `http.request.bytes`, `http.response.body.bytes`, `user_agent.original`, `source.ip`, optional GeoIP `source.geo.*` / `source.as.number` and `user.name`) and forward proxy logs (Squid, Zscaler; source `proxy`) | first version |
+| `firewall/` | - | - | planned |
 
 Linux covers, with one rule per behaviour and the type of rule that fits it: blacklists of tools and miners
 reverse shells, GTFOBins escapes, persistence (cron, systemd, profile, SSH keys, sudoers, PAM,
@@ -120,3 +121,21 @@ python3 tests/omega/coverage.py linux --triage /tmp/triage-linux.tsv # ATT&CK te
 
 Every rule has `tests/omega/cases/<rule-name>.yaml`: documents (`match: true` for the ones the filter must hit; the
 others are benign and must not be hit) and optionally `matches: N`, what the rule type must produce.
+
+## Web pack notes
+
+- Tiers: an attempt (payload, probe, scan, tool user agent) is T1, silent, and only adds risk; a success, a chain
+  (`correlation`: brute force then login, upload then script, exploit then web shell) or an attack from an internal
+  address is T0. T2 holds baselines, log loss, beaconing and the three risk rules (`omega-web-source-ip-risk`,
+  `-host-risk` with `risk_ratio`, `-user-risk` with `usual_hours`). The host risk rule also adds up the alerts of the
+  `linux` and `windows` packs for the same `host.name`.
+- Rule types used: any, blacklist, whitelist, frequency (also with `use_terms_query`), cardinality, percentage_match,
+  metric_aggregation, spike, spike_aggregation, flatline, change, new_term (with `max_occurrences` and composite
+  fields), correlation, geo_velocity, beacon, baseline, log_loss, outlier, risk, plus `active_hours`.
+- Web rules read `logs-*` access indices and `filebeat-*`; narrow `index` to your web logs, since the payload rules use
+  wildcards. Behind a load balancer `source.ip` must be the client address (`X-Forwarded-For`), or every per-source
+  threshold counts the balancer.
+- Rules that need GeoIP or authentication fields (`omega-web-impossible-travel-login`, `-session-country-change`,
+  `-admin-access-from-new-network`, `-user-new-browser-or-system`) stay silent when the field is missing.
+- Proxy rules (`omega-web-proxy-*`) read `logs-squid.log-*` and `logs-zscaler_zia.web-*`.
+- Time windows (`active_hours`, `usual_hours`) default to UTC and Monday to Friday 07:00-19:00: set them to your site.

@@ -1,0 +1,54 @@
+name: omega-web-cross-site-scripting-payload-in-request
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1190, T1059.007]
+risk_score: 10
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - range: {http.response.status_code: {gte: 200, lt: 400}}
+    - range: {http.response.status_code: {gte: 500}}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*<script*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%3cscript*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%253cscript*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*javascript:*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*javascript%3a*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*onerror=*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*onerror%3d*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*onload=*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*onmouseover=*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*onfocus=*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*alert(*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*alert%28*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*document.cookie*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*document.domain*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*<svg*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%3csvg*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*<iframe*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%3ciframe*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*<img*src*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%3cimg*src*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*prompt(*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*prompt%28*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*confirm(*', case_insensitive: true}}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: Script injection syntax (script, svg, iframe, onerror=, javascript:, document.cookie) in the URL of a request that
+    reached the application.
+  source: [web]
+  false_positives: Pages that legitimately carry HTML in a parameter, security training sites. Adds a small risk only.
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/webserver_generic/web_xss_in_access_logs.yml
+  - https://attack.mitre.org/techniques/T1190/
+  - https://attack.mitre.org/techniques/T1059/007/

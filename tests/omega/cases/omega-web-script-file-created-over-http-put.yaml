@@ -1,0 +1,59 @@
+docs:
+- id: put-jsp
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: PUT}, response: {status_code: 201}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /shell.jsp}
+- id: put-php-204
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: PUT}, response: {status_code: 204}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /files/a.php}
+- id: put-jsp-slash
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: PUT}, response: {status_code: 201}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /x.jsp/}
+- id: put-txt
+  doc:
+    http: {request: {method: PUT}, response: {status_code: 201}}
+    url: {original: /notes.txt}
+    event: {category: web}
+    host: {name: web1}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+- id: put-refused
+  doc:
+    http: {request: {method: PUT}, response: {status_code: 405}}
+    url: {original: /shell.jsp}
+    event: {category: web}
+    host: {name: web1}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+- id: get-jsp
+  doc:
+    url: {original: /shell.jsp}
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+matches: 3

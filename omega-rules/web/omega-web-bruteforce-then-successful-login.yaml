@@ -1,0 +1,74 @@
+name: omega-web-bruteforce-then-successful-login
+type: correlation
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1110.001, T1110.004, T1078]
+risk_score: 85
+risk_objects: {ip: source.ip, host: host.name, user: user.name}
+filter:
+- {term: {event.category: web}}
+query_key: source.ip
+timeframe: {minutes: 15}
+realert: {hours: 1}
+correlation_leaves:
+  login_fail:
+    num_events: 15
+    filter:
+    - {term: {http.request.method: POST}}
+    - bool:
+        should:
+        - wildcard: {url.original: {value: '*/login*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/signin*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/sign-in*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/wp-login.php*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/user/login*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/account/login*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/auth/login*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/session*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/j_security_check*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/admin/login*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/oauth/token*', case_insensitive: true}}
+        minimum_should_match: 1
+    - bool:
+        should:
+        - {terms: {http.response.status_code: [401, 403]}}
+        - bool:
+            must:
+            - {terms: {http.response.status_code: [200]}}
+            - bool:
+                should:
+                - wildcard: {url.original: {value: '*/wp-login.php*', case_insensitive: true}}
+                minimum_should_match: 1
+        minimum_should_match: 1
+  login_success:
+    filter:
+    - {term: {http.request.method: POST}}
+    - bool:
+        should:
+        - wildcard: {url.original: {value: '*/login*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/signin*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/sign-in*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/wp-login.php*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/user/login*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/account/login*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/auth/login*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/session*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/j_security_check*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/admin/login*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/oauth/token*', case_insensitive: true}}
+        minimum_should_match: 1
+    - {terms: {http.response.status_code: [302, 303]}}
+correlation_query: login_fail THEN login_success
+alert: [debug]
+omega:
+  tier: T0
+  description: 'One source address fails to log in 15 times (401, 403, or a WordPress 200) and then logs in successfully (302
+    or 303) within 15 minutes: the guessed password worked.'
+  source: [web]
+  false_positives: A user behind a shared address who mistypes a password many times, then succeeds. Raise num_events or exclude
+    the address. Applications that answer 200 on success need the success leaf adapted.
+  references:
+  - https://github.com/elastic/detection-rules/blob/main/rules/linux/credential_access_potential_successful_linux_ssh_bruteforce.toml
+  - https://attack.mitre.org/techniques/T1110/001/
+  - https://attack.mitre.org/techniques/T1078/

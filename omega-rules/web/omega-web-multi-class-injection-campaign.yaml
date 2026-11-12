@@ -1,0 +1,321 @@
+name: omega-web-multi-class-injection-campaign
+type: correlation
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1190, T1595.002]
+risk_score: 30
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - range: {http.response.status_code: {gte: 200, lt: 400}}
+    - range: {http.response.status_code: {gte: 500}}
+    minimum_should_match: 1
+query_key: source.ip
+timeframe: {minutes: 15}
+realert: {hours: 1}
+correlation_leaves:
+  injection:
+    filter:
+    - bool:
+        should:
+        - wildcard: {url.original: {value: '*union*select*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*union%20select*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*union+select*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*union%20all%20select*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*union+all+select*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*union/**/select*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*information_schema.tables*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*information_schema.columns*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*information_schema%2etables*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*@@version*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*select%20version()*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*select+version()*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*select%20database()*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*select+database()*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*concat(0x*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*concat%280x*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*group_concat(*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*group_concat%28*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*extractvalue(*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*extractvalue%28*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*updatexml(*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*updatexml%28*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*sleep(*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*sleep%28*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*pg_sleep(*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*pg_sleep%28*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*waitfor%20delay*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*waitfor+delay*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*waitfor delay*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*benchmark(*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*benchmark%28*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*xp_cmdshell*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*load_file(*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*load_file%28*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*into%20outfile*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*into+outfile*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*into%20dumpfile*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*or%201=1*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*or+1=1*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*or 1=1*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*and%201=2*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*and+1=2*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*''%20or%20''1''=''1*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*''+or+''1''=''1*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%27%20or%20%271%27%3d%271*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%27+or+%271%27%3d%271*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*order%20by%2010--*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*order+by+10--*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%27--*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*''--+*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/*!50000*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*having%201=1*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*having+1=1*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*={{*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=%7b%7b*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%7b%7b7*7%7d%7d*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*{{7*7}}*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=${*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=$%7b*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%24%7b7*7%7d*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*${7*7}*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=<%=*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=%3c%25=*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*#{7*7}*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%23%7b7*7%7d*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*{{config*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*{{request*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*__class__*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*__mro__*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*__subclasses__*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*__globals__*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*freemarker.template*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*t(java.lang.runtime)*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*.getclass().forname(*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*{php}*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*{{self.__init__*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*lipsum.__globals__*', case_insensitive: true}}
+        minimum_should_match: 1
+  file_access:
+    filter:
+    - bool:
+        should:
+        - wildcard: {url.original: {value: '*../../../*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*..%2f..%2f*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%2e%2e%2f*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%2e%2e/*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*..%5c..%5c*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%252e%252e*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*..%c0%af*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%c0%ae%c0%ae*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*..;/*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/etc/passwd*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%2fetc%2fpasswd*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/etc/shadow*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%2fetc%2fshadow*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/proc/self/*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%2fproc%2fself%2f*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/windows/win.ini*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%2fwindows%2fwin.ini*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*boot.ini*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*c:\\windows*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*c:/windows*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*c%3a%5cwindows*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*c%3a%2fwindows*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*php://filter*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*php%3a%2f%2ffilter*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*php://input*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*expect://*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*phar://*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*zip://*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*data://text*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/var/log/auth.log*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/var/log/apache*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*.ssh/id_rsa*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/.bash_history*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*web-inf/web.xml*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*wp-config.php*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=c:/users*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=c%3a%5cusers*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=http://*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=https://*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=ftp://*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=smb://*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=file://*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=gopher://*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=dict://*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=ldap://*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=jar:*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=netdoc:*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%3dhttp%3a%2f%2f*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%3dhttps%3a%2f%2f*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=http%3a%2f%2f*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=https%3a%2f%2f*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*=//*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*169.254.169.254*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*169%2e254%2e169%2e254*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*0xa9fea9fe*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*0xa9.0xfe.0xa9.0xfe*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*2852039166*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*0251.0376.0251.0376*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*::ffff:169.254.169.254*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*::ffff:a9fe:a9fe*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*fd00:ec2::254*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*100.100.100.200*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*169.254.170.2*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*metadata.google.internal*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*metadata.goog*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*computemetadata/v1*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*meta-data/iam/security-credentials*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*meta-data%2fiam%2fsecurity-credentials*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*latest/meta-data*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*latest/api/token*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/metadata/instance\?api-version*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/metadata/identity/oauth2/token*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*localhost:2375*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*127.0.0.1:2375*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*kubernetes.default.svc*', case_insensitive: true}}
+        minimum_should_match: 1
+  execution:
+    filter:
+    - bool:
+        should:
+        - wildcard: {url.original: {value: '*;id;*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*;id%20*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*|id|*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%3bwhoami*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*;whoami*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*|whoami*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%7cwhoami*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*`whoami`*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%60whoami%60*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*$(whoami)*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%24%28whoami%29*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*;cat%20/etc*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*;cat+/etc*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*|cat%20/etc*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%3bcat%20%2fetc*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*;wget%20http*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*;wget+http*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*;curl%20http*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*;curl+http*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*|wget%20http*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*|curl%20http*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%7cbash*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*|bash*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/bin/sh*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%2fbin%2fsh*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/bin/bash*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%2fbin%2fbash*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*cmd.exe*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*cmd%20/c*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*cmd+/c*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*powershell.exe*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*powershell%20-*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*powershell+-*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*nc%20-e*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*nc+-e*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*/dev/tcp/*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%2fdev%2ftcp%2f*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*mkfifo*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*base64%20-d*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*base64+-d*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*${ifs}*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*$%7bifs%7d*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%24%7bifs%7d*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*;sleep%20*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%3bsleep%20*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*;sleep+*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*|sleep%20*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*ping%20-c%20*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*ping+-c+*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*certutil%20-urlcache*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*certutil+-urlcache*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*bitsadmin%20/transfer*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*python%20-c*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*python+-c*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*perl%20-e*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*perl+-e*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%{(#*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%25%7b%28%23*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*${(#a=@*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*#_memberaccess*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%23_memberaccess*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*ognlutil*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*class.module.classloader*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*class%5bmodule%5d.classloader*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*class.classloader*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*java.lang.runtime*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*java.lang.processbuilder*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*getruntime().exec*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*getruntime%28%29.exec*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*processbuilder(*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*ysoserial*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*xwork.methodaccess*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*new+java.lang*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*new%20java.lang*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*scriptenginemanager*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*org.apache.commons.collections*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*${jndi:*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*$%7bjndi:*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%24%7bjndi*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%2524%257bjndi*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*${${lower:j}*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*${${upper:j}*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*${::-j}*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*${${::-j}*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*${${env:*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*${base64:*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*${lower:*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*${upper:*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*${env:*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*${sys:*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*${java:*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%24%7benv:*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%24%7bsys:*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*jndi:ldap*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*jndi:rmi*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*jndi:dns*', case_insensitive: true}}
+        minimum_should_match: 1
+  script:
+    filter:
+    - bool:
+        should:
+        - wildcard: {url.original: {value: '*<script*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%3cscript*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%253cscript*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*javascript:*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*javascript%3a*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*onerror=*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*onerror%3d*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*onload=*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*onmouseover=*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*onfocus=*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*alert(*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*alert%28*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*document.cookie*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*document.domain*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*<svg*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%3csvg*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*<iframe*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%3ciframe*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*<img*src*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*%3cimg*src*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*prompt(*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*prompt%28*', case_insensitive: true}}
+        - wildcard: {url.original: {value: '*confirm(*', case_insensitive: true}}
+        minimum_should_match: 1
+correlation_query: (injection AND file_access AND execution) OR (injection AND file_access AND script) OR (injection AND execution
+  AND script) OR (file_access AND execution AND script)
+alert: []
+omega:
+  tier: T1
+  description: 'One source address sends payloads of at least three different classes (SQL or template injection, file inclusion
+    or SSRF, command or Java execution, script injection) that reach the application within 15 minutes: an automated attack tool,
+    not a curious user.'
+  source: [web]
+  false_positives: 'Authorised scanners (exclude their addresses). Silent: it adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1190/']

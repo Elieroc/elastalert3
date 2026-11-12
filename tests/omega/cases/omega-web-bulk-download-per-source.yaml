@@ -1,0 +1,147 @@
+docs:
+- id: pos-1
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 104857600}}
+    source: {ip: 198.51.100.9}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T10:01:01Z'
+- id: pos-2
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 104857600}}
+    source: {ip: 198.51.100.9}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T10:01:21Z'
+- id: pos-3
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 104857600}}
+    source: {ip: 198.51.100.9}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T10:01:41Z'
+- id: pos-4
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 104857600}}
+    source: {ip: 198.51.100.9}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T10:02:01Z'
+- id: pos-5
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 104857600}}
+    source: {ip: 198.51.100.9}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T10:02:21Z'
+- id: pos-6
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 104857600}}
+    source: {ip: 198.51.100.9}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T10:02:41Z'
+- id: under-1
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 104857600}}
+    source: {ip: 198.51.100.10}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T10:01:01Z'
+- id: under-2
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 104857600}}
+    source: {ip: 198.51.100.10}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T10:01:31Z'
+- id: under-3
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 104857600}}
+    source: {ip: 198.51.100.10}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T10:02:01Z'
+- id: under-4
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 200, body: {bytes: 104857600}}
+    source: {ip: 198.51.100.10}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T10:02:31Z'
+- id: refused-1
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http:
+      request: {method: GET}
+      response: {status_code: 404, body: {bytes: 900000000}}
+    source: {ip: 198.51.100.11}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+    '@timestamp': '2026-01-01T10:01:01Z'
+mappings:
+  source:
+    properties: {ip: {type: ip}}
+matches: 1

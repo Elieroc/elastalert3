@@ -1,0 +1,29 @@
+name: omega-web-download-volume-spike-per-source
+type: spike_aggregation
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1567, T1030]
+risk_score: 15
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- range: {http.response.status_code: {gte: 200, lt: 300}}
+metric_agg_key: http.response.body.bytes
+metric_agg_type: sum
+spike_height: 10
+spike_type: up
+threshold_cur: 104857600
+threshold_ref: 1
+query_key: source.ip
+timeframe: {minutes: 30}
+buffer_time: {minutes: 30}
+realert: {hours: 1}
+alert: []
+omega:
+  tier: T1
+  description: The volume one source address downloads in 30 minutes is at least 10 times what it was in the previous 30 minutes,
+    and above 100 MB.
+  source: [web]
+  false_positives: A user who starts a large legitimate download after a quiet period (exclude, or raise spike_height).
+  references: ['https://attack.mitre.org/techniques/T1030/']

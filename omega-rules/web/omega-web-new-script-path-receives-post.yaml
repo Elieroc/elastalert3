@@ -1,0 +1,33 @@
+name: omega-web-new-script-path-receives-post
+type: new_term
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1505.003, T1190]
+risk_score: 20
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- {term: {http.request.method: POST}}
+- range: {http.response.status_code: {gte: 200, lt: 300}}
+- bool:
+    should:
+    - wildcard: {url.path: {value: '*.php', case_insensitive: true}}
+    - wildcard: {url.path: {value: '*.asp', case_insensitive: true}}
+    - wildcard: {url.path: {value: '*.aspx', case_insensitive: true}}
+    - wildcard: {url.path: {value: '*.jsp', case_insensitive: true}}
+    - wildcard: {url.path: {value: '*.cgi', case_insensitive: true}}
+    - wildcard: {url.path: {value: '*.ashx', case_insensitive: true}}
+    minimum_should_match: 1
+fields: [url.path]
+terms_window_size: {days: 30}
+use_keyword_postfix: false
+realert: {minutes: 1}
+alert: []
+omega:
+  tier: T1
+  description: 'A script path (php, asp, aspx, jsp, cgi) answers a successful POST for the first time in 30 days: a new endpoint,
+    which after a deployment is normal and after an upload is a web shell.'
+  source: [web]
+  false_positives: 'Every deployment that adds a script. Silent: adds risk, and the upload-and-execute chains give the context.'
+  references: ['https://attack.mitre.org/techniques/T1505/003/']

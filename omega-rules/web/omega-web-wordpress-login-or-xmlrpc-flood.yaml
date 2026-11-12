@@ -1,0 +1,28 @@
+name: omega-web-wordpress-login-or-xmlrpc-flood
+type: frequency
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1110.001, T1110.003]
+risk_score: 20
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- {term: {http.request.method: POST}}
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*/wp-login.php*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/xmlrpc.php*', case_insensitive: true}}
+    minimum_should_match: 1
+num_events: 30
+timeframe: {minutes: 5}
+query_key: source.ip
+realert: {minutes: 30}
+alert: []
+omega:
+  tier: T1
+  description: 'One source address posts 30 or more requests to wp-login.php or xmlrpc.php within 5 minutes, whatever the answer:
+    WordPress password guessing, including the system.multicall amplification.'
+  source: [web]
+  false_positives: Mobile apps and plugins that use xmlrpc.php heavily (exclude their addresses or disable xmlrpc.php).
+  references: ['https://attack.mitre.org/techniques/T1110/001/', 'https://attack.mitre.org/techniques/T1110/003/']

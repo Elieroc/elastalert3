@@ -1,0 +1,24 @@
+name: omega-web-iis-shortname-scan
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1595.003, T1083]
+risk_score: 10
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- {terms: {http.request.method: [GET, OPTIONS]}}
+- {terms: {http.response.status_code: [200, 301]}}
+- regexp: {url.original: {value: '.*~1.*a\.aspx(\?.*)?', flags: NONE, case_insensitive: true}}
+realert: {minutes: 30}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: 'IIS short file name enumeration: a tilde-one name ending in a.aspx answered 200 or 301 (the server leaks 8.3 names).'
+  source: [web]
+  false_positives: Almost none. A scanner that runs the technique; patch or disable 8.3 names.
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/webserver_generic/web_iis_tilt_shortname_scan.yml
+  - https://attack.mitre.org/techniques/T1595/003/

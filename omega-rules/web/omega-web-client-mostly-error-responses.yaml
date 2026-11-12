@@ -1,0 +1,25 @@
+name: omega-web-client-mostly-error-responses
+type: percentage_match
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1595.002, T1595.003]
+risk_score: 15
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+match_bucket_filter:
+  range: {http.response.status_code: {gte: 400, lt: 500}}
+max_percentage: 90
+min_denominator: 100
+query_key: source.ip
+buffer_time: {minutes: 15}
+realert: {minutes: 30}
+alert: []
+omega:
+  tier: T1
+  description: 'At least 90 % of the requests of one source address, out of at least 100 requests in 15 minutes, got a 4xx answer:
+    a scanner or a broken client.'
+  source: [web]
+  false_positives: 'Clients with an expired token or a dead link list (exclude them). Silent: adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1595/002/']

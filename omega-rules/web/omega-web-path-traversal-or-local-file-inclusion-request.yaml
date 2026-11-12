@@ -1,0 +1,70 @@
+name: omega-web-path-traversal-or-local-file-inclusion-request
+type: any
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1190, T1083, T1005]
+risk_score: 20
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- bool:
+    should:
+    - range: {http.response.status_code: {gte: 200, lt: 400}}
+    - range: {http.response.status_code: {gte: 500}}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard: {url.original: {value: '*../../../*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*..%2f..%2f*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%2e%2e%2f*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%2e%2e/*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*..%5c..%5c*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%252e%252e*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*..%c0%af*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%c0%ae%c0%ae*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*..;/*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/etc/passwd*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%2fetc%2fpasswd*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/etc/shadow*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%2fetc%2fshadow*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/proc/self/*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%2fproc%2fself%2f*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/windows/win.ini*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*%2fwindows%2fwin.ini*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*boot.ini*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*c:\\windows*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*c:/windows*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*c%3a%5cwindows*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*c%3a%2fwindows*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*php://filter*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*php%3a%2f%2ffilter*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*php://input*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*expect://*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*phar://*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*zip://*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*data://text*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/var/log/auth.log*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/var/log/apache*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*.ssh/id_rsa*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*/.bash_history*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*web-inf/web.xml*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*wp-config.php*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*=c:/users*', case_insensitive: true}}
+    - wildcard: {url.original: {value: '*=c%3a%5cusers*', case_insensitive: true}}
+    minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [source.ip]
+alert: []
+omega:
+  tier: T1
+  description: Directory traversal sequences or sensitive local files (/etc/passwd, /proc/self, win.ini, wp-config.php, php://filter...)
+    in the URL of a request that reached the application.
+  source: [web]
+  false_positives: File managers and documentation sites that mention these names; scanners.
+  references:
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/webserver_generic/web_path_traversal_exploitation_attempt.yml
+  - https://github.com/SigmaHQ/sigma/blob/master/rules/web/webserver_generic/web_susp_windows_path_uri.yml
+  - https://github.com/elastic/detection-rules/blob/main/rules/cross-platform/discovery_web_server_local_file_inclusion_activity.toml
+  - https://attack.mitre.org/techniques/T1083/
+  - https://attack.mitre.org/techniques/T1005/

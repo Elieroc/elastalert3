@@ -1,0 +1,55 @@
+docs:
+- id: sqlmap
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: 'sqlmap/1.8.2#stable (https://sqlmap.org)'}
+    url: {original: /}
+- id: nikto
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: 'Mozilla/5.00 (Nikto/2.5.0) (Evasions:None) (Test:Port Check)'}
+    url: {original: /}
+- id: ffuf
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: Fuzz Faster U Fool v2.1.0}
+    url: {original: /}
+- id: redtail
+  match: true
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 404}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: libredtail-http}
+    url: {original: /}
+- id: chrome
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent:
+      original: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+    url: {original: /}
+- id: curl
+  doc:
+    event: {category: web}
+    host: {name: web1}
+    http: {request: {method: GET}, response: {status_code: 200}}
+    source: {ip: 203.0.113.7}
+    user_agent: {original: curl/8.7.1}
+    url: {original: /}
+matches: 4

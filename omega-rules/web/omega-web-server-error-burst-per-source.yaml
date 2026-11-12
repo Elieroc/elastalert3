@@ -1,0 +1,48 @@
+name: omega-web-server-error-burst-per-source
+type: frequency
+index: logs-nginx.access-*,logs-apache.access-*,logs-apache_tomcat.access-*,logs-iis.access-*,logs-traefik.access-*,filebeat-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1190, T1595.002]
+risk_score: 15
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- {term: {event.category: web}}
+- {terms: {http.response.status_code: [500, 502, 503, 504]}}
+num_events: 15
+timeframe: {minutes: 5}
+query_key: source.ip
+realert: {minutes: 30}
+exceptions:
+- name: monitoring-and-health-check-agents
+  reason: load balancers, uptime monitors and probes that request many paths with scripting clients
+  match:
+    user_agent.original|startswith:
+    - ELB-HealthChecker
+    - kube-probe
+    - GoogleHC
+    - Amazon-Route53-Health-Check-Service
+    - Pingdom
+    - UptimeRobot
+    - Zabbix
+    - check_http
+    - Nagios
+    - Datadog
+    - StatusCake
+    - Site24x7
+    - NewRelic
+    - Consul
+    - HAProxy
+    - Blackbox Exporter
+    - Prometheus
+    - Elastic-Heartbeat
+alert: []
+omega:
+  tier: T1
+  description: 'One source address triggers 15 or more server errors (500, 502, 503, 504) within 5 minutes: fuzzing, error-based
+    injection or an exploit that crashes the application.'
+  source: [web]
+  false_positives: A broken page that one user reloads in a loop; a monitoring probe against an unhealthy service (exclude it).
+  references:
+  - https://github.com/elastic/detection-rules/blob/main/rules/cross-platform/reconnaissance_web_server_unusual_spike_in_error_response_codes.toml
+  - https://attack.mitre.org/techniques/T1190/
