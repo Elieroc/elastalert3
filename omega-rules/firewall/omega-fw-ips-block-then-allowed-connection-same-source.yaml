@@ -12,7 +12,7 @@ filter:
     - exists: {field: source.ip}
     must_not:
     - terms:
-        source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+        source.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
 query_key: source.ip
 timeframe: {minutes: 15}
 realert: {hours: 1}
@@ -27,7 +27,7 @@ correlation_leaves:
     - term: {event.category: network}
     - term: {event.type: allowed}
     - terms:
-        destination.ip: *id001
+        destination.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
 correlation_query: ips_blocked THEN connection_allowed
 alert: []
 omega:

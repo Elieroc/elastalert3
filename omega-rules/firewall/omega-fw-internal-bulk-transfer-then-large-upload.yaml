@@ -15,9 +15,9 @@ correlation_leaves:
   staging:
     filter:
     - terms:
-        source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+        source.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
     - terms:
-        destination.ip: *id001
+        destination.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
     - terms:
         destination.port: [445, 2049, 873, 22, 21]
     - range:
@@ -26,13 +26,13 @@ correlation_leaves:
     filter:
     - term: {event.type: allowed}
     - terms:
-        source.ip: *id001
+        source.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
     - bool:
         must:
         - exists: {field: destination.ip}
         must_not:
         - terms:
-            destination.ip: *id001
+            destination.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
     - range:
         source.bytes: {gte: 104857600}
 correlation_query: staging THEN upload

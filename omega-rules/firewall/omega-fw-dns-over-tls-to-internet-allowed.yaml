@@ -10,13 +10,13 @@ filter:
 - term: {event.category: network}
 - term: {event.type: allowed}
 - terms:
-    source.ip: &id001 [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
+    source.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
 - bool:
     must:
     - exists: {field: destination.ip}
     must_not:
     - terms:
-        destination.ip: *id001
+        destination.ip: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16]
 - terms:
     destination.port: [853]
 realert: {minutes: 30}
