@@ -1,0 +1,41 @@
+docs:
+- id: rdp
+  match: true
+  doc:
+    host: {name: pc-0042}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+    user: {name: da-bob}
+    winlog:
+      event_data: {LogonType: '10'}
+- id: console
+  match: true
+  doc:
+    host: {name: srv-fs1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+    user: {name: administrator}
+    winlog:
+      event_data: {LogonType: '2'}
+- id: dc
+  match: false
+  doc:
+    host: {name: dc01}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+    user: {name: da-bob}
+    winlog:
+      event_data: {LogonType: '10'}
+- id: network
+  match: false
+  doc:
+    host: {name: pc-0042}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+    user: {name: da-bob}
+    winlog:
+      event_data: {LogonType: '3'}
+- id: normal
+  match: false
+  doc:
+    host: {name: pc-0042}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+    user: {name: alice}
+    winlog:
+      event_data: {LogonType: '10'}

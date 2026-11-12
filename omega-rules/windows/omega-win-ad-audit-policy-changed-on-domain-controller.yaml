@@ -1,0 +1,22 @@
+name: omega-win-ad-audit-policy-changed-on-domain-controller
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1685]
+risk_score: 15
+risk_objects: {user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4719'}
+realert: {minutes: 10}
+query_key: [host.name, user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'The system audit policy is changed (event 4719): turning off the audit of directory access or of account logon
+    on a domain controller blinds the other rules of this pack.'
+  source: [auth]
+  false_positives: 'Planned audit changes and group policy refresh by administrators. Silent: it adds risk; an audit change followed
+    by DCSync or a ticket request is the attack.'
+  references: ['https://attack.mitre.org/techniques/T1562/002/']

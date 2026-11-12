@@ -1,0 +1,27 @@
+name: omega-win-ad-netlogon-secure-channel-vulnerable-connection
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1210, T1068]
+risk_score: 75
+risk_objects: {host: host.name}
+filter:
+- bool:
+    should:
+    - term:
+        event.provider: {value: NETLOGON, case_insensitive: true}
+    minimum_should_match: 1
+- terms:
+    event.code: ['5827', '5828', '5829']
+realert: {minutes: 30}
+query_key: [host.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'The Netlogon secure channel logs a vulnerable connection or a denied one (events 5827, 5828, 5829 in the System
+    log): a client that tries Zerologon (CVE-2020-1472) or runs without the secure channel enforcement.'
+  source: [auth]
+  false_positives: Old devices (NAS, printers, Samba) that do not support the secure channel. They show up on every domain controller
+    until fixed, so list them and exclude.
+  references: ['https://attack.mitre.org/techniques/T1210/']

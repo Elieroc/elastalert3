@@ -1,0 +1,40 @@
+name: omega-win-ad-spn-added-to-user-account
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1558.003, T1098]
+risk_score: 15
+risk_objects: {user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '5136'}
+- bool:
+    should:
+    - term:
+        winlog.event_data.AttributeLDAPDisplayName: {value: servicePrincipalName, case_insensitive: true}
+    minimum_should_match: 1
+- term: {winlog.event_data.OperationType: '%%14674'}
+- bool:
+    should:
+    - term:
+        winlog.event_data.ObjectClass: {value: user, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            user.name: {value: '*$', case_insensitive: true}
+        minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [user.name, winlog.event_data.ObjectDN]
+alert: []
+omega:
+  tier: T1
+  description: 'A service principal name is added to a user object (not a computer): setting an SPN on an account is how an attacker
+    makes it Kerberoastable on demand, then asks for its ticket and cracks it.'
+  source: [auth]
+  false_positives: 'Administrators who register a service account (setspn). Silent: it adds risk, and a ticket burst or a RC4
+    ticket request on the same account makes it matter.'
+  references: ['https://attack.mitre.org/techniques/T1558/003/']

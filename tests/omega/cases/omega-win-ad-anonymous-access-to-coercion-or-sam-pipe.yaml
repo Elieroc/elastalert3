@@ -1,0 +1,41 @@
+docs:
+- id: efs
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: ANONYMOUS LOGON}
+    source: {ip: 10.0.0.50}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: efsrpc}
+- id: samr
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: ANONYMOUS LOGON}
+    source: {ip: 10.0.0.50}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: samr}
+- id: user
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: alice}
+    source: {ip: 10.0.0.20}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: efsrpc}
+- id: other-pipe
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: ANONYMOUS LOGON}
+    source: {ip: 10.0.0.50}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: spoolss}
+mappings:
+  source:
+    properties:
+      ip: {type: ip}

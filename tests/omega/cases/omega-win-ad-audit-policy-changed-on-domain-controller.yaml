@@ -1,0 +1,12 @@
+docs:
+- id: changed
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4719'}
+    user: {name: bob.admin}
+- id: other
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4720'}

@@ -1,0 +1,38 @@
+name: omega-win-ad-ca-editflags-subject-alternative-name-enabled
+type: any
+index: logs-endpoint.events.process*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1649, T1112]
+risk_score: 85
+risk_objects: {host: host.name, user: user.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: process}
+- term: {event.type: start}
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*editflags*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*EDITF_ATTRIBUTESUBJECTALTNAME2*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        process.command_line: {value: '*setreg*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*+editf_attributesubjectaltname2*', case_insensitive: true}
+    - wildcard:
+        process.command_line: {value: '*editf_attributesubjectaltname2*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [host.name, user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A command turns on the EDITF_ATTRIBUTESUBJECTALTNAME2 flag of a certificate authority (certutil -setreg policy\EditFlags):
+    any requester can then put a subject alternative name in a request and get a certificate for another account (ESC6).'
+  source: [process]
+  false_positives: 'Almost none: the flag is a known misconfiguration and is not used on purpose.'
+  references: ['https://attack.mitre.org/techniques/T1649/']

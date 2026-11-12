@@ -1,0 +1,35 @@
+name: omega-win-ad-sid-history-added-to-object
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1134.005, T1098]
+risk_score: 85
+risk_objects: {user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- bool:
+    should:
+    - terms:
+        event.code: ['4765', '4766']
+    - bool:
+        must:
+        - term: {event.code: '5136'}
+        - bool:
+            should:
+            - term:
+                winlog.event_data.AttributeLDAPDisplayName: {value: sIDHistory, case_insensitive: true}
+            minimum_should_match: 1
+        - term: {winlog.event_data.OperationType: '%%14674'}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A SID is added to the SID history of an account (events 4765, 4766 or a directory change of sIDHistory): the account
+    then carries the rights of a privileged group, a persistence and escalation trick.'
+  source: [auth]
+  false_positives: Domain migrations add SID history on purpose. Outside a migration project it should never happen.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/builtin/security/win_security_add_sid_history_to_active_directory_object.yml',
+    'https://attack.mitre.org/techniques/T1134/005/']

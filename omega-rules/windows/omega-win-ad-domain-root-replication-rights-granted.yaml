@@ -1,0 +1,43 @@
+name: omega-win-ad-domain-root-replication-rights-granted
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1098, T1003.006]
+risk_score: 90
+risk_objects: {user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '5136'}
+- bool:
+    should:
+    - term:
+        winlog.event_data.AttributeLDAPDisplayName: {value: nTSecurityDescriptor, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - term:
+        winlog.event_data.ObjectClass: {value: domainDNS, case_insensitive: true}
+    minimum_should_match: 1
+- term: {winlog.event_data.OperationType: '%%14674'}
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.AttributeValue: {value: '*1131f6aa-9c07-11d1-f79f-00c04fc2dcd2*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.AttributeValue: {value: '*1131f6ad-9c07-11d1-f79f-00c04fc2dcd2*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.AttributeValue: {value: '*89e95b76-444d-4c62-991a-0facbeda640c*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'The security descriptor of the domain root object gets a directory replication right (DS-Replication-Get-Changes,
+    -All or -In-Filtered-Set): the account that holds them can run DCSync later, without any group membership to alert on.'
+  source: [auth]
+  false_positives: Directory sync products (Azure AD Connect, migration tools) are given these rights on purpose. Exclude by account
+    and by change ticket.
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/builtin/security/win_security_account_backdoor_dcsync_rights.yml',
+    'https://attack.mitre.org/techniques/T1098/', 'https://attack.mitre.org/techniques/T1003/006/']

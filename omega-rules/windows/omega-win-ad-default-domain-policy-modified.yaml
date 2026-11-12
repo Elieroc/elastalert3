@@ -1,0 +1,33 @@
+name: omega-win-ad-default-domain-policy-modified
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1484.001]
+risk_score: 75
+risk_objects: {user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '5136'}
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.ObjectDN: {value: '*{31B2F340-016D-11D2-945F-00C04FB984F9}*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.ObjectDN: {value: '*{6AC1786C-016F-11D2-945F-00C04FB984F9}*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - term:
+        winlog.event_data.ObjectClass: {value: groupPolicyContainer, case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'The Default Domain Policy or the Default Domain Controllers Policy is changed in the directory (event 5136 on
+    its GPO GUID): these two policies apply to everyone, so an edit reaches every machine and every domain controller.'
+  source: [auth]
+  false_positives: Planned password, lockout or audit policy changes. Rare, so each one deserves a ticket.
+  references: ['https://attack.mitre.org/techniques/T1484/001/']

@@ -1,0 +1,51 @@
+name: omega-win-ad-privileged-account-logon-on-workstation-or-server
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1078.002]
+risk_score: 15
+risk_objects: {user: user.name, ip: source.ip}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4624'}
+- terms:
+    winlog.event_data.LogonType: ['2', '7', '10', '11']
+- bool:
+    should:
+    - wildcard:
+        user.name: {value: administrator, case_insensitive: true}
+    - wildcard:
+        user.name: {value: adm-*, case_insensitive: true}
+    - wildcard:
+        user.name: {value: '*-adm', case_insensitive: true}
+    - wildcard:
+        user.name: {value: da-*, case_insensitive: true}
+    - wildcard:
+        user.name: {value: ea-*, case_insensitive: true}
+    - wildcard:
+        user.name: {value: admin.*, case_insensitive: true}
+    - wildcard:
+        user.name: {value: '*.admin', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            host.name: {value: dc*, case_insensitive: true}
+        - wildcard:
+            host.name: {value: '*-dc*', case_insensitive: true}
+        minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [user.name, host.name]
+alert: []
+omega:
+  tier: T1
+  description: 'An account named like an administrator (administrator, adm-*, *-adm, da-*, ea-*, admin.*) opens an interactive,
+    RDP or cached logon (types 2, 7, 10, 11) on a host whose name does not start with DC: a breach of the tier model, where a
+    privileged credential is left in the memory of a weaker machine.'
+  source: [auth]
+  false_positives: 'Help desk and administrators who work on servers with their admin account. Edit the name patterns to your
+    naming rules. Silent: it adds risk, and credential theft on that host follows.'
+  references: ['https://attack.mitre.org/techniques/T1078/002/']

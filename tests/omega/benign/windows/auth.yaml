@@ -16,3 +16,18 @@
 - {event.code: '7045', event.provider: Service Control Manager, winlog.event_data.ServiceName: 'Vendor Agent', winlog.event_data.ServiceFileName: '"C:\Program Files\Vendor\agent.exe" -service'}
 - {event.code: '4698', user.name: svc-sccm, winlog.event_data.TaskContent: '<Exec><Command>C:\Program Files\Vendor\task.exe</Command></Exec>'}
 - {event.code: '104', event.provider: Microsoft-Windows-Eventlog-Other}
+# Active Directory events seen on a domain controller
+- {event.code: '4624', event.outcome: success, user.name: 'PC1$', source.ip: 10.0.0.21, winlog.event_data.LogonType: '3', winlog.event_data.AuthenticationPackageName: Kerberos}
+- {event.code: '4768', user.name: alice, source.ip: 10.0.0.20, winlog.event_data.TicketEncryptionType: '0x12', winlog.event_data.Status: '0x0'}
+- {event.code: '4769', user.name: alice, source.ip: 10.0.0.20, winlog.event_data.TicketEncryptionType: '0x12', winlog.event_data.ServiceName: 'FS01$'}
+- {event.code: '4771', user.name: alice, source.ip: 10.0.0.20, winlog.event_data.Status: '0x18'}
+- {event.code: '4738', user.name: helpdesk, winlog.event_data.TargetUserName: alice, winlog.event_data.UserAccountControl: '%%2050'}
+- {event.code: '4720', user.name: helpdesk, winlog.event_data.TargetUserName: newuser}
+- {event.code: '4662', user.name: 'DC01$', winlog.event_data.Properties: '{1131f6ad-9c07-11d1-f79f-00c04fc2dcd2}'}
+- {event.code: '4662', user.name: 'SRV1$', winlog.event_data.Properties: '{e362ed86-b728-0842-b27d-2dea7a9df218}'}
+- {event.code: '5136', user.name: helpdesk, winlog.event_data.AttributeLDAPDisplayName: description, winlog.event_data.OperationType: '%%14674', winlog.event_data.ObjectClass: user, winlog.event_data.ObjectDN: 'CN=alice,CN=Users,DC=corp,DC=local'}
+- {event.code: '5137', user.name: helpdesk, winlog.event_data.ObjectClass: organizationalUnit, winlog.event_data.ObjectDN: 'OU=Staff,DC=corp,DC=local'}
+- {event.code: '5145', user.name: alice, source.ip: 10.0.0.20, winlog.event_data.ShareName: '\\*\SYSVOL', winlog.event_data.RelativeTargetName: 'corp.local\Policies\{ABC}\Machine\Registry.pol', winlog.event_data.AccessList: '%%1538'}
+- {event.code: '5145', user.name: alice, source.ip: 10.0.0.20, winlog.event_data.ShareName: '\\*\IPC$', winlog.event_data.RelativeTargetName: spoolss}
+- {event.code: '4781', user.name: helpdesk, winlog.event_data.OldTargetUserName: 'PC1$', winlog.event_data.NewTargetUserName: 'PC2$'}
+- {event.code: '4719', user.name: SYSTEM}

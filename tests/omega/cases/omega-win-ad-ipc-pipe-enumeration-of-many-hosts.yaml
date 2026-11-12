@@ -1,0 +1,159 @@
+docs:
+- id: h0
+  match: true
+  doc:
+    host: {name: srv0}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: alice}
+    source: {ip: 10.0.0.60}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: srvsvc}
+- id: h1
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: alice}
+    source: {ip: 10.0.0.60}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: srvsvc}
+- id: h2
+  match: true
+  doc:
+    host: {name: srv2}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: alice}
+    source: {ip: 10.0.0.60}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: srvsvc}
+- id: h3
+  match: true
+  doc:
+    host: {name: srv3}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: alice}
+    source: {ip: 10.0.0.60}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: srvsvc}
+- id: h4
+  match: true
+  doc:
+    host: {name: srv4}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: alice}
+    source: {ip: 10.0.0.60}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: srvsvc}
+- id: h5
+  match: true
+  doc:
+    host: {name: srv5}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: alice}
+    source: {ip: 10.0.0.60}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: srvsvc}
+- id: h6
+  match: true
+  doc:
+    host: {name: srv6}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: alice}
+    source: {ip: 10.0.0.60}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: srvsvc}
+- id: h7
+  match: true
+  doc:
+    host: {name: srv7}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: alice}
+    source: {ip: 10.0.0.60}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: srvsvc}
+- id: h8
+  match: true
+  doc:
+    host: {name: srv8}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: alice}
+    source: {ip: 10.0.0.60}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: srvsvc}
+- id: h9
+  match: true
+  doc:
+    host: {name: srv9}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: alice}
+    source: {ip: 10.0.0.60}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: srvsvc}
+- id: h10
+  match: true
+  doc:
+    host: {name: srv10}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: alice}
+    source: {ip: 10.0.0.60}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: srvsvc}
+- id: h11
+  match: true
+  doc:
+    host: {name: srv11}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: alice}
+    source: {ip: 10.0.0.60}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: srvsvc}
+- id: h12
+  match: true
+  doc:
+    host: {name: srv12}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: alice}
+    source: {ip: 10.0.0.60}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: srvsvc}
+- id: h13
+  match: true
+  doc:
+    host: {name: srv13}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: alice}
+    source: {ip: 10.0.0.60}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: srvsvc}
+- id: h14
+  match: true
+  doc:
+    host: {name: srv14}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: alice}
+    source: {ip: 10.0.0.60}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: srvsvc}
+- id: h15
+  match: true
+  doc:
+    host: {name: srv15}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: alice}
+    source: {ip: 10.0.0.60}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: srvsvc}
+- id: one
+  match: true
+  doc:
+    host: {name: srv1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: alice}
+    source: {ip: 10.0.0.61}
+    winlog:
+      event_data: {ShareName: \\*\IPC$, RelativeTargetName: srvsvc}
+matches: 2
+mappings:
+  source:
+    properties:
+      ip: {type: ip}

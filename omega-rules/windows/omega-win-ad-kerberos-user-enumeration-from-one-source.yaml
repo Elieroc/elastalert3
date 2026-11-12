@@ -1,0 +1,29 @@
+name: omega-win-ad-kerberos-user-enumeration-from-one-source
+type: cardinality
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1087.002, T1110.003]
+risk_score: 75
+risk_objects: {ip: source.ip}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4768'}
+- bool:
+    should:
+    - term:
+        winlog.event_data.Status: {value: '0x6', case_insensitive: true}
+    minimum_should_match: 1
+cardinality_field: user.name
+max_cardinality: 19
+timeframe: {minutes: 10}
+query_key: [source.ip]
+realert: {minutes: 30}
+alert: [debug]
+omega:
+  tier: T0
+  description: 'One source address asks for a ticket for 20 or more different accounts that do not exist (event 4768, status 0x6,
+    client not found) within 10 minutes: user enumeration with a Kerberos tool such as kerbrute.'
+  source: [auth]
+  false_positives: A broken import of old names, a scanner. Exclude by source.
+  references: ['https://attack.mitre.org/techniques/T1087/002/']

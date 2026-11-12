@@ -1,0 +1,28 @@
+docs:
+- id: default
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: iam, provider: Microsoft-Windows-Security-Auditing, code: '5136'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ObjectDN: 'CN={31B2F340-016D-11D2-945F-00C04FB984F9},CN=Policies,CN=System,DC=corp,DC=local', ObjectClass: groupPolicyContainer,
+        AttributeLDAPDisplayName: versionNumber, OperationType: '%%14674', AttributeValue: x}
+- id: dc-policy
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: iam, provider: Microsoft-Windows-Security-Auditing, code: '5136'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ObjectDN: 'CN={6AC1786C-016F-11D2-945F-00C04FB984F9},CN=Policies,CN=System,DC=corp,DC=local', ObjectClass: groupPolicyContainer,
+        AttributeLDAPDisplayName: gPCMachineExtensionNames, OperationType: '%%14674', AttributeValue: x}
+- id: other-gpo
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: iam, provider: Microsoft-Windows-Security-Auditing, code: '5136'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ObjectDN: 'CN={ABCDEF00-016D-11D2-945F-00C04FB984F9},CN=Policies,CN=System,DC=corp,DC=local', ObjectClass: groupPolicyContainer,
+        AttributeLDAPDisplayName: versionNumber, OperationType: '%%14674', AttributeValue: x}

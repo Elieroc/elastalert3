@@ -1,0 +1,43 @@
+name: omega-win-ad-machine-account-ntlm-logon-from-new-source
+type: new_term
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1557.001, T1187]
+risk_score: 20
+risk_objects: {user: user.name, ip: source.ip}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4624'}
+- bool:
+    should:
+    - term:
+        winlog.event_data.LogonType: {value: '3', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - term:
+        winlog.event_data.AuthenticationPackageName: {value: NTLM, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        user.name: {value: '*$', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - term: {user.name: ANONYMOUS LOGON}
+fields:
+- [user.name, source.ip]
+terms_window_size: {days: 30}
+use_keyword_postfix: false
+realert: {minutes: 1}
+alert: []
+omega:
+  tier: T1
+  description: 'A computer account logs on over the network with NTLM from a source address it has not used in the last 30 days:
+    the shape of an NTLM relay that coerced a machine (PetitPotam, PrinterBug) and replays its authentication from another host.'
+  source: [auth]
+  false_positives: 'Computers that change address (DHCP, new network), or that fall back to NTLM when Kerberos fails. Silent:
+    it adds risk; with a coercion tool or an ADCS request it matters.'
+  references: ['https://attack.mitre.org/techniques/T1557/001/']

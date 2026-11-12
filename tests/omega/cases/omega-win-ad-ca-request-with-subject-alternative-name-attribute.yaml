@@ -1,0 +1,34 @@
+docs:
+- id: upn
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4887'}
+    user: {name: alice}
+    winlog:
+      event_data: {Requester: CORP\alice, Attributes: 'CertificateTemplate:User
+
+          SAN:upn=administrator@corp.local'}
+- id: dns
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4887'}
+    user: {name: alice}
+    winlog:
+      event_data: {Requester: CORP\alice, Attributes: 'ccm:x
+
+          SAN:dns=dc1.corp.local'}
+- id: plain
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4887'}
+    user: {name: alice}
+    winlog:
+      event_data: {Requester: CORP\alice, Attributes: 'CertificateTemplate:User'}
+- id: other
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4886'}

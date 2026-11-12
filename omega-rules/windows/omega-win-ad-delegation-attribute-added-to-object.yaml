@@ -1,0 +1,31 @@
+name: omega-win-ad-delegation-attribute-added-to-object
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1098, T1558]
+risk_score: 80
+risk_objects: {user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '5136'}
+- bool:
+    should:
+    - term:
+        winlog.event_data.AttributeLDAPDisplayName: {value: msDS-AllowedToActOnBehalfOfOtherIdentity, case_insensitive: true}
+    - term:
+        winlog.event_data.AttributeLDAPDisplayName: {value: msDS-AllowedToDelegateTo, case_insensitive: true}
+    minimum_should_match: 1
+- term: {winlog.event_data.OperationType: '%%14674'}
+realert: {minutes: 30}
+query_key: [user.name, winlog.event_data.ObjectDN]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A Kerberos delegation attribute is set on an object: msDS-AllowedToActOnBehalfOfOtherIdentity (resource-based
+    constrained delegation) or msDS-AllowedToDelegateTo (constrained delegation). An attacker who can write it takes over the
+    target with a forged service ticket.'
+  source: [auth]
+  false_positives: Administrators who set up delegation for a service or a web farm (exclude the change tickets by account). Rare
+    and worth a look every time.
+  references: ['https://attack.mitre.org/techniques/T1098/', 'https://attack.mitre.org/techniques/T1558/']

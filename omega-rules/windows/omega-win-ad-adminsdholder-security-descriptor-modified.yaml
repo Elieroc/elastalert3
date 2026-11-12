@@ -1,0 +1,31 @@
+name: omega-win-ad-adminsdholder-security-descriptor-modified
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1098, T1078.002]
+risk_score: 90
+risk_objects: {user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '5136'}
+- bool:
+    should:
+    - term:
+        winlog.event_data.AttributeLDAPDisplayName: {value: nTSecurityDescriptor, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.ObjectDN: {value: 'CN=AdminSDHolder,CN=System,*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'The security descriptor of the AdminSDHolder object is changed: the permissions set there are copied to every
+    privileged account every hour, so a hidden ACE on it is a persistent backdoor.'
+  source: [auth]
+  false_positives: Almost none. Only a planned change of privileged account permissions touches this object.
+  references: ['https://attack.mitre.org/techniques/T1098/', 'https://attack.mitre.org/techniques/T1078/002/']

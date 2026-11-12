@@ -35,7 +35,7 @@ Silent T1 rules still write their doc to the writeback index with `risk_objects`
 | Pack | Rules | Data sources (ECS) | State |
 |---|---|---|---|
 | `linux/` | 134: 54 T0, 76 T1, 4 T2 | Elastic Defend / Auditbeat (process, file, network, DNS lookups), system auth (sshd, sudo, su) | first version |
-| `windows/` | 197: 105 T0, 87 T1, 5 T2 | Elastic Defend / Winlogbeat / Sysmon (process, file, registry, network, DNS, named pipes, WMI), Security and System event logs (4624/4625/4662/4697/4698/4732/4768/4769/5140, 1102, 7045), PowerShell script block logging (4104) | first version |
+| `windows/` | 228: 127 T0, 96 T1, 5 T2 | Elastic Defend / Winlogbeat / Sysmon (process, file, registry, network, DNS, named pipes, WMI), Security and System event logs (4624/4625/4662/4697/4698/4732/4768/4769/5140, 1102, 7045), PowerShell script block logging (4104) | first version |
 | `web/` | 92: 17 T0, 64 T1, 11 T2 | Web access logs (nginx, Apache, Tomcat, IIS, Traefik; ECS `event.category: web`, `url.original`/`url.path`/`url.domain`, `http.request.method`, `http.response.status_code`, `http.request.bytes`, `http.response.body.bytes`, `user_agent.original`, `source.ip`, optional GeoIP `source.geo.*` / `source.as.number` and `user.name`) and forward proxy logs (Squid, Zscaler; source `proxy`) | first version |
 | `firewall/` | 64: 16 T0, 37 T1, 11 T2 | Firewall and IPS logs (Fortinet, Palo Alto, Cisco ASA, Check Point, Sophos, Juniper, pfSense; ECS `event.category` network / intrusion_detection / authentication / configuration, `event.type` allowed or denied, `source.ip`, `destination.ip`, `destination.port`, `network.transport`, `network.bytes`, `source.bytes`, `network.application`, `rule.category`, `observer.name`, `observer.type: firewall`, `user.name`, GeoIP `source.geo.*`) | first version |
 
@@ -156,9 +156,27 @@ others are benign and must not be hit) and optionally `matches: N`, what the rul
 - `omega-fw-dns-to-unlisted-external-resolver` lists public resolvers: put yours in the whitelist. Time windows (`active_hours`, `usual_hours`) default to UTC.
 - The host and risk rules of the three packs can be combined: set the same `risk_object_type` (ip) to add up firewall, web and endpoint alerts on one address.
 
+## Active Directory rules of the Windows pack
+
+Most of them read what the domain controllers write, not what an attacker's host writes, so they also catch attacks run from an unmanaged machine (Impacket on Linux, for example).
+They cover persistence and privilege changes in the directory (shadow credentials, delegation, AdminSDHolder, replication rights, SID history, DCShadow, SPN on users,
+preauthentication, noPac renames, trusts, DSRM, default policies, SYSVOL tasks), authentication abuse (Kerberos spray and user enumeration, NTLM relay of machine accounts,
+Zerologon events, NTLMv1, RC4), certificate services (SAN requests, template changes, EditFlags), secrets (gMSA password, DPAPI backup key), ADIDNS and coercion pipes.
+
+The 31 rules named `omega-win-ad-*` stay silent when the audit is missing. Turn on these, on every domain controller, or most of these rules never fire:
+
+- Advanced audit policy: Directory Service Changes (5136, 5137), Directory Service Access (4662, with a SACL on the objects to watch: domain root, AdminSDHolder,
+  gMSA objects and the secrets), Kerberos Authentication Service and Service Ticket Operations (4768, 4769, 4771), User, Computer and Security Group Management
+  (4738, 4742, 4781, 4765), Authentication Policy Change (4704, 4706), Audit Policy Change (4719), Detailed File Share (5145).
+- On the certificate authorities: the Certification Services audit (4886 to 4900).
+- Collect the System log of the domain controllers (Netlogon 5827 to 5829).
+
+`omega-win-ad-privileged-account-logon-on-workstation-or-server` matches administrator account and domain controller host names by pattern: edit them to your naming rules.
+Attribute flags such as the preauthentication flag read the text list of event 4738 (`%%2096`), which depends on the language-independent identifiers Windows writes.
+
 ## ATT&CK coverage
 
 Measured on the `mitre_attack` of every rule against ATT&CK Enterprise v20.0 (active techniques only, revoked and deprecated ones left out):
-152 of 227 techniques (67 %) and 309 of 706 techniques plus sub-techniques (44 %). `python3 tests/omega/coverage.py <pack>` lists, per pack, what the
+153 of 227 techniques (67 %) and 312 of 706 techniques plus sub-techniques (44 %). `python3 tests/omega/coverage.py <pack>` lists, per pack, what the
 Sigma and Elastic sources detect and the pack does not. What stays out of reach with these logs: resource development, pre-compromise reconnaissance,
 firmware and hardware, and most cloud control plane techniques (they need a cloud audit log pack, not endpoint, web or firewall logs).

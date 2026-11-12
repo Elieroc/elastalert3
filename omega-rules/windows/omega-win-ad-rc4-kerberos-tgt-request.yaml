@@ -1,0 +1,39 @@
+name: omega-win-ad-rc4-kerberos-tgt-request
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1550.002, T1558]
+risk_score: 8
+risk_objects: {user: user.name, ip: source.ip}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4768'}
+- bool:
+    should:
+    - term:
+        winlog.event_data.TicketEncryptionType: {value: '0x17', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - term:
+        winlog.event_data.Status: {value: '0x0', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            user.name: {value: '*$', case_insensitive: true}
+        minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [user.name, source.ip]
+alert: []
+omega:
+  tier: T1
+  description: 'A Kerberos ticket-granting ticket is requested with RC4 encryption (event 4768, type 0x17): in a domain that uses
+    AES it points to overpass-the-hash or to a tool that builds the request from an NTLM hash.'
+  source: [auth]
+  false_positives: 'Old systems and accounts that never got an AES key. Common in older domains; check how many you have before
+    using it. Silent: it adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1550/002/']

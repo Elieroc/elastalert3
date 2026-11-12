@@ -1,0 +1,33 @@
+docs:
+- id: wildcard
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: iam, provider: Microsoft-Windows-Security-Auditing, code: '5137'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ObjectDN: 'DC=*,DC=corp.local,CN=MicrosoftDNS,DC=DomainDnsZones,DC=corp,DC=local', ObjectClass: dnsNode}
+- id: wpad
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: iam, provider: Microsoft-Windows-Security-Auditing, code: '5137'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ObjectDN: 'DC=wpad,DC=corp.local,CN=MicrosoftDNS,DC=DomainDnsZones,DC=corp,DC=local', ObjectClass: dnsNode}
+- id: host
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: iam, provider: Microsoft-Windows-Security-Auditing, code: '5137'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ObjectDN: 'DC=pc9,DC=corp.local,CN=MicrosoftDNS,DC=DomainDnsZones,DC=corp,DC=local', ObjectClass: dnsNode}
+- id: user
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: iam, provider: Microsoft-Windows-Security-Auditing, code: '5137'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ObjectDN: 'DC=*,CN=Users,DC=corp,DC=local', ObjectClass: user}

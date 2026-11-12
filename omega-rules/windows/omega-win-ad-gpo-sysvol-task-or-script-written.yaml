@@ -1,0 +1,52 @@
+name: omega-win-ad-gpo-sysvol-task-or-script-written
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1484.001, T1053.005, T1037.001]
+risk_score: 20
+risk_objects: {user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '5145'}
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.ShareName: {value: '*\\SYSVOL', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.RelativeTargetName: {value: '*scheduledtasks.xml', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.RelativeTargetName: {value: '*\\scripts.ini', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.RelativeTargetName: {value: '*\\psscripts.ini', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.AccessList: {value: '*%%4417*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.AccessList: {value: '*WriteData*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.AccessList: {value: '*AppendData*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            user.name: {value: '*$', case_insensitive: true}
+        minimum_should_match: 1
+realert: {minutes: 10}
+query_key: [user.name, winlog.event_data.RelativeTargetName]
+alert: []
+omega:
+  tier: T1
+  description: 'A write to a Group Policy file that starts code on every machine it applies to: ScheduledTasks.xml, scripts.ini
+    or psscripts.ini in SYSVOL (share access event 5145).'
+  source: [auth]
+  false_positives: 'Administrators who edit a GPO from the console. Silent: it adds risk; a GPO task right after a new admin or
+    from an odd host is the attack.'
+  references: ['https://attack.mitre.org/techniques/T1484/001/']

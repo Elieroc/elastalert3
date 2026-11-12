@@ -1,0 +1,34 @@
+docs:
+- id: new
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+    user: {name: SRV1$}
+    source: {ip: 10.0.9.9}
+    winlog:
+      event_data: {LogonType: '3', AuthenticationPackageName: NTLM}
+- id: old-same
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+    user: {name: SRV1$}
+    source: {ip: 10.0.1.1}
+    winlog:
+      event_data: {LogonType: '3', AuthenticationPackageName: Kerberos}
+- id: hist
+  match: false
+  doc:
+    host: {name: dc9}
+    event: {provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+    user: {name: SRV1$}
+    source: {ip: 10.0.1.1}
+    winlog:
+      event_data: {LogonType: '3', AuthenticationPackageName: NTLM}
+    '@timestamp': '2025-12-20T10:00:00Z'
+matches: 1
+mappings:
+  source:
+    properties:
+      ip: {type: ip}

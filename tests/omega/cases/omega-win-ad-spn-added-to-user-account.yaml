@@ -1,0 +1,37 @@
+docs:
+- id: add
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: iam, provider: Microsoft-Windows-Security-Auditing, code: '5136'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ObjectDN: 'CN=Bob,CN=Users,DC=corp,DC=local', ObjectClass: user, AttributeLDAPDisplayName: servicePrincipalName,
+        OperationType: '%%14674', AttributeValue: MSSQLSvc/db1.corp.local}
+- id: computer
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: iam, provider: Microsoft-Windows-Security-Auditing, code: '5136'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ObjectDN: 'CN=Bob,CN=Users,DC=corp,DC=local', ObjectClass: computer, AttributeLDAPDisplayName: servicePrincipalName,
+        OperationType: '%%14674', AttributeValue: x}
+- id: removed
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: iam, provider: Microsoft-Windows-Security-Auditing, code: '5136'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ObjectDN: 'CN=Bob,CN=Users,DC=corp,DC=local', ObjectClass: user, AttributeLDAPDisplayName: servicePrincipalName,
+        OperationType: '%%14675', AttributeValue: x}
+- id: machine
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: iam, provider: Microsoft-Windows-Security-Auditing, code: '5136'}
+    user: {name: DC1$}
+    winlog:
+      event_data: {ObjectDN: 'CN=Bob,CN=Users,DC=corp,DC=local', ObjectClass: user, AttributeLDAPDisplayName: servicePrincipalName,
+        OperationType: '%%14674', AttributeValue: x}

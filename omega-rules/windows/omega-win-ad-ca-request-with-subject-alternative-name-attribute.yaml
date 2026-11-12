@@ -1,0 +1,33 @@
+name: omega-win-ad-ca-request-with-subject-alternative-name-attribute
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1649]
+risk_score: 80
+risk_objects: {user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4887'}
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.Attributes: {value: '*san:*upn=*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.Attributes: {value: '*san:*dns=*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.Attributes: {value: '*san:*email=*', case_insensitive: true}
+    - wildcard:
+        winlog.event_data.Attributes: {value: '*san:*ipaddress=*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [winlog.event_data.Requester]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A certificate is issued (event 4887) for a request that carries a subject alternative name in its attributes:
+    if the authority allows it (flag EDITF_ATTRIBUTESUBJECTALTNAME2, ESC6) anyone can ask for a certificate as a domain administrator.'
+  source: [auth]
+  false_positives: Authorities that allow a SAN on purpose for web servers or devices. Exclude the requesters and templates you
+    know. Needs the certificate services audit on the authority.
+  references: ['https://attack.mitre.org/techniques/T1649/']

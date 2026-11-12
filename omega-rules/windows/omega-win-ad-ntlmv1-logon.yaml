@@ -1,0 +1,30 @@
+name: omega-win-ad-ntlmv1-logon
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 4
+mitre_attack: [T1550.002, T1557.001]
+risk_score: 6
+risk_objects: {user: user.name, ip: source.ip}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4624'}
+- bool:
+    should:
+    - term:
+        winlog.event_data.LmPackageName: {value: NTLM V1, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - term: {user.name: ANONYMOUS LOGON}
+realert: {minutes: 10}
+query_key: [user.name, source.ip]
+alert: []
+omega:
+  tier: T1
+  description: 'A network logon that uses NTLM version 1 (event 4624, package name NTLM V1): the weak protocol that can be cracked
+    and downgraded to by a relay or a rogue server.'
+  source: [auth]
+  false_positives: 'Old devices and applications that still use NTLMv1; the list is the first step of disabling it. Silent: it
+    adds risk.'
+  references: ['https://attack.mitre.org/techniques/T1557/001/']

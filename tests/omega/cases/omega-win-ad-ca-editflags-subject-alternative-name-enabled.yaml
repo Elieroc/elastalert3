@@ -1,0 +1,53 @@
+docs:
+- id: certutil
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: certutil.exe
+      executable: C:\Windows\System32\certutil.exe
+      command_line: certutil -config ca\CORP-CA -setreg policy\EditFlags +EDITF_ATTRIBUTESUBJECTALTNAME2
+      parent: {name: explorer.exe}
+- id: ps
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: powershell.exe
+      executable: C:\Windows\System32\powershell.exe
+      command_line: powershell -c certutil -setreg policy\EditFlags +EDITF_ATTRIBUTESUBJECTALTNAME2
+      parent: {name: explorer.exe}
+- id: other
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: certutil.exe
+      executable: C:\Windows\System32\certutil.exe
+      command_line: certutil -setreg ca\CRLPeriod Days
+      parent: {name: explorer.exe}
+- id: view
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    user: {name: alice}
+    event: {category: process, type: start}
+    process:
+      name: certutil.exe
+      executable: C:\Windows\System32\certutil.exe
+      command_line: certutil -getreg policy\EditFlags
+      parent: {name: explorer.exe}

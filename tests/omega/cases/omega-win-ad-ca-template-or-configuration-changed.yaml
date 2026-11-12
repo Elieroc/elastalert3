@@ -1,0 +1,18 @@
+docs:
+- id: template
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4899'}
+    user: {name: pki-admin}
+- id: config
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4890'}
+    user: {name: pki-admin}
+- id: issued
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4887'}

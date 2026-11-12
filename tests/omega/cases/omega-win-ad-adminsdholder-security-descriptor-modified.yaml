@@ -1,0 +1,28 @@
+docs:
+- id: acl
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: iam, provider: Microsoft-Windows-Security-Auditing, code: '5136'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ObjectDN: 'CN=AdminSDHolder,CN=System,DC=corp,DC=local', ObjectClass: container, AttributeLDAPDisplayName: nTSecurityDescriptor,
+        OperationType: '%%14674', AttributeValue: x}
+- id: user-acl
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: iam, provider: Microsoft-Windows-Security-Auditing, code: '5136'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ObjectDN: 'CN=Bob,CN=Users,DC=corp,DC=local', ObjectClass: user, AttributeLDAPDisplayName: nTSecurityDescriptor,
+        OperationType: '%%14674', AttributeValue: x}
+- id: holder-other
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: iam, provider: Microsoft-Windows-Security-Auditing, code: '5136'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ObjectDN: 'CN=AdminSDHolder,CN=System,DC=corp,DC=local', ObjectClass: container, AttributeLDAPDisplayName: description,
+        OperationType: '%%14674', AttributeValue: x}

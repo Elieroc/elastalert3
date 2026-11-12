@@ -1,0 +1,43 @@
+name: omega-win-ad-lm-compatibility-level-lowered
+type: any
+index: logs-endpoint.events.registry*,winlogbeat-*,logs-windows.sysmon_operational-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1112, T1685, T1557.001]
+risk_score: 75
+risk_objects: {host: host.name}
+filter:
+- term: {host.os.type: windows}
+- term: {event.category: registry}
+- terms:
+    event.type: [change, creation]
+- bool:
+    should:
+    - wildcard:
+        registry.path: {value: '*\\Control\\Lsa\\LmCompatibilityLevel', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        registry.data.strings: {value: '0', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '1', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '2', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '0x00000000', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '0x00000001', case_insensitive: true}
+    - wildcard:
+        registry.data.strings: {value: '0x00000002', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [host.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'The LmCompatibilityLevel value of the Lsa key is set to 0, 1 or 2: the host sends LM or NTLMv1 responses again,
+    which makes captured authentication easy to crack or relay.'
+  source: [registry]
+  false_positives: A planned change for a legacy system. Rare, and on a domain controller it is serious.
+  references: ['https://attack.mitre.org/techniques/T1112/', 'https://attack.mitre.org/techniques/T1557/001/']

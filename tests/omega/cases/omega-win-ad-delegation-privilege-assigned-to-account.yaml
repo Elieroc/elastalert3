@@ -1,0 +1,17 @@
+docs:
+- id: 'yes'
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4704'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {PrivilegeList: SeEnableDelegationPrivilege}
+- id: other-priv
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4704'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {PrivilegeList: SeBackupPrivilege}

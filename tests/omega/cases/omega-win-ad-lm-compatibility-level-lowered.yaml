@@ -1,0 +1,49 @@
+docs:
+- id: zero
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\LmCompatibilityLevel
+      data:
+        strings: ['0x00000000']
+    process: {name: reg.exe}
+- id: two
+  match: true
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\LmCompatibilityLevel
+      data:
+        strings: ['2']
+    process: {name: reg.exe}
+- id: five
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\LmCompatibilityLevel
+      data:
+        strings: ['0x00000005']
+    process: {name: reg.exe}
+- id: other
+  match: false
+  doc:
+    host:
+      os: {type: windows}
+      name: win1
+    event: {category: registry, type: change}
+    registry:
+      path: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\RunAsPPL
+      data:
+        strings: ['0x00000000']
+    process: {name: reg.exe}

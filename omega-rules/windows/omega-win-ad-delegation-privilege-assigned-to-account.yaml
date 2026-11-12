@@ -1,0 +1,26 @@
+name: omega-win-ad-delegation-privilege-assigned-to-account
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1098, T1558]
+risk_score: 80
+risk_objects: {user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4704'}
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.PrivilegeList: {value: '*SeEnableDelegationPrivilege*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'The SeEnableDelegationPrivilege right is assigned to an account (event 4704): it lets the account set delegation
+    on any object, a persistent way to take over the domain.'
+  source: [auth]
+  false_positives: 'Almost none: the right is held by Domain Admins by default and rarely given to others.'
+  references: ['https://attack.mitre.org/techniques/T1098/']

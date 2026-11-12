@@ -1,0 +1,31 @@
+docs:
+- id: 'on'
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4738'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {TargetUserName: svc-old, UserAccountControl: '%%2096'}
+- id: mixed
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4738'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {UserAccountControl: '%%2050 %%2096'}
+- id: other-flag
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4738'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {UserAccountControl: '%%2050'}
+- id: empty
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4738'}
+    user: {name: bob.admin}

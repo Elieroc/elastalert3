@@ -1,0 +1,35 @@
+docs:
+- id: shadow
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: iam, provider: Microsoft-Windows-Security-Auditing, code: '5137'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ObjectDN: 'CN=NTDS Settings,CN=FAKE,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configuration,DC=corp,DC=local',
+        ObjectClass: nTDSDSA}
+- id: promo
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: iam, provider: Microsoft-Windows-Security-Auditing, code: '5137'}
+    user: {name: DC2$}
+    winlog:
+      event_data: {ObjectDN: 'CN=NTDS Settings,CN=DC2,CN=Servers,CN=Default,CN=Sites,CN=Configuration,DC=corp,DC=local', ObjectClass: nTDSDSA}
+- id: user
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: iam, provider: Microsoft-Windows-Security-Auditing, code: '5137'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ObjectDN: 'CN=Bob,CN=Users,DC=corp,DC=local', ObjectClass: user}
+- id: '5136'
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: iam, provider: Microsoft-Windows-Security-Auditing, code: '5136'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ObjectDN: 'CN=Bob,CN=Users,DC=corp,DC=local', ObjectClass: nTDSDSA, AttributeLDAPDisplayName: description,
+        OperationType: '%%14674', AttributeValue: x}

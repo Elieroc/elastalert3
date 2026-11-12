@@ -1,0 +1,45 @@
+name: omega-win-ad-anonymous-access-to-coercion-or-sam-pipe
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1187, T1087.002]
+risk_score: 75
+risk_objects: {ip: source.ip, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '5145'}
+- bool:
+    should:
+    - term:
+        user.name: {value: ANONYMOUS LOGON, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.ShareName: {value: '*\\IPC$', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - term:
+        winlog.event_data.RelativeTargetName: {value: efsrpc, case_insensitive: true}
+    - term:
+        winlog.event_data.RelativeTargetName: {value: lsarpc, case_insensitive: true}
+    - term:
+        winlog.event_data.RelativeTargetName: {value: samr, case_insensitive: true}
+    - term:
+        winlog.event_data.RelativeTargetName: {value: netlogon, case_insensitive: true}
+    - term:
+        winlog.event_data.RelativeTargetName: {value: lsass, case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [source.ip]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'The ANONYMOUS LOGON account opens a named pipe that coercion and directory enumeration tools use (efsrpc, lsarpc,
+    samr, netlogon, lsass) on IPC$ (event 5145): PetitPotam or an unauthenticated enumeration of accounts.'
+  source: [auth]
+  false_positives: Very old clients and some backup tools use null sessions. Rare on modern networks. Needs the Detailed File
+    Share audit.
+  references: ['https://attack.mitre.org/techniques/T1187/']

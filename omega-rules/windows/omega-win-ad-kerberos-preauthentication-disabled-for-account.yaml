@@ -1,0 +1,26 @@
+name: omega-win-ad-kerberos-preauthentication-disabled-for-account
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1558.004, T1098]
+risk_score: 80
+risk_objects: {user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4738'}
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.UserAccountControl: {value: '*%%2096*', case_insensitive: true}
+    minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [winlog.event_data.TargetUserName]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'The "do not require Kerberos preauthentication" flag is turned on for an account (event 4738): its encrypted material
+    can then be requested by anyone and cracked offline (AS-REP roasting).'
+  source: [auth]
+  false_positives: Very old Kerberos clients and some Unix integrations need it. The change is rare, so each one deserves a check.
+  references: ['https://attack.mitre.org/techniques/T1558/004/']

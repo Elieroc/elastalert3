@@ -1,0 +1,40 @@
+name: omega-win-ad-dpapi-domain-backup-key-read
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1003.004, T1555]
+risk_score: 90
+risk_objects: {user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4662'}
+- bool:
+    should:
+    - term:
+        winlog.event_data.ObjectType: {value: SecretObject, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.ObjectName: {value: '*BCKUPKEY*', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            user.name: {value: '*$', case_insensitive: true}
+        minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'The DPAPI domain backup key (the BCKUPKEY secret object of the directory) is read by an account that is not a
+    computer (event 4662): with this key an attacker decrypts the saved secrets of every user in the domain, for ever.'
+  source: [auth]
+  false_positives: 'None in normal operation: only a domain controller reads this key. Needs the Directory Service Access audit
+    and a SACL on the secrets.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/builtin/security/win_security_dpapi_domain_backupkey_extraction.yml',
+    'https://attack.mitre.org/techniques/T1003/004/']

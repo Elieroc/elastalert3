@@ -1,0 +1,41 @@
+docs:
+- id: rc4
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4768'}
+    user: {name: alice}
+    source: {ip: 10.0.0.20}
+    winlog:
+      event_data: {TicketEncryptionType: '0x17', Status: '0x0'}
+- id: aes
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4768'}
+    user: {name: alice}
+    source: {ip: 10.0.0.20}
+    winlog:
+      event_data: {TicketEncryptionType: '0x12', Status: '0x0'}
+- id: failed
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4768'}
+    user: {name: alice}
+    source: {ip: 10.0.0.20}
+    winlog:
+      event_data: {TicketEncryptionType: '0x17', Status: '0x6'}
+- id: machine
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4768'}
+    user: {name: PC1$}
+    source: {ip: 10.0.0.20}
+    winlog:
+      event_data: {TicketEncryptionType: '0x17', Status: '0x0'}
+mappings:
+  source:
+    properties:
+      ip: {type: ip}

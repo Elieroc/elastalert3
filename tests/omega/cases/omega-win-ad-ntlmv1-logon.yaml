@@ -1,0 +1,32 @@
+docs:
+- id: v1
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+    user: {name: svc-old}
+    source: {ip: 10.0.0.30}
+    winlog:
+      event_data: {LmPackageName: NTLM V1}
+- id: v2
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+    user: {name: svc-old}
+    source: {ip: 10.0.0.30}
+    winlog:
+      event_data: {LmPackageName: NTLM V2}
+- id: anon
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4624'}
+    user: {name: ANONYMOUS LOGON}
+    source: {ip: 10.0.0.30}
+    winlog:
+      event_data: {LmPackageName: NTLM V1}
+mappings:
+  source:
+    properties:
+      ip: {type: ip}

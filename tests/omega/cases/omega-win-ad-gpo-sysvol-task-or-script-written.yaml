@@ -1,0 +1,43 @@
+docs:
+- id: task
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ShareName: \\*\SYSVOL, RelativeTargetName: 'corp.local\Policies\{ABC}\Machine\Preferences\ScheduledTasks\ScheduledTasks.xml',
+        AccessList: '%%4417'}
+- id: scripts
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ShareName: \\*\SYSVOL, RelativeTargetName: 'corp.local\Policies\{ABC}\Machine\Scripts\scripts.ini', AccessList: '%%4417'}
+- id: read
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ShareName: \\*\SYSVOL, RelativeTargetName: 'corp.local\Policies\{ABC}\Machine\Preferences\ScheduledTasks\ScheduledTasks.xml',
+        AccessList: '%%1538'}
+- id: machine
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: DC1$}
+    winlog:
+      event_data: {ShareName: \\*\SYSVOL, RelativeTargetName: x\scripts.ini, AccessList: '%%4417'}
+- id: other-share
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '5145'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ShareName: \\*\Data, RelativeTargetName: scripts.ini, AccessList: '%%4417'}

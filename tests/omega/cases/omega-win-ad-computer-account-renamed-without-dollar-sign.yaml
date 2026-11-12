@@ -1,0 +1,25 @@
+docs:
+- id: nopac
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4781'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {OldTargetUserName: FAKEPC$, NewTargetUserName: DC1}
+- id: rename-ok
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4781'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {OldTargetUserName: PC1$, NewTargetUserName: PC2$}
+- id: user-rename
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4781'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {OldTargetUserName: bob, NewTargetUserName: robert}

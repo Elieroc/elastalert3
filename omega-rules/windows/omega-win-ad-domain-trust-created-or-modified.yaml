@@ -1,0 +1,22 @@
+name: omega-win-ad-domain-trust-created-or-modified
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 2
+mitre_attack: [T1484.002, T1098]
+risk_score: 75
+risk_objects: {user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- terms:
+    event.code: ['4706', '4716', '4865', '4867']
+realert: {minutes: 30}
+query_key: [user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A domain trust is created or changed (events 4706, 4716, 4865, 4867): a new trust opens a path from another domain
+    or forest into this one.'
+  source: [auth]
+  false_positives: Planned mergers and migrations. Trusts are rare, so each one should come with a ticket.
+  references: ['https://attack.mitre.org/techniques/T1484/002/']

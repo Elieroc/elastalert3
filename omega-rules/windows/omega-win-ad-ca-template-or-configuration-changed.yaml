@@ -1,0 +1,23 @@
+name: omega-win-ad-ca-template-or-configuration-changed
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 3
+mitre_attack: [T1649]
+risk_score: 15
+risk_objects: {user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- terms:
+    event.code: ['4899', '4900', '4890', '4891', '4885']
+realert: {minutes: 10}
+query_key: [user.name]
+alert: []
+omega:
+  tier: T1
+  description: 'A certificate template or the configuration of the certificate authority is changed (events 4899, 4900, 4890,
+    4891, 4885): the first step of an ESC template abuse or of a rogue authority.'
+  source: [auth]
+  false_positives: 'Planned template changes by the PKI team. Silent: it adds risk; a request with a SAN right after is the attack.
+    Needs the certificate services audit.'
+  references: ['https://github.com/SigmaHQ/sigma/blob/master/rules/windows/builtin/security/win_security_adcs_certificate_template_configuration_vulnerability.yml']

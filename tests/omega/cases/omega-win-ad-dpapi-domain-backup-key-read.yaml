@@ -1,0 +1,25 @@
+docs:
+- id: read
+  match: true
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4662'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ObjectType: SecretObject, ObjectName: 'CN=BCKUPKEY_P Secret,CN=System,DC=corp,DC=local'}
+- id: dc
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4662'}
+    user: {name: DC1$}
+    winlog:
+      event_data: {ObjectType: SecretObject, ObjectName: 'CN=BCKUPKEY_P Secret,CN=System,DC=corp,DC=local'}
+- id: other
+  match: false
+  doc:
+    host: {name: win1}
+    event: {category: authentication, provider: Microsoft-Windows-Security-Auditing, code: '4662'}
+    user: {name: bob.admin}
+    winlog:
+      event_data: {ObjectType: SecretObject, ObjectName: 'CN=Other Secret,CN=System,DC=corp,DC=local'}

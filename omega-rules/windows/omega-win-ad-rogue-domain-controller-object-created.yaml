@@ -1,0 +1,34 @@
+name: omega-win-ad-rogue-domain-controller-object-created
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1207]
+risk_score: 90
+risk_objects: {user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '5137'}
+- bool:
+    should:
+    - term:
+        winlog.event_data.ObjectClass: {value: nTDSDSA, case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            user.name: {value: '*$', case_insensitive: true}
+        minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A directory object of class nTDSDSA (a domain controller settings object) is created by an account that is not
+    a machine account: DCShadow, a fake domain controller that pushes changes into the directory without normal logging.'
+  source: [auth]
+  false_positives: Almost none. Promoting a domain controller creates this object, and the account used is a machine account or
+    a planned administrator (exclude them by name).
+  references: ['https://attack.mitre.org/techniques/T1207/']

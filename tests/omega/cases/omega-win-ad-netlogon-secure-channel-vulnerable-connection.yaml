@@ -1,0 +1,21 @@
+docs:
+- id: denied
+  match: true
+  doc:
+    host: {name: dc9}
+    event: {provider: NETLOGON, code: '5827'}
+- id: vuln
+  match: true
+  doc:
+    host: {name: dc9}
+    event: {provider: NETLOGON, code: '5829'}
+- id: other
+  match: false
+  doc:
+    host: {name: dc9}
+    event: {provider: NETLOGON, code: '5719'}
+- id: wrong-provider
+  match: false
+  doc:
+    host: {name: dc9}
+    event: {provider: Other, code: '5827'}

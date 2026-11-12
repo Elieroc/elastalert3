@@ -1,0 +1,33 @@
+name: omega-win-ad-computer-account-renamed-without-dollar-sign
+type: any
+index: winlogbeat-*,logs-system.security-*,logs-windows.forwarded-*
+timestamp_field: '@timestamp'
+priority: 1
+mitre_attack: [T1068, T1036]
+risk_score: 90
+risk_objects: {user: user.name, host: host.name}
+filter:
+- term: {event.provider: Microsoft-Windows-Security-Auditing}
+- term: {event.code: '4781'}
+- bool:
+    should:
+    - wildcard:
+        winlog.event_data.OldTargetUserName: {value: '*$', case_insensitive: true}
+    minimum_should_match: 1
+- bool:
+    must_not:
+    - bool:
+        should:
+        - wildcard:
+            winlog.event_data.NewTargetUserName: {value: '*$', case_insensitive: true}
+        minimum_should_match: 1
+realert: {minutes: 30}
+query_key: [user.name]
+alert: [debug]
+omega:
+  tier: T0
+  description: 'A computer account is renamed to a name without the trailing $ (event 4781): the sAMAccountName spoofing step
+    of noPac (CVE-2021-42278 / 42287), which gets a ticket as a domain controller.'
+  source: [auth]
+  false_positives: 'None in normal operation: a computer account name always ends with $.'
+  references: ['https://github.com/elastic/detection-rules/blob/main/rules/privilege_escalation_samaccountname_spoofing_attack.toml']
