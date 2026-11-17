@@ -73,18 +73,24 @@ Find below all available metrics:
      ``run_every``) finds rules that are stuck, failing or starved of ``max_threads``.
    - ``elastalert_rule_last_success_timestamp_seconds{rule_name}`` (gauge): Unix time of the last run without error.
      Neither gauge has a sample for a rule until its first successful run.
-   - ``elastalert_rule_cpu_seconds_total{rule_name}`` and ``elastalert_rule_allocated_bytes_total{rule_name}``
-     (counters): CPU time used and heap allocated by the runs of the rule. ``rate(elastalert_rule_cpu_seconds_total[1h])``
-     is the share of one core the rule uses; divided by ``rate(elastalert_scrapes_total[1h])`` it is the CPU time
-     of an average run. ``topk(10, ...)`` lists the most expensive rules.
-   - ``elastalert_rule_memory_peak_bytes{rule_name}`` (gauge): the most heap the last run held at once, above what
-     the rule held before it started (large result pages, big windows or term sets being filled).
-     ``avg_over_time(elastalert_rule_memory_peak_bytes[1h])`` is its average.
+   - ``elastalert_rule_cpu_seconds_total{rule_name}`` (counter): CPU time used by the runs of the rule.
+     ``rate(elastalert_rule_cpu_seconds_total[1h])`` is the share of one core the rule uses; divided by
+     ``rate(elastalert_scrapes_total[1h])`` it is the CPU time of an average run. ``topk(10, ...)`` lists the most
+     expensive rules. It is measured on the rule's own task only: work done for it by shared parts of the daemon
+     (TLS and HTTP on the Elasticsearch connections, the writeback of its documents) is not included. A run that
+     fails still counts.
+   - ``elastalert_rule_memory_bytes{rule_name}`` (gauge): the memory the rule holds right now. It is what its runs
+     allocated and have not freed yet, so it includes the state a rule keeps between runs (event windows, term
+     sets, learned history). Each block counts for what the allocator really reserves for it. ``topk(10, elastalert_rule_memory_bytes)`` lists the rules that hold the most RAM.
 
-     These three are measured on the rule's own task only: work done for it by shared parts of the daemon (TLS
-     and HTTP on the Elasticsearch connections, the writeback of its documents) is not included, and neither is
-     the memory a rule keeps between runs (only what a run adds on top of it at its peak). A run that fails still
-     counts.
+     It is attributed per rule, not read from the operating system, so it differs from the resident set size of the
+     process (what ``ps`` or a process exporter report) in two ways: the sum over the rules is a little below it,
+     because of what is not a rule's (the daemon itself, the loaded rule files); and after a rule frees a lot, the
+     process may keep the pages for a while instead of returning them to the system, while the gauge drops at once.
+     Memory a run leaves in a shared structure (the buffer of an Elasticsearch connection it grew, say) counts for
+     that rule until it is freed. Memory allocated by a rule and freed by another part of the daemon (a document handed to the
+     writeback) leaves the rule's count when it is freed. A rule that is removed goes back to about zero when its
+     task stops, and keeps a sample at that value.
    - ``elastalert_es_request_duration_seconds{kind}`` (histogram) and ``elastalert_es_request_errors_total{kind}``
      (counter): every request to Elasticsearch, by ``kind`` (``search``, ``scroll``, ``pit``, ``count``, ``mget``,
      ``bulk``, ``eql``, ``esql``, ``validate``, ``field_caps``, ``get``, ``other``). They are not per rule, to keep the

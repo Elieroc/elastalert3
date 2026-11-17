@@ -246,7 +246,7 @@ async fn rule_task(
         _ = tokio::time::sleep(first_delay) => {}
         _ = stop.changed() => return st,
     }
-    let usage = metrics::Usage::default();
+    let usage = ctx.metrics.usage(&st.rule.name);
     loop {
         let started = tokio::time::Instant::now();
         let mut next = started + Duration::from_micros(st.rule.run_every.max(time::SECOND) as u64) + Duration::from_millis(pseudo_random(5_000));
@@ -258,14 +258,10 @@ async fn rule_task(
             st.has_run_once = true;
             let _permit = sem.acquire().await;
             let end = now() - st.rule.query_delay;
-            let run = metrics::measure(&usage, logger::RULE.scope(st.rule.name.clone(), st.run(&ctx, end, initial.take())));
+            let run = metrics::measure(usage, logger::RULE.scope(st.rule.name.clone(), st.run(&ctx, end, initial.take())));
             let outcome = std::panic::AssertUnwindSafe(run).catch_unwind().await;
-            let (cpu, allocated, peak) = usage.take();
-            ctx.metrics.rule(&st.rule.name, |c| {
-                c.cpu_seconds += cpu;
-                c.allocated_bytes += allocated;
-                c.memory_peak = Some(peak as f64);
-            });
+            let cpu = usage.take_cpu();
+            ctx.metrics.rule(&st.rule.name, |c| c.cpu_seconds += cpu);
             match outcome {
                 Ok(Ok(_)) => {}
                 Ok(Err(e)) => {
