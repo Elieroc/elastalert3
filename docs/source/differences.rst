@@ -74,6 +74,15 @@ Behaviour differences
    * - Writeback
      - one request per document
      - one ``_bulk`` per second (or 500 docs); client-side ids make retries idempotent
+   * - Writeback buffer
+     - a failed write is lost
+     - docs wait in memory while Elasticsearch is unreachable, up to 50,000; beyond that the oldest ``_status`` docs are dropped first, then the oldest others, and the number dropped is logged as an error
+   * - Silences
+     - one lookup per key
+     - all active silences are read (scrolled, no 10,000 limit) every ``run_every``; silences ended for more than a week are forgotten from memory
+   * - ``es_conn_timeout``
+     - used as is
+     - used as is (earlier 3.x versions tripled the read timeout); a value above 300 s logs a warning, 30 to 60 is usual
    * - Pending alerts
      - polled every ``run_every``, one ``delete_by_query`` each
      - kept in memory, mirrored in Elasticsearch, aggregation groups sent by a timer

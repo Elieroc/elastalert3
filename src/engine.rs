@@ -51,6 +51,12 @@ impl Silences {
     pub fn set(&self, key: &str, until: Ts, exponent: i32) {
         self.0.lock().unwrap().insert(key.to_string(), (until, exponent));
     }
+
+    /// Forgets silences that ended more than a week ago. Expired ones are kept a while because
+    /// `exponential_realert` still reads their exponent; a week is far above any realert cap.
+    pub fn purge(&self, at: Ts) {
+        self.0.lock().unwrap().retain(|_, (until, _)| *until > at - 7 * 86_400 * SECOND);
+    }
 }
 
 /// Everything a rule task needs besides its own state.
@@ -1798,6 +1804,16 @@ mod tests {
         // Friday evening: sleep until Monday morning.
         let n = at("2026-10-23T20:00:00Z");
         assert_eq!(pause_until(next("2026-10-23T20:00:00Z"), n.timestamp_micros(), run_every), Some(at("2026-10-26T10:00:00Z").timestamp_micros()));
+    }
+
+    #[test]
+    fn purge_drops_long_expired_silences_only() {
+        let s = Silences::default();
+        s.set("old", 0, 3);
+        s.set("recent", 6 * 86_400 * SECOND, 3);
+        s.purge(8 * 86_400 * SECOND);
+        assert!(s.get("old").is_none());
+        assert!(s.get("recent").is_some());
     }
 
     #[test]

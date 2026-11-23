@@ -237,6 +237,11 @@ field. May not be compatible with all rule types.
 If the same documents are read again and again because of a large ``buffer_time``, and your ingest
 pipeline sets an ingest timestamp, see :ref:`ingest_timestamp_field <ingest_timestamp_field>`.
 
+The ``<writeback_index>_status`` index gets one document per rule per run and never shrinks by itself (hundreds of
+millions of documents on a large install). It is only read for debugging, so give it a retention policy (ISM on
+OpenSearch, ILM on Elasticsearch), for example delete after 7 to 30 days. Keep ``es_conn_timeout`` at 30 to 60 seconds:
+a larger value lets one hung request block a rule for hours.
+
 Can I perform aggregations?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

@@ -118,19 +118,32 @@ impl Writeback {
     }
 }
 
+/// Brings `buf` down to `max` docs: oldest status docs go first, then the oldest of the rest.
+/// Returns how many were dropped.
+fn shed(buf: &mut Vec<(bool, String)>, max: usize) -> usize {
+    let mut excess = buf.len().saturating_sub(max);
+    let dropped = excess;
+    buf.retain(|(status, _)| !(*status && excess > 0 && { excess -= 1; true }));
+    if excess > 0 {
+        buf.drain(..excess);
+    }
+    dropped
+}
+
 async fn run(es: Es, mut rx: mpsc::Receiver<(String, Option<String>, Value)>) {
-    let mut buf: Vec<String> = Vec::new();
+    let mut buf: Vec<(bool, String)> = Vec::new(); // (is a status doc, bulk lines)
     let mut tick = tokio::time::interval(Duration::from_secs(1));
     loop {
         let open = tokio::select! {
             msg = rx.recv() => match msg {
                 Some((index, id, doc)) => {
                     // New docs use `create` so a retried bulk can't duplicate; explicit ids overwrite.
-                    buf.push(match (id, doc.is_null()) {
+                    let status = index.ends_with("_status");
+                    buf.push((status, match (id, doc.is_null()) {
                         (Some(id), true) => format!("{}\n", json!({"delete": {"_index": index, "_id": id}})),
                         (Some(id), false) => format!("{}\n{doc}\n", json!({"index": {"_index": index, "_id": id}})),
                         (None, _) => format!("{}\n{doc}\n", json!({"create": {"_index": index, "_id": uuid::Uuid::now_v7().to_string()}})),
-                    });
+                    }));
                     if buf.len() < BATCH { continue }
                     true
                 }
@@ -140,7 +153,7 @@ async fn run(es: Es, mut rx: mpsc::Receiver<(String, Option<String>, Value)>) {
         };
         while !buf.is_empty() {
             let n = buf.len().min(BATCH);
-            match es.bulk(buf[..n].concat()).await {
+            match es.bulk(buf[..n].iter().map(|(_, l)| l.as_str()).collect::<String>()).await {
                 Ok(resp) => {
                     if resp["errors"] == json!(true) {
                         let first = resp["items"].as_array().and_then(|items| {
@@ -154,8 +167,9 @@ async fn run(es: Es, mut rx: mpsc::Receiver<(String, Option<String>, Value)>) {
                 }
                 Err(e) => {
                     log::error!("Error writing to Elasticsearch writeback (will retry): {e:#}");
-                    if buf.len() > MAX_BUFFER {
-                        buf.drain(..buf.len() - MAX_BUFFER);
+                    let dropped = shed(&mut buf, MAX_BUFFER);
+                    if dropped > 0 {
+                        log::error!("Writeback buffer over {MAX_BUFFER} docs while Elasticsearch is unreachable: {dropped} docs dropped (status docs first)");
                     }
                     if open {
                         break;
@@ -167,5 +181,19 @@ async fn run(es: Es, mut rx: mpsc::Receiver<(String, Option<String>, Value)>) {
         if !open {
             return;
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn shed_drops_status_before_alerts() {
+        let mut buf = vec![(false, "a1".to_string()), (true, "s1".into()), (false, "a2".into()), (true, "s2".into())];
+        assert_eq!(shed(&mut buf, 3), 1);
+        assert_eq!(buf.iter().map(|(_, l)| l.as_str()).collect::<Vec<_>>(), ["a1", "a2", "s2"]);
+        assert_eq!(shed(&mut buf, 1), 2);
+        assert_eq!(buf, [(false, "a2".to_string())]);
     }
 }

@@ -101,9 +101,12 @@ impl Es {
         }
 
         let timeout = c.get("es_conn_timeout").and_then(Value::as_u64).unwrap_or(20);
+        if timeout > 300 {
+            log::warn!("es_conn_timeout: {timeout} s is very long, a hung request blocks a rule that long; 30-60 is usual");
+        }
         let mut b = reqwest::Client::builder()
             .default_headers(headers)
-            .timeout(Duration::from_secs(timeout.max(1) * 3))
+            .timeout(Duration::from_secs(timeout.max(1)))
             .connect_timeout(Duration::from_secs(timeout.max(1)))
             .pool_max_idle_per_host(32);
         if conf_bool(c, "verify_certs") == Some(false) {

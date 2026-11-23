@@ -165,10 +165,11 @@ async fn silence(args: &Args, rule: &rule::Rule, es: &Es, index: &str) -> Result
 /// Loads every active silence from ES into memory (startup, then every maintenance tick so that
 /// `--silence` from another process takes effect).
 async fn refresh_silences(ctx: &Ctx, index: &str) {
-    let body = json!({"query": {"range": {"until": {"gt": "now"}}}, "size": 10000});
-    match ctx.es.search(&format!("{index}_silence"), &body).await {
-        Ok(r) => {
-            for h in r["hits"]["hits"].as_array().into_iter().flatten() {
+    let body = json!({"query": {"range": {"until": {"gt": "now"}}}});
+    match ctx.es.scan(&format!("{index}_silence"), &body, "1m").await {
+        Ok(hits) => {
+            ctx.silences.purge(now());
+            for h in &hits {
                 let s = &h["_source"];
                 if let (Some(name), Some(until)) = (s["rule_name"].as_str(), s["until"].as_str().and_then(parse_iso)) {
                     ctx.silences.raise(name, until, s["exponent"].as_i64().unwrap_or(0) as i32);
