@@ -4,3 +4,4 @@ docs
 bench
 tests
 *.log
+api

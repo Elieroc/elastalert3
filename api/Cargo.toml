@@ -1,0 +1,19 @@
+[package]
+name = "elastalert-api"
+version = "0.1.0"
+edition = "2024"
+license = "Apache-2.0"
+description = "REST API + Swagger for elastalert3: rules, alerts, silences. Runs in its own container."
+
+[dependencies]
+anyhow = "1"
+axum = "0.8"
+chrono = "0.4"
+reqwest = { version = "0.13", default-features = false, features = ["json", "rustls"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml_ng = "0.10"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "process", "fs", "signal", "time"] }
+utoipa = "5"
+utoipa-swagger-ui = { version = "9", features = ["axum", "vendored"] }
+uuid = { version = "1", features = ["v4"] }

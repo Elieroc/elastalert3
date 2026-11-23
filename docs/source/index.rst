@@ -30,6 +30,7 @@ Contents:
    alerts
    enhancements
    differences
+   api
    logging
    advanced
    recipes/faq

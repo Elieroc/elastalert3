@@ -50,6 +50,7 @@ New in ElastAlert 3
 - Prometheus: :doc:`rule lag, last success time, CPU and memory per rule, and Elasticsearch request durations <recipes/exposing_rule_metrics>`.
 - The ``rust.add_field``, ``rust.drop_if`` and ``rust.lookup`` :doc:`match enhancements <enhancements>`.
 - The ``validate`` subcommand (``validate --es`` checks the filters and fields against the mappings), and ``--es_debug_trace`` with responses.
+- A :doc:`REST API <api>` with Swagger, in the separate ``api/`` project and container: rules (validated by the daemon's own loader), alerts, runs, errors, silences, per-rule CPU, memory and run time, test runs, Sigma conversion, ATT&CK layer. Silences it lifts are marked with ``lifted: true`` documents in the ``_silence`` index (see :doc:`elastalert_status`).
 - Hot reload keeps the state of a changed rule; pending alerts and aggregation groups survive restarts.
 
 A rule using ``correlation``, ``geo_velocity``, ``beacon``, ``baseline``, ``log_loss``, ``outlier``, ``risk``, ``risk_score``, ``max_occurrences`` on ``new_term`` or a ``rust.*`` enhancement does not load in ElastAlert 2. ElastAlert 2 ignores

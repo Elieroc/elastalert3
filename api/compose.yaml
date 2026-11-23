@@ -1,0 +1,20 @@
+# Daemon + API side by side, sharing config.yaml and rules/. Build the daemon image first:
+#   docker build -t elastalert3 .
+services:
+  elastalert:
+    image: elastalert3
+    volumes:
+      - ./config.yaml:/opt/elastalert/config.yaml:ro
+      - ./rules:/opt/elastalert/rules:ro
+    command: ["--config", "/opt/elastalert/config.yaml", "--prometheus_port", "9100"]
+  api:
+    build: .
+    ports: ["8080:8080"]
+    environment:
+      API_READ_TOKEN: ${API_READ_TOKEN:?set API_READ_TOKEN}
+      API_WRITE_TOKEN: ${API_WRITE_TOKEN:?set API_WRITE_TOKEN}
+      ES_URL: ${ES_URL:-http://elasticsearch:9200}
+      ELASTALERT_METRICS_URL: http://elastalert:9100/metrics
+    volumes:
+      - ./config.yaml:/opt/elastalert/config.yaml:ro
+      - ./rules:/opt/elastalert/rules
