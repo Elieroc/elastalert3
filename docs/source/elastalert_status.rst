@@ -84,3 +84,11 @@ an alert with ``realert`` is triggered, a ``silence`` record will be written wit
 
 Whenever an alert is triggered, ElastAlert 3 will check for a matching ``silence`` document, and if the ``until`` timestamp is in the future, it will ignore
 the alert completely. See the :doc:`Running ElastAlert 3 <flags>` section for information on how to silence an alert.
+
+.. admonition:: ElastAlert 3
+   :class: ea3
+
+   A silence can be lifted early. A document with ``lifted: true`` (same ``rule_name``, ``@timestamp`` = the time of the
+   lift, ``until`` in the future so that it is read) is a marker, not a silence: at its next maintenance tick the daemon
+   forgets the silence of that ``rule_name`` unless it was set or raised after the marker. The
+   `REST API <https://github.com/Elieroc/elastalert3/tree/main/api>`_ writes it with ``DELETE /silences/{id}``.

@@ -24,8 +24,10 @@ use std::sync::{Arc, Mutex};
 type Doc = Map<String, Value>;
 
 /// Realert/silence state shared by all rules (several rules may share a `realert_key`).
+/// Each entry is `(until, exponent, touched)`: `touched` is when it was last set or raised, so that a silence
+/// lifted from the API (`lift`) only removes what predates the lift.
 #[derive(Default)]
-pub struct Silences(Mutex<FxHashMap<String, (Ts, i32)>>);
+pub struct Silences(Mutex<FxHashMap<String, (Ts, i32, Ts)>>);
 
 impl Silences {
     pub fn is_silenced(&self, key: &str) -> bool {
@@ -33,29 +35,38 @@ impl Silences {
     }
 
     pub fn is_silenced_at(&self, key: &str, at: Ts) -> bool {
-        self.0.lock().unwrap().get(key).is_some_and(|(until, _)| at < *until)
+        self.0.lock().unwrap().get(key).is_some_and(|(until, ..)| at < *until)
     }
 
     pub fn get(&self, key: &str) -> Option<(Ts, i32)> {
-        self.0.lock().unwrap().get(key).copied()
+        self.0.lock().unwrap().get(key).map(|(u, e, _)| (*u, *e))
     }
 
     /// Merge a silence read from ES: never shortens one we already know.
     pub fn raise(&self, key: &str, until: Ts, exponent: i32) {
         let mut m = self.0.lock().unwrap();
-        if m.get(key).is_none_or(|(u, _)| *u < until) {
-            m.insert(key.to_string(), (until, exponent));
+        if m.get(key).is_none_or(|(u, ..)| *u < until) {
+            m.insert(key.to_string(), (until, exponent, now()));
         }
     }
 
     pub fn set(&self, key: &str, until: Ts, exponent: i32) {
-        self.0.lock().unwrap().insert(key.to_string(), (until, exponent));
+        self.0.lock().unwrap().insert(key.to_string(), (until, exponent, now()));
+    }
+
+    /// A lift marker written at `at` (see the API's `DELETE /silences`): forgets the silence of `key`
+    /// unless it was set or raised after `at`.
+    pub fn lift(&self, key: &str, at: Ts) {
+        let mut m = self.0.lock().unwrap();
+        if m.get(key).is_some_and(|(.., touched)| *touched <= at) {
+            m.remove(key);
+        }
     }
 
     /// Forgets silences that ended more than a week ago. Expired ones are kept a while because
     /// `exponential_realert` still reads their exponent; a week is far above any realert cap.
     pub fn purge(&self, at: Ts) {
-        self.0.lock().unwrap().retain(|_, (until, _)| *until > at - 7 * 86_400 * SECOND);
+        self.0.lock().unwrap().retain(|_, (until, ..)| *until > at - 7 * 86_400 * SECOND);
     }
 }
 
@@ -1823,6 +1834,17 @@ mod tests {
         assert!(s.is_silenced_at("k", 99 * SECOND));
         assert!(!s.is_silenced_at("k", 100 * SECOND));
         assert!(!s.is_silenced_at("other", 0));
+    }
+
+    #[test]
+    fn lift_only_removes_silences_older_than_the_marker() {
+        let s = Silences::default();
+        s.set("k", now() + 3600 * SECOND, 0);
+        s.lift("k", now() - 60 * SECOND);
+        assert!(s.is_silenced("k"), "set after the marker: kept");
+        s.lift("k", now() + SECOND);
+        assert!(!s.is_silenced("k"), "set before the marker: lifted");
+        s.lift("absent", now());
     }
 
     #[test]

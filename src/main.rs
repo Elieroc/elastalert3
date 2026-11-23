@@ -169,11 +169,20 @@ async fn refresh_silences(ctx: &Ctx, index: &str) {
     match ctx.es.scan(&format!("{index}_silence"), &body, "1m").await {
         Ok(hits) => {
             ctx.silences.purge(now());
+            let mut lifts = Vec::new();
             for h in &hits {
                 let s = &h["_source"];
                 if let (Some(name), Some(until)) = (s["rule_name"].as_str(), s["until"].as_str().and_then(parse_iso)) {
-                    ctx.silences.raise(name, until, s["exponent"].as_i64().unwrap_or(0) as i32);
+                    // `lifted: true` docs are markers written by the API when it lifts a silence early.
+                    match (s["lifted"].as_bool() == Some(true), s["@timestamp"].as_str().and_then(parse_iso)) {
+                        (true, Some(at)) => lifts.push((name, at)),
+                        (true, None) => {}
+                        _ => ctx.silences.raise(name, until, s["exponent"].as_i64().unwrap_or(0) as i32),
+                    }
                 }
+            }
+            for (name, at) in lifts {
+                ctx.silences.lift(name, at);
             }
         }
         Err(e) => log::warn!("Error reading silences from Elasticsearch: {e:#}"),
