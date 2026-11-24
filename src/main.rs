@@ -17,6 +17,7 @@ mod mitre;
 mod notify;
 mod querylang;
 mod rule;
+mod rule_types;
 mod setup;
 mod sigma;
 mod testrule;
@@ -126,6 +127,11 @@ enum Cmd {
     MitreLayer(mitre::LayerArgs),
     /// Print the ElastAlert options a Sigma rule compiles to; no Elasticsearch and no config needed
     SigmaConvert(sigma::ConvertArgs),
+    /// Print the options specific to a rule type (required and optional, with descriptions) as JSON, or the list of types; no Elasticsearch and no config needed
+    RuleTypes {
+        /// Rule type, e.g. spike_aggregation (default: list them all)
+        name: Option<String>,
+    },
 }
 
 fn parse_time_arg(s: &str) -> Result<Ts> {
@@ -470,6 +476,9 @@ async fn main() -> Result<()> {
     }
     if let Some(Cmd::SigmaConvert(c)) = &args.cmd {
         return sigma::convert_cmd(c);
+    }
+    if let Some(Cmd::RuleTypes { name }) = &args.cmd {
+        return rule_types::cmd(name.as_deref());
     }
     let conf = Config::load(&args.config)?;
     if let Some(Cmd::Validate { es }) = &args.cmd {

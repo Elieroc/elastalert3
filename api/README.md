@@ -20,6 +20,7 @@ Swagger UI: `http://localhost:8080/swagger-ui/` (spec: `/api-docs/openapi.json`)
 | alerts | `GET /alerts`, `/alerts/pending`, `/alerts/{id}`, `/runs`, `/errors` | read |
 | silences | `GET /silences`, `POST /silences`, `DELETE /silences/{id}` | read; write for POST, DELETE |
 | sigma | `POST /sigma/convert`, `GET /mitre/layer`, `GET/PUT/DELETE /sigma/rules[/{path}]` (`sigma_folders`) | read; write for PUT, DELETE |
+| rule-types | `GET /rule-types`, `GET /rule-types/{type}` (required and optional options of a type, with descriptions) | read |
 | config | `GET /config` (read-only, secrets masked) | read |
 | indices | `GET /indices`, `GET /indices/{pattern}/fields`, `POST /indices/{pattern}/search` (read-only, no scripts, max 100 hits) | read |
 

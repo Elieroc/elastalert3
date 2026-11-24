@@ -8,6 +8,7 @@ mod es;
 mod explore;
 mod history;
 mod jobs;
+mod rule_types;
 mod rules;
 mod sigma_rules;
 mod stats;
@@ -119,7 +120,7 @@ impl Modify for Bearer {
         jobs::start, jobs::list, jobs::get, jobs::cancel, sigma_rules::list, sigma_rules::get, sigma_rules::put, sigma_rules::delete,
         history::lift, rules::list, rules::get, rules::put, rules::delete, rules::enable, rules::disable, rules::validate, rules::test,
         history::alerts, history::pending, history::alert, history::runs, history::errors, history::silences, history::silence,
-        convert::sigma, convert::mitre),
+        convert::sigma, convert::mitre, rule_types::list, rule_types::get),
     components(schemas(rules::RuleSummary, rules::RuleFile, rules::Saved, rules::Validation, history::Page, history::NewSilence, rules::TestRequest, stats::RuleStats, stats::RuleDetail, stats::Status, explore::ConfigView, explore::Field,
         jobs::JobView, jobs::JobStatus, sigma_rules::SigmaSummary, sigma_rules::SigmaFile)),
     modifiers(&Bearer),
@@ -130,6 +131,8 @@ struct Doc;
 fn router(app: Arc<App>) -> Router {
     Router::new()
         .route("/health", get(health))
+        .route("/rule-types", get(rule_types::list))
+        .route("/rule-types/{type}", get(rule_types::get))
         .route("/rules", get(rules::list))
         .route("/rules/validate", post(rules::validate))
         .route("/rules/test", post(rules::test))

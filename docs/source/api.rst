@@ -430,6 +430,57 @@ again after the marker is kept.
 
 ``404`` if the document is unknown or is itself a lift marker.
 
+Rule types
+----------
+
+``GET /rule-types``
+~~~~~~~~~~~~~~~~~~~
+
+Read token. The rule types the daemon loads: ``[{"type": "frequency", "summary": "..."}, ...]``.
+
+``GET /rule-types/{type}``
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Read token. The options specific to a rule type, with a description each, from the daemon's own catalogue
+(``elastalert rule-types``), so it never disagrees with what the loader accepts. The options every rule has
+(``index``, ``filter``, ``alert``, ``realert``...) are not listed: see :doc:`ruletypes`.
+
+.. code-block:: sh
+
+   api "$API/rule-types/spike_aggregation"
+
+.. code-block:: json
+
+   {
+     "type": "spike_aggregation",
+     "summary": "Matches when a metric in the current window is spike_height times larger or smaller than in the reference window.",
+     "query": "aggregation",
+     "required": [
+       {"name": "metric_agg_key", "type": "string", "description": "Field the metric is computed over, ..."},
+       {"name": "metric_agg_type", "type": "string", "enum": ["min", "max", "avg", "sum", "cardinality", "value_count", "percentiles"], "description": "..."},
+       {"name": "percentile_range", "type": "integer", "required_if": "metric_agg_type is percentiles", "description": "..."},
+       {"name": "spike_height", "type": "number", "description": "..."},
+       {"name": "spike_type", "type": "string", "enum": ["up", "down", "both"], "description": "..."},
+       {"name": "timeframe", "type": "timedelta", "description": "..."}
+     ],
+     "one_of": [],
+     "optional": [
+       {"name": "query_key", "type": "string", "description": "..."},
+       {"name": "alert_on_new_data", "type": "boolean", "default": false, "description": "..."}
+     ],
+     "doc": "https://elastalert3.neopipe.fr/ruletypes.html#spike-aggregation"
+   }
+
+``required``
+  Always needed. A field with ``required_if`` is needed only in that case.
+``one_of``
+  Groups of options of which at least one is needed, e.g. ``[["max_threshold", "min_threshold"]]`` for
+  ``metric_aggregation``. The members are also described in ``optional``.
+``query``
+  ``documents`` (the rule reads the hits) or ``aggregation`` (the rule asks Elasticsearch for aggregations).
+
+``404`` for an unknown type, with the list of valid ones.
+
 Sigma
 -----
 

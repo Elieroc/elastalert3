@@ -103,6 +103,23 @@ comment and metadata name those rules and their files. Rules with ``is_enabled: 
 ``--include-disabled``; they are then marked ``(disabled)``. Other options: ``--name`` (the layer name), and no
 ``-o`` to write to standard output.
 
+Listing the options of a rule type: ``rule-types``
+--------------------------------------------------
+
+.. admonition:: ElastAlert 3
+   :class: ea3
+
+   New in ElastAlert 3.
+
+::
+
+    $ elastalert rule-types spike_aggregation
+
+``rule-types`` prints as JSON the options specific to a rule type: ``required``, ``one_of`` (groups of which at least one
+is needed) and ``optional``, each with its type, default and a description. Without a type it lists them all. Neither
+Elasticsearch nor a config file is needed. The options every rule has (``index``, ``filter``, ``alert``...) are not
+listed. The API serves the same data as ``GET /rule-types/{type}``.
+
 .. _docker-instructions:
 
 As a Docker container

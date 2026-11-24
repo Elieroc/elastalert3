@@ -1,0 +1,336 @@
+# Options specific to each rule type, served by `elastalert rule-types` and GET /rule-types on the API.
+# Common options (index, filter, alert, realert, query_key on most types...) are in ruletypes.rst, not repeated here.
+# required: always needed. one_of: groups of which at least one member is needed. required_if: needed in a condition.
+# example: the smallest rule body that loads; the test in rule.rs removes each required option from it and expects a refusal.
+any:
+  summary: Matches every hit of the query.
+  query: documents
+  example: ""
+  required: []
+  optional: []
+
+blacklist:
+  summary: Matches when a field is in a blacklist.
+  query: documents
+  example: |
+    compare_key: user.name
+    blacklist: [root]
+  required:
+  - {name: compare_key, type: string, description: Field compared to the blacklist. Events where it is null are ignored.}
+  - {name: blacklist, type: list, description: 'Blacklisted values, and/or paths of flat files holding them as "!file /path".'}
+  optional: []
+
+whitelist:
+  summary: Matches when a field is not in a whitelist.
+  query: documents
+  example: |
+    compare_key: user.name
+    ignore_null: true
+    whitelist: [alice]
+  required:
+  - {name: compare_key, type: string, description: Field compared to the whitelist.}
+  - {name: ignore_null, type: boolean, description: When true, events without a compare_key field do not match.}
+  - {name: whitelist, type: list, description: 'Whitelisted values, and/or paths of flat files holding them as "!file /path".'}
+  optional: []
+
+change:
+  summary: Matches when a field changes with respect to the last event with the same query_key.
+  query: documents
+  example: |
+    query_key: host.name
+    compare_key: [user.name]
+    ignore_null: true
+  required:
+  - {name: compare_key, type: 'string|list', description: Fields to monitor. An alert triggers when any of them changes.}
+  - {name: ignore_null, type: boolean, description: When true, events without a compare_key field do not count as changed.}
+  - {name: query_key, type: 'string|list', description: The rule is applied per value of this field, which must be in every event checked.}
+  optional:
+  - {name: timeframe, type: timedelta, description: Maximum time between changes. After it the old value of compare_key is forgotten.}
+
+frequency:
+  summary: Matches when at least num_events events happen within timeframe.
+  query: documents
+  example: |
+    num_events: 5
+    timeframe: {minutes: 10}
+  required:
+  - {name: num_events, type: integer, description: Number of events that triggers an alert, inclusive. Must be positive.}
+  - {name: timeframe, type: timedelta, description: Time within which num_events must occur.}
+  optional:
+  - {name: query_key, type: 'string|list', description: Events are counted separately for each value of this field.}
+  - {name: use_count_query, type: boolean, default: false, description: Use the count API instead of downloading the documents. For tens of thousands of hits or more.}
+  - {name: use_terms_query, type: boolean, default: false, description: Count the documents per value of query_key with a terms aggregation. Needs query_key.}
+  - {name: terms_size, type: integer, default: 50, description: With use_terms_query, the maximum number of terms returned per query.}
+  - {name: attach_related, type: boolean, default: false, description: Attach the other events of the match under related_events.}
+
+spike:
+  summary: Matches when the number of events in the current timeframe is spike_height times larger or smaller than in the previous one.
+  query: documents
+  example: |
+    timeframe: {hours: 1}
+    spike_height: 3
+    spike_type: up
+  required:
+  - {name: timeframe, type: timedelta, description: Size of the current window; the reference window is the one before. The rule is not active until two timeframes have elapsed since the first event.}
+  - {name: spike_height, type: number, description: Ratio of the current to the reference count that triggers an alert.}
+  - {name: spike_type, type: string, enum: [up, down, both], description: Direction of the spike that matches.}
+  optional:
+  - {name: field_value, type: string, description: Compare the means of this field instead of the event counts; threshold_ref and threshold_cur are then ignored.}
+  - {name: threshold_ref, type: integer, description: Minimum number of events in the reference window for an alert.}
+  - {name: threshold_cur, type: integer, description: Minimum number of events in the current window for an alert.}
+  - {name: alert_on_new_data, type: boolean, default: false, description: With query_key, a new value may alert immediately instead of waiting for two timeframes of baseline.}
+  - {name: use_count_query, type: boolean, default: false, description: Use the count API instead of downloading the documents.}
+  - {name: use_terms_query, type: boolean, default: false, description: Count per value of query_key with a terms aggregation. Needs query_key.}
+  - {name: terms_size, type: integer, default: 50, description: With use_terms_query, the maximum number of terms returned per query.}
+  - {name: query_key, type: 'string|list', description: Counts are kept separately for each value of this field.}
+
+flatline:
+  summary: Matches when the number of events stays under threshold for timeframe.
+  query: documents
+  example: |
+    timeframe: {minutes: 30}
+    threshold: 1
+  required:
+  - {name: timeframe, type: timedelta, description: Period that must hold fewer than threshold events.}
+  - {name: threshold, type: integer, description: Minimum number of events for an alert not to trigger.}
+  optional:
+  - {name: query_key, type: 'string|list', description: Alert when any value of the field was seen at least once and then falls below threshold. The value is available as key in the alert text.}
+  - {name: forget_keys, type: boolean, default: false, description: With query_key, forget the value that alerted until it is seen again.}
+  - {name: use_count_query, type: boolean, default: false, description: Use the count API instead of downloading the documents.}
+  - {name: use_terms_query, type: boolean, default: false, description: Count per value of query_key with a terms aggregation. Needs query_key.}
+  - {name: terms_size, type: integer, default: 50, description: With use_terms_query, the maximum number of terms returned per query.}
+
+new_term:
+  summary: Matches when a value appears in a field that has not been seen in the history.
+  query: documents
+  example: |
+    fields: [user.name]
+  required: []
+  one_of:
+  - [fields, query_key]
+  optional:
+  - {name: fields, type: list, description: 'Fields to monitor; an entry that is itself a list is a composite key. query_key is used when fields is not set.'}
+  - {name: query_key, type: string, description: Used as the field to monitor when fields is not set. Required with use_terms_query.}
+  - {name: terms_window_size, type: timedelta, default: {days: 30}, description: Window of the initial query for the known terms. No term seen in it alerts.}
+  - {name: max_occurrences, type: integer, default: 0, description: A term seen at most this many times in terms_window_size still alerts, once. New in ElastAlert 3.}
+  - {name: window_step_size, type: timedelta, default: {days: 1}, description: Ignored in ElastAlert 3, which gathers the known terms with one composite aggregation.}
+  - {name: alert_on_missing_field, type: boolean, default: false, description: Alert when a field is missing from a document.}
+  - {name: use_terms_query, type: boolean, default: false, description: Get the terms with aggregation queries. One field only, which must also be query_key.}
+  - {name: terms_size, type: integer, default: 50, description: With use_terms_query, the number of buckets returned per query.}
+  - {name: use_keyword_postfix, type: boolean, default: true, description: Add .keyword to the fields of the initial query.}
+
+cardinality:
+  summary: Matches when the number of distinct values of a field within timeframe is above or below a threshold.
+  query: documents
+  example: |
+    timeframe: {hours: 1}
+    cardinality_field: user.name
+    max_cardinality: 10
+  required:
+  - {name: timeframe, type: timedelta, description: Period in which distinct values are counted.}
+  - {name: cardinality_field, type: string, description: Field to count the distinct values of.}
+  one_of:
+  - [max_cardinality, min_cardinality]
+  optional:
+  - {name: max_cardinality, type: integer, description: Alert when the cardinality is greater than this. Each new event that raises it alerts.}
+  - {name: min_cardinality, type: integer, description: Alert when the cardinality is lower than this, once timeframe has elapsed since the first event.}
+  - {name: query_key, type: 'string|list', description: Cardinality is counted separately for each value of this field.}
+
+metric_aggregation:
+  summary: Matches when a metric over the buffer_time window is above or below a threshold.
+  query: aggregation
+  example: |
+    metric_agg_key: bytes
+    metric_agg_type: sum
+    max_threshold: 100
+  required:
+  - {name: metric_agg_key, type: string, description: Field the metric is computed over, or the name of the scripted field when metric_agg_script is used.}
+  - {name: metric_agg_type, type: string, enum: [min, max, avg, sum, cardinality, value_count, percentiles], description: Metric aggregation to perform.}
+  - {name: percentile_range, type: integer, required_if: 'metric_agg_type is percentiles', description: Percentage value to aggregate against.}
+  one_of:
+  - [max_threshold, min_threshold]
+  optional:
+  - {name: max_threshold, type: number, description: Alert when the metric is greater than this (exclusive).}
+  - {name: min_threshold, type: number, description: Alert when the metric is lower than this (exclusive).}
+  - {name: query_key, type: string, description: Metric is computed and judged separately for each value of this field.}
+  - {name: metric_agg_script, type: 'string|object', description: 'Painless script computing the metric, as a string or {script: ...}.'}
+  - {name: min_doc_count, type: integer, default: 1, description: Minimum number of events in the window for a query_key value to be considered.}
+  - {name: use_run_every_query_size, type: boolean, default: false, description: Use run_every as the calculation window instead of buffer_time.}
+  - {name: allow_buffer_time_overlap, type: boolean, default: false, description: Allow the window to overlap the end of the previous run.}
+  - {name: bucket_interval, type: timedelta, description: Divide the window into segments of this size, each judged on its own. buffer_time must be a multiple of it.}
+  - {name: sync_bucket_interval, type: boolean, default: false, description: With bucket_interval, align the window on the date_histogram bucket keys.}
+  - {name: metric_format_string, type: string, description: Python format string for the metric, added to the match as metric_<key>_formatted.}
+
+spike_aggregation:
+  summary: Matches when a metric in the current window is spike_height times larger or smaller than in the reference window.
+  query: aggregation
+  example: |
+    timeframe: {hours: 1}
+    spike_height: 3
+    spike_type: up
+    metric_agg_key: bytes
+    metric_agg_type: sum
+  required:
+  - {name: metric_agg_key, type: string, description: Field the metric is computed over, or the name of the scripted field when metric_agg_script is used.}
+  - {name: metric_agg_type, type: string, enum: [min, max, avg, sum, cardinality, value_count, percentiles], description: Metric aggregation to perform.}
+  - {name: percentile_range, type: integer, required_if: 'metric_agg_type is percentiles', description: Percentage value to aggregate against.}
+  - {name: spike_height, type: number, description: Ratio of the metric in the current window to the reference window that triggers an alert.}
+  - {name: spike_type, type: string, enum: [up, down, both], description: Direction of the spike that matches.}
+  - {name: timeframe, type: timedelta, description: Size of the current window; the reference window is the one before. The rule is not active until two timeframes have elapsed since the first event.}
+  optional:
+  - {name: query_key, type: string, description: Metric is computed and judged separately for each value of this field.}
+  - {name: metric_agg_script, type: 'string|object', description: 'Painless script computing the metric, as a string or {script: ...}.'}
+  - {name: threshold_ref, type: number, description: Minimum metric value in the reference window for an alert.}
+  - {name: threshold_cur, type: number, description: Minimum metric value in the current window for an alert.}
+  - {name: min_doc_count, type: integer, default: 1, description: Minimum number of events in the current window for a query_key value to be considered.}
+  - {name: alert_on_new_data, type: boolean, default: false, description: With query_key, a new value may alert immediately instead of waiting for two timeframes of baseline.}
+
+percentage_match:
+  summary: Matches when the percentage of documents that match a bucket filter, within buffer_time, is above or below a threshold.
+  query: aggregation
+  example: |
+    match_bucket_filter: [{term: {event.outcome: failure}}]
+    max_percentage: 50
+  required:
+  - {name: match_bucket_filter, type: list, description: 'Query DSL filter of the match bucket, a subset of the documents of the rule filter.'}
+  one_of:
+  - [min_percentage, max_percentage]
+  optional:
+  - {name: min_percentage, type: number, description: Alert when the percentage of matching documents is lower than this.}
+  - {name: max_percentage, type: number, description: Alert when the percentage of matching documents is greater than this.}
+  - {name: query_key, type: string, description: Percentage is computed and judged separately for each value of this field.}
+  - {name: min_denominator, type: integer, default: 0, description: Minimum number of documents for the percentage to apply.}
+  - {name: use_run_every_query_size, type: boolean, default: false, description: Use run_every as the calculation window instead of buffer_time.}
+  - {name: allow_buffer_time_overlap, type: boolean, default: false, description: Allow the window to overlap the end of the previous run.}
+  - {name: bucket_interval, type: timedelta, description: Divide the window into segments of this size, each judged on its own.}
+  - {name: sync_bucket_interval, type: boolean, default: false, description: With bucket_interval, align the window on the date_histogram bucket keys.}
+  - {name: percentage_format_string, type: string, description: Python format string for the percentage, added to the match as percentage_formatted.}
+
+correlation:
+  summary: Matches when events of several searches (the leaves) happen on the same query_key value within timeframe, combined with AND, OR, THEN, XOR, NOT. New in ElastAlert 3.
+  query: documents
+  example: |
+    query_key: host.name
+    timeframe: {hours: 1}
+    correlation_query: a THEN b
+    correlation_leaves:
+      a: {filter: [{term: {k: a}}]}
+      b: {filter: [{term: {k: b}}]}
+  required:
+  - {name: query_key, type: 'string|list', description: The pivot. Documents without a value for it are skipped.}
+  - {name: timeframe, type: timedelta, description: How long a chain stays open, measured from its first event.}
+  - {name: correlation_leaves, type: object, description: 'Map of leaf name to leaf: filter (non-empty list of Query DSL filters, or one eql / esql query), and optional num_events (default 1), index, query_key.'}
+  - {name: correlation_query, type: string, description: 'How the leaves combine, with AND, OR, THEN, XOR, NOT, COUNT{n}(a OR b) and parentheses. Every leaf must appear in it.'}
+  optional: []
+
+geo_velocity:
+  summary: Matches an event too far from the previous event of the same query_key for the time between them (impossible travel). New in ElastAlert 3.
+  query: documents
+  example: |
+    query_key: user.name
+    geo_field: loc
+    timeframe: {hours: 24}
+    max_speed_kmh: 900
+  required:
+  - {name: query_key, type: 'string|list', description: One last position is kept per value of this field.}
+  - {name: geo_field, type: string, description: 'Field holding the position: {lat, lon}, "lat,lon", [lon, lat] or "POINT(lon lat)".'}
+  - {name: timeframe, type: timedelta, description: A position older than this is forgotten.}
+  one_of:
+  - [max_speed_kmh, min_distance_km]
+  optional:
+  - {name: max_speed_kmh, type: number, description: 'Match when distance / time is above this speed. Must be above 0.'}
+  - {name: min_distance_km, type: number, description: Moves shorter than this never match. Defaults to 100 when max_speed_kmh is set.}
+  - {name: geo_include, type: list, description: Fields of the previous event to copy into the match.}
+
+beacon:
+  summary: Matches when the events of a query_key value come at regular intervals (C2 beaconing). New in ElastAlert 3.
+  query: documents
+  example: |
+    query_key: host.name
+    timeframe: {hours: 6}
+    min_events: 20
+  required:
+  - {name: query_key, type: 'string|list', description: One series of event times is kept per value of this field.}
+  - {name: timeframe, type: timedelta, description: Window the events are measured over.}
+  - {name: min_events, type: integer, description: Fewer events than this in the last timeframe never match. At least 3.}
+  optional:
+  - {name: max_jitter, type: number, default: 0.15, description: 'Largest accepted coefficient of variation of the gaps between events, in ]0, 1].'}
+  - {name: min_interval, type: timedelta, default: 0, description: Series whose mean gap is shorter than this are ignored.}
+
+baseline:
+  summary: Matches when the event count of the last bucket is too far from what is normal for the same bucket in the history. New in ElastAlert 3.
+  query: aggregation
+  example: |
+    bucket: {hours: 1}
+    history: {weeks: 4}
+  required:
+  - {name: bucket, type: timedelta, description: Width of the counting buckets, in whole seconds. Must divide history and, with a seasonality, the season.}
+  - {name: history, type: timedelta, description: How far back the baseline is learned. At least 2 seasons.}
+  optional:
+  - {name: query_key, type: string, description: One baseline per value of this field (a single field), else one for all events.}
+  - {name: seasonality, type: string, enum: [none, hour_of_day, hour_of_week], default: none, description: Which past buckets the current one is compared with.}
+  - {name: method, type: string, enum: [zscore, mad], default: zscore, description: How the score is computed.}
+  - {name: threshold, type: number, default: 4, description: Match when the absolute score reaches this. Must be above 0.}
+  - {name: min_baseline_count, type: number, default: 20, description: A series is skipped when the samples of the bucket slot add up to fewer events than this.}
+  - {name: terms_size, type: integer, default: 50, description: Number of query_key values followed, the most frequent of the history.}
+
+log_loss:
+  summary: Matches a source that stopped sending logs for longer than it ever does at this time of the week. New in ElastAlert 3.
+  query: aggregation
+  example: |
+    query_key: [organisation, event_src]
+    history: {weeks: 4}
+  required:
+  - {name: query_key, type: 'string|list', description: What a source is. Every field must be aggregatable (keyword); compound keys allowed.}
+  - {name: history, type: timedelta, description: Window read to learn the thresholds. At least 2 seasons and at least max_threshold.}
+  optional:
+  - {name: resolution, type: timedelta, default: {minutes: 10}, description: A source is active in a bucket of this size when it has an event in it. Whole seconds, divides history and the season.}
+  - {name: seasonality, type: string, enum: [hour_of_week, hour_of_day, none], default: hour_of_week, description: Which past instants the current silence is compared with.}
+  - {name: factor, type: number, default: 1.5, description: The threshold is factor times what is normal. Must be above 0.}
+  - {name: quantile, type: number, default: 0.99, description: With seasonality none, the quantile of the gaps taken as normal. Between 0 and 1.}
+  - {name: min_threshold, type: timedelta, default: {hours: 1}, description: Never alert before this silence.}
+  - {name: max_threshold, type: timedelta, default: {days: 3}, description: Always lost beyond this silence.}
+  - {name: learn_every, type: timedelta, default: {hours: 6}, description: How often the thresholds are learned again.}
+  - {name: group_field, type: string, description: One field of a compound query_key. With mass_loss_ratio, also matches a group of sources.}
+  - {name: mass_loss_ratio, type: number, description: Share of lost sources of a group, from 0 to 1, that makes a group match. Goes with group_field.}
+  - {name: min_group_size, type: integer, default: 3, description: Minimum number of judged sources of a group for a group match.}
+
+outlier:
+  summary: Matches an entity whose metric is at least outlier_factor times the median of its peers. New in ElastAlert 3.
+  query: aggregation
+  example: |
+    query_key: user.name
+    timeframe: {hours: 24}
+    metric_agg_key: bytes
+    metric_agg_type: sum
+    outlier_factor: 10
+  required:
+  - {name: query_key, type: string, description: The entity, a single field.}
+  - {name: metric_agg_key, type: string, description: Field the metric is computed over.}
+  - {name: metric_agg_type, type: string, enum: [min, max, avg, sum, cardinality, value_count], description: Metric aggregation to perform. percentiles is not supported.}
+  - {name: timeframe, type: timedelta, description: Window the metric is computed over, ending now.}
+  - {name: outlier_factor, type: number, description: An entity matches at value >= factor * reference. Must be above 0.}
+  optional:
+  - {name: min_population, type: integer, default: 10, description: With fewer entities nothing matches. At least 3.}
+  - {name: outlier_reference, type: string, enum: [median, p99], default: median, description: The reference the factor applies to.}
+  - {name: peer_field, type: string, description: Compare each entity only with its group (value of this field). A single aggregatable field, different from query_key.}
+  - {name: metric_agg_script, type: 'string|object', description: Painless script computing the metric.}
+  - {name: terms_size, type: integer, default: 1000, description: Number of entities seen, the ones with the most documents.}
+  - {name: min_doc_count, type: integer, default: 1, description: Minimum number of events for an entity to be considered.}
+
+risk:
+  summary: Matches an entity whose risk, added up from the alerts of the other rules, reaches risk_threshold within timeframe. New in ElastAlert 3.
+  query: documents
+  example: |
+    risk_threshold: 100
+    timeframe: {hours: 24}
+  required:
+  - {name: risk_threshold, type: number, description: An entity matches when the sum of its risk within timeframe reaches this. Must be above 0.}
+  - {name: timeframe, type: timedelta, description: Window the risk is added up over.}
+  optional:
+  - {name: risk_object_type, type: string, description: Only the entities of this type are judged.}
+  - {name: min_distinct_rules, type: integer, default: 1, description: Number of different rules that must contribute.}
+  - {name: usual_hours, type: object, description: Same syntax as active_hours. An alert outside it adds off_hours_bonus. Goes with off_hours_bonus.}
+  - {name: off_hours_bonus, type: number, description: Risk added to each entity of an alert raised outside usual_hours. Goes with usual_hours.}
+  - {name: risk_ratio, type: number, description: Also require this many times the usual risk of the entity per timeframe. Above 1. Goes with risk_history.}
+  - {name: risk_history, type: timedelta, description: Window the usual risk is learned over; a multiple of timeframe, at least twice as long. Goes with risk_ratio.}
